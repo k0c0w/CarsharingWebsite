@@ -1,0 +1,10 @@
+
+.fixed {
+
+}
+
+header {
+    height: 96px;
+    position: fixed;
+    width: 100%;
+}

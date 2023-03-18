@@ -1,0 +1,84 @@
+
+.flex-container { 
+  display: flex;
+  align-items: center;
+}
+
+.flex-column { flex-direction: column;}
+
+.frame {
+  position: relative; 
+  min-height: 100vh
+}
+
+.greeting-screen {
+  color: #fff;
+  overflow: hidden;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+
+.greeting-background {
+  background-size: cover;
+  position: relative;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+
+.banner {
+  margin-top: 10em;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 110px;
+  font-weight: 800;
+  font-family: "Orbitron";
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  overflow: hidden;
+  margin-top: 0;
+  margin-bottom: -30px;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 30px;
+  font-weight: 400;
+  overflow: hidden;
+  text-align: center;
+}
+
+.greeting-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+  min-width: 240px;
+  transform: translateY(0);
+  opacity: 1;
+  box-shadow: none;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  text-align: center;
+  padding: 16px;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 24px;
+  display: inline-block;
+  background-color: #10b5dc;
+}
+
+.button:hover{
+  background-color: #199bb9;
+}
+
+
+.button+.button {
+      margin-left: 16px;
+}

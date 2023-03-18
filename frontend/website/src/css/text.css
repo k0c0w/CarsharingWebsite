@@ -1,0 +1,12 @@
+.bold-text {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.dim {
+    font-size: 18px;
+    font-weight: 400;
+    color: #757C7E;
+    text-align: center;
+    text-decoration: none;
+}

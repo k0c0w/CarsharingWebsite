@@ -1,0 +1,19 @@
+
+.tariff-holder{
+    justify-content: center;
+    min-height: 20em;
+    min-width: 20em;
+    background-color: blue;
+    margin: 10px 10px 10px 10px;
+}
+
+.rectangle-holder p {
+    margin: 0;
+    font-weight: bold;
+}
+
+.tariffs-list-holder {
+    position: absolute;
+    height: 100%;
+    padding-bottom: 2vh;
+}
