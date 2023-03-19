@@ -20,11 +20,11 @@ function App() {
   return (
     <BrowserRouter>
       <Header/>
-        <Routes>
-          <Route exact path="/" element={<Index/>}/>
-          <Route path="/tariff" element={<Tariffs/>} />
-          <Route exact path="/login" element={<Login/>}/>
-        </Routes>
+      <Routes>
+        <Route exact path="/" element={<Index/>}/>
+        <Route path="/tariff" element={<Tariffs/>} />
+        <Route exact path="/login" element={<Login/>}/>
+      </Routes>
     </BrowserRouter>
   );
 }
