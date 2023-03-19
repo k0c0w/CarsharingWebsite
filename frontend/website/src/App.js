@@ -5,6 +5,7 @@ import Login from './Containers/Login';
 import {BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Tariffs from './Containers/Tariffs';
+import { Registration } from './Containers/Registration';
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route exact path="/" element={<Index/>}/>
         <Route path="/tariff" element={<Tariffs/>} />
         <Route exact path="/login" element={<Login/>}/>
+        <Route path="/registration" element={<Registration/>}/>
       </Routes>
     </BrowserRouter>
   );
