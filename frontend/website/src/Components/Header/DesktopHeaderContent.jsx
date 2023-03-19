@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-import "../css/common.css";
-import Container from "./Container";
+import "../../css/common.css";
+import Container from "../Container";
 
 
 export const DesktopHeaderContent = () => (

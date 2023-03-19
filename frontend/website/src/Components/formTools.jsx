@@ -17,4 +17,24 @@ export const Form = React.forwardRef((props, ref) => {
     </form>)
 });
 
+
+
+export const MyFormProfileInput = () => {
+    const gap = { columnGap: "100px"};
+
+    return (
+    <div id="myFormInput" className="flex-container" style={gap}>
+        <div className="flex-container flex-column" style={{order: 0}}>
+            <Input name="email" placeholder="Почта"/>
+            <Input name="password" placeholder="Пароль"/>
+            <Input placeholder="Повторите пароль"/>
+        </div>
+        <div className="flex-container flex-column" style={{order: 1}}>
+            <Input name="name" placeholder="Имя"/>
+            <Input name="surname" placeholder="Фамилия"/>
+            <Input name="age" placeholder="Возраст"/>
+        </div>
+    </div>);
+};
+
 export default Form;

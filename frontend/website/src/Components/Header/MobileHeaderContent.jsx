@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import "../css/common.css";
+import "../../css/common.css";
 
 export default function MobileHeaderContent() {
     return (

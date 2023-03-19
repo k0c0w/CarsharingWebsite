@@ -10,3 +10,10 @@
     text-align: center;
     text-decoration: none;
 }
+
+.softblue-regular {
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #10B5DC;
+}

@@ -1,5 +1,5 @@
-import DesktopHeaderContent from "../Components/DesktopHeaderContent";
-import MobileHeaderContent from "../Components/MobileHeaderContent";
+import DesktopHeaderContent from "../Components/Header/DesktopHeaderContent";
+import MobileHeaderContent from "../Components/Header/MobileHeaderContent";
 
 export default function Header() {
     return (
