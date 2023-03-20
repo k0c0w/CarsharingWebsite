@@ -165,9 +165,9 @@
   
 
   @media only screen and (max-width: 768px) {
-    .header-content { display: none;}
-    .mobile-header-container {display: block;}
-    .logo-content {color: #0a4d60; font-size: 32px;}
+    .header-content { display: none; }
+    .mobile-header-container { display: block; }
+    .logo-content { color: #0a4d60; font-size: 32px; }
   }
 
   @media only screen and (max-width: 480px) {
