@@ -1,10 +1,20 @@
-
-.fixed {
+.mobile-menu {
+    padding-left: 15px;
+    padding-top: 30px;
+    color: #191818;
 
 }
 
-header {
-    height: 96px;
-    position: fixed;
-    width: 100%;
+.mobile-menu-item {
+    font-size: 19px;
+    font-weight: 700;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
+
+.mobile-menu-item a {
+    text-decoration: none;
+    color: #191818;
+}
+
+.mobile-menu-item a:visited {color: #191818;}

@@ -1,3 +1,7 @@
+.index-greeting {
+    background-image: url("../../public/sources/greeting/main.jpg");
+}
+
 .indexAbout-sidecontent_top {
     width: 200px;
     height: 200px;
@@ -48,4 +52,14 @@
     column-gap: 5vw;
     align-items: flex-start;
     padding-top: 4vh
+}
+
+@media only screen and (max-width: 480px) {
+    .index-greeting {
+        background-image: url("../../public/sources/greeting/mobile_main.jpg");
+    }
+    .side-content { display: none;}
+    .index-text { max-width: 65vw; font-weight: 400; font-size: 16px; margin-top: 1vh; margin-bottom: 0;}
+    .index-about_text_container { align-items: center; row-gap: 20px;}
+    #about { min-height: fit-content;}
 }

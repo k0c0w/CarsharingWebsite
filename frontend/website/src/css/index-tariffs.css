@@ -17,3 +17,19 @@
     height: 100%;
     padding-bottom: 2vh;
 }
+
+@media only screen and (max-width: 480px) {
+    .tariff-holder { 
+        min-height: 5vh; 
+        justify-content: flex-start; 
+        background-color: transparent;
+        border: solid 1px #D0D0D0;
+        border-radius: 4px;
+        box-shadow: 0px 3px 10px #7a7a7a4d;
+        width: 100%;
+        min-width: 150px;
+        padding-right: 15px;
+    }
+    .tariff-holder p { padding-left: 20px;}
+    .tariffs-list-holder li { flex-direction: column; align-items: flex-start; }   
+}

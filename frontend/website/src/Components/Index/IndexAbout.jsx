@@ -58,7 +58,7 @@ const RestrictionsContent = () => (
 
 
 export default function IndexAbout() {
-    return <Section style={{backgroundColor:"#DEF0F0"}}>
+    return <Section style={{backgroundColor:"#DEF0F0"}} id="about">
         <Container style={{paddingBottom:"4vh"}}>
         <div className="flex-container about-container">
             <div className="about-content">

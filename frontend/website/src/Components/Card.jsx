@@ -5,7 +5,7 @@ import { Dim } from "./TextTags";
 export const CardHolder = (props) => (
     <Figure figureName="card">
         {props?.children}
-        <div className="image-holder"><img src="" alt="car"/></div>
+        <div className="image-holder"><img src="https://mobility.hyundai.ru/dist/images/cars/sonata2.png" alt="car"/></div>
         <div className="card-content">
             <div>
                 <h1>SONATA</h1>

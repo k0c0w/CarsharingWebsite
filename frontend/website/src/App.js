@@ -6,6 +6,7 @@ import {BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Tariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
+import { CardHolder } from './Components/Card';
 
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/tariff" element={<Tariffs/>} />
         <Route exact path="/login" element={<Login/>}/>
         <Route path="/registration" element={<Registration/>}/>
+        <Route path="/card" element={<CardHolder/>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -11,10 +11,7 @@
   min-height: 100vh
 }
 
-@media only screen and (max-width: 480px) {
-  .frame {min-height: 80vh;}
-  
-}
+
 
 .greeting-screen {
   color: #fff;
@@ -40,7 +37,7 @@
 .title {
   font-size: 110px;
   font-weight: 800;
-  font-family: "Orbitron";
+  font-family: Orbitron;
   letter-spacing: .07em;
   text-transform: uppercase;
   overflow: hidden;
@@ -86,4 +83,20 @@
 
 .button+.button {
       margin-left: 16px;
+}
+
+@media only screen and (max-width: 480px) {
+  .frame {min-height: 80vh;}
+  .banner .title {font-size: 60px;  max-width: 300px;}
+  .banner .subtitle {font-size: 21px; max-width: 215px;}
+  .button { min-width: 120px; width: 150px;  height: 50px; background-color: #002C5F; padding: 8px; border-radius: 15px; font-size: 12px;}
+  .greeting-buttons { align-items: center; }
+  .button + .button { margin-left: 10px;}
+
+}
+
+@media only screen and (max-width: 350px) {
+  .greeting-buttons { flex-direction: column;}
+  .button + .button { margin-left: 0px; margin-top: 10px;}
+  .button {width: 120px;}
 }

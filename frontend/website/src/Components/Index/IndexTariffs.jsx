@@ -17,11 +17,11 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
       <Container>
         <SectionTitle subtitle="Ваш личный автомобиль">Тарифы</SectionTitle>
         <div className="tariffs-list-holder" id="tariffs">
-            <li style={tariffsHolder} className="flex-container">
+            <ul style={tariffsHolder} className="flex-container">
                 <TariffHolder>Freedom</TariffHolder>
                 <TariffHolder>Travel</TariffHolder>
                 <TariffHolder>Everyday</TariffHolder>
-            </li>
+            </ul>
         </div>
       </Container>
     </Section>

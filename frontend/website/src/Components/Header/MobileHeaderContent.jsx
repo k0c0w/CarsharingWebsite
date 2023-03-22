@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import "../../css/common.css";
+import "../../css/header.css";
 
 export default function MobileHeaderContent() {
     return (
@@ -19,9 +20,10 @@ export default function MobileHeaderContent() {
             </label>
             <div className="page-overlay"></div>
             <ul className="mobile-menu">
-            <li className="mobile-menu-item"><NavLink to="/#tariffs" className="header-content-menu-item-link">Выйти</NavLink></li>
-            <li className="mobile-menu-item"><NavLink to="/documents" className="header-content-menu-item-link">Документы</NavLink></li>
-            <li className="mobile-menu-item"><NavLink to="/profile" className="header-content-menu-item-link">Личный кабинет</NavLink></li>
+                <li className="mobile-menu-item" style={{marginBottom:"30px"}}><NavLink style={{color:"red", display: "block"}} to="/logout" >Выйти</NavLink></li>    
+                <label><li className="mobile-menu-item"><NavLink to="/" >Главная</NavLink></li></label>
+                <li className="mobile-menu-item"><NavLink to="/documents">Документы</NavLink></li>
+                <li className="mobile-menu-item"><NavLink to="/profile">Личный кабинет</NavLink></li>
             </ul>
         </div>
         </div>

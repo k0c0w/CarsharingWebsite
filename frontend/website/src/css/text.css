@@ -17,3 +17,8 @@
     text-decoration: none;
     color: #10B5DC;
 }
+
+@media only screen and (max-width: 480px) {
+    .bold-text { font-size: 14px;}
+    .dim { font-size: 12px;}
+}

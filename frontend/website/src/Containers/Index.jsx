@@ -18,12 +18,11 @@ export default function Index() {
 
     return <>
         <DocumentTitle>Drive</DocumentTitle>
-        <GreetingSection title="Drive" subtitle="Онлайн аренда автомобиля"
-            backgroundImageSource="../sources/greeting/main.jpg">
-                <div className="greeting-buttons">
-                    <button className="button" onClick={() => scrollTo(tariffs)}>Аренда</button>
-                    <button className="button" onClick={() => scrollTo(chat)}>Задать вопрос</button>          
-                </div>
+        <GreetingSection title="Drive" subtitle="Онлайн аренда автомобиля" backgroundImageClass="index-greeting">
+            <div className="greeting-buttons">
+                <button className="button" onClick={() => scrollTo(tariffs)}>Аренда</button>
+                <button className="button" onClick={() => scrollTo(chat)}>Задать вопрос</button>          
+            </div>
         </GreetingSection>
         <IndexAbout/>
         <IndexTariffs ref={tariffs}/>

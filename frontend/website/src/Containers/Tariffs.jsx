@@ -24,7 +24,7 @@ export function CarListSection () {
 export default function Tariffs () {
     return (<>
         <GreetingSection title="Everyday" subtitle="Дай деняк сюда"
-         backgroundImageSource="../sources/greeting/tariff_name.jpg"/>
+         style={{backgroundImage:"url(../../sources/greeting/tariff_name.jpg)"}}/>
         <CarListSection/>
     </>
     );
