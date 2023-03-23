@@ -1,24 +1,54 @@
 import logo from './logo.svg';
 import './App.css';
+import React, { useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import SideNavBar from './components/SideNavBar';
+import CarsMngmt from './pages/Cars';
+import { useMode, ColorModeContext } from './theme';
+import { ThemeProvider, CssBaseline } from '@mui/material';
+import Header from './components/Header';
+
+var routes = [
+  {
+    path: '/',
+    name: "Главная"
+  },
+  {
+    path: '/cars',
+    name: "Машины"
+  },
+  {
+    path: '/tariffs',
+    name: "Тарифы"
+  },
+  {
+    path: '/users',
+    name: "Пользователи"
+  }
+]
 
 function App() {
+  const [path, setPath] = useState(window.location.pathname);
+  const [theme, colorMode] = useMode();
+
+  var handlePath = (path) => setPath(path);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme} >
+          <CssBaseline />
+          <Header></Header>
+          <SideNavBar path={path} routes={routes} handlePath={handlePath}></SideNavBar>
+          <div className='Page' >
+            <Routes>
+              <Route path='/' element={<></>} />
+              <Route path='/cars' element={<CarsMngmt />} />
+            </Routes>
+          </div>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </>
   );
 }
 
