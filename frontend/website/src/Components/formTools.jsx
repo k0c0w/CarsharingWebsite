@@ -3,7 +3,7 @@ import "../css/form.css";
 
 export const Input = (props) => (
     <div className="form-field">
-        <input className="form-input" name={props.name} type={props.type} placeholder={props.placeholder}/>
+        <input className="form-input" name={props.name} type={props.type} placeholder={props.placeholder} value={props.value}/>
         {props.inputErrorMessage && <p className="form-error">{props.inputErrorMessage}</p>}
     </div>
 );
@@ -19,20 +19,16 @@ export const Form = React.forwardRef((props, ref) => {
 
 
 
-export const MyFormProfileInput = () => {
+export const MyFormProfileInput = (props) => {
     const gap = { columnGap: "100px"};
 
     return (
     <div id="myFormInput" className="flex-container" style={gap}>
         <div className="flex-container flex-column" style={{order: 0}}>
-            <Input name="email" placeholder="Почта"/>
-            <Input name="password" placeholder="Пароль"/>
-            <Input placeholder="Повторите пароль"/>
+            {props.leftBlock}
         </div>
         <div className="flex-container flex-column" style={{order: 1}}>
-            <Input name="name" placeholder="Имя"/>
-            <Input name="surname" placeholder="Фамилия"/>
-            <Input name="age" placeholder="Возраст"/>
+            {props.rightBlock}
         </div>
     </div>);
 };

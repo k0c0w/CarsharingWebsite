@@ -8,6 +8,7 @@ import Tariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { CardHolder } from './Components/Card';
 import { Documents } from './Containers/Documents';
+import ProfileEdit from './Containers/ProfileEdit';
 
 
 function App() {
@@ -24,12 +25,16 @@ function App() {
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route exact path="/" element={<Index/>}/>
+        <Route index exact path="/" element={<Index/>}/>
         <Route path="/tariff" element={<Tariffs/>} />
         <Route exact path="/login" element={<Login/>}/>
         <Route path="/registration" element={<Registration/>}/>
         <Route path="/card" element={<CardHolder/>}/>
         <Route path="/documents" element={<Documents/>}/>
+        <Route path="profile">
+            <Route path='edit' element={<ProfileEdit/>}/>
+            <Route path='*' element={<>ghbd</>}/>
+        </Route>
       </Routes>
     </BrowserRouter>
   );

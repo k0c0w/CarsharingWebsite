@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Section from "../Components/Sections";
 import Container from "../Components/Container";
 import Bold from "../Components/TextTags";
-import {Form, MyFormProfileInput} from "../Components/formTools"
+import {Form, MyFormProfileInput, Input } from "../Components/formTools"
 import { fixHeader } from "../hooks/common_functions";
 
 import "../css/text.css";
@@ -18,7 +18,9 @@ export function Registration  ()  {
         <Container className="flex-container">
             <Form className="center flex-column">
                 <Bold className="form-header">Регистрация</Bold>
-                <MyFormProfileInput/>
+                <MyFormProfileInput
+                    leftBlock={<><Input name="email" placeholder="Почта"/><Input name="password" placeholder="Пароль"/><Input placeholder="Повторите пароль"/></>}
+                    rightBlock={<><Input name="name" placeholder="Имя"/><Input name="surname" placeholder="Фамилия"/><Input name="age" placeholder="Возраст"/></>}/>
                 <div id="formButton" className="form-filed flex-container" style={gap}>
                     <button className="button form-button">Регистрация</button>
                     <label className="form-accept">
