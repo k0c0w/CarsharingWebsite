@@ -14,7 +14,7 @@ export function Registration  ()  {
     useEffect(()=> {fixHeader()}, []);
 
     return (
-    <Section>
+    <Section className="margin-header">
         <Container className="flex-container">
             <Form className="center flex-column">
                 <Bold className="form-header">Регистрация</Bold>

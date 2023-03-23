@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import Tariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { CardHolder } from './Components/Card';
+import { Documents } from './Containers/Documents';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route exact path="/login" element={<Login/>}/>
         <Route path="/registration" element={<Registration/>}/>
         <Route path="/card" element={<CardHolder/>}/>
+        <Route path="/documents" element={<Documents/>}/>
       </Routes>
     </BrowserRouter>
   );
