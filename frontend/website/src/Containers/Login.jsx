@@ -1,14 +1,10 @@
 import Section from "../Components/Sections";
 import Container from "../Components/Container";
-import { useEffect } from "react";
 import Form, { Input } from "../Components/formTools";
 import Bold from "../Components/TextTags";
 import { NavLink } from "react-router-dom";
-import { fixHeader } from "../hooks/common_functions";
 
 export default function Login() {
-
-    useEffect(()=> {fixHeader()}, []);
 
     return (
     <Section>

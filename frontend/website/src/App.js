@@ -2,13 +2,13 @@ import './App.css';
 import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
-import {BrowserRouter, Routes, Route } from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import Tariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
-import { CardHolder } from './Components/Card';
 import { Documents } from './Containers/Documents';
-import ProfileEdit from './Containers/ProfileEdit';
+import ProfileEdit, { ProfileChangePassword } from './Containers/ProfileEdit';
+import FixHeader from './Components/FixHeader';
 
 
 function App() {
@@ -27,13 +27,16 @@ function App() {
       <Routes>
         <Route index exact path="/" element={<Index/>}/>
         <Route path="/tariff" element={<Tariffs/>} />
-        <Route exact path="/login" element={<Login/>}/>
-        <Route path="/registration" element={<Registration/>}/>
-        <Route path="/card" element={<CardHolder/>}/>
         <Route path="/documents" element={<Documents/>}/>
-        <Route path="profile">
-            <Route path='edit' element={<ProfileEdit/>}/>
-            <Route path='*' element={<>ghbd</>}/>
+
+        <Route element={<FixHeader/>}>
+          <Route exact path="/login" element={<Login/>}/>
+          <Route path="/registration" element={<Registration/>}/>
+          <Route path='/profile' element={<Outlet/>}>
+            <Route  path='edit' element={<ProfileEdit/>}/>
+            <Route path='edit/password' element={<ProfileChangePassword/>}/>
+          </Route>
+        <Route path="*" element={<>404</>}/>
         </Route>
       </Routes>
     </BrowserRouter>

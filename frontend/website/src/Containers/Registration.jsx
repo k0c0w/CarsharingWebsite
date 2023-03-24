@@ -1,9 +1,8 @@
-import { useEffect } from "react";
 import Section from "../Components/Sections";
 import Container from "../Components/Container";
 import Bold from "../Components/TextTags";
 import {Form, MyFormProfileInput, Input } from "../Components/formTools"
-import { fixHeader } from "../hooks/common_functions";
+
 
 import "../css/text.css";
 
@@ -11,7 +10,6 @@ import "../css/text.css";
 const gap = { columnGap: "100px"};
 
 export function Registration  ()  {
-    useEffect(()=> {fixHeader()}, []);
 
     return (
     <Section className="margin-header">

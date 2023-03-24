@@ -1,4 +1,18 @@
 .profile-edit-form-header {
-    justify-content: space-between;
-    align-self: flex-end;
+    column-gap: 25px;
+    text-align: center;
+}
+
+.change-password {
+    margin-bottom: 25px;
+    color:blue;
+}
+
+.delete { background-color: #F85B5B; }
+.delete:hover { background-color: #db6363;}
+
+@media only screen and (max-width: 480px) {
+    .profile-edit-form-header { column-gap: 0; flex-direction: column;}
+    .change-password {margin-bottom: 5px;}
+    .delete { display: none;}
 }

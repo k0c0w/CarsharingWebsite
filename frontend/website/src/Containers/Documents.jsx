@@ -1,16 +1,13 @@
-import { useEffect } from "react";
-import { fixHeader } from "../hooks/common_functions";
-import {GreetingSection, Section, SectionTitle} from "../Components/Sections";
-import "../css/documents.css";
-import "../css/common.css";
+import {Section, SectionTitle} from "../Components/Sections";
 import DocumentTitle from "../DocumentTitle";
 import Container from "../Components/Container";
-import { CardHolder } from "../Components/Card";
 import {Figure} from "../Components/Figure";
 import { Dim } from "../Components/TextTags";
 import Line from "../Components/Line";
 import HorizontalArrow from "../Components/HorizontalArrow";
 import "../css/rectangle-link.css";
+import "../css/documents.css";
+import "../css/common.css";
 
 
 const NewsCard = (props) => (

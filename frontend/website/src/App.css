@@ -95,8 +95,8 @@ a { color: #191818;}
   /*.frame {min-height: 80vh;}*/
   .banner .title {font-size: 60px;  max-width: 300px;}
   .banner .subtitle {font-size: 21px; max-width: 215px;}
-  .button { min-width: 120px; width: 150px;  height: 50px; background-color: #002C5F; padding: 8px; border-radius: 15px; font-size: 12px;}
-  .greeting-buttons { align-items: center; }
+  .button { min-width: 120px; width: 150px;  height: 50px; padding: 8px; border-radius: 15px; font-size: 12px;}
+  .greeting-buttons { align-items: center; } .greeting-buttons .button { background-color: #002C5F}
   .button + .button { margin-left: 10px;}
 
 }
