@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import Tariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
-import ProfileEdit, { ProfileChangePassword } from './Containers/ProfileEdit';
+import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 
 
@@ -32,7 +32,8 @@ function App() {
         <Route element={<FixHeader/>}>
           <Route exact path="/login" element={<Login/>}/>
           <Route path="/registration" element={<Registration/>}/>
-          <Route path='/profile' element={<Outlet/>}>
+          <Route path='/profile'>
+            <Route path='' element={<Profile/>}/>
             <Route  path='edit' element={<ProfileEdit/>}/>
             <Route path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>

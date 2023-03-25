@@ -1,3 +1,5 @@
+.profileContainer-padding { padding-top: 150px; }
+
 .profile-edit-form-header {
     column-gap: 25px;
     text-align: center;
@@ -11,8 +13,96 @@
 .delete { background-color: #F85B5B; }
 .delete:hover { background-color: #db6363;}
 
+.profile-holder {
+    display: flex;
+}
+
+.profile-carlist-figure {
+    width: 50%;
+    min-height: 600px;
+    position: relative;
+}
+
+.profile-info-figure {
+    max-height: 260px;
+    width: 30%;
+    margin-left: auto;
+    position: relative;
+}
+
+.profile-pen { height: 20px; margin-left: 10px; margin-right: 0; }
+
+.profile-account {
+    text-align: center;
+    width: 75%;
+    border-radius: 10px;
+    position: absolute;
+    bottom: 50px;
+    min-height: 80px;
+    padding: 5px 0;
+}
+
+.profile-account-element { margin-bottom: 15px; }
+
+a.profile-account-element { text-decoration: underline; text-decoration-color: rgb(217, 217, 217); }
+.dim.profile-account-element { margin-top: 5px;}
+
+.balance { color: #10B5DC; letter-spacing: 2px; font-size: 20px; font-weight: 600; }
+
+[figure="info-holder"] {
+    background-color: white;
+    padding: 1em 2em;
+    border: 1px solid #D9D9D9;
+    border-radius: 5%;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-carlist-list { margin-top: 50px; width: 90%; }
+
+.border-solid { border: 1px solid #10B5DC; }
+
+[figure="rented-car"] {
+    height: 50px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.open-button {
+    min-width: 100px;
+    width: 150px;
+    opacity: 1;
+    box-shadow: none;
+    border: none;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 24px;
+    display: inline-block;
+    margin-left: auto;
+}
+
+.open-button-active { background-color: #D9D9D9; }
+.open-button-active:hover {background-color: #aaaaaa;}
+
+.open-button-nonactive { background-color: #199bb9;}
+.open-button-nonactive {background-color: #10b5dc;}
+
+.open-button-closed { }
+
+.rented-car-image { width: 120px; }
+
+.rented-car-info { margin-left: 20px; text-align: center;}
+.rented-car-info__sign { font-size: 14px; margin-top: 5px; color: #D9D9D9}
+
 @media only screen and (max-width: 480px) {
     .profile-edit-form-header { column-gap: 0; flex-direction: column;}
     .change-password {margin-bottom: 5px;}
     .delete { display: none;}
+    .profile-holder { flex-direction: column-reverse; align-items: center; }
+    .profile-info-figure { margin-left: initial;}
+
 }

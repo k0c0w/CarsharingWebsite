@@ -12,4 +12,4 @@ export default function Bold (props) {
     <div style={style} id={props?.id} className={`bold-text ${props.className ? props.className : ""}`}>{props.children}</div>);
 }
 
-export const Dim = (props) => (<div className={`dim ${props.className ? props.className : ""}`}>{props.children}</div>);
+export const Dim = (props) => (<div className={`dim ${props.className ? props.className : ""}`} style={props?.style}>{props.children}</div>);
