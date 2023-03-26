@@ -32,4 +32,10 @@ public class TariffController : Controller
         await _carsharingContext.SaveChangesAsync();
         return Ok();
     }
+
+    [HttpGet("tariffs")]
+    public IActionResult GetExistingTariffs() => Json(_carsharingContext.Tarrifs.Select(x => new
+    {
+        id = x.Id, name = x.Name, price = x.Price, description = x.Description
+    }).ToList());
 }
