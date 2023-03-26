@@ -18,16 +18,16 @@ public class ClientController : Controller
         }
         await using (var context = new CarsharingContext())
         {
-            var client = context.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
-            if (client.Result!.Email == form.Email)
+            var client = await context.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
+            if (client != null)
             {
                 return BadRequest("A client with this email already exists");
             }
-            var id = context.Clients.Count();
+            var id = await context.Clients.CountAsync() + 1;
             var newClient = 
                 new Client
                 {
-                    Id = id + 1,
+                    Id = id,
                     Email = form.Email!, 
                     ClientInfo = new ClientInfo
                     {
@@ -38,7 +38,7 @@ public class ClientController : Controller
                         PassportType = "passport"
                     },
                     Password = form.Password!,
-                    RoleId = 1 //id for user
+                    RoleId = 1 //id for client
                 };
             await context.AddAsync(newClient);
             await context.SaveChangesAsync();
@@ -51,12 +51,12 @@ public class ClientController : Controller
     {
         await using (var context = new CarsharingContext())
         {
-            var client = context.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
-            if (client.Result == null)
+            var client = await context.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
+            if (client == null)
             {
                 return Unauthorized("There is no client with this email");
             }
-            if (client.Result.Password != form.Password)
+            if (client.Password != form.Password)
             {
                 return Unauthorized("Wrong password");
             }
