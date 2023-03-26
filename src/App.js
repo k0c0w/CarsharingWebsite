@@ -7,6 +7,7 @@ import CarsMngmt from './pages/Cars';
 import { useMode, ColorModeContext } from './theme';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import Header from './components/Header';
+import TarrifMngmt from './pages/Tarrifs';
 
 var routes = [
   {
@@ -18,7 +19,7 @@ var routes = [
     name: "Машины"
   },
   {
-    path: '/tariffs',
+    path: '/tarrifs',
     name: "Тарифы"
   },
   {
@@ -42,7 +43,7 @@ function App() {
           <SideNavBar path={path} routes={routes} handlePath={handlePath}></SideNavBar>
           <div className='Page' >
             <Routes>
-              <Route path='/' element={<></>} />
+              <Route path='/tarrifs' element={<TarrifMngmt />} />
               <Route path='/cars' element={<CarsMngmt />} />
             </Routes>
           </div>

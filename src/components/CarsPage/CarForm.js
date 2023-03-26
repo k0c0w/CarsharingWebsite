@@ -5,13 +5,12 @@ import { maxWidth } from '@mui/system';
 import InputBase from '@mui/material/InputBase';
 import MenuItem from '@mui/material/MenuItem';
 
-import style from '../../styles/car-page.css';
-import '../../styles/floating-form-dashboard.css'
+import '../../styles/car-page.css';
 import { ColorModeContext, tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 
-const tariffs = [
+const tarrifs = [
     {
         value: '5H',
         label: '5H',
@@ -33,34 +32,43 @@ const tariffs = [
 // InputLabelProps={{
 //     style: { color: colors.grey[100] },
 // }}
+var re = new RegExp("^[A-Z]{1}[0-9]{3}[A-Z]{2}-[0-9]{2,3}$")
+
+var validate = (text) => {
+    text.replace("/\s+/g", "")
+    text.replace('/\B(?=([0-9]{3})+(?![0-9]))/g', " ")
+    console.log(`${text} - ${re.test(text)} `)
+}
 
 
-function AddCar() {
+var handleSubmit = (e) => {
+    var inputs = e.target.parentNode.getElementsByTagName('input')
+    var result = {};
+
+    Array.from(inputs).forEach(element => {
+        var name = element?.name ?? "not exist";
+        result[name] = element?.value ?? "not exist";
+    });
+
+    return (result);
+}
+
+
+export function CarForm({ carModel }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    const colorMode = useContext(ColorModeContext);
-
-    var re = new RegExp("^[A-Z]{1}[0-9]{3}[A-Z]{2}-[0-9]{2,3}$")
-
-    var validate = (text) => {
-        text.replace("/\s+/g", "")
-        text.replace('/\B(?=([0-9]{3})+(?![0-9]))/g', " ")
-        console.log(`${text} - ${re.test(text)} `)
-    }
 
     const StyledTextField = styleTextField(color.primary[100]);
 
     return (
         <>
-
-            <div className='inputsCar' style={{ display: 'flex', flexDirection: 'column', maxWidth: '650px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <h3>
-                    Добавить машину
-                </h3>
+            <div className='inputs'>
                 <StyledTextField
                     variant="outlined"
                     size='small'
                     label="Имя"
+                    name='name'
+                    value={carModel?.name}
                 >
                 </StyledTextField>
 
@@ -70,6 +78,8 @@ function AddCar() {
                     size='small'
                     label="Номер"
                     border="white"
+                    name='number'
+                    value={carModel?.number}
                     onChange={(e) => validate(e.target.value.toString())}>
                 </StyledTextField>
 
@@ -77,10 +87,11 @@ function AddCar() {
                     id="Тариф"
                     select
                     label="Тариф"
-                    defaultValue="5H"
                     helperText=""
+                    name='tarrif'
+                    defaultValue={carModel?.tarrif ?? '5H'} 
                 >
-                    {tariffs.map((option) => (
+                    {tarrifs.map((option) => (
                         <MenuItem key={option.value} value={option.value}>
                             {option.label}
                         </MenuItem>
@@ -92,15 +103,37 @@ function AddCar() {
                     placeholder={'Описание'}
                     fullWidth={true}
                     variant="outlined"
-                    minRows={2} maxRows={5}
-                    multiline={true}>
-
+                    name='description'
+                    minRows={2} maxRows={10}
+                    multiline={true}
+                    value={carModel?.description}
+                    >
                 </StyledTextField>
 
-                <InputBase placeholder='Фото машины' name='Фото машины' label='Фото машины' type='file'></InputBase>
+                <InputBase placeholder='Фото машины' name='photo' label='Фото машины' type='file'></InputBase>
+
+
             </div>
         </>
     )
 }
 
-export default AddCar;
+export const CarFormTitle = ({title='Добавить объект'}) => {
+    const theme = useTheme();
+    const color = tokens(theme.palette.mode);
+
+    return (<h3 style={{ color: color.grey[100] }}>{title}</h3 >);
+}
+
+export const CarFormSubmit = ({ handler, title='Сделать запрос' }) => {
+    const theme = useTheme();
+    const color = tokens(theme.palette.mode);
+
+    return (
+        <Button disableFocusRipple className="submit" type="submit"
+            style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
+            onClick={(e) => handler(handleSubmit(e))}>
+            {title}
+        </Button>
+    );
+}
