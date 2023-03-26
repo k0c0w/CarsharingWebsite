@@ -1,0 +1,90 @@
+.renting {
+    display: flex;
+    align-items: stretch;
+    min-height: calc(100vh - 96px);
+}
+
+.renting-car-info {
+    width: 42vw;
+    padding-left:32px;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.renting-car-info__tariff {
+    display: flex;
+    text-transform: uppercase;
+    text-align: left;
+    color: #74C2D7;
+    font-weight: 600;
+    font-size: 38px;
+    padding-bottom: 15px;
+}
+
+.renting-car-info__img {
+    width: 100%;
+    text-align: center;
+}
+
+.renting-car-info__car {
+    display: block;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.renting-car-info__car-tarrif {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.renting-car-info__car-tarrif span { font-size: 20px; }
+
+.renting-sidebar {
+    width: 58vw;
+    background-color: #DEF0F0;
+    padding-right: 32px;
+    position: relative;
+}
+
+.renting-sidebar-period {
+    height: 35%;
+}
+
+.renting-sidebar-period__holder {
+    margin-top: 20px;
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.renting-sidebar-period__holder span:not(:first-child) {
+    color: #D0D0D0;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.renting-sidebar-period__holder input[type="date"] {
+    background-color: transparent;
+    border: none ;
+    border-bottom: 1px solid black;
+    padding: 15px;
+    padding-bottom: 2px;
+    outline: none;
+}
+
+.renting-sidebar-period__error {
+    color:  red;
+    margin-bottom: 5px;
+    min-height: 30px;
+}
+
+.renting-sidebar-period__holder ~ .button {
+    margin-top: 20px;
+}
+
+
+.renting-sidebar-map {
+    height: 65%;
+    background-color: white;
+}
+
