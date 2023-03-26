@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using Carsharing.Forms;
 using Microsoft.AspNetCore.Mvc;
 using Carsharing.Model;
@@ -74,6 +74,7 @@ public class ClientController : Controller
     public async Task<IActionResult> Login([FromBody]LoginDto dto)
     {
         var client = await _carsharingContext.Clients.FirstOrDefaultAsync(cl => cl.Email == dto.Email);
+
         if (client == null)
         {
             return Unauthorized("There is no client with this email");
