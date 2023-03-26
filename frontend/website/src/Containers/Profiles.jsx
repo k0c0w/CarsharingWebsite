@@ -66,7 +66,7 @@ const CarList = () => (
                         <Bold>Sonata</Bold>
                         <div className="rented-car-info__sign">H182OP 116</div>
                     </div>
-                    <button id="2" className="open-button" onClick={openButtonPressed}>Открыть</button>
+                    <button id="2" className="open-button open-button-nonactive" onClick={openButtonPressed}>Открыть</button>
                 </Figure>
             </li>
         </ul>

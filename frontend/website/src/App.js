@@ -9,6 +9,7 @@ import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
+import CarRent from './Containers/CarRent';
 
 
 function App() {
@@ -26,16 +27,20 @@ function App() {
       <Header/>
       <Routes>
         <Route index exact path="/" element={<Index/>}/>
-        <Route path="/tariff" element={<Tariffs/>} />
-        <Route path="/documents" element={<Documents/>}/>
-
+        <Route exact path="/documents" element={<Documents/>}/>
+        <Route path="/tariffs">
+          <Route exact path=':tariff' element={<Tariffs/>}/>
+          <Route path=':taiff/rent/' element={<FixHeader/>}>
+            <Route path=':car' element={<CarRent/>}/>
+          </Route>
+        </Route>
         <Route element={<FixHeader/>}>
           <Route exact path="/login" element={<Login/>}/>
-          <Route path="/registration" element={<Registration/>}/>
+          <Route exact path="/registration" element={<Registration/>}/>
           <Route path='/profile'>
-            <Route path='' element={<Profile/>}/>
-            <Route  path='edit' element={<ProfileEdit/>}/>
-            <Route path='edit/password' element={<ProfileChangePassword/>}/>
+            <Route exact path='' element={<Profile/>}/>
+            <Route exact path='edit' element={<ProfileEdit/>}/>
+            <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>
         <Route path="*" element={<>404</>}/>
         </Route>

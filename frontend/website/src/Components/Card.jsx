@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import "../css/card.css";
 import Figure from "./Figure";
 import { Dim } from "./TextTags";
@@ -12,6 +13,6 @@ export const CardHolder = (props) => (
             </div>
             <Dim>Some description of car in few words. features.</Dim>
         </div>
-        <button>Аренда</button>
+        <NavLink to="rent/sonata">Аренда</NavLink>
     </Figure>
 ) 

@@ -10,7 +10,12 @@
     padding-bottom: 25px;   
 }
 
-[figure="card"] button {
+[figure="card"] a {
+    display: flex;
+    align-self: middle;
+    text-decoration: none;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
     font-size: 20px;
     border-radius: 5px;
@@ -25,7 +30,7 @@
     position: absolute;
 }
 
-[figure="card"] button:hover {color: #10a9dc;  border: solid #10a9dc 3px; transition: .08s;}
+[figure="card"] a:hover {color: #10a9dc;  border: solid #10a9dc 3px; transition: .08s;}
 
 [figure="card"] .dim { width: 55%; font-size: 20px;}
 

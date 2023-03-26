@@ -24,9 +24,9 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
         <SectionTitle subtitle="Ваш личный автомобиль">Тарифы</SectionTitle>
         <div className="rectangle-container">
             <ul className="tariff-list">
-              <li className="rectangle-container-item" color-type="1"><TarrifHolder name="Everyday"/></li>
-              <li className="rectangle-container-item" color-type="2"><TarrifHolder name="Everyday"/></li>
-              <li className="rectangle-container-item" color-type="3"><TarrifHolder name="Everyday"/></li>
+              <li className="rectangle-container-item" color-type="1"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
+              <li className="rectangle-container-item" color-type="2"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
+              <li className="rectangle-container-item" color-type="3"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
             </ul>
         </div>
       </Container>
