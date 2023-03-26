@@ -1,6 +1,6 @@
 namespace Carsharing.Forms;
 
-public class RegistrationForm : LoginForm
+public class RegistrationDto : LoginDto
 {
     public string? RetryPassword { get; set; }
     public string? Name { get; set; }

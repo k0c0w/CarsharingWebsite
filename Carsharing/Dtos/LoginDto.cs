@@ -1,6 +1,6 @@
 namespace Carsharing.Forms;
 
-public class LoginForm
+public class LoginDto
 {
     public string? Email { get; set; }
     public string? Password { get; set; }

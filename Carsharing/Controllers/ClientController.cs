@@ -10,20 +10,20 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class ClientController : Controller
 {
-    private CarsharingContext _carsharingContext;
+    private readonly CarsharingContext _carsharingContext;
 
     public ClientController(CarsharingContext carsharingContext)
     {
         _carsharingContext = carsharingContext;
     }
     
-    [HttpPost("[action]")]
-    public async Task<IActionResult> RegistrationDto([FromBody]RegistrationForm form)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody]RegistrationDto dto)
     {
-        var isEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$").IsMatch(form.Email);
-        var isName = new Regex(@"^[A-Z][a-zA-Z]*$").IsMatch(form.Name);
-        var isSurname = new Regex(@"^[A-Z][a-zA-Z]*$").IsMatch(form.Surname);
-        var isPassword = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$").IsMatch(form.Password);
+        var isEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$").IsMatch(dto.Email);
+        var isName = new Regex(@"^[A-Z][a-zA-Z]*$").IsMatch(dto.Name);
+        var isSurname = new Regex(@"^[A-Z][a-zA-Z]*$").IsMatch(dto.Surname);
+        var isPassword = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$").IsMatch(dto.Password);
         
         if (!isEmail)
             return BadRequest("Wrong email format");
@@ -37,12 +37,12 @@ public class ClientController : Controller
         if (!isName) 
             return BadRequest("Wrong name format");
         
-        if (form.Password != form.RetryPassword)
+        if (dto.Password != dto.RetryPassword)
         {
             return BadRequest("Wrong confirm password");
         }
 
-        var client = await _carsharingContext.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
+        var client = await _carsharingContext.Clients.FirstOrDefaultAsync(cl => cl.Email == dto.Email);
         if (client != null)
         {
             return BadRequest("A client with this email already exists");
@@ -53,16 +53,16 @@ public class ClientController : Controller
             new Client
             {
                 Id = id,
-                Email = form.Email,
+                Email = dto.Email,
                 ClientInfo = new ClientInfo
                 {
-                    Name = form.Name,
-                    Surname = form.Surname,
-                    Age = form.Age,
+                    Name = dto.Name,
+                    Surname = dto.Surname,
+                    Age = dto.Age,
                     ClientId = id,
                     PassportType = "passport"
                 },
-                Password = form.Password,
+                Password = dto.Password,
                 RoleId = 1 //id for client
             };
         await _carsharingContext.AddAsync(newClient);
@@ -70,16 +70,17 @@ public class ClientController : Controller
         return Ok();
     }
     
-    [HttpPost("[action]")]
-    public async Task<IActionResult> LoginDto([FromBody]LoginForm form)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody]LoginDto dto)
     {
-        var client = await _carsharingContext.Clients.FirstOrDefaultAsync(cl => cl.Email == form.Email);
+        var client = await _carsharingContext.Clients.FirstOrDefaultAsync(cl => cl.Email == dto.Email);
+        
         if (client == null)
         {
             return Unauthorized("There is no client with this email");
         }
 
-        if (client.Password != form.Password)
+        if (client.Password != dto.Password)
         {
             return Unauthorized("Wrong password");
         }
