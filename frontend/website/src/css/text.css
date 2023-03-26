@@ -1,0 +1,24 @@
+.bold-text {
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.dim {
+    font-size: 18px;
+    font-weight: 400;
+    color: #757C7E;
+    text-align: center;
+    text-decoration: none;
+}
+
+.softblue-regular {
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    color: #10B5DC;
+}
+
+@media only screen and (max-width: 480px) {
+    .bold-text { font-size: 14px;}
+    .dim { font-size: 12px;}
+}
