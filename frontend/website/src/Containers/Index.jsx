@@ -6,11 +6,15 @@ import { GreetingSection} from "../Components/Sections"
 import {DocumentTitle} from "../DocumentTitle"
 import "../css/common.css";
 
-function scrollTo(ref) {
+function scrollTo({ref, hash}) {
+    const options = {behavior: 'smooth'};
     if(ref){
-        ref?.current.scrollIntoView();
+        ref?.current.scrollIntoView(options);
     }
+    if(hash && hash?.length > 0)
+        document.getElementById(hash)?.scrollIntoView(options);
 }
+
 
 export default function Index() {
     const tariffs = useRef(null);
@@ -20,8 +24,8 @@ export default function Index() {
         <DocumentTitle>Drive</DocumentTitle>
         <GreetingSection title="Drive" subtitle="Онлайн аренда автомобиля" backgroundImageClass="index-greeting">
             <div className="greeting-buttons">
-                <button className="button" onClick={() => scrollTo(tariffs)}>Аренда</button>
-                <button className="button" onClick={() => scrollTo(chat)}>Задать вопрос</button>          
+                <button className="button" onClick={() => scrollTo({ref:tariffs})}>Аренда</button>
+                <button className="button" onClick={() => scrollTo({ref:chat})}>Задать вопрос</button>          
             </div>
         </GreetingSection>
         <IndexAbout/>
