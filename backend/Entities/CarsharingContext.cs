@@ -22,13 +22,16 @@ public class CarsharingContext : DbContext
     public virtual DbSet<Tariff> Tariffs { get; set; }
     
     public virtual DbSet<Post> News { get; set; }
+    
+    public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         SetDefaultValues(modelBuilder);
-        
+        SetUniqueFields(modelBuilder);
+
         modelBuilder.Entity<Tariff>()
             .ToTable(t =>
                 t.HasCheckConstraint($"CK_{nameof(Tariff)}_{nameof(Tariff.Price)}",
@@ -45,6 +48,12 @@ public class CarsharingContext : DbContext
                      new UserRole() { Id=Entities.Model.Roles.User, Name = "user" });
     }
 
+    private void SetUniqueFields(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Document>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
+        modelBuilder.Entity<Tariff>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
+    }
+    
     private void SetDefaultValues(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Car>().Property(x => x.IsOpened).HasDefaultValue(false);
