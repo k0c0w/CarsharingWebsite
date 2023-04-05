@@ -33,8 +33,10 @@ public class TariffController : Controller
     }
 
     [HttpGet("tariffs")]
-    public IActionResult GetExistingTariffs() => Json(_carsharingContext.Tariffs.Select(x => new
+    public IActionResult GetExistingTariffs() => Json(_carsharingContext.Tariffs.Where(x => x.IsActive)
+        .Select(x => new
     {
         id = x.Id, name = x.Name, price = x.Price, description = x.Description
-    }).ToList());
+        //todo: добавить полную ссылку до изображения image_url
+    }));
 }
