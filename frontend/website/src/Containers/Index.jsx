@@ -1,10 +1,11 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import IndexAbout from "../Components/Index/IndexAbout";
 import IndexChat from "../Components/Index/IndexChat";
 import IndexTariffs from "../Components/Index/IndexTariffs";
 import { GreetingSection} from "../Components/Sections"
 import {DocumentTitle} from "../DocumentTitle"
 import "../css/common.css";
+import axiosInstance, {getDataFromEndpoint} from "../httpclient/axios_client";
 
 function scrollTo({ref, hash}) {
     const options = {behavior: 'smooth'};
@@ -16,9 +17,12 @@ function scrollTo({ref, hash}) {
 }
 
 
-export default function Index() {
+export default function Index({tariffsData}) {
     const tariffs = useRef(null);
     const chat = useRef(null);
+    //const [tariffsData, setTariffsData] = useState([]);
+    //useEffect(()=> {getDataFromEndpoint("tariff/tariffs", setTariffsData)}, []);
+
 
     return <>
         <DocumentTitle>Drive</DocumentTitle>
@@ -29,7 +33,7 @@ export default function Index() {
             </div>
         </GreetingSection>
         <IndexAbout/>
-        <IndexTariffs ref={tariffs}/>
+        <IndexTariffs ref={tariffs} tariffs={tariffsData}/>
         <IndexChat ref = {chat}/>
         </>;
 }

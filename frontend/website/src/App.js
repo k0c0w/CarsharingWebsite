@@ -3,13 +3,15 @@ import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
 import {BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
-import Tariffs from './Containers/Tariffs';
+import { useEffect, useState } from 'react';
+import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
+import { getDataFromEndpoint } from './httpclient/axios_client';
+
 
 
 function App() {
@@ -22,15 +24,19 @@ function App() {
     })
   }, []);
 
+  const [tariffsData, setTariffsData] = useState([]);
+  const [madeRequest, setMadeRequest] = useState(false);
+  useEffect(() => { if(!madeRequest) getDataFromEndpoint("tariff/tariffs", setTariffsData)}, []);
+
   return (
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route index exact path="/" element={<Index/>}/>
+        <Route index exact path="/" element={<Index tariffsData={tariffsData}/>}/>
         <Route exact path="/documents" element={<Documents/>}/>
         <Route path="/tariffs">
-          <Route exact path=':tariff' element={<Tariffs/>}/>
-          <Route path=':taiff/rent/' element={<FixHeader/>}>
+          <Route exact path=':tariffName' element={<BeforeTariffs tariffsData={tariffsData}/>}/>
+          <Route path=':taiffName/rent/' element={<FixHeader/>}>
             <Route path=':car' element={<CarRent/>}/>
           </Route>
         </Route>

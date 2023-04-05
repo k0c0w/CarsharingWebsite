@@ -8,6 +8,8 @@ import HorizontalArrow from "../Components/HorizontalArrow";
 import "../css/rectangle-link.css";
 import "../css/documents.css";
 import "../css/common.css";
+import { useState } from "react";
+import { getDataFromEndpoint } from "../httpclient/axios_client";
 
 
 const NewsCard = (props) => (
@@ -36,7 +38,7 @@ const News = () => (
 )
 
 const Document = ({documentInfo}) => (
-    <a href={documentInfo.href} target="_blank" className="flex-container rectangle-container-item_link">
+    <a href={documentInfo.url} target="_blank" className="flex-container rectangle-container-item_link">
         <div className="flex-container" style={{overflow:"hidden"}}>
             <h3 className="rectangle-container-item_head">{documentInfo.documentName}</h3>
         </div>
@@ -44,10 +46,10 @@ const Document = ({documentInfo}) => (
     </a>
 );
 
-
-const info = {href:"#", documentName:"Договор аренды"}
-
 export function Documents (props) {
+    const [documentLinks, setDocumentLinks] = useState([]);
+    useState(() => {getDataFromEndpoint("documents", setDocumentLinks)}, []);
+
     return <>
     <DocumentTitle>Документы</DocumentTitle>
     <News/>
@@ -56,7 +58,7 @@ export function Documents (props) {
             <SectionTitle>Документы</SectionTitle>
             <div className="rectangle-container">
                 <ul className="tariff-holder">
-                    <li className="rectangle-container-item"><Document documentInfo={info}/></li>
+                    {documentLinks.map((info, i) => <li className="rectangle-container-item" key={i}><Document documentInfo={info}/></li>)}
                 </ul>
             </div>
         </Container>

@@ -1,3 +1,4 @@
+import { useParams, Navigate } from "react-router-dom";
 import { CardHolder } from "../Components/Card";
 import Container from "../Components/Container";
 import Section, { GreetingSection, SectionTitle } from "../Components/Sections";
@@ -6,6 +7,13 @@ const style = {     display: "flex",
     justifyContent: "space-evenly",
     alignItems: "center",
     minHeight: "fit-content", flexWrap: "wrap", rowGap: "50px", columnGap: "15px"}
+
+export default function BeforeTariffs ({tariffsData}) {
+    const {tariffName} = useParams();
+    const tariff = tariffsData.find(x => x.name == tariffName);
+    return tariff ? <Tariffs title={tariff.name} subtitle={tariff.description} backgroundImage={tariff.image_url}/> 
+    : <Navigate to="/notFound"/>;
+}
 
 export function CarListSection () {
     return (
@@ -21,10 +29,10 @@ export function CarListSection () {
     </Section>);
 }
 
-export default function Tariffs () {
+function Tariffs ({title, subtitle, backgroundImage}) {
     return (<>
-        <GreetingSection title="Everyday" subtitle="Дай деняк сюда"
-         style={{backgroundImage:"url(../../sources/greeting/tariff_name.jpg)"}}/>
+        <GreetingSection title={title} subtitle={subtitle}
+         style={{backgroundImage:`url(${backgroundImage})`}}/>
         <CarListSection/>
     </>
     );
