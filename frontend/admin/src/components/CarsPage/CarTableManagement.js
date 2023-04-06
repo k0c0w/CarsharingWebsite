@@ -1,12 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@emotion/react';
 import { Box } from '@mui/system';
 import { Button } from '@mui/material';
-
+import { TableAddRefreshButtons } from '../TableCommon';
 import '../../styles/car-page.css';
 import '../../styles/popup.css'
-import { ColorModeContext, tokens } from '../../theme';
-import { styleTextField } from '../../styleComponents';
+import { tokens } from '../../theme';
 import CarsGrid from './CarsGrid';
 import { Popup } from '../Popup';
 import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
@@ -21,7 +20,7 @@ import { axiosInstance } from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function CarTable({ handleSelect }) {
+function CarTable({ handleSelect, refreshRows, carsData }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -51,7 +50,7 @@ function CarTable({ handleSelect }) {
     );
 
     var handleClickInfo = (model) => {
-        var popup = {
+        const popup = {
             title: <CarViewInfoTitle></CarViewInfoTitle>,
             close: () => setD('none'),
             inputsModel: <CarViewInfo carModel={model}></CarViewInfo>
@@ -60,18 +59,18 @@ function CarTable({ handleSelect }) {
         setD('block');
     }
     var handleClickAdd = () => {
-        var popup = {
+        const popup = {
             title: <CarFormTitle title='Добавить'></CarFormTitle>,
             close: () => setD('none'),
-            submit: <CarFormSubmit handler={send}></CarFormSubmit>,
             inputsModel: <CarForm></CarForm>,
+            settings: {method: "post", endpointUrl: "carmodel/create"}
         };
         setPopup(popup);
         console.log(selected[0]);
         setD('block');
     }
     var handleClickChange = () => {
-        var popup = {
+        const popup = {
             title: <CarFormTitle title='Изменить'></CarFormTitle>,
             close: () => setD('none'),
             submit: <CarFormSubmit></CarFormSubmit>,
@@ -84,11 +83,9 @@ function CarTable({ handleSelect }) {
 
     return (
         <>
-            <Button
-                style={{ backgroundColor: color.greenAccent[300], color: color.primary[900], marginRight: '20px' }}
-                onClick={(e) => handleClickAdd()}>Добавить</Button>
+            <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows}/>
 
-            <CarsGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} ></CarsGrid>
+            <CarsGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={carsData}/>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>

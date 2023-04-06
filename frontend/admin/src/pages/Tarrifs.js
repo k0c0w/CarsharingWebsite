@@ -1,13 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import { useTheme } from '@emotion/react';
-import { tokens } from '../theme';
+import React, { useEffect, useState } from 'react';
 
-import { styleTextField } from '../styleComponents';
-import TarrifTable from '../components/TarrifsPage/TarrifTableManagement';
-import TarrifsGrid from '../components/TarrifsPage/TarrifsGrid';
-import axiosInstance from '../httpclient/axios_client'
+import TarrifTable from '../components/TarrifsPage/TarrifTableManagement'
+import {refreshData} from '../httpclient/axios_client'
+import { TableSearchField } from '../components/TableCommon';
 
 
 
@@ -16,11 +11,6 @@ const attrs = [
         value: 'Name',
         label: 'Имя',
         labelHelper: "Имени"
-    },
-    {
-        value: 'Period',
-        label: 'Длительность',
-        labelHelper: "Длительности"
     },
     {
         value: 'Price',
@@ -34,77 +24,23 @@ const attrs = [
     }
 ];
 
-var getAttr = (value) => {
-    var result = null;
-    attrs.forEach(attr => {
-        if (attr.value === value)
-            result = attr;
-    })
-    return result;
-}
 
-const refreshTariffsData = (newStateSetter, searchQuery='') => {
-    axiosInstance.get(`tariff/tariffs?${searchQuery}`)
-        .then(r => newStateSetter(r.data))
-        .catch(err => { alert("Error occured while recieving tariffs."); console.log(err)});
-};
 
-function getFilteredList(oldList, atrValueRef, attr) {
-    const value = atrValueRef.current.childNodes[0].childNodes[0].value?.trimEnd()?.trimStart();
-    debugger;
-    const lowwerAttr = attr.toLowerCase();
-    const newList = oldList.filter(x => x[lowwerAttr] == value);
-    return newList;
-}
-
+const tariffEndpoint = "tariff/tariffs";
 
 function TarrifMngmt() {
-    const theme = useTheme();
-    const color = tokens(theme.palette.mode);
-    // Аттрибут для поиска 
-    const [attr, setAttr] = useState("Period");
     const [tariffsData, setTariffsData] = useState([]);
-    const serachFieldRef = useRef(null);
-    const StyledTextField = styleTextField(color.primary[100]);
-
-    useEffect(()=>{refreshTariffsData(setTariffsData)}, []);
+    
+    useEffect(()=>{refreshData(setTariffsData, tariffEndpoint)}, []);
 
     return (
         <>
             <h1>
                 Tarrifs Management
             </h1>
-            <div style={{ marginTop: '70px' }}>
-                <StyledTextField ref={serachFieldRef}
-                    style={{ width: '250px' }}
-                    type={'search'}
-                    helperText={`Фильтровать по ${getAttr(attr)?.labelHelper?.toLowerCase() ?? attr}`}>
-                </StyledTextField>
-
-                <StyledTextField
-                    style={{ width: '170px' }}
-                    select
-                    label="Аттрибут"
-                    defaultValue={attr}
-                    helperText=""
-                    onChange={(e) => setAttr(e.target.value)}
-                >
-                    {attrs.map((option) => (
-                        <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                        </MenuItem>
-                    ))}
-                </StyledTextField>
-                <Button
-                    style={{ marginTop: '10px', marginLeft: '20px', backgroundColor: color.primary[100], color: color.primary[900] }}
-                    variant={'contained'}
-                    onClick = {()=>{setTariffsData(getFilteredList(tariffsData, serachFieldRef, attr))}}
-                >
-                    Добавить новый фильтр
-                </Button>
-            </div>
+            <TableSearchField data={tariffsData} attrs={attrs} defaultAttrName="Price" setData={setTariffsData}/>
             <div className='commandsList'>
-                <TarrifTable tariffsData={tariffsData} refreshRows={() => refreshTariffsData(setTariffsData)}/>
+                <TarrifTable tariffsData={tariffsData} refreshRows={() => refreshData(setTariffsData, tariffEndpoint)}/>
             </div>
         </>
     )

@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Button from '@mui/material/Button';
-import { TextField, Input, colors } from '@mui/material';
-import { maxWidth } from '@mui/system';
+
 import InputBase from '@mui/material/InputBase';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -12,16 +11,6 @@ import { styleTextField } from '../../styleComponents';
 import { useState } from 'react';
 import axiosInstance from '../../httpclient/axios_client';
 
-
-
-
-// var re = new RegExp("^[A-Z]{1}[0-9]{3}[A-Z]{2}-[0-9]{2,3}$")
-
-// var validate = (text) => {
-//     text.replace("/\s+/g", "")
-//     text.replace('/\B(?=([0-9]{3})+(?![0-9]))/g', " ")
-//     console.log(`${text} - ${re.test(text)} `)
-// }
 
 
 var handleSubmit = (e) => {
@@ -37,20 +26,19 @@ var handleSubmit = (e) => {
 }
 
 
-export function CarForm({ carModel }) {
+export function CarForm({carModel}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     const [tarrifs, setTarrifs] = useState([]);
     
-    var getTarrifs = async () => {
-        let settings = require('../../appsettings.json');
-
-        await axiosInstance.get(`http://${settings.appUrl}/api/tariff/tariffs`)
-        .then((response) => response.json())
+    const getTarrifs = async () => {
+        axiosInstance.get(`tariff/tariffs`)
+        .then((response) => response.data)
         .then((response) => { 
             setTarrifs(response);
             console.log(response);
         })
+        .catch(err => console.log("Error ocured ehn recived tariff list for carform"));
     }
     useEffect(() => {
         getTarrifs();
@@ -64,22 +52,22 @@ export function CarForm({ carModel }) {
                 <StyledTextField
                     variant="outlined"
                     size='small'
-                    label="Имя"
-                    name='name'
+                    label="Производитель"
+                    name='brand'
                     type={'text'}
-                    value={carModel?.name}
+                    value={carModel?.brand.trimEnd().trimStart()}
                 >
                 </StyledTextField>
 
                 <StyledTextField
-                    placeholder={'"Серия и номер"-"регион"'}
+                    placeholder={'Модель'}
                     variant="outlined"
                     size='small'
-                    label="Номер"
+                    label="Модель"
                     border="white"
-                    name='number'
+                    name='model'
                     type={'text'}
-                    value={carModel?.number}
+                    value={carModel?.number.trimEnd().trimStart()}
                 >
                 </StyledTextField>
 
@@ -89,8 +77,8 @@ export function CarForm({ carModel }) {
                     type={'number'}
                     label="Тариф"
                     helperText=""
-                    name='tariffId'        /////// --------------- поменять название
-                    defaultValue={carModel?.tarrif ?? ''}
+                    name='tariffId'
+                    defaultValue={carModel?.tariff_id}
                 >
                     {tarrifs.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
@@ -112,12 +100,12 @@ export function CarForm({ carModel }) {
                 >
                 </StyledTextField>
 
-                <InputBase placeholder='Фото машины' name='sourceImg' label='Фото машины' type='file'></InputBase>
+                <InputBase placeholder='Фото машины' name='img' label='Фото машины' type='file'></InputBase>
 
             </div>
         </>
     )
-}
+};
 
 export const CarFormTitle = ({ title = 'Добавить объект' }) => {
     const theme = useTheme();
@@ -126,7 +114,7 @@ export const CarFormTitle = ({ title = 'Добавить объект' }) => {
     return (<h3 style={{ color: color.grey[100] }}>{title}</h3 >);
 }
 
-export const CarFormSubmit = ({ handler, title = 'Сделать запрос' }) => {
+export const CarFormSubmit = ({ handler, title = 'Создать' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 

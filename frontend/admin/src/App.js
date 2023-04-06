@@ -20,7 +20,7 @@ var routes = [
     name: "Машины"
   },
   {
-    path: '/tarrifs',
+    path: '/tariffs',
     name: "Тарифы"
   },
   {
@@ -45,7 +45,7 @@ function App() {
           <SideNavBar path={path} routes={routes} handlePath={handlePath}></SideNavBar>
           <div className='Page' >
             <Routes>
-              <Route path='/tarrifs' element={<TarrifMngmt />} />
+              <Route path='/tariffs' element={<TarrifMngmt />} />
               <Route path='/cars' element={<CarsMngmt />} />
               <Route path='/users' element={<UserMngmt />} />
             </Routes>

@@ -12,6 +12,7 @@ import { CarForm, CarFormTitle, CarFormSubmit } from './TarrifForm';
 import { TarrifViewInfo, TarrifViewInfoTitle } from './TarrifViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import { axiosInstance } from '../../httpclient/axios_client';
+import { TableAddRefreshButtons } from '../TableCommon';
 
 function send() {
     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
@@ -23,9 +24,6 @@ function send() {
     axiosInstance.post(`/tariff/create`, body)
     .then((response) => console.log(response))
 }
-
-
-
 
 function TarrifTable({ tariffsData, refreshRows }) {
     const theme = useTheme();
@@ -78,14 +76,9 @@ function TarrifTable({ tariffsData, refreshRows }) {
         console.log(selected[0]);
         setD('block');
     }
-
     return (
         <>
-            <Button
-                style={{ backgroundColor: color.greenAccent[300], color: color.primary[900], marginRight: '20px' }}
-                onClick={(e)=> handleClickAdd()}>Добавить</Button>
-            <Button style={{ backgroundColor: color.greenAccent[300], color: color.primary[900], marginRight: '20px' }} 
-                onClick={(e)=> refreshRows()}>Обновить</Button>
+            <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>
             <TarrifsGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={tariffsData}></TarrifsGrid>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >

@@ -12,4 +12,11 @@ export const axiosInstance = axios.create(
     }
 );
 
+
+export const refreshData = (newStateSetter, endpoint, searchQuery='') => {
+    axiosInstance.get(`${endpoint}?${searchQuery}`)
+        .then(r => { newStateSetter(r.data)})
+        .catch(err => { alert(`Error occured while recieving from '${endpoint}'.`); console.log(err)});
+};
+
 export default axiosInstance;

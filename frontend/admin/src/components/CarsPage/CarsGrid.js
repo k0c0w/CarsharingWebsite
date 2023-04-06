@@ -9,16 +9,13 @@ import Button from '@mui/material/Button';
 // import Paper from '@mui/material/Paper';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { GridRenderCellParams } from '@mui/x-data-grid';
-
-import { rows } from '../../data/carsRows';
 import { tokens } from '../../theme';
 
 
 
 
 
-function CarsGrid({handleClickInfo, handleSelect}) {
+function CarsGrid({handleClickInfo, handleSelect, rows}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -32,23 +29,20 @@ function CarsGrid({handleClickInfo, handleSelect}) {
             type: 'number'
         },
         {
-            field: 'name',
-            headerName: 'Name',
+            field: 'brand',
+            headerName: 'Производитель',
             flex: 1,
             type: 'string'
-            // cellClassName: 'name-column-cell'
         },
         {
-            field: 'number',
-            headerName: 'Number',
+            field: 'model',
+            headerName: 'модель',
             flex: 1
-            // cellClassName: 'number-column-cell'
         },
         {
-            field: 'tarrif',
-            headerName: 'Number',
+            field: 'tariff_id',
+            headerName: 'Тариф',
             flex: 1
-            // cellClassName: 'number-column-cell'
         },
         {
             field: 'func',
@@ -61,19 +55,11 @@ function CarsGrid({handleClickInfo, handleSelect}) {
                     <Box
                     width="60%"
                     borderRadius={"5px"}
-                    sx= {{ height: '30px', width: '10px',  }}
-                    >
-                        {/* <Button 
-                            disabled={isSelectedMany}  
-                            variant={'contained'}
-                            style={{ backgroundColor: ( isSelectedMany ? color.grey[800] : color.primary[100] ), color: color.primary[900], marginRight: '20px' }}>
-                                Изменить
-                        </Button> */}
-                        {/* <Button variant={'contained'} style={{ backgroundColor: color.redAccent[200], color: color.primary[900], marginRight: '20px' }}>Посмотреть данные</Button> */}
+                    sx= {{ height: '30px', width: '10px',  }}>
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={(e)=>handleClickInfo(params.row)} //e.target.parentNode.parentNode.parentNode.childNodes
+                            onClick={(e)=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
