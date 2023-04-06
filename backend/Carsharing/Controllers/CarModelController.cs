@@ -20,16 +20,23 @@ public class CarModelController : Controller
     [HttpPost("create")]
     public async Task<IActionResult> Create([FromBody]CarModelDto dto)
     {
-        var id = await _carsharingContext.CarModels.CountAsync() + 1;
         var newCarModel = new CarModel
         {
-            Id = id,
             Brand = dto.Brand,
+            Model = dto.Model,
             Description = dto.Description,
             TariffId = dto.TariffId
         };
         await _carsharingContext.AddAsync(newCarModel);
         await _carsharingContext.SaveChangesAsync();
         return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetCarModels()
+    {
+        var carModels = await _carsharingContext.CarModels.ToArrayAsync();
+        return Json(carModels.Select(x => new { id = x.Id, brand = x.Brand, 
+            model=x.Model, tariff_id = x.TariffId }));
     }
 }

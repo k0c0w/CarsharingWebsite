@@ -8,7 +8,6 @@ public class CarModelDto
     public string Model { get; set; }
 
     public string Description { get; set; }
-
-
+    
     public int TariffId { get; set; }
 }

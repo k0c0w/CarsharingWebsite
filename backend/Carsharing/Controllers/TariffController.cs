@@ -33,10 +33,14 @@ public class TariffController : Controller
     }
 
     [HttpGet("tariffs")]
-    public IActionResult GetExistingTariffs() => Json(_carsharingContext.Tariffs.Where(x => x.IsActive)
-        .Select(x => new
+    public async Task<IActionResult> GetExistingTariffs()
     {
-        id = x.Id, name = x.Name, price = x.Price, description = x.Description
-        //todo: добавить полную ссылку до изображения image_url
-    }));
+        var tariffs = await _carsharingContext.Tariffs.Where(x => x.IsActive).ToArrayAsync();
+            
+        return Json(tariffs.Select(x => new
+        {
+            id = x.Id, name = x.Name, price = x.Price, description = x.Description
+            //todo: добавить полную ссылку до изображения image_url
+        }));
+    }
 }
