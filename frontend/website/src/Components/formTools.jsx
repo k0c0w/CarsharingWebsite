@@ -1,12 +1,14 @@
 import React from "react";
 import "../css/form.css";
 
-export const Input = (props) => (
+export const Input = React.forwardRef((props, ref) => (
     <div className="form-field">
-        <input className="form-input" name={props.name} type={props.type} placeholder={props.placeholder} value={props.value}/>
+        <input ref={ref} id={props.id} className={`form-input${props.inputErrorMessage?' error':''}`}
+             name={props.name} type={props.type} placeholder={props.placeholder} value={props.value}
+             required={props.required}/>
         {props.inputErrorMessage && <p className="form-error">{props.inputErrorMessage}</p>}
     </div>
-);
+));
 
 
 export const Form = React.forwardRef((props, ref) => {
