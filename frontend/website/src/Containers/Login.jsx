@@ -2,22 +2,10 @@ import Section from "../Components/Sections";
 import Container from "../Components/Container";
 import Form, { Input } from "../Components/formTools";
 import Bold from "../Components/TextTags";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useRef, useState } from "react";
 import { areValidLoginFields } from "../js/form-validators";
-import axiosInstance from "../httpclient/axios_client";
-
-function sendFields(formRef){
-    if(formRef){
-        const data = Array.from(formRef.current.elements)
-        .filter((element) => element.name)
-        .reduce(
-          (obj, input) => Object.assign(obj, { [input.name]: input.value }),
-          {}
-        );
-        axiosInstance.post('/login', data);
-    }
-}
+import { sendForm } from "../js/common-functions";
 
 
 export default function Login() {
@@ -25,11 +13,12 @@ export default function Login() {
     const loginRef = useRef(null);
     const passwordRef = useRef(null);
     const formRef = useRef(null);
+    const location = useLocation();
 
     function handleLogin(event) {
         event.preventDefault();
         if(!areValidLoginFields(loginRef.current, passwordRef.current, setErrors)) return;
-        sendFields(formRef);
+        sendForm(formRef.current, location.pathname);
     }
 
     return (

@@ -103,6 +103,14 @@ function trimAllValues(inputsCollection) {
     }
 }
 
+function checkWithFormat(input, format, errorMessage){
+    if(input.value.length > 0 && !format.test(input.value)) {
+        appendError(input, genereteErrorNode(errorMessage));
+        return false;
+    }
+    return true;
+} 
+
 export function areValidRegistrationFields(form) {
     try {
         if(!commonFromFieldsValidator(form)) return false;
@@ -127,7 +135,6 @@ export function areValidRegistrationFields(form) {
     }
 }    
 
-
 export function areValidLoginFields(login, password, setErrors) {
     const errors = {};
     login.value = login.value.trimEnd().trimStart();
@@ -140,4 +147,40 @@ export function areValidLoginFields(login, password, setErrors) {
         errors.password = "Поле не должно быть пустым.";
     setErrors(errors);
     return !(errors.login || errors.password);
+}
+
+export function areValidProfileEdit(form) {
+    try {
+        if(!commonFromFieldsValidator(form)) return false;
+        const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#age")) 
+        & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
+        
+        return commonFields 
+        & checkWithFormat(form.querySelector("#passport"), /(\d{4})\s*-?\s*(\d{6})/, "Формат паспорта: CCCC НННННН")
+        & checkWithFormat(form.querySelector("#license"), /(\d{2})\s*-?\s*(\d{2}||[A-Z]{2})\s*-?\s*(\d{6})/, 
+            "Формат ВУ (латиница): СС СС НННННН");
+    }
+    catch(exception){
+        console.log(exception);
+        alert("Что-то пошло не так. Попробуйте перезагрузить страницу.");
+        return false;
+    }
+}
+
+export function isValidPasswordChange(form) {
+    try {
+        if(!commonFromFieldsValidator(form)) return false;
+        const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#age")) 
+        & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
+        
+        return commonFields 
+        & checkWithFormat(form.querySelector("#passport"), /(\d{4})\s*-?\s*(\d{6})/, "Формат паспорта: CCCC НННННН")
+        & checkWithFormat(form.querySelector("#license"), /(\d{2})\s*-?\s*(\d{2}||[A-Z]{2})\s*-?\s*(\d{6})/, 
+            "Формат ВУ (латиница): СС СС НННННН");
+    }
+    catch(exception){
+        console.log(exception);
+        alert("Что-то пошло не так. Попробуйте перезагрузить страницу.");
+        return false;
+    }
 }

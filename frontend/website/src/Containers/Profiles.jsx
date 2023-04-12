@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {Form, MyFormProfileInput, Input} from "../Components/formTools";
 import Bold, {Dim} from "../Components/TextTags";
 import DocumentTitle from "../DocumentTitle";
@@ -7,39 +7,69 @@ import Container from "../Components/Container";
 
 import "../css/profile.css";
 import Figure from "../Components/Figure";
+import { useRef } from "react";
+import { areValidProfileEdit, isValidPasswordChange } from "../js/form-validators";
+import { sendForm } from "../js/common-functions";
 
 const gap = { columnGap: "100px"};
 
 export function ProfileChangePassword () {
-return <>
-<DocumentTitle>Смена пароля</DocumentTitle>
-<Section>
-    <Form className="center flex-column">
-        <Bold className="form-header">Смена пароля</Bold>
-        <Input name="password" placeholder="новый пароль"/>
-        <Input placeholder="повторите пароль"/>
-        <button className="button form-button">Сохранить</button>
-    </Form>
-</Section>
-</>
+    const formRef = useRef(null);
+    const location = useLocation();
+    function handleSend(event) {
+        event.preventDefault();
+        if(isValidPasswordChange(formRef.current))
+            sendForm(formRef.current, location.pathname);
+    }
+
+    return <>
+        <DocumentTitle>Смена пароля</DocumentTitle>
+        <Section>
+            <Form className="center flex-column">
+                <Bold className="form-header">Смена пароля</Bold>
+                <Input name="password" placeholder="новый пароль"/>
+                <Input placeholder="повторите пароль"/>
+                <button className="button form-button">Сохранить</button>
+            </Form>
+        </Section>
+    </>
 };
 
+const LeftProfileEdit = () => (<>
+    <Input id="email" name="email" placeholder="Почта" value="example@mail.ru"/>
+    <Input id="passport" name="passport" placeholder="Паспорт"/>
+    <Input id="license" placeholder="Водительское удостоверение"/></>);
+
+const RightProfileEdit = () => (<>
+    <Input id="name" name="name" placeholder="Имя" value="Василий"/>
+    <Input id="surname" name="surname" placeholder="Фамилия" value="Пупкин"/>
+    <Input id="age" name="age" placeholder="Возраст" value="25"/></>);
+
 export function ProfileEdit () {
+    const formRef = useRef(null);
+    const location = useLocation();
+
+    function handleSend(event) {
+        event.preventDefault();
+        if(areValidProfileEdit(formRef.current))
+            sendForm(formRef.current, location.pathname);
+    }
+
     return <>
     <DocumentTitle>Редактирование профиля</DocumentTitle>
     <Section className="margin-header">
         <Container className="flex-container">
-            <Form className="center flex-column">
+            <Form ref={formRef} className="center flex-column">
                 <div className="flex-container profile-edit-form-header">
                     <Bold className="form-header">Василий Пупкин</Bold>
                     <NavLink to="password" className="change-password">[сменить пароль]</NavLink>
                 </div>
                 <MyFormProfileInput
-                    leftBlock={<><Input name="email" placeholder="Почта" value="example@mail.ru"/><Input name="passport" placeholder="Паспорт"/><Input placeholder="Водительское удостоверение"/></>}
-                    rightBlock={<><Input name="name" placeholder="Имя" value="Василий"/><Input name="surname" placeholder="Фамилия" value="Пупкин"/><Input name="age" placeholder="Возраст" value="25"/></>}/>
+                    leftBlock={<LeftProfileEdit/>}
+                    rightBlock={<RightProfileEdit/>}/>
                 <div id="formButton" className="form-filed flex-container" style={gap}>
                     <button className="button form-button delete">Удалить аккаунт</button>
-                    <button className="button form-button">Сохранить</button>
+                    <button onClick={handleSend} className="button form-button">Сохранить</button>
                 </div>  
             </Form>
         </Container>

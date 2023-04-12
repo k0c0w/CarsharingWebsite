@@ -6,41 +6,23 @@ import {Form, MyFormProfileInput, Input } from "../Components/formTools"
 
 import "../css/text.css";
 import { areValidRegistrationFields } from "../js/form-validators";
+import { sendForm } from "../js/common-functions";
 import { useRef } from "react";
-import axiosInstance from "../httpclient/axios_client";
-
-
-
-
-//todo: send form вынести в отдельную общедоступную функцию
-function sendForm(form, endpointUrl, additionalData) {
-    const finalFormEndpoint = endpointUrl || form.action;
-    const data = Array.from(form.elements)
-        .filter((element) => element.name)
-        .reduce(
-          (obj, input) => Object.assign(obj, { [input.name]: input.value }),
-          {}
-        );
-
-    if (additionalData) {
-        Object.assign(data, additionalData);
-    }
-    console.log(data);
-    return axiosInstance.post(finalFormEndpoint, data)
-}
+import { useLocation } from "react-router-dom";
 
 
 const gap = { columnGap: "100px"};
 
 export function Registration  ()  {
     const formRef = useRef(null);
+    const location = useLocation();
 
     function handleSend(event) {
         event.preventDefault();
-        if(areValidRegistrationFields(formRef.current))
-            sendForm(formRef.current, "/register")
-            .then(r => alert("done"))
-            .catch(err => alert("error post"));
+        if(areValidRegistrationFields(formRef.current)) 
+            sendForm(formRef.current, location.pathname)
+            //.then(r => alert("done"))
+            //.catch(err => alert("error post"));
     }
 
     return (
@@ -74,4 +56,3 @@ const RegistrationRightInputs = () => (
     <Input required id="surname" name="surname" placeholder="Фамилия"/>
     <Input required id="age" type="number" name="age" placeholder="Возраст"/></>
 )
-
