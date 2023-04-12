@@ -66,7 +66,10 @@
 .form-accept input[type="checkbox"] {
     margin-right: 32px;
 }
-
+.form-accept > .form-error {     left: 0;
+    text-align: center;
+    right: 0;
+}
 #formButton .softblue-regular { margin-left: 20px; }
 #loginHeader ~ .form-field { width: 100%;}
 

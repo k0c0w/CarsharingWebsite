@@ -38,10 +38,10 @@ export default function Login() {
             <Form ref={formRef} className="center flex-column">
                 <Bold id="loginHeader" className="form-header">Войти</Bold>
                 <Input ref={loginRef} type="email" placeholder="Почта" required={true}
-                    name="login" inputErrorMessage={errors["login"]}/>
+                    name="login" inputErrorMessage={errors["login"]} className="loginField"/>
                 <Input ref={passwordRef} type="password" placeholder="Пароль" required={true}
                     name="password" inputErrorMessage={errors["password"]}/>
-                <div id="formButton" className="form-filed">
+                <div id="formButton">
                     <button className="button form-button" onClick={handleLogin}>Login</button>
                     <NavLink className="softblue-regular" to="/registration">Регистрация</NavLink>
                 </div>
