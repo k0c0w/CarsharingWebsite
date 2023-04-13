@@ -168,15 +168,9 @@ export function areValidProfileEdit(form) {
 }
 
 export function isValidPasswordChange(form) {
-    try {
-        if(!commonFromFieldsValidator(form)) return false;
-        const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#age")) 
-        & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
-        
-        return commonFields 
-        & checkWithFormat(form.querySelector("#passport"), /(\d{4})\s*-?\s*(\d{6})/, "Формат паспорта: CCCC НННННН")
-        & checkWithFormat(form.querySelector("#license"), /(\d{2})\s*-?\s*(\d{2}||[A-Z]{2})\s*-?\s*(\d{6})/, 
-            "Формат ВУ (латиница): СС СС НННННН");
+    try{
+        return commonFromFieldsValidator(form) && 
+        checkPasswords(form.querySelector("#password"), form.querySelector("#password_repeat"));
     }
     catch(exception){
         console.log(exception);

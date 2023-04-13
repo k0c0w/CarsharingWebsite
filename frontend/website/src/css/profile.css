@@ -66,6 +66,7 @@ a.profile-account-element { text-decoration: underline; text-decoration-color: r
     height: 50px;
     border-radius: 5px;
     padding: 10px;
+    margin-bottom: 25px;
 }
 
 .open-button {
@@ -100,7 +101,7 @@ a.profile-account-element { text-decoration: underline; text-decoration-color: r
 
 @media only screen and (max-width: 768px) {
     .profile-carlist-list { width: initial; margin-top: 20px;}
-    [figure="rented-car"] { border-radius: 3px; padding: 5px; column-gap: 10px}
+    [figure="rented-car"] { border-radius: 3px; padding: 5px; column-gap: 10px; margin-bottom: 12px;}
     .open-button { width: auto;} .rented-car-image { width: 90px; }
     .rented-car-info { }
 }

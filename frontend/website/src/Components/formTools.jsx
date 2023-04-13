@@ -4,7 +4,7 @@ import "../css/form.css";
 export const Input = React.forwardRef((props, ref) => (
     <div className="form-field">
         <input ref={ref} id={props.id} className={`form-input${props.inputErrorMessage?' error':''}`}
-             name={props.name} type={props.type} placeholder={props.placeholder} value={props.value}
+             name={props.name} type={props.type} placeholder={props.placeholder} defaultValue={props.value}
              required={props.required}/>
         {props.inputErrorMessage && <p className="form-error">{props.inputErrorMessage}</p>}
     </div>

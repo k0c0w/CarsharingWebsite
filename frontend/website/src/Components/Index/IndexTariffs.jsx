@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Section, { SectionTitle } from "../Sections";
 import Container from "../Container";
 import Figure from "../../Components/Figure";
@@ -8,6 +8,7 @@ import "../../css/index-tariffs.css";
 import HorizontalArrow from "../HorizontalArrow";
 import { NavLink } from "react-router-dom";
 import Bold from "../TextTags";
+import axiosInstance from "../../httpclient/axios_client";
 
 
 const TarrifHolder = (props) => (
@@ -20,7 +21,8 @@ const TarrifHolder = (props) => (
 );
 
 export const IndexTariffs =  React.forwardRef((props, ref) => (
-    <Section ref={ref}>
+
+  <Section ref={ref}>
       <Container>
         <SectionTitle subtitle="Ваш личный автомобиль">Тарифы</SectionTitle>
         <div className="rectangle-container">
@@ -31,6 +33,6 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
             </ul>
         </div>
       </Container>
-    </Section>
+  </Section>
 ));
 export default IndexTariffs;

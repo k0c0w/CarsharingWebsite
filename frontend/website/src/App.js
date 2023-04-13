@@ -3,7 +3,7 @@ import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
 import {BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
@@ -13,8 +13,18 @@ import CarRent from './Containers/CarRent';
 import { getDataFromEndpoint } from './httpclient/axios_client';
 
 
+function LoadContextData({endpoint}) {
+  const [info, setInfo] = useState([]);
+  const [madeRequest, setMadeRequest] = useState(false);
+  useEffect(() => {
+    getDataFromEndpoint(endpoint, setInfo)
+  }, []);
+  return <Outlet context={info} />;
+}
+
 
 function App() {
+
   useEffect(() => {
     window.addEventListener('scroll', function () {
       let header = document.getElementsByTagName('header')[0];
@@ -24,23 +34,19 @@ function App() {
     })
   }, []);
 
-  const [tariffsData, setTariffsData] = useState([]);
-  const [madeRequest, setMadeRequest] = useState(false);
-  useEffect(() => { if(!madeRequest) getDataFromEndpoint("tariff/tariffs", setTariffsData)}, []);
-
   return (
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route index exact path="/" element={<Index tariffsData={tariffsData}/>}/>
-        <Route exact path="/documents" element={<Documents/>}/>
-        <Route path="/tariffs">
-          <Route exact path=':tariffName' element={<BeforeTariffs tariffsData={tariffsData}/>}/>
-          <Route path=':taiffName/rent/' element={<FixHeader/>}>
-            <Route path=':car' element={<CarRent/>}/>
+        <Route path="/" element={<LoadContextData endpoint={"/tariff/tariffs"}/>}>
+          <Route index exact path="" element={<Index/>}/>
+          <Route path="tariffs">
+            <Route exact path=':tariffName' element={<BeforeTariffs/>}/>
+            <Route path=':taiffName/rent/:car' element={<CarRent/>}/>
           </Route>
         </Route>
-        <Route element={<FixHeader/>}>
+        <Route exact path="/documents" element={<Documents/>}/>
+        <Route element={<FixHeader/>}>  
           <Route exact path="/login" element={<Login/>}/>
           <Route exact path="/registration" element={<Registration/>}/>
           <Route path='/profile'>

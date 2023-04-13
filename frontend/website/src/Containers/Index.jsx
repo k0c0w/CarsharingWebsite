@@ -6,6 +6,7 @@ import { GreetingSection} from "../Components/Sections"
 import {DocumentTitle} from "../DocumentTitle"
 import "../css/common.css";
 import axiosInstance, {getDataFromEndpoint} from "../httpclient/axios_client";
+import { useOutletContext } from "react-router-dom";
 
 function scrollTo({ref, hash}) {
     const options = {behavior: 'smooth'};
@@ -17,9 +18,10 @@ function scrollTo({ref, hash}) {
 }
 
 
-export default function Index({tariffsData}) {
+export default function Index() {
     const tariffs = useRef(null);
     const chat = useRef(null);
+    const info = useOutletContext();
     //const [tariffsData, setTariffsData] = useState([]);
     //useEffect(()=> {getDataFromEndpoint("tariff/tariffs", setTariffsData)}, []);
 
@@ -33,7 +35,7 @@ export default function Index({tariffsData}) {
             </div>
         </GreetingSection>
         <IndexAbout/>
-        <IndexTariffs ref={tariffs} tariffs={tariffsData}/>
+        <IndexTariffs ref={tariffs} tariffs={info}/>
         <IndexChat ref = {chat}/>
         </>;
 }
