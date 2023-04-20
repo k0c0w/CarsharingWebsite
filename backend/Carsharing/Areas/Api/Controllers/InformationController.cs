@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
 
-public class DocumentsAndNewsController : Controller
+[Area("Api")]
+public class InformationController : Controller
 {
-    public DocumentsAndNewsController(CarsharingContext context) => _context = context;
+    public InformationController(CarsharingContext context) => _context = context;
     private readonly CarsharingContext _context;
     
     //todo: инкапсулировать в сервис
-    [HttpGet("/document")]
-    public async Task<IActionResult> GetDocumentsDescriptions()
+    [HttpGet]
+    public async Task<IActionResult> Documents()
     {
         var documents = await _context.WebsiteDocuments.ToArrayAsync();
 
@@ -23,8 +24,8 @@ public class DocumentsAndNewsController : Controller
         }));
     }
 
-    [HttpGet("/news")]
-    public async Task<IActionResult> GetNews([FromQuery] int page, [FromQuery] int limit = 20, 
+    [HttpGet]
+    public async Task<IActionResult> News([FromQuery] int page, [FromQuery] int limit = 20, 
         [FromQuery] bool byDescending = true)
     {
         if (page <= 0 || limit <= 0) return Json(Array.Empty<object>());

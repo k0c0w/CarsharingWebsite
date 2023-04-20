@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas" />
+    <Folder Include="Controllers" />
     <Folder Include="wwwroot\tariffs" />
   </ItemGroup>
 </Project>

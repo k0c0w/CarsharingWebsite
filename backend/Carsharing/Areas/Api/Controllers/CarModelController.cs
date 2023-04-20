@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+[Area("Api")]
 public class CarModelController : Controller
 {
     private readonly CarsharingContext _carsharingContext;
@@ -33,7 +32,7 @@ public class CarModelController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCarModels()
+    public async Task<IActionResult> Existing()
     {
         var carModels = await _carsharingContext.CarModels.ToArrayAsync();
         return Json(carModels.Select(x => new { id = x.Id, brand = x.Brand, 

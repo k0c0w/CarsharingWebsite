@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+[Area("Api")]
 public class TariffController : Controller
 {
     private readonly CarsharingContext _carsharingContext;
@@ -17,7 +16,7 @@ public class TariffController : Controller
         _carsharingContext = carsharingContext;
     }
 
-    [HttpPost("create")]
+    [HttpPost]
     public async Task<IActionResult> Create([FromBody]TariffDto dto)
     {
         var id = await _carsharingContext.Tariffs.CountAsync() + 1;
@@ -32,8 +31,8 @@ public class TariffController : Controller
         return Ok();
     }
 
-    [HttpGet("tariffs")]
-    public async Task<IActionResult> GetExistingTariffs()
+    [HttpGet]
+    public async Task<IActionResult> Tariffs()
     {
         var tariffs = await _carsharingContext.Tariffs.Where(x => x.IsActive).ToArrayAsync();
             

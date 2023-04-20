@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Carsharing.Controllers;
 
-
+[Area("Api")]
 public class ProfileController : Controller
 {
     
-    [HttpGet("api/profile")]
-    public IActionResult GetProfileInfoBySession()
+    [HttpGet]
+    public IActionResult Index()
     {
         return Json(new 
         {
@@ -26,8 +26,8 @@ public class ProfileController : Controller
         });
     }
 
-    [HttpGet("/api/profile/personalInfo")]
-    public IActionResult GetPersonalInfo()
+    [HttpGet]
+    public IActionResult PersonalInfo()
     {
         return Json(new
         {

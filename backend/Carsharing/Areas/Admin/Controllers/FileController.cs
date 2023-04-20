@@ -3,7 +3,7 @@ using Services;
 
 namespace Carsharing.Controllers;
 
-[Route("[controller]")]
+[Area("Admin")]
 public class FileController : Controller
 {
     private readonly IAsyncFileProvider _fileProvider;
@@ -13,7 +13,7 @@ public class FileController : Controller
     public FileController(IAsyncFileProvider fileProvider) => _fileProvider = fileProvider;
 
     //вообще не безопасно, поменять или проверять экстенш файла и фолдер
-    [HttpPost("save")]
+    [HttpPost]
     public async Task<IActionResult> Save(IFormFile file)
     {
         var folder = "tariffs";
@@ -23,7 +23,7 @@ public class FileController : Controller
         return Ok();
     }
 
-    [HttpDelete("delete")]
+    [HttpDelete]
     public IActionResult Delete([FromQuery] string folderName, [FromQuery] string fileName)
     {
         _fileProvider.Delete(Path.Combine(WebRoot, folderName), fileName);

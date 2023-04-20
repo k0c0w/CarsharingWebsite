@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
 
-[Route("api/[controller]")]
-[ApiController]
+[Area("Api")]
 public class UserController : Controller
 {
     private readonly CarsharingContext _carsharingContext;
@@ -18,8 +17,8 @@ public class UserController : Controller
         _carsharingContext = carsharingContext;
     }
 
-    [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser([FromBody]RegistrationDto dto)
+    [HttpPost]
+    public async Task<IActionResult> Register([FromBody]RegistrationDto dto)
     {
         var isEmail = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$").IsMatch(dto.Email);
         var isName = new Regex(@"^[A-Z][a-zA-Z]*$").IsMatch(dto.Name);
@@ -70,7 +69,7 @@ public class UserController : Controller
         return Ok();
     }
     
-    [HttpPost("login")]
+    [HttpPost]
     public async Task<IActionResult> Login([FromBody]LoginDto dto)
     {
         var client = await _carsharingContext.Users.FirstOrDefaultAsync(cl => cl.Email == dto.Email);
