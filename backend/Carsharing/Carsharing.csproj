@@ -18,5 +18,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Entities\Entities.csproj" />
+    <ProjectReference Include="..\Infrastructure\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas" />
+    <Folder Include="wwwroot\tariffs" />
   </ItemGroup>
 </Project>
