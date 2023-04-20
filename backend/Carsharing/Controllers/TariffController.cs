@@ -39,8 +39,7 @@ public class TariffController : Controller
             
         return Json(tariffs.Select(x => new
         {
-            id = x.Id, name = x.Name, price = x.Price, description = x.Description
-            //todo: добавить полную ссылку до изображения image_url
+            id = x.TariffId, name = x.Name, price = x.Price, description = x.Description
         }));
     }
 }

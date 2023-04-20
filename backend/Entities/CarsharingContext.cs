@@ -1,21 +1,29 @@
-﻿using Entities.Model;
+﻿using Entities.EntityConfigurations;
+using Entities.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Data.Common;
 
 namespace Entities;
 
-public class CarsharingContext : DbContext
+public class CarsharingContext : IdentityDbContext<User>
 {
-    public CarsharingContext(DbContextOptions<CarsharingContext> options) : base(options){}
+    public CarsharingContext(DbContextOptions<CarsharingContext> options) : base(options)
+    {
+        //DbContext.Database.EnsureCreated();
+    }
     
     public virtual DbSet<CarModel> CarModels { get; set; }
 
     public virtual DbSet<Car> Cars { get; set; }
-    public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserInfo> UserInfos { get; set; }
 
-    public virtual DbSet<UserRole> Roles { get; set; }
+    public virtual DbSet<UserRole> UserRoles { get; set; }
+
+    public override DbSet<User> Users { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
     
@@ -37,15 +45,8 @@ public class CarsharingContext : DbContext
                 t.HasCheckConstraint($"CK_{nameof(Tariff)}_{nameof(Tariff.Price)}",
                     $"\"{nameof(Tariff.Price)}\" > 0"));
 
-        modelBuilder.Entity<UserRole>().Property(x => x.Id)
-            .HasConversion(x => (int)x, x => (Roles)x);
-        modelBuilder.Entity<User>().Property(x => x.RoleId)
-            .HasConversion(x => (int)x, x => (Roles)x);
-        
-        
-        modelBuilder.Entity<UserRole>()
-            .HasData(new UserRole() { Id=Entities.Model.Roles.Admin, Name = "admin" },
-                     new UserRole() { Id=Entities.Model.Roles.User, Name = "user" });
+        modelBuilder.ApplyConfiguration(new UserConfiguration());
+        modelBuilder.ApplyConfiguration(new UserInfoConfiguration()); 
     }
 
     private void SetUniqueFields(ModelBuilder modelBuilder)

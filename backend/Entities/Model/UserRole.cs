@@ -2,22 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Entities.Model;
 
-public enum Roles
+
+public class UserRole: IdentityRole
 {
-    Admin=1,
-    User
-}
-
-//todo: заменить Id на enum и мапить его в инт
-
-[PrimaryKey("Id")]
-public class UserRole
-{
-    public Roles Id { get; set; }
-
-    public string Name { get; set; }
+    public DateTime? CreatedAt { get; set; }
 }
