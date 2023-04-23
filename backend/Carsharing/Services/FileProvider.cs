@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace Services;
+namespace Carsharing.Services;
 
 public class FileProvider : IAsyncFileProvider
 {
