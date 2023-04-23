@@ -6,12 +6,18 @@ using Entities.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class AccountController : Controller
+[AllowAnonymous]
+//[ValidateAntiForgeryToken]
+public class AccountController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
@@ -29,7 +35,7 @@ public class AccountController : Controller
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser([FromBody]RegistrationDto dto)
+    public async Task<IActionResult> RegisterUser(RegistrationDto dto)
     {   
 
         // Into service
@@ -55,16 +61,30 @@ public class AccountController : Controller
             return BadRequest();
 
         _userInfo.UserId = user.Id;
-        _carsharingContext.Update<UserInfo>(_userInfo);
+        _carsharingContext.Update(_userInfo);
 
         List<Claim> claims = new List<Claim>()
         {
             new Claim(ClaimTypes.NameIdentifier, dto.Name),
             new Claim(ClaimTypes.Email, dto.Email),
-            new Claim(ClaimTypes.DateOfBirth, dto.Birthday.ToString())
+            new Claim(ClaimTypes.DateOfBirth, _userInfo?.BirthDay.ToString()),
+            new Claim("Passport", _userInfo?.Passport?.ToString() ?? "")
         };
 
-        await _signInManager.SignInWithClaimsAsync(user, true, claims);
+
+
+        var pr = await _signInManager.CreateUserPrincipalAsync(user);
+        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+
+        var resultSignIn = await _signInManager.PasswordSignInAsync(user, dto.Password ?? "", false, false);
+        if (resultSignIn.Succeeded == false)
+            return Unauthorized("Почта или пароль неверен.");
+
+        //var resultAddClaim = await _userManager.AddClaimsAsync(user, claims);
+        //if ( resultAddClaim.Succeeded == false )
+        //    return StatusCode(500, "Не удалось добавить claims");
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
 
         _carsharingContext.SaveChanges();
 
@@ -72,15 +92,12 @@ public class AccountController : Controller
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody]LoginDto dto)
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto?.Email);
 
         if (user == null)
-            return Unauthorized("Email or password is incorrect");
-
-        if (await _userManager.CheckPasswordAsync(user, dto?.Password) != true)
-            return Unauthorized("Email or password is incorrect");
+            return Unauthorized("Почта или пароль неверен.");
 
         var userInfo = await _carsharingContext.UserInfos.FirstOrDefaultAsync(x => x.UserId == user.Id);
 
@@ -88,12 +105,29 @@ public class AccountController : Controller
         {
             new Claim(ClaimTypes.NameIdentifier, user.UserName),
             new Claim(ClaimTypes.Email, dto.Email),
-            new Claim(ClaimTypes.DateOfBirth, userInfo.BirthDay.ToString())
+            new Claim(ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString()),
+            new Claim("Passport", userInfo?.Passport?.ToString() ?? "")
         };
 
-        await _signInManager.SignInWithClaimsAsync(user, false, claims);
+        var pr = await _signInManager.CreateUserPrincipalAsync(user);
+        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+
+        var resultSignIn = await _signInManager.PasswordSignInAsync(user, dto.Password ?? "", false, false);
+        if ( resultSignIn.Succeeded == false)
+            return Unauthorized("Почта или пароль неверен.");
+
+        //var resultAddClaim = await _userManager.AddClaimsAsync(user, claims);
+        //if ( resultAddClaim.Succeeded == false )
+        //    return StatusCode(500, "Не удалось добавить claims");
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
 
         return Ok();
+    }
+    [HttpPost("logout")]
+    public async Task LogOut()
+    {
+        await _signInManager.SignOutAsync();
     }
 }
 

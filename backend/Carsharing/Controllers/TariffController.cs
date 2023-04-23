@@ -8,7 +8,7 @@ namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class TariffController : Controller
+public class TariffController : ControllerBase
 {
     private readonly CarsharingContext _carsharingContext;
 
@@ -24,8 +24,8 @@ public class TariffController : Controller
         var newTariff = new Tariff
         {
             Price = dto.Price,
-            Name = dto.Name,
-            Description = dto.Description
+            Name = dto?.Name,
+            Description = dto?.Description
         };
         await _carsharingContext.AddAsync(newTariff);
         await _carsharingContext.SaveChangesAsync();
@@ -37,9 +37,6 @@ public class TariffController : Controller
     {
         var tariffs = await _carsharingContext.Tariffs.Where(x => x.IsActive).ToArrayAsync();
             
-        return Json(tariffs.Select(x => new
-        {
-            id = x.TariffId, name = x.Name, price = x.Price, description = x.Description
-        }));
+        return new JsonResult(tariffs.Select(x => new { id = x.TariffId, name = x.Name, price = x.Price, description = x.Description }));
     }
 }

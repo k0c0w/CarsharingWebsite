@@ -20,6 +20,9 @@ namespace Carsharing.Helpers.Attributes
         {
             var currentValue = (string)value;
 
+            if (currentValue == null)
+                return new ValidationResult("Value of this property is null");
+
             if (_regex.IsMatch(currentValue))
                 return ValidationResult.Success;
 
