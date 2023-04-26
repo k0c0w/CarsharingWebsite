@@ -5,20 +5,24 @@ namespace Domain.Entities;
 
 public class Car
 {
-    //todo: [concurencyCheck]
+    [ConcurrencyCheck]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
     [MaxLength(9)]
     public string LicensePlate { get; set; }
 
-    //todo: [concurencyCheck]
+    [ConcurrencyCheck]
     public bool HasToBeNonActive { get; set; }
 
     public bool IsOpened { get; set; }
 
-    //todo: [concurencyCheck]
+    [ConcurrencyCheck]
     public bool IsTaken { get; set; }
+    
+    public double ParkingLatitude { get; set; }
+    
+    public double ParkingLongitude { get; set; }
 
     [ForeignKey(nameof(CarModelId))]
     public int CarModelId { get; set; }

@@ -1,8 +1,8 @@
 using Carsharing.ViewModels;
 using Contracts;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
@@ -17,9 +17,13 @@ public class BookingController : Controller
     }
 
     [HttpGet]
-    public IActionResult Re()
+    public async Task<IActionResult> FreeCars([FromQuery] double lat, [FromQuery] double lng,
+        [FromQuery] int tariffId, [FromQuery] double radius)
     {
-        return Ok("dfdfd");
+        if (radius < 0 || tariffId < 0)
+            return BadRequest(new { error = "Wrong arguments" });
+        var cars = await _service.GetFreeCars(tariffId, new GeoPoint(lat, lng), radius, 150);
+        return Json(cars);
     }
     
     [HttpPost]
@@ -35,11 +39,19 @@ public class BookingController : Controller
                 Start = bookingInfo.StartDate,
                 End = bookingInfo.EndDate
             });
-            return Ok("Ура");
+            return Ok(new {success=true, booked_car_id=bookingInfo.CarId});
         }
-        catch
+        catch (ObjectNotFoundException)
         {
-            return BadRequest("Не возможно забронировать");
+            return BadRequest(new { error = "Не возможно забронировать. Некоторые аргументы не действительны." });
+        }
+        catch (InvalidOperationException)
+        {
+            return BadRequest(new { error = "Не возможно забронировать" });
+        }
+        catch (CarAlreadyBookedException)
+        {
+            return BadRequest(new { error = "Машина уже забронированна." });
         }
     }
 }

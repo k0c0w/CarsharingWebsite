@@ -1,6 +1,7 @@
 using Contracts;
 using Domain;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
 using Services.Exceptions;
 
@@ -17,11 +18,39 @@ public class BookingService : IBookingService
         _ctx = context;
     }
 
+    public async Task<IEnumerable<FreeCarDto>> GetFreeCars(int tariffId, GeoPoint coordinates, 
+        double locationRadiusInMeters = 100, int limit = 500)
+    {
+        if (locationRadiusInMeters <= 0) 
+            throw new ArgumentException($"{nameof(locationRadiusInMeters)} must be >0");
+        var degreeDeviation = 0.01 * locationRadiusInMeters / 111;
+        var cars = await _ctx.Cars
+            .Where(x => !(x.HasToBeNonActive || x.IsTaken))
+            .Include(x => x.CarModel)
+            .Where(x => x.CarModelId == tariffId)
+            .Where(x => (coordinates.Latitude - degreeDeviation) <= x.ParkingLatitude
+                        && x.ParkingLatitude <= (coordinates.Latitude + degreeDeviation)
+                        && (coordinates.Longitude - degreeDeviation) <= x.ParkingLongitude
+                        && x.ParkingLongitude <= (coordinates.Longitude + degreeDeviation))
+            .Take(limit)
+            .ToListAsync();
+        return cars.Select(x => new FreeCarDto
+            { CarId = x.Id, TariffId = tariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude) });
+    }
+
     public async Task BookCarAsync(RentCarDto rentCarInfo)
     {
-        //todo: както локать баланс
-        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserId);
+        if (rentCarInfo.Start > rentCarInfo.End || rentCarInfo.Days == 0) throw new ArgumentException("Wrong date bounds");
         var tariff = await _ctx.Tariffs.FindAsync(rentCarInfo.TariffId);
+        if (tariff == null) throw new ObjectNotFoundException($"No such tariff: id {rentCarInfo.TariffId}");
+        var carSupportsTariff = await _ctx.Cars.Include(x => x.CarModel)
+            .Where(x => x.Id == rentCarInfo.CarId && x.CarModel.TariffId == rentCarInfo.TariffId)
+            .AnyAsync();
+        if (!carSupportsTariff)
+            throw new ObjectNotFoundException(
+                $"car({rentCarInfo.CarId}) is not associated with tariff({rentCarInfo.TariffId})");
+        
+        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserId);
         var total = tariff.Price * rentCarInfo.Days;
         if (userInfo.Balance < total) throw new InvalidOperationException("Not enough money to book car");
         await AssignCarToUserAsync(userInfo, rentCarInfo, tariff.Price);
@@ -30,8 +59,7 @@ public class BookingService : IBookingService
     private async Task AssignCarToUserAsync(UserInfo userInfo, RentCarDto details, decimal withdrawal)
     {
         var isAssigned = await _carService.SetCarIsTakenAsync(details.CarId);
-        if(!isAssigned) return;
-        //todo: вынести снятие со счета
+        if(!isAssigned) throw new CarAlreadyBookedException();
         userInfo.Balance -= withdrawal;
         //todo: сейчас аренда машины доступна только с текущего дня, без планирования
         var sub = new Subscription
