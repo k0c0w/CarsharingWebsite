@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
-namespace Entities.Model;
+namespace Domain.Entities;
 
 public enum Roles
 {

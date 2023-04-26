@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 using Carsharing.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Entities;
-using Entities.Model;
+using Domain;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;

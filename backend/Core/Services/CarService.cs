@@ -1,9 +1,10 @@
-﻿using Entities;
+﻿using Domain;
 using Microsoft.EntityFrameworkCore;
+using Services.Abstractions;
 
 namespace Services;
 
-public class CarService
+public class CarService : ICarService
 {
     private readonly CarsharingContext _ctx;
     
@@ -12,6 +13,22 @@ public class CarService
         _ctx = context;
     }
 
+    public async Task ReleaseCarAsync(int carId)
+    {
+        var car = await _ctx.Cars.FindAsync(carId);
+        if (car != null)
+        {
+            car.IsOpened = false;
+            car.IsOpened = false;
+            await _ctx.SaveChangesAsync();
+        }
+    }
+
+    public async Task CreateCarModel()
+    {
+        
+    }
+    
     public async Task<bool> SetCarIsTakenAsync(int id)
     {
         try

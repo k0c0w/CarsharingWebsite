@@ -1,12 +1,15 @@
-﻿using Entities.Model;
+﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Entities;
+namespace Domain;
 
 public class CarsharingContext : DbContext
 {
-    public CarsharingContext(DbContextOptions<CarsharingContext> options) : base(options){}
+    public CarsharingContext(DbContextOptions<CarsharingContext> options) : base(options)
+    {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    }
     
     public virtual DbSet<CarModel> CarModels { get; set; }
 
@@ -25,7 +28,7 @@ public class CarsharingContext : DbContext
     
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -44,8 +47,8 @@ public class CarsharingContext : DbContext
         
         
         modelBuilder.Entity<UserRole>()
-            .HasData(new UserRole() { Id=Entities.Model.Roles.Admin, Name = "admin" },
-                     new UserRole() { Id=Entities.Model.Roles.User, Name = "user" });
+            .HasData(new UserRole() { Id=Domain.Entities.Roles.Admin, Name = "admin" },
+                     new UserRole() { Id=Domain.Entities.Roles.User, Name = "user" });
     }
 
     private void SetUniqueFields(ModelBuilder modelBuilder)

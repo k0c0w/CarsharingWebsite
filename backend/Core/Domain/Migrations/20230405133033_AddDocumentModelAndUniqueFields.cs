@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Entities.Migrations
+namespace Domain.Migrations
 {
     /// <inheritdoc />
     public partial class AddDocumentModelAndUniqueFields : Migration

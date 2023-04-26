@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities.Model;
+namespace Domain.Entities;
 
 public class Subscription
 {

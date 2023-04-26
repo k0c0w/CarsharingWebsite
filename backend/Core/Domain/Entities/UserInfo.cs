@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace Entities.Model;
+namespace Domain.Entities;
 
 [PrimaryKey("UserId")]
 public class UserInfo

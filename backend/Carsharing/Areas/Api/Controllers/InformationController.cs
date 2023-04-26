@@ -1,5 +1,5 @@
 using System.Globalization;
-using Entities;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +29,7 @@ public class InformationController : Controller
         [FromQuery] bool byDescending = true)
     {
         if (page <= 0 || limit <= 0) return Json(Array.Empty<object>());
-        IQueryable<Entities.Model.Post> query = byDescending ? 
+        IQueryable<Domain.Entities.Post> query = byDescending ? 
         _context.News.OrderByDescending(x => x.CreatedAt) : _context.News;
         var news = await query.Skip((page - 1) * limit).Take(limit).ToArrayAsync();
             
