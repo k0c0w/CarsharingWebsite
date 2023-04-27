@@ -16,9 +16,9 @@ namespace Carsharing.Helpers.Attributes
             _regex = regex;
         }
 
-        protected override ValidationResult? IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            var currentValue = (string)value;
+            var currentValue = (string?)value;
 
             if (currentValue == null)
                 return new ValidationResult("Value of this property is null");

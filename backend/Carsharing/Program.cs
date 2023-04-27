@@ -2,6 +2,7 @@ using Carsharing.Authorization;
 using Entities;
 using Entities.Model;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
@@ -20,7 +21,7 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
-
+    options.User.AllowedUserNameCharacters = "ÀàÁáÂâÃãÄäÅå¨¸ÆæÇçÈèÉéÊêËëÌìÍíÎîÏïĞğÑñÒòÓóÔôÕõÖö×÷ØøÙùÚúÛûÜüİıŞşßÿ";
 })
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();
@@ -29,7 +30,11 @@ builder.Services.AddIdentity<User, UserRole>(options =>
 builder.Services.ConfigureApplicationCookie(config =>
 {
 })
- .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+ .AddAuthentication(options =>
+ {
+     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+ })
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
      options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -47,12 +52,13 @@ builder.Services.ConfigureApplicationCookie(config =>
          context.Response.StatusCode = StatusCodes.Status403Forbidden;
          return Task.CompletedTask;
      };
- })
- .AddFacebook(options =>
- {
-     options.AppId = configuration["Authorization:Facebook:AppId"];
-     options.AppSecret = configuration["Authorization:Facebook:AppSecret"];
  });
+ //.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+ //{
+ //    options.ClientId = configuration["Authorization:Google:AppId"];
+ //    options.ClientSecret = configuration["Authorization:Google:AppSecret"];
+ //    options.SignInScheme = IdentityConstants.ExternalScheme;
+ //});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -67,7 +73,8 @@ builder.Services.AddAuthorization(options =>
 });
 
 
-builder.Services.AddSingleton<IAuthorizationHandler, CanBuyRequirementsHandler>();
+builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 
 builder.Services.AddCors(options =>
@@ -81,7 +88,7 @@ builder.Services.AddCors(options =>
     //        builder.WithOrigins(frontendURL)
     //            .AllowAnyHeader()
     //            .AllowAnyMethod()
-    //            .AllowCredentials() // 'Access-Control-Allow-Credentials' : true
+    //            .AllowCredentials() 
     //    );
     options.AddPolicy("CORSAllowLocalHost3000",
        builder =>
@@ -106,6 +113,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.Use(async (context, next) =>
+{
+    var cookies = context.Request.Cookies;
+    await next.Invoke();
+});
 
 app.UseCors("CORSAllowLocalHost3000");
 //app.UseCors(options => options

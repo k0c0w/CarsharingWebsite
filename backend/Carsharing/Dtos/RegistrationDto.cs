@@ -13,11 +13,11 @@ public class RegistrationDto : LoginDto
 
     [Required]
     [RegExCheck(@"^[A-Z][a-zA-Z]*$", ErrorMessage = "Wrong format for name")]
-    public string Name { get; set; } = String.Empty;
+    public string UserName { get; set; } = String.Empty;
 
     [Required]
     [RegExCheck(@"^[A-Z][a-zA-Z]*$", ErrorMessage = "Wrong format for name")]
-    public string Surname { get; set; } = String.Empty;
+    public string UserSurname { get; set; } = String.Empty;
 
 
     [DataType(DataType.DateTime)]

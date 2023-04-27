@@ -14,7 +14,7 @@ namespace Carsharing.Authorization
             AgeThreshold = ageThreshold;
         }
     }
-    public class CanBuyRequirementsHandler : AuthorizationHandler<CanBuyRequirement>
+    public class ApplicationRequirementsHandler : AuthorizationHandler<CanBuyRequirement>
     {
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanBuyRequirement requirement)
         {
