@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
@@ -20,6 +21,7 @@ public class UserInfo
 
     public string? TelephoneNum { get; set; }
 
+    [ConcurrencyCheck]
     public decimal Balance { get; set; }
 
     [ForeignKey(nameof(User))]
