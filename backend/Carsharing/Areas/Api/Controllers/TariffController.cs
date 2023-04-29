@@ -1,6 +1,6 @@
 using Carsharing.Forms;
-using Entities.Model;
-using Entities;
+using Domain.Entities;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

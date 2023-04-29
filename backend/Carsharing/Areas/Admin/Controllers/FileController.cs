@@ -1,5 +1,5 @@
+using Carsharing.Services;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 
 namespace Carsharing.Controllers;
 
@@ -18,7 +18,7 @@ public class FileController : Controller
     {
         var folder = "tariffs";
         await using var read = file.OpenReadStream();
-        var f = new Services.File(file.FileName, read, file.Length);
+        var f = new Carsharing.Services.File(file.FileName, read, file.Length);
         await _fileProvider.SaveAsync(Path.Combine(WebRoot, folder), f);
         return Ok();
     }

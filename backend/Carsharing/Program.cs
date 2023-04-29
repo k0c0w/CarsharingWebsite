@@ -1,6 +1,8 @@
-using Entities;
+using Carsharing.Services;
+using Domain;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<CarsharingContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        x => x.MigrationsAssembly("Entities"));
+        x => x.MigrationsAssembly("Domain"));
 });
 
 builder.Services.AddCors(options =>
@@ -22,6 +24,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAsyncFileProvider, FileProvider>();
+RegisterServices();
 
 var app = builder.Build();
 app.UseCors();
@@ -44,3 +47,10 @@ app.UseEndpoints(endpoints =>
 });
 
 app.Run();
+
+
+void RegisterServices()
+{
+    builder.Services.AddScoped<IBookingService, BookingService>();
+    builder.Services.AddScoped<ICarService, CarService>();
+}
