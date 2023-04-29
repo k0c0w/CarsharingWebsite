@@ -9,10 +9,10 @@ namespace Services;
 
 public class BookingService : IBookingService
 {
-    private CarService _carService;
+    private ICarService _carService;
     private CarsharingContext _ctx;
     
-    public BookingService(CarService carService, CarsharingContext context)
+    public BookingService(ICarService carService, CarsharingContext context)
     {
         _carService = carService;
         _ctx = context;
