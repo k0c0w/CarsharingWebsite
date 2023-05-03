@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.4">
       <PrivateAssets>all</PrivateAssets>
@@ -22,9 +26,6 @@
     <ProjectReference Include="..\Core\Services.Abstractions\Services.Abstractions.csproj" />
     <ProjectReference Include="..\Core\Services\Services.csproj" />
     <ProjectReference Include="..\Entities\Entities.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="wwwroot\tariffs" />
+    <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />
   </ItemGroup>
 </Project>

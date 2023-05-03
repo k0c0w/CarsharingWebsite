@@ -7,7 +7,7 @@ namespace Domain.Entities;
 public class Tariff
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; set; }
+    public int TariffId { get; set; }
 
     public string Name { get; set; } = null!;
 

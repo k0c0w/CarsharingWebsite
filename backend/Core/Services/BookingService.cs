@@ -86,8 +86,8 @@ public class BookingService : IBookingService
         var userInfo = await _ctx.UserInfos.FindAsync(userId);
         if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userId}");
         //todo: isConfirmed переделать
-        var isConfirmed = userInfo.PassportType != null && userInfo.Passport != null 
-                                                        && userInfo.DriverLicense != null && userInfo.TelephoneNum != null;
+        var isConfirmed = userInfo.PassportType != null && userInfo.Passport != null
+                                                        && userInfo.DriverLicense != null;
         if (!isConfirmed) throw new InvalidOperationException("Profile is not confirmed");
         return userInfo;
     }

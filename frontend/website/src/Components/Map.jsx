@@ -1,8 +1,5 @@
 import { YMaps, Map as YMap, Placemark, ZoomControl, GeolocationControl} from '@pbe/react-yandex-maps'
-
 const mapState = { center: [55.789363, 49.124080], zoom:18};
-
-
 export default function MyMap(props) {
     return <div className= {props.className}>
         <YMaps>

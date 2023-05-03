@@ -1,4 +1,5 @@
 using Carsharing.Forms;
+using Microsoft.AspNetCore.Authorization;
 using Domain;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -6,8 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
 
-[Area("Api")]
-public class CarModelController : Controller
+
+[Route("api/[controller]")]
+[ApiController]
+public class CarModelController : ControllerBase
 {
     private readonly CarsharingContext _carsharingContext;
 
@@ -30,12 +33,19 @@ public class CarModelController : Controller
         await _carsharingContext.SaveChangesAsync();
         return Ok();
     }
-
-    [HttpGet]
-    public async Task<IActionResult> Existing()
+    
+    [HttpGet("getcar")]
+    public async Task<IActionResult> GetCarModels()
     {
+        var l = HttpContext.User.Claims;
         var carModels = await _carsharingContext.CarModels.ToArrayAsync();
-        return Json(carModels.Select(x => new { id = x.Id, brand = x.Brand, 
-            model=x.Model, tariff_id = x.TariffId }));
+        return new JsonResult(carModels.Select(x => new { id = x.Id, brand = x.Brand, model = x.Model, tariff_id = x.TariffId }));
+    }
+
+    [HttpGet("rent")]
+    [Authorize(Policy = "CanBuy")]
+    public async Task<IActionResult> RentCar()
+    {
+        return Ok("You brought it!");
     }
 }

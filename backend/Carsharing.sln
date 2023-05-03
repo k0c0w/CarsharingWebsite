@@ -5,6 +5,9 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carsharing", "Carsharing\Carsharing.csproj", "{15910DFE-B736-42C2-9D0E-19888636D84F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistence", "Infrastructure\Persistence\Persistence.csproj", "{9AA57B77-463F-4DD8-B3C8-A1DC95F08342}"
+
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Core\Domain\Domain.csproj", "{A906C347-0BC7-4A69-9FA5-6B98F54EA894}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Core\Services\Services.csproj", "{402B782C-2E14-4D77-953D-6F48802B8902}"
@@ -27,6 +30,11 @@ Global
 		{A906C347-0BC7-4A69-9FA5-6B98F54EA894}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A906C347-0BC7-4A69-9FA5-6B98F54EA894}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A906C347-0BC7-4A69-9FA5-6B98F54EA894}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AA57B77-463F-4DD8-B3C8-A1DC95F08342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA57B77-463F-4DD8-B3C8-A1DC95F08342}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AA57B77-463F-4DD8-B3C8-A1DC95F08342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA57B77-463F-4DD8-B3C8-A1DC95F08342}.Release|Any CPU.Build.0 = Release|Any CPU
+
 		{402B782C-2E14-4D77-953D-6F48802B8902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{402B782C-2E14-4D77-953D-6F48802B8902}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{402B782C-2E14-4D77-953D-6F48802B8902}.Release|Any CPU.ActiveCfg = Release|Any CPU
