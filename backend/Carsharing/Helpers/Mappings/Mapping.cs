@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Carsharing.Forms;
-using Carsharing.Infastructure.GoogleAPI;
-using Entities.Model;
+using Carsharing.Persistence.GoogleAPI;
+using Domain.Entities;
 
 namespace Carsharing.Helpers.Mappings
 {

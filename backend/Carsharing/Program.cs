@@ -1,13 +1,11 @@
 using Carsharing.Authorization;
-using Entities;
-using Entities.Model;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Domain;
+using Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -16,12 +14,12 @@ var configuration = builder.Services.BuildServiceProvider().GetRequiredService<I
 builder.Services.AddDbContext<CarsharingContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        x => x.MigrationsAssembly("Entities"));
+        x => x.MigrationsAssembly("Domain"));
 });
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
-    options.User.AllowedUserNameCharacters = "ÀàÁáÂâÃãÄäÅå¨¸ÆæÇçÈèÉéÊêËëÌìÍíÎîÏïĞğÑñÒòÓóÔôÕõÖö×÷ØøÙùÚúÛûÜüİıŞşßÿ";
+    options.User.AllowedUserNameCharacters = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å¨¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½";
 })
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();
@@ -53,12 +51,6 @@ builder.Services.ConfigureApplicationCookie(config =>
          return Task.CompletedTask;
      };
  });
- //.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
- //{
- //    options.ClientId = configuration["Authorization:Google:AppId"];
- //    options.ClientSecret = configuration["Authorization:Google:AppSecret"];
- //    options.SignInScheme = IdentityConstants.ExternalScheme;
- //});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -76,35 +68,28 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
-
-builder.Services.AddCors(options =>
+if (builder.Environment.IsDevelopment())
 {
-    var frontendURL = configuration.GetValue<string>("FrontendHost");
-
-    //options.AddDefaultPolicy(builder => builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader());
-
-    //options.AddPolicy("CORSAllowLocalHost3000",
-    //    builder =>
-    //        builder.WithOrigins(frontendURL)
-    //            .AllowAnyHeader()
-    //            .AllowAnyMethod()
-    //            .AllowCredentials() 
-    //    );
-    options.AddPolicy("CORSAllowLocalHost3000",
-       builder =>
-           builder.WithOrigins(frontendURL)
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .AllowAnyMethod()
-                .SetIsOriginAllowed(hostName => true)
-       );
-});
-
+    builder.Services.AddCors(options =>
+    {
+        var frontendURL = configuration.GetValue<string>("FrontendHost");
+    
+        options.AddPolicy("CORSAllowLocalHost3000",
+            builder =>
+                builder.WithOrigins(frontendURL)
+                    .AllowAnyHeader()
+                    .AllowCredentials()
+                    .AllowAnyMethod()
+                    .SetIsOriginAllowed(hostName => true)
+        );
+    });
+}
 
 builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
+builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
@@ -121,23 +106,15 @@ app.Use(async (context, next) =>
 });
 
 app.UseCors("CORSAllowLocalHost3000");
-//app.UseCors(options => options
-//    .AllowAnyHeader()
-//    .AllowCredentials()
-//    .AllowAnyMethod()
-//    .SetIsOriginAllowed(hostName => true));
-
-//app.UseCookiePolicy(new CookiePolicyOptions
-//{
-//    HttpOnly = HttpOnlyPolicy.Always,
-//    MinimumSameSitePolicy = SameSiteMode.None,
-//    Secure = CookieSecurePolicy.Always
-//});
 
 app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseStaticFiles();
+
+app.UseRouting();
 app.MapControllers();
+
 
 app.Run();
