@@ -1,5 +1,6 @@
 using Carsharing.ViewModels.Admin;
 using Contracts.Tariff;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
@@ -8,6 +9,7 @@ namespace Carsharing.Controllers;
 
 [ApiController]
 [Route("admin/api/tariff")]
+//todo: [Authorize(Roles = "Admin")]
 public class AdminTariffController : ControllerBase
 {
     private readonly IAdminTariffService _service;

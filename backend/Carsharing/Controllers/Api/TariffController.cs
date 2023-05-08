@@ -1,15 +1,9 @@
-using Carsharing.Forms;
-using Contracts.Tariff;
-using Domain.Entities;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
-using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/tariffs")]
 [ApiController]
 public class TariffController : ControllerBase
 {
@@ -20,8 +14,8 @@ public class TariffController : ControllerBase
         _tariffService = service;
     }
 
-    [HttpGet("[action]")]
-    public async Task<IActionResult> Tariffs()
+    [HttpGet]
+    public async Task<IActionResult> Tariff()
     {
         var tariffs = await _tariffService.GetAllActiveAsync();
         return new JsonResult(tariffs.Select(x => new
