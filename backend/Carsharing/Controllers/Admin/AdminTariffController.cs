@@ -16,7 +16,22 @@ public class AdminTariffController : ControllerBase
     {
         _service = service;
     }
-    
+
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllTariffs()
+    {
+        var tariffs = await _service.GetAllAsync();
+        return new JsonResult(tariffs.Select(x => new TariffVM
+        {
+            Id = x.Id,
+            Name = x.Name,
+            Description = x.Description,
+            MaxMileage = x.MaxMileage,
+            PriceInRubles = x.PriceInRubles,
+            IsActive = x.IsActive
+        }));
+    }
+
     [HttpPost("[action]")]
     public async Task<IActionResult> Create([FromBody] CreateTariffVM vm)
     {
@@ -36,9 +51,54 @@ public class AdminTariffController : ControllerBase
         }
         catch (AlreadyExistsException)
         {
-            return new BadRequestObjectResult(new { error = "Such tariff exists" });
+            return BadRequest(new { error = "Such tariff exists" });
         }
 
         return new CreatedResult("/tariffs", null);
+    }
+
+    [HttpPut("setstate/{id:int}")]
+    public async Task<IActionResult> SwitchTariffState([FromRoute] int id, [FromBody] bool state)
+    {
+        try
+        {
+            if (state)
+                await _service.TurnOnAsync(id);
+            else
+                await _service.TurnOffAsync(id);
+            return NoContent();
+        }
+        catch
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpPut("edit/{id:int}")]
+    public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffDto edit)
+    {
+        try
+        {
+            await _service.EditAsync(id, edit);
+            return NoContent();
+        }
+        catch (AlreadyExistsException)
+        { return BadRequest(new { error = "tariff already exists" }); }
+        catch (ArgumentException ex)
+        { return BadRequest(new { error = $"invalid arguments:{ex.Message}" }); }
+    }
+
+    [HttpDelete("delete/{id:int}")]
+    public async Task<IActionResult> DeleteTariff([FromRoute] int id)
+    {
+        try
+        {
+            await _service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch(InvalidOperationException ex)
+        {
+            return BadRequest(new {error=ex.Message});
+        }
     }
 }
