@@ -1,3 +1,4 @@
+using Carsharing;
 using Carsharing.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain;
 using Domain.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -68,6 +70,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddTariffService();
+
 if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddCors(options =>
@@ -86,6 +90,13 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddControllers();
+
+//todo: создать форматтер, чтобы ошибки отправлялись в общем стиле
+builder.Services.Configure<ApiBehaviorOptions>(o =>
+{
+    o.InvalidModelStateResponseFactory = actionContext =>
+        new BadRequestObjectResult(actionContext.ModelState);
+});
 
 
 builder.Services.AddSwaggerGen();
