@@ -6,14 +6,15 @@
 
 .form-error {
     position: absolute;
-    left: 32px;
-    top: 42px;
-    font-size: 13px;
+    left: 30px;
+    top: 30px;
+    font-size: 10px;
     font-weight: 500;
     line-height: 21px;
     color: #e63312;
-    display: none;
 }
+
+.form-input.error { border-color: #e63312; }
 
 .form-input {
     font-size: 18px;
@@ -65,7 +66,10 @@
 .form-accept input[type="checkbox"] {
     margin-right: 32px;
 }
-
+.form-accept > .form-error {     left: 0;
+    text-align: center;
+    right: 0;
+}
 #formButton .softblue-regular { margin-left: 20px; }
 #loginHeader ~ .form-field { width: 100%;}
 
@@ -87,7 +91,7 @@
         height: 50px;
     }
     .form-header { font-size: 25px;  margin-bottom: 16px; letter-spacing: 1px;}
-
+    .form-error { left: 25px; top: 20px; font-size: 8px; }
 }
 
 @media (max-width: 767px) {
