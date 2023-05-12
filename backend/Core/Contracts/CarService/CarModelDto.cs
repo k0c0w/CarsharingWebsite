@@ -12,5 +12,7 @@ public class CarModelDto
 
     public int TariffId { get; set; }
 
-    public string ImageUrl => $"models/{Brand}/{Model.Replace(" ", "_")}.png";
+    public string ImageUrl { get; init; }
+
+    public static string GenerateImageUrl(string fileName) => $"models/{fileName}";
 }

@@ -44,6 +44,8 @@ public class CarsharingContext : IdentityDbContext<User>
 
         modelBuilder.ApplyConfiguration(new UserConfiguration());
         modelBuilder.ApplyConfiguration(new UserInfoConfiguration());
+
+        modelBuilder.Entity<CarModel>().Ignore(x => x.ImageName);
     }
 
     private void SetUniqueFields(ModelBuilder modelBuilder)

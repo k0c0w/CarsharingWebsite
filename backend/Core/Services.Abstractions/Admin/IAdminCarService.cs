@@ -15,4 +15,8 @@ public interface IAdminCarService : ICarService
     Task DeleteCarAsync(int id);
     
     Task<IEnumerable<CarModelDto>> GetAllModelsAsync();
+    
+    Task<IEnumerable<CarDto>> GetAllCarsAsync();
+    
+    Task<IEnumerable<CarDto>> GetCarsByModelAsync(int modelId);
 }

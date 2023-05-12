@@ -16,5 +16,7 @@ public class CarModel
     [ForeignKey(nameof(Tariff))]
     public int TariffId { get; set; }
 
-    public virtual Tariff? Tariff { get; set; } 
+    public virtual Tariff? Tariff { get; set; }
+
+    public string ImageName => $"{Brand.Replace(' ', '_')}_{Model.Replace(' ', '_')}_{TariffId}";
 }
