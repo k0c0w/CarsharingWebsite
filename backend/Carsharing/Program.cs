@@ -1,5 +1,6 @@
 using Carsharing;
 using Carsharing.Authorization;
+using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
@@ -8,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Domain;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Services;
+using Services.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -68,6 +71,9 @@ builder.Services.AddAuthorization(options =>
 
 
 builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
+builder.Services.AddScoped<ICarService, CarService>();
+builder.Services.AddScoped<IFileProvider, FileProvider>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddTariffService();

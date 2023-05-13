@@ -19,4 +19,6 @@ public interface IAdminCarService : ICarService
     Task<IEnumerable<CarDto>> GetAllCarsAsync();
     
     Task<IEnumerable<CarDto>> GetCarsByModelAsync(int modelId);
+    
+    Task<IEnumerable<CarDto>> GetAvailableCarsByModelAsync(int modelId);
 }

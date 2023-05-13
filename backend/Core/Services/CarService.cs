@@ -79,6 +79,30 @@ public class CarService : IAdminCarService
         };
     }
 
+    public async Task<IEnumerable<FreeCarDto>> GetAvailableCarsByLocationAsync(SearchCarDto searchParams, int limit=256)
+    {
+        if (searchParams.Radius <= 0) 
+            throw new ArgumentException($"{nameof(searchParams.Radius)} must be >0");
+        var carModel = await _ctx.CarModels.Include(x => x.Tariff)
+            .Where(x => x.Tariff.IsActive)
+            .FirstOrDefaultAsync(x => x.Id == searchParams.CarModelId);
+        if (carModel == null) throw new ObjectNotFoundException(nameof(CarModel));
+        
+        
+        var degreeDeviation = 0.01 * searchParams.Radius / 111;
+        var cars = await _ctx.Cars
+            .Where(x => x.CarModelId == searchParams.CarModelId)
+            .Where(x => !(x.HasToBeNonActive || x.IsTaken))
+            .Where(x => (searchParams.Latitude - degreeDeviation) <= x.ParkingLatitude
+                        && x.ParkingLatitude <= (searchParams.Latitude + degreeDeviation)
+                        && (searchParams.Longitude - degreeDeviation) <= x.ParkingLongitude
+                        && x.ParkingLongitude <= (searchParams.Longitude + degreeDeviation))
+            .Take(limit)
+            .ToListAsync();
+        return cars.Select(x => new FreeCarDto
+            { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude) });
+    }
+
     public async Task<IEnumerable<CarDto>> GetAvailableCarsByModelAsync(int modelId)
     {
         var cars = await CarsByModelId(modelId)

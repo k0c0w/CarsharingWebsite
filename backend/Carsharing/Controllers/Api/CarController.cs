@@ -1,6 +1,6 @@
 using Carsharing.ViewModels;
+using Contracts;
 using Microsoft.AspNetCore.Authorization;
-using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Exceptions;
@@ -13,10 +13,12 @@ namespace Carsharing.Controllers;
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;
+    private readonly IBookingService _bookingService;
 
-    public CarController(ICarService service)
+    public CarController(ICarService service, IBookingService bookingService)
     {
         _carService = service;
+        _bookingService = bookingService;
     }
     
     [HttpGet("models/{tariff:int}")]
@@ -58,17 +60,23 @@ public class CarController : ControllerBase
         }
     }
     
-    [HttpGet("{modelId:int}")]
-    public async Task<IActionResult> GetAvailableCarsByModelId([FromRoute] int modelId)
+    [HttpGet("available")]
+    public async Task<IActionResult> GetFreeCars([FromQuery] FindCarsVM carSearch)
     {
-       var cars = await _carService.GetAvailableCarsByModelAsync(modelId);
-       return new JsonResult(cars.Select(x => new CarVM
-       {
-           Id = x.Id,
-           LicensePlate = x.LicensePlate,
-           ParkingLatitude = x.ParkingLatitude,
-           ParkingLongitude = x.ParkingLongitude
-       }));
+        var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
+        {
+            Latitude = carSearch.Latitude,
+            Longitude = carSearch.Latitude,
+            Radius = carSearch.Radius,
+            CarModelId = carSearch.CarModelId
+        });
+        
+        return new JsonResult(cars.Select(x => new CarVM
+        {
+            Id = x.CarId,
+            ParkingLatitude = x.Location.Latitude,
+            ParkingLongitude = x.Location.Longitude,
+        }));
     }
 
     [HttpGet("rent")]

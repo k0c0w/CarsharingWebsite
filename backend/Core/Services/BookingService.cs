@@ -17,26 +17,7 @@ public class BookingService : IBookingService
         _carService = carService;
         _ctx = context;
     }
-
-    public async Task<IEnumerable<FreeCarDto>> GetFreeCars(int tariffId, GeoPoint coordinates, 
-        double locationRadiusInMeters = 100, int limit = 500)
-    {
-        if (locationRadiusInMeters <= 0) 
-            throw new ArgumentException($"{nameof(locationRadiusInMeters)} must be >0");
-        var degreeDeviation = 0.01 * locationRadiusInMeters / 111;
-        var cars = await _ctx.Cars
-            .Where(x => !(x.HasToBeNonActive || x.IsTaken))
-            .Include(x => x.CarModel)
-            .Where(x => x.CarModelId == tariffId)
-            .Where(x => (coordinates.Latitude - degreeDeviation) <= x.ParkingLatitude
-                        && x.ParkingLatitude <= (coordinates.Latitude + degreeDeviation)
-                        && (coordinates.Longitude - degreeDeviation) <= x.ParkingLongitude
-                        && x.ParkingLongitude <= (coordinates.Longitude + degreeDeviation))
-            .Take(limit)
-            .ToListAsync();
-        return cars.Select(x => new FreeCarDto
-            { CarId = x.Id, TariffId = tariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude) });
-    }
+    
 
     public async Task BookCarAsync(RentCarDto rentCarInfo)
     {

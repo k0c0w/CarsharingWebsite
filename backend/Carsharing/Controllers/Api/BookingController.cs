@@ -15,16 +15,7 @@ public class BookingController : Controller
     {
         _service = service;
     }
-
-    [HttpGet]
-    public async Task<IActionResult> FreeCars([FromQuery] double lat, [FromQuery] double lng,
-        [FromQuery] int tariffId, [FromQuery] double radius)
-    {
-        if (radius < 0 || tariffId < 0)
-            return BadRequest(new { error = "Wrong arguments" });
-        var cars = await _service.GetFreeCars(tariffId, new GeoPoint(lat, lng), radius, 150);
-        return Json(cars);
-    }
+    
     
     [HttpPost]
     public async Task<IActionResult> BookCar([FromBody] BookingVM bookingInfo)

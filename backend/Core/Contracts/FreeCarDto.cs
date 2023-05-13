@@ -1,6 +1,6 @@
 namespace Contracts;
 
-public class FreeCarDto
+public record FreeCarDto
 {
     public GeoPoint Location { get; init; }
     
