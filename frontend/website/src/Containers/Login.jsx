@@ -13,6 +13,17 @@ var props = {
 
 
 export default function Login() {
+    const [errors, setErrors] = useState({});
+    const loginRef = useRef(null);
+    const passwordRef = useRef(null);
+    const formRef = useRef(null);
+    const location = useLocation();
+
+    function handleLogin(event) {
+        event.preventDefault();
+        if(!areValidLoginFields(loginRef.current, passwordRef.current, setErrors)) return;
+        sendForm(formRef.current, location.pathname);
+    }
 
     window.fbAsyncInit = function() {
         FB.init({
@@ -55,7 +66,7 @@ export default function Login() {
     return (
     <Section>
         <Container className="flex-container">
-            <Form className="center flex-column">
+            <Form ref={formRef} className="center flex-column">
                 <Bold id="loginHeader" className="form-header">Войти</Bold>
                 <Input name="Email" placeholder="Почта" set={(e)=>setEmail(e)} value={email} />
                 <Input name="Password" placeholder="Пароль" set={(e)=>setPassword(e)} value={password} />
