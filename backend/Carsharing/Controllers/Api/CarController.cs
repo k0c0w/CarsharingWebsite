@@ -38,20 +38,23 @@ public class CarController : ControllerBase
         }));
     }
     
-    [HttpGet("model/{tariff:int}")]
-    public async Task<IActionResult> GetCarModelByTariff([FromRoute] int tariff)
+    [HttpGet("model/{id:int}")]
+    public async Task<IActionResult> GetCarModelByTariff([FromRoute] int id)
     {
         try
         {
-            var model = await _carService.GetModelByTariffIdAsync(tariff);
-            return new JsonResult(new CarModelVM
+            var model = await _carService.GetModelByIdAsync(id);
+            return new JsonResult(new ExpandedCarModelVM
             {
                 Brand = model.Brand,
                 Description = model.Description,
                 Model = model.Model,
                 Url = model.ImageUrl,
-                TariffId = tariff,
-                Id = model.Id
+                TariffId = model.TariffId,
+                Id = model.Id,
+                Price = model.Price,
+                MaxMilage = model.Restrictions,
+                TariffName = model.TariffName
             });
         }
         catch (ObjectNotFoundException)
@@ -66,7 +69,7 @@ public class CarController : ControllerBase
         var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
         {
             Latitude = carSearch.Latitude,
-            Longitude = carSearch.Latitude,
+            Longitude = carSearch.Longitude,
             Radius = carSearch.Radius,
             CarModelId = carSearch.CarModelId
         });

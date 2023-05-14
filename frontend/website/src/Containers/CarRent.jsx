@@ -3,27 +3,83 @@ import { Dim } from "../Components/TextTags";
 import DocumentTitle from "../DocumentTitle";
 import MyMap from "../Components/Map";
 import "../css/car-rent.css";
+import { useEffect, useState } from "react";
+import axiosInstance, { getDataFromEndpoint } from "../httpclient/axios_client";
+import { NavLink, useNavigate, useNavigation, useParams } from "react-router-dom";
 
-export default function CarRent() {
+
+
+export default function CarRent() {    
+    const {modelId} = useParams();
+    const [modelInfo, setModelInfo] = useState({});
+    const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
+    const [radius, setRadius] = useState(10000);
+    const [carList, setCarList] = useState([]);
+    const navigate = useNavigate();
+    
+
+    function success(position) {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        setGeo({latitude: latitude, longitude: longitude});
+      }
+    
+      function error() {
+        alert("Невозможно получить ваше местоположение.");
+        navigate("/");
+      }
+
+    
+    function getCarList() {
+        axiosInstance.get('cars/available', {params: {
+            CarModelId: modelId,
+            Longitude: geo.longitude,
+            Latitude: geo.latitude,
+            Radius: radius
+        }})
+        .then(x => setCarList(x.data))
+        .catch(err => alert("Невозможно получить список машин."))
+    }  
+
+
+    useEffect(() => {
+        axiosInstance.get(`cars/model/${modelId}`)
+        .then(x => setModelInfo(x.data))
+        .then(() => {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser");
+                navigate("/");
+              } else {
+                navigator.geolocation.getCurrentPosition(success, error);
+                getCarList();
+              }
+        })
+        .catch(err => { navigate('/notFound')});
+    }, []);
+
+    useEffect(() => {getCarList()}, [radius]);
+
+
     return <>
-    <DocumentTitle>Sonata</DocumentTitle>
+    <DocumentTitle>{modelInfo?.model}</DocumentTitle>
     <div style={{height:"96px"}}></div>
     <Section className="renting">
         <div className="renting-car-info flex-container">
-            <div className="renting-car-info__tariff"><span style={{marginLeft:0}}>Travel</span></div>
-            <div className="renting-car-info__img"><img src="https://mobility.hyundai.ru/dist/images/cars/sonata2.png" alt="" /></div>
+            <div><span style={{marginLeft:0}}>
+                <NavLink  className="renting-car-info__tariff" to={`/tariffs/${modelInfo?.tariff_id}`}>{modelInfo?.tariff_name}</NavLink></span></div>
+            <div className="renting-car-info__img"><img src={modelInfo?.image_url} alt={modelInfo?.model} /></div>
             <div style={{width:"100%", textAlign: "center", padding: "0 15px"}}>
                 <div>
-                <h1 className="renting-car-info__car">Sonata</h1>
-                <div className="renting-car-info__car-tarrif"><span>1050 р./мес.</span><span>500 км/день</span></div>
+                <h1 className="renting-car-info__car">{modelInfo?.brand} {modelInfo?.model}</h1>
+                <div className="renting-car-info__car-tarrif"><span>{modelInfo?.price} р./мес.</span><span>{modelInfo?.max_milage && <>{modelInfo?.max_milage} км/день</>}</span></div>
                 <Dim style={{textAlign: "left", paddingTop:"20px"}}>
-                    Таким образом укрепление и развитие структуры требуют от нас анализа систем массового участия. Товарищи! постоянное информационно-пропагандистское обеспечение нашей деятельности способствует подготовки и реализации форм развития. Не следует, однако забывать, что укрепление и развитие структуры в значительной степени обуславливает создание систем массового участия.
+                    {modelInfo?.description}
                 </Dim>
                 </div>
             </div>
         </div>
         <div className="renting-sidebar">
-            <MyMap className="renting-sidebar-map"/>
+            <MyMap geo={geo} cars={carList} className="renting-sidebar-map"/>
             <div className="renting-sidebar-period">
                 <div className="flex-container flex-column">
                     <div className="renting-sidebar-period__holder">

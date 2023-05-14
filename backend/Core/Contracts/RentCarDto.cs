@@ -6,7 +6,7 @@ public record RentCarDto
     
     public int TariffId { get; init; }
     
-    public int PotentialRenterUserId { get; init; }
+    public string PotentialRenterUserId { get; init; }
     
     public DateTime Start { get; init; }
     

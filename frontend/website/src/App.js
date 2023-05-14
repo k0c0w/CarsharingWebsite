@@ -31,10 +31,8 @@ function App() {
       <Routes>
         <Route path="/">
           <Route index exact path="" element={<Index/>}/>
-          <Route path="tariffs">
-            <Route exact path=':tariffId' element={<BeforeTariffs/>}/>
-            <Route path=':taiffName/rent/:car' element={<CarRent/>}/>
-          </Route>
+          <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
+          <Route path='rent/:modelId' element={<CarRent/>}/>
         </Route>
         <Route exact path="/documents" element={<Documents/>}/>
         <Route element={<FixHeader/>}>  

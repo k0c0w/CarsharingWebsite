@@ -1,6 +1,6 @@
 namespace Contracts;
 
-public class CarModelDto
+public record CarModelDto
 {
     public int Id { get; init; }
     

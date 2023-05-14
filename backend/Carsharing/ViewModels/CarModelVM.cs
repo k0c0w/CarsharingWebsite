@@ -21,7 +21,7 @@ public record CarModelVM
     public string Description { get; set; }
     
     [JsonPropertyName("tariff_id")]
-    [JsonPropertyOrder(1)]
+    [JsonPropertyOrder(6)]
     public int TariffId { get; set; }
     
     [JsonPropertyName("image_url")]

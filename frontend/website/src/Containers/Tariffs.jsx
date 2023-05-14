@@ -46,10 +46,15 @@ export function CarListSection ({tariffId, price}) {
             <div style={style}>
             {!loaded && <Bold>Загрузка...</Bold>}
             {loaded && cars.length == 0 && <Bold>К сожалению, нет доступных машин.</Bold>}
-            {cars.map((x, i) =>
-                <CardHolder brand={x.brand} model={x.model} price={price}
-                 description={x.description} modelId={x.id}
-                 img={x.image_url}/>)}
+            {cars.map((x, i) =>{
+
+                let description = x.description?.substring(0, 64);
+                if(x?.description.length > 64)
+                    description = `${description}...`;
+                return <CardHolder brand={x.brand} model={x.model} price={price}
+                description={description} modelId={x.id}
+                img={x.image_url}/>;
+            })}
             </div>
         </Container>
     </Section>);

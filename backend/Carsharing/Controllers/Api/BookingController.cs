@@ -22,14 +22,7 @@ public class BookingController : Controller
     {
         try
         {
-            await _service.BookCarAsync(new RentCarDto
-            {
-                PotentialRenterUserId = 3,
-                TariffId = bookingInfo.TariffId,
-                CarId = bookingInfo.CarId,
-                Start = bookingInfo.StartDate,
-                End = bookingInfo.EndDate
-            });
+            throw new NotImplementedException();
             return Ok(new {success=true, booked_car_id=bookingInfo.CarId});
         }
         catch (ObjectNotFoundException)
