@@ -8,10 +8,10 @@ public record CreateCarVM
     public string LicensePlate { get; init; }
 
     [JsonPropertyName("latitude")]
-    public double ParkingLatitude { get; init; }
+    public decimal ParkingLatitude { get; init; }
     
     [JsonPropertyName("longitude")]
-    public double ParkingLongitude { get; init; }
+    public decimal ParkingLongitude { get; init; }
     
     [JsonPropertyName("prototype_id")]
     public int CarModelId { get; init; }

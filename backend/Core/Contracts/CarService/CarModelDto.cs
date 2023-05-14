@@ -1,6 +1,6 @@
 namespace Contracts;
 
-public class CarModelDto
+public record CarModelDto
 {
     public int Id { get; init; }
     
@@ -14,5 +14,5 @@ public class CarModelDto
 
     public string ImageUrl { get; init; }
 
-    public static string GenerateImageUrl(string fileName) => $"models/{fileName}";
+    public static string GenerateImageUrl(string fileName) => $"/models/{fileName}.png";
 }

@@ -12,9 +12,9 @@ public record CarDto
 
     public bool IsTaken { get; set; }
     
-    public double ParkingLatitude { get; set; }
+    public decimal ParkingLatitude { get; set; }
     
-    public double ParkingLongitude { get; set; }
+    public decimal ParkingLongitude { get; set; }
 
     public int CarModelId { get; set; }
 }

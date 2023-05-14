@@ -11,14 +11,14 @@ public record FindCarsVM
     
     [Required(ErrorMessage = "Укажите долготу.")]
     [JsonPropertyName("longitude")]
-    public double Longitude { get; init; }
+    public decimal Longitude { get; init; }
     
     [Required(ErrorMessage = "Укажите широту.")]
     [JsonPropertyName("latitude")]
-    public double Latitude { get; init; }
+    public decimal Latitude { get; init; }
     
     [Required(ErrorMessage = "Укажите радиус поиска.")]
-    [Range(20, 3000)]
+    [Range(20, 100000)]
     [JsonPropertyName("radius")]
     public int Radius { get; init; }
 }

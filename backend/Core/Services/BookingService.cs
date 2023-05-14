@@ -62,7 +62,7 @@ public class BookingService : IBookingService
         }
     }
     
-    private async Task<UserInfo> GetConfirmedUserInfoAsync(int userId)
+    private async Task<UserInfo> GetConfirmedUserInfoAsync(string userId)
     {
         var userInfo = await _ctx.UserInfos.FindAsync(userId);
         if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userId}");

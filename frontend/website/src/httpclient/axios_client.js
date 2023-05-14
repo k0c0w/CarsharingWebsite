@@ -7,12 +7,13 @@ export const axiosInstance = axios.create({
     headers: {
         'Accept': 'application/json',
         'Content-type': 'application/json; charset=UTF-8',
+        "Access-Control-Allow-Origin" : "https://localhost:7129"
       }
 });
 
 export function getDataFromEndpoint(endpoint, dataSetterFunction) {
     axiosInstance.get(endpoint)
-        .then(r => {dataSetterFunction(r.data)})
+        .then(r => {dataSetterFunction(r.data);})
         .catch(err => console.log(`Error while recieving data from ${endpoint}`));
 }
 

@@ -20,9 +20,9 @@ public class Car
     [ConcurrencyCheck]
     public bool IsTaken { get; set; }
     
-    public double ParkingLatitude { get; set; }
+    public decimal ParkingLatitude { get; set; }
     
-    public double ParkingLongitude { get; set; }
+    public decimal ParkingLongitude { get; set; }
 
     [ForeignKey(nameof(CarModelId))]
     public int CarModelId { get; set; }

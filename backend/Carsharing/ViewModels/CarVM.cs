@@ -14,9 +14,9 @@ public record CarVM
 
     [JsonPropertyName("latitude")]
     [JsonPropertyOrder(3)]
-    public double ParkingLatitude { get; set; }
+    public decimal ParkingLatitude { get; set; }
     
     [JsonPropertyName("longitude")]
     [JsonPropertyOrder(4)]
-    public double ParkingLongitude { get; set; }
+    public decimal ParkingLongitude { get; set; }
 }
