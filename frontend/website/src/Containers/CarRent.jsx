@@ -4,17 +4,31 @@ import DocumentTitle from "../DocumentTitle";
 import MyMap from "../Components/Map";
 import "../css/car-rent.css";
 import { useEffect, useState } from "react";
-import axiosInstance, { getDataFromEndpoint } from "../httpclient/axios_client";
-import { NavLink, useNavigate, useNavigation, useParams } from "react-router-dom";
+import axiosInstance from "../httpclient/axios_client";
+import { NavLink, useNavigate, useParams } from "react-router-dom";
 
+function days(startDate, endDate) {
+    if(startDate && endDate){
+        const diffTime = Math.abs(endDate - startDate);
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+    }
+    return 0;
+}
 
+function sendReuest(startDate, endDate, carId){
+    console.log("s");
+}
 
 export default function CarRent() {    
     const {modelId} = useParams();
     const [modelInfo, setModelInfo] = useState({});
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
-    const [radius, setRadius] = useState(10000);
     const [carList, setCarList] = useState([]);
+
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
+
+    let car = null;
     const navigate = useNavigate();
     
 
@@ -33,14 +47,13 @@ export default function CarRent() {
     function getCarList() {
         axiosInstance.get('cars/available', {params: {
             CarModelId: modelId,
-            Longitude: geo.longitude,
-            Latitude: geo.latitude,
-            Radius: radius
+            Longitude: parseFloat(geo.longitude),
+            Latitude: parseFloat(geo.latitude),
+            Radius: 8192
         }})
         .then(x => {console.log(x.data);setCarList(x.data);})
         .catch(err => alert("Невозможно получить список машин."))
     }  
-
 
     useEffect(() => {
         axiosInstance.get(`cars/model/${modelId}`)
@@ -57,7 +70,19 @@ export default function CarRent() {
         .catch(err => { navigate('/notFound')});
     }, []);
 
-    useEffect(() => {getCarList()}, [radius]);
+    function set(data){
+        car = data;
+    }
+
+    function rentCar(){
+        if(startDate && endDate && startDate <= endDate && car){
+            sendReuest(startDate, endDate, car);
+        }
+        else{
+            alert("Не все поля заполнены. Убедитесь, что выбрали машину.");
+        }
+        return false;
+    }
 
 
     return <>
@@ -79,22 +104,23 @@ export default function CarRent() {
             </div>
         </div>
         <div className="renting-sidebar">
-            <MyMap geo={geo} cars={carList} className="renting-sidebar-map"/>
+            <MyMap geo={geo} cars={carList} chooseCarFunc={set} className="renting-sidebar-map"/>
             <div className="renting-sidebar-period">
                 <div className="flex-container flex-column">
                     <div className="renting-sidebar-period__holder">
                         <span>Преиод:</span>
                         <span>с</span>
-                        <input type="date"/>
+                        <input type="date" onChange={(e) => {setStartDate(new Date(e.target.value + 'T00:00'))}}/>
                         <span>по</span>
-                        <input type="date"/>
+                        <input type="date" onChange={(e) => {setEndDate(new Date(e.target.value + 'T00:00'))}}/>
                     </div>
-                    <div className="renting-sidebar-period__error">Неверная дата!</div>
-                    <Dim>Расчетная стоимость: 10000р</Dim>
-                    <button className="button">Аренда</button>
+                    <div className="renting-sidebar-period__error">{startDate > endDate && <>Неверная дата!</>}</div>
+                    { startDate != null && endDate != null && startDate <= endDate && modelInfo?.price 
+                    && <Dim>Расчетная стоимость: {(days(startDate, endDate) * modelInfo?.price)?.toFixed(2)} р</Dim>}
+                    <button className="button" onClick={rentCar}>Аренда</button>
                 </div>
             </div>
         </div>
     </Section>
-    </>;
+    </>
 }
