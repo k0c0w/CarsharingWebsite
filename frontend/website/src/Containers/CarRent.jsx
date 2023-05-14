@@ -37,7 +37,7 @@ export default function CarRent() {
             Latitude: geo.latitude,
             Radius: radius
         }})
-        .then(x => setCarList(x.data))
+        .then(x => {console.log(x.data);setCarList(x.data);})
         .catch(err => alert("Невозможно получить список машин."))
     }  
 
