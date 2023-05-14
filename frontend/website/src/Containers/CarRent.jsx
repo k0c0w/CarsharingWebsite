@@ -15,8 +15,35 @@ function days(startDate, endDate) {
     return 0;
 }
 
-function sendReuest(startDate, endDate, carId){
-    console.log("s");
+
+function sendReuest(startDate, endDate, carId, block) {
+    block(true);
+    axiosInstance.post('booking/rent', {
+        data:{
+            car_id: carId,
+            start_date: startDate.toJSON(),
+            end_date: endDate.toJSON(),
+        }
+    })
+    .then(e => alert("Успешно забронирована."))
+    .catch(e =>handleStatus(e.response))
+    .finally(block(false));
+}
+
+function handleStatus(response) {
+    if(!response){
+        alert("Ошибка");
+        return;
+    }
+
+    switch(response.status){
+        case 401:
+            document.location.href = `/login?return_uri=${document.location.href}`;
+            break;
+        case 400:
+            alert("Машина не может быть забронирована. Недоступна или недостаточно средств.");
+            break;
+    }
 }
 
 export default function CarRent() {    
@@ -24,13 +51,11 @@ export default function CarRent() {
     const [modelInfo, setModelInfo] = useState({});
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
     const [carList, setCarList] = useState([]);
-
+    const [block, setBlock] = useState(false);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
-    let car = null;
     const navigate = useNavigate();
-    
+    let car = null;
 
     function success(position) {
         const latitude = position.coords.latitude;
@@ -51,7 +76,7 @@ export default function CarRent() {
             Latitude: parseFloat(geo.latitude),
             Radius: 8192
         }})
-        .then(x => {console.log(x.data);setCarList(x.data);})
+        .then(x => {setCarList(x.data);})
         .catch(err => alert("Невозможно получить список машин."))
     }  
 
@@ -75,8 +100,9 @@ export default function CarRent() {
     }
 
     function rentCar(){
+
         if(startDate && endDate && startDate <= endDate && car){
-            sendReuest(startDate, endDate, car);
+            sendReuest(startDate, endDate, car, setBlock);
         }
         else{
             alert("Не все поля заполнены. Убедитесь, что выбрали машину.");
@@ -117,7 +143,7 @@ export default function CarRent() {
                     <div className="renting-sidebar-period__error">{startDate > endDate && <>Неверная дата!</>}</div>
                     { startDate != null && endDate != null && startDate <= endDate && modelInfo?.price 
                     && <Dim>Расчетная стоимость: {(days(startDate, endDate) * modelInfo?.price)?.toFixed(2)} р</Dim>}
-                    <button className="button" onClick={rentCar}>Аренда</button>
+                    {!block && <button className="button" onClick={rentCar}>Аренда</button>}
                 </div>
             </div>
         </div>

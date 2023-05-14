@@ -14,6 +14,6 @@ export const CardHolder = ({brand, model, price, description, modelId, img}) => 
             </div>
             <Dim>{description}</Dim>
         </div>
-        <NavLink to={`rent/${modelId}`}>Аренда</NavLink>
+        <NavLink to={`/rent/${modelId}`}>Аренда</NavLink>
     </Figure>
 ) 
