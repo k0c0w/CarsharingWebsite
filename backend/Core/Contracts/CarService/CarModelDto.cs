@@ -14,5 +14,5 @@ public class CarModelDto
 
     public string ImageUrl { get; init; }
 
-    public static string GenerateImageUrl(string fileName) => $"models/{fileName}";
+    public static string GenerateImageUrl(string fileName) => $"/models/{fileName}.png";
 }

@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Section, { SectionTitle } from "../Sections";
 import Container from "../Container";
-import Figure from "../../Components/Figure";
 
 import "../../css/rectangle-link.css";
 import "../../css/index-tariffs.css";
 import HorizontalArrow from "../HorizontalArrow";
 import { NavLink } from "react-router-dom";
 import Bold from "../TextTags";
-import axiosInstance from "../../httpclient/axios_client";
 
 
 const TarrifHolder = (props) => (
@@ -29,7 +27,8 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
             {props.tariffs.length == 0 && <Bold>Нет доступных тарифов</Bold>}
             <ul className="tariff-list">
               {props.tariffs.map((tariff, i) => 
-              <li className="rectangle-container-item" color-type={i % 3 + 1} key={i}><TarrifHolder to={`/tariffs/${tariff.name}`} name={tariff.name}/></li>)}
+              <li className="rectangle-container-item" color-type={i % 3 + 1} key={i}>
+                <TarrifHolder to={`/tariffs/${tariff.id}`} name={tariff.name}/></li>)}
             </ul>
         </div>
       </Container>

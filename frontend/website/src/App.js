@@ -13,15 +13,6 @@ import CarRent from './Containers/CarRent';
 import { getDataFromEndpoint } from './httpclient/axios_client';
 
 
-function LoadContextData({endpoint}) {
-  const [info, setInfo] = useState([]);
-  const [madeRequest, setMadeRequest] = useState(false);
-  useEffect(() => {
-    getDataFromEndpoint(endpoint, setInfo)
-  }, []);
-  return <Outlet context={info} />;
-}
-
 
 function App() {
 
@@ -38,10 +29,10 @@ function App() {
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route path="/" element={<LoadContextData endpoint={"/tariff/tariffs"}/>}>
+        <Route path="/">
           <Route index exact path="" element={<Index/>}/>
           <Route path="tariffs">
-            <Route exact path=':tariffName' element={<BeforeTariffs/>}/>
+            <Route exact path=':tariffId' element={<BeforeTariffs/>}/>
             <Route path=':taiffName/rent/:car' element={<CarRent/>}/>
           </Route>
         </Route>
