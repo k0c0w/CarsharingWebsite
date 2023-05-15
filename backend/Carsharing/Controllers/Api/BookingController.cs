@@ -31,7 +31,6 @@ public class BookingController : Controller
                 TariffId = bookingInfo.TariffId,
             });
             throw new NotImplementedException();
-            return Ok(new {success=true, booked_car_id=bookingInfo.CarId});
         }
         catch (ObjectNotFoundException)
         {
