@@ -3,8 +3,8 @@ import Container from "../Components/Container";
 import Bold from "../Components/TextTags";
 import {Form, MyFormProfileInput, Input } from "../Components/formTools"
 
-
 import "../css/text.css";
+
 import { areValidRegistrationFields } from "../js/form-validators";
 import { sendForm } from "../js/common-functions";
 import { useRef } from "react";

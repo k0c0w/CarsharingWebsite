@@ -111,6 +111,7 @@ a.profile-account-element { text-decoration: underline; text-decoration-color: r
     .change-password {margin-bottom: 5px;}
     .delete { display: none;}
     .profile-holder { flex-direction: column-reverse; align-items: center; }
+
     .profile-info-figure { margin-left: initial; }
     .rented-car-image { display: none;}
     [figure="info-holder"] { width: 350px; padding: 7px; border-radius: 3px; margin-bottom: 10px;}

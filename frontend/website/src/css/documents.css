@@ -84,6 +84,7 @@
         flex-direction: column;
     }
 
+
     [figure="news"] h3 { font-size: 11px;}
 
     .truncate-text {

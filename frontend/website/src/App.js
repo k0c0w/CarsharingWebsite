@@ -13,7 +13,6 @@ import CarRent from './Containers/CarRent';
 
 
 function App() {
-
   useEffect(() => {
     window.addEventListener('scroll', function () {
       let header = document.getElementsByTagName('header')[0];

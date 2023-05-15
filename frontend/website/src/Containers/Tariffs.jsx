@@ -42,7 +42,6 @@ export function CarListSection ({tariffId, price}) {
          api.getDataFromEndpoint(`cars/models/${tariffId}`, whenRecieved);
     }, []);
 
-
     return (
     <Section  style={{backgroundColor:"#DEF0F0"}}>
         <Container>

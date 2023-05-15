@@ -23,7 +23,6 @@ export default function Index() {
     const [tariffsData, setTariffsData] = useState([]);
     useEffect(()=> {new API().getDataFromEndpoint("tariffs", setTariffsData);}, []);
 
-
     return <>
         <DocumentTitle>Drive</DocumentTitle>
         <GreetingSection title="Drive" subtitle="Онлайн аренда автомобиля" backgroundImageClass="index-greeting">
