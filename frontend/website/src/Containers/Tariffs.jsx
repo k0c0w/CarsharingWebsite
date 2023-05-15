@@ -4,7 +4,7 @@ import { CardHolder } from "../Components/Card";
 import Container from "../Components/Container";
 import Section, { GreetingSection, SectionTitle } from "../Components/Sections";
 import { useEffect } from "react";
-import { axiosInstance, getDataFromEndpoint } from "../httpclient/axios_client";
+import  API  from "../httpclient/axios_client";
 import Bold from "../Components/TextTags";
 
 const style = {     display: "flex",
@@ -16,8 +16,11 @@ export default function BeforeTariffs () {
     const [tariff, setTariff] = useState(null);
     const {tariffId} = useParams();
     const navigator = useNavigate();
+    const api = new API();
+
     useEffect(() => {
-        axiosInstance.get(`/tariffs/${tariffId}`)
+        api.axiosInstance
+        .get(`/tariffs/${tariffId}`)
         .then(r => setTariff(r.data))
         .catch(() => navigator("/notFound"));
       }, []);
@@ -28,6 +31,7 @@ export default function BeforeTariffs () {
 
 export function CarListSection ({tariffId, price}) {
 
+    const api = new API();
     const [cars, setCars] = useState([]);
     const [loaded, setLoaded] = useState(false);
     function whenRecieved(data){
@@ -35,7 +39,7 @@ export function CarListSection ({tariffId, price}) {
         setLoaded(true);
     }
     useEffect(() => {
-        getDataFromEndpoint(`cars/models/${tariffId}`, whenRecieved);
+         api.getDataFromEndpoint(`cars/models/${tariffId}`, whenRecieved);
     }, []);
 
 
@@ -51,7 +55,7 @@ export function CarListSection ({tariffId, price}) {
                 let description = x.description?.substring(0, 64);
                 if(x?.description.length > 64)
                     description = `${description}...`;
-                return <CardHolder brand={x.brand} model={x.model} price={price}
+                return <CardHolder key={i} brand={x.brand} model={x.model} price={price}
                 description={description} modelId={x.id}
                 img={x.image_url}/>;
             })}

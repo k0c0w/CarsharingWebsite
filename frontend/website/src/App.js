@@ -10,8 +10,6 @@ import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
-import { getDataFromEndpoint } from './httpclient/axios_client';
-
 
 
 function App() {

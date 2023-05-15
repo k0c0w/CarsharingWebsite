@@ -10,12 +10,12 @@ import Figure from "../Components/Figure";
 import { useEffect, useRef, useState } from "react";
 import { areValidProfileEdit, isValidPasswordChange } from "../js/form-validators";
 import { sendForm } from "../js/common-functions";
-import axiosInstance from "../httpclient/axios_client";
+import API from "../httpclient/axios_client";
 
 const gap = { columnGap: "100px"};
 
 function axiosData(endpoint, setter) {
-    axiosInstance.get(endpoint)
+    new API().axiosInstance.get(endpoint)
         .then(r => setter(r.data))
         .catch(err => alert("Ошибка при загрузке профиля. Проверьте интернет соединение."))
 }

@@ -30,10 +30,8 @@ builder.Services.AddIdentity<User, UserRole>(options =>
     .AddDefaultTokenProviders();
 
 // Auth
-builder.Services.ConfigureApplicationCookie(config =>
-{
-})
- .AddAuthentication(options =>
+builder.Services
+    .AddAuthentication(options =>
  {
      options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
      options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
@@ -132,6 +130,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.MapControllers();
-
+app.MapFallbackToFile("index.html");
 
 app.Run();

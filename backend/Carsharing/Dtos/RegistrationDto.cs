@@ -1,5 +1,6 @@
 using Carsharing.Helpers.Attributes;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Carsharing.Forms;
@@ -7,16 +8,19 @@ namespace Carsharing.Forms;
 public class RegistrationDto : LoginDto
 {
 
-    [Required]
+    /*[Required]
     [Compare(nameof(Password), ErrorMessage = "Passwords don't match.")]
-    public string RetryPassword { get; set; } = String.Empty;
+    [JsonPropertyName()]
+    public string RetryPassword { get; set; } = String.Empty;*/
 
     [Required]
     [RegExCheck(@"^[A-Z][a-zA-Z]*$", ErrorMessage = "Wrong format for name")]
+    [JsonPropertyName("name")]
     public string UserName { get; set; } = String.Empty;
 
     [Required]
     [RegExCheck(@"^[A-Z][a-zA-Z]*$", ErrorMessage = "Wrong format for name")]
+    [JsonPropertyName("surname")]
     public string UserSurname { get; set; } = String.Empty;
 
 

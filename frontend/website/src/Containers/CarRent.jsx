@@ -4,7 +4,7 @@ import DocumentTitle from "../DocumentTitle";
 import MyMap from "../Components/Map";
 import "../css/car-rent.css";
 import { useEffect, useState } from "react";
-import axiosInstance from "../httpclient/axios_client";
+import API from "../httpclient/axios_client";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 
 function days(startDate, endDate) {
@@ -18,7 +18,7 @@ function days(startDate, endDate) {
 
 function sendReuest(startDate, endDate, carId, block) {
     block(true);
-    axiosInstance.post('booking/rent', {
+    new API().axiosInstance.post('booking/rent', {
         data:{
             car_id: carId,
             start_date: startDate.toJSON(),
@@ -46,7 +46,8 @@ function handleStatus(response) {
     }
 }
 
-export default function CarRent() {    
+export default function CarRent() {
+    const api = new API();    
     const {modelId} = useParams();
     const [modelInfo, setModelInfo] = useState({});
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
@@ -70,7 +71,7 @@ export default function CarRent() {
 
     
     function getCarList() {
-        axiosInstance.get('cars/available', {params: {
+        api.axiosInstance.get('cars/available', {params: {
             CarModelId: modelId,
             Longitude: parseFloat(geo.longitude),
             Latitude: parseFloat(geo.latitude),
@@ -81,7 +82,7 @@ export default function CarRent() {
     }  
 
     useEffect(() => {
-        axiosInstance.get(`cars/model/${modelId}`)
+        api.axiosInstance.get(`cars/model/${modelId}`)
         .then(x => setModelInfo(x.data))
         .then(() => {
             if (!navigator.geolocation) {

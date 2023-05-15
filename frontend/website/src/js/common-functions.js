@@ -1,4 +1,4 @@
-import axiosInstance from "../httpclient/axios_client";
+import API from "../httpclient/axios_client";
 
 export function sendForm(form, endpointUrl, additionalData) {
     const finalFormEndpoint = endpointUrl || form.action;
@@ -13,5 +13,5 @@ export function sendForm(form, endpointUrl, additionalData) {
         Object.assign(data, additionalData);
     }
     console.log(data);
-    return axiosInstance.post(finalFormEndpoint, data)
+    return new API().axiosInstance.post(finalFormEndpoint, data)
 }

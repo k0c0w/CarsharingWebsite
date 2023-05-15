@@ -4,7 +4,7 @@ import IndexChat from "../Components/Index/IndexChat";
 import IndexTariffs from "../Components/Index/IndexTariffs";
 import { GreetingSection} from "../Components/Sections"
 import {DocumentTitle} from "../DocumentTitle"
-import { getDataFromEndpoint } from "../httpclient/axios_client";
+import  API  from "../httpclient/axios_client";
 import "../css/common.css";
 
 function scrollTo({ref, hash}) {
@@ -21,7 +21,7 @@ export default function Index() {
     const tariffs = useRef(null);
     const chat = useRef(null);
     const [tariffsData, setTariffsData] = useState([]);
-    useEffect(()=> {getDataFromEndpoint("tariffs", setTariffsData);}, []);
+    useEffect(()=> {new API().getDataFromEndpoint("tariffs", setTariffsData);}, []);
 
 
     return <>
