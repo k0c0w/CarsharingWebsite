@@ -2,26 +2,34 @@ using Carsharing.ViewModels;
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Abstractions;
 using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
-[Area("Api")]
+[Route("api/booking")]
 public class BookingController : Controller
 {
-    private readonly BookingService _service;
+    private readonly IBookingService _service;
     
-    public BookingController(BookingService service)
+    public BookingController(IBookingService service)
     {
         _service = service;
     }
     
     
-    [HttpPost]
+    [HttpPost("rent")]
     public async Task<IActionResult> BookCar([FromBody] BookingVM bookingInfo)
     {
         try
         {
+            await _service.BookCarAsync(new RentCarDto()
+            {
+                End = bookingInfo.EndDate,
+                Start = bookingInfo.StartDate,
+                CarId = bookingInfo.CarId,
+                TariffId = bookingInfo.TariffId,
+            });
             throw new NotImplementedException();
             return Ok(new {success=true, booked_car_id=bookingInfo.CarId});
         }
