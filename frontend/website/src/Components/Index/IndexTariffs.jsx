@@ -1,12 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Section, { SectionTitle } from "../Sections";
 import Container from "../Container";
-import Figure from "../../Components/Figure";
-
 import "../../css/rectangle-link.css";
 import "../../css/index-tariffs.css";
 import HorizontalArrow from "../HorizontalArrow";
 import { NavLink } from "react-router-dom";
+import Bold from "../TextTags";
 
 
 const TarrifHolder = (props) => (
@@ -19,17 +18,18 @@ const TarrifHolder = (props) => (
 );
 
 export const IndexTariffs =  React.forwardRef((props, ref) => (
-    <Section ref={ref}>
+  <Section ref={ref}>
       <Container>
         <SectionTitle subtitle="Ваш личный автомобиль">Тарифы</SectionTitle>
         <div className="rectangle-container">
+            {props.tariffs.length == 0 && <Bold>Нет доступных тарифов</Bold>}
             <ul className="tariff-list">
-              <li className="rectangle-container-item" color-type="1"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
-              <li className="rectangle-container-item" color-type="2"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
-              <li className="rectangle-container-item" color-type="3"><TarrifHolder to="/tariffs/everyday" name="Everyday"/></li>
+              {props.tariffs.map((tariff, i) => 
+              <li className="rectangle-container-item" color-type={i % 3 + 1} key={i}>
+                <TarrifHolder to={`/tariffs/${tariff.id}`} name={tariff.name}/></li>)}
             </ul>
         </div>
       </Container>
-    </Section>
+  </Section>
 ));
 export default IndexTariffs;

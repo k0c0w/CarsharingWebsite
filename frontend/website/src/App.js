@@ -3,8 +3,8 @@ import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
 import {BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { useEffect } from 'react';
-import Tariffs from './Containers/Tariffs';
+import { Fragment, useEffect, useState } from 'react';
+import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
@@ -26,15 +26,13 @@ function App() {
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route index exact path="/" element={<Index/>}/>
-        <Route exact path="/documents" element={<Documents/>}/>
-        <Route path="/tariffs">
-          <Route exact path=':tariff' element={<Tariffs/>}/>
-          <Route path=':taiff/rent/' element={<FixHeader/>}>
-            <Route path=':car' element={<CarRent/>}/>
-          </Route>
+        <Route path="/">
+          <Route index exact path="" element={<Index/>}/>
+          <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
+          <Route path='rent/:modelId' element={<CarRent/>}/>
         </Route>
-        <Route element={<FixHeader/>}>
+        <Route exact path="/documents" element={<Documents/>}/>
+        <Route element={<FixHeader/>}>  
           <Route exact path="/login" element={<Login/>}/>
           <Route exact path="/registration" element={<Registration/>}/>
           <Route path='/profile'>
