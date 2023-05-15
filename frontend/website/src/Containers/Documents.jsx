@@ -9,7 +9,7 @@ import "../css/rectangle-link.css";
 import "../css/documents.css";
 import "../css/common.css";
 import { useEffect, useState } from "react";
-import { getDataFromEndpoint } from "../httpclient/axios_client";
+import API from "../httpclient/axios_client";
 import "../css/carousel.css";
 
 const NewsCard = (props) => (
@@ -95,7 +95,7 @@ const Document = ({documentInfo}) => (
 
 export function Documents (props) {
     const [documentLinks, setDocumentLinks] = useState([]);
-    useState(() => {getDataFromEndpoint("documents", setDocumentLinks)}, []);
+    useState(() => {API.getDataFromEndpoint("documents", setDocumentLinks)}, []);
 
     return <>
     <DocumentTitle>Документы</DocumentTitle>

@@ -19,6 +19,7 @@ export function Registration  ()  {
 
     function handleSend(event) {
         event.preventDefault();
+        console.log(formRef.current)
         if(areValidRegistrationFields(formRef.current)) 
             sendForm(formRef.current, location.pathname)
             //.then(r => alert("done"))
@@ -45,14 +46,18 @@ export function Registration  ()  {
     </Section>);
 };
 
-const RegistrationLeftInputs = () => ( <>
+const RegistrationLeftInputs = () => ( 
+    <>
         <Input required id="email" name="email" placeholder="Почта"/>
         <Input required id="password" name="password" placeholder="Пароль"/>
-        <Input required id="password_repeat" placeholder="Повторите пароль"/></>
+        <Input required id="password_repeat" placeholder="Повторите пароль"/>
+    </>
 )
 
 const RegistrationRightInputs = () => (
-    <><Input required id="name" name="name" placeholder="Имя"/>
-    <Input required id="surname" name="surname" placeholder="Фамилия"/>
-    <Input required id="age" type="number" name="age" placeholder="Возраст"/></>
+    <>
+        <Input required id="name" name="name" placeholder="Имя"/>
+        <Input required id="surname" name="surname" placeholder="Фамилия"/>
+        <Input required id="age" type="number" name="age" placeholder="Возраст"/>
+    </>
 )

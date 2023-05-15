@@ -10,14 +10,14 @@ import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
-import { getDataFromEndpoint } from './httpclient/axios_client';
+import API from './httpclient/axios_client';
 
 
 function LoadContextData({endpoint}) {
   const [info, setInfo] = useState([]);
   const [madeRequest, setMadeRequest] = useState(false);
   useEffect(() => {
-    getDataFromEndpoint(endpoint, setInfo)
+    API.getDataFromEndpoint(endpoint, setInfo)
   }, []);
   return <Outlet context={info} />;
 }

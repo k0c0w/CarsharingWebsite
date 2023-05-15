@@ -1,21 +1,23 @@
-import axios, {isCancel, AxiosError} from 'axios';
+// import axios, {isCancel, AxiosError} from 'axios';
 
-const login = (url, model) => {
-    const config = {
-        headers:{
-            'Content-Type': 'application/json', 
-            "Access-Control-Allow-Origin" : "https://localhost:7129"
-        }
-      };
-    axios.defaults.withCredentials = true;
-    axios.post(`${url}/api/account/login/`, model, config)
-        .then((response) => console.log(response))
+// const login = (url, model) => {
+//     const config = {
+//         headers:{
+//             'Content-Type': 'application/json', 
+//             "Access-Control-Allow-Origin" : "https://localhost:7129"
+//         }
+//       };
+//     axios.defaults.withCredentials = true;
+//     axios.post(`${url}/api/account/login/`, model, config)
+//         .then((response) => console.log(response))
 
-      axios.get(`${url}/api/carmodel/rent/`, config)
-        .then(response => console.log(response))
-};
+//       axios.get(`${url}/api/carmodel/rent/`, config)
+//         .then(response => console.log(response))
+// };
 
-export default login;
+// export default login;
+
+
 
 
 // fetch(url+'/api/account/login', {
