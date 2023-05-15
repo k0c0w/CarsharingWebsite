@@ -10,7 +10,7 @@ public interface ICarService
 
     Task<IEnumerable<CarModelDto>> GetModelsByTariffIdAsync(int tariff);
     
-    Task<CarModelDto> GetModelByTariffIdAsync(int tariff);
+    Task<ExtendedCarModelDto> GetModelByIdAsync(int id);
 
     Task<IEnumerable<FreeCarDto>> GetAvailableCarsByLocationAsync(SearchCarDto searchParams, int limit=256);
 }

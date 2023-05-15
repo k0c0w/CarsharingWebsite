@@ -10,17 +10,6 @@ import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
-import API from './httpclient/axios_client';
-
-
-function LoadContextData({endpoint}) {
-  const [info, setInfo] = useState([]);
-  const [madeRequest, setMadeRequest] = useState(false);
-  useEffect(() => {
-    API.getDataFromEndpoint(endpoint, setInfo)
-  }, []);
-  return <Outlet context={info} />;
-}
 
 
 function App() {
@@ -38,12 +27,10 @@ function App() {
     <BrowserRouter>
       <Header/>
       <Routes>
-        <Route path="/" element={<LoadContextData endpoint={"/tariff/tariffs"}/>}>
+        <Route path="/">
           <Route index exact path="" element={<Index/>}/>
-          <Route path="tariffs">
-            <Route exact path=':tariffName' element={<BeforeTariffs/>}/>
-            <Route path=':taiffName/rent/:car' element={<CarRent/>}/>
-          </Route>
+          <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
+          <Route path='rent/:modelId' element={<CarRent/>}/>
         </Route>
         <Route exact path="/documents" element={<Documents/>}/>
         <Route element={<FixHeader/>}>  

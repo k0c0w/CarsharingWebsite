@@ -1,19 +1,28 @@
 import { YMaps, Map as YMap, Placemark, ZoomControl, GeolocationControl} from '@pbe/react-yandex-maps'
-const mapState = { center: [55.789363, 49.124080], zoom:18};
-export default function MyMap(props) {
-    return <div className= {props.className}>
-        <YMaps>
-            <YMap state={mapState} width="100%" height="100%">
-                <Placemark  geometry={[55.789363, 49.124080]}>
-                <div onClick={()=> console.log("asdsada")}>
-                </div>
+import { useState } from 'react';
 
-                </Placemark>
+const defaultPreset = {preset: 'islands#blueAutoIcon'};
+const selectedPreset = {preset: 'islands#redAutoIcon'};
 
-                <Placemark geometry={[55.789287, 49.124038]}/>
-                <Placemark geometry={[55.789668, 49.125013]}/>
+export default function MyMap({className, geo, cars, chooseCarFunc}) {
+    const [prev, setPrev] = useState(null);
+    const mapState = { center: [geo.latitude, geo.longitude], zoom:18};
+
+    function handleClick(event) {
+        const target = event.originalEvent.target;
+        chooseCarFunc(target.options._options.id);
+    }
+
+    return <div className= {className}>
+        <YMaps key={"6cf04ff9-9772-446d-b5e7-35cd65093895"}>
+            <YMap modules={["geolocation", "geocode", "control.GeolocationControl"]} state={mapState} width="100%" height="100%">
+                {cars.map((x, i) => {
+                    return <Placemark key={i} onClick={handleClick} options={{preset: 'islands#blueAutoIcon', id:x.id}}
+                     geometry={[parseFloat(x.latitude), parseFloat(x.longitude)]}>
+                    </Placemark>
+                })}
                 <ZoomControl options={{ float: "left" }} />
-                <GeolocationControl options={{ float: "left" }} />
+                <GeolocationControl  options={{ float: "left" }} />
             </YMap>
         </YMaps>
     </div>

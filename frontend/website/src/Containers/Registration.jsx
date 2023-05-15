@@ -21,7 +21,7 @@ export function Registration  ()  {
         event.preventDefault();
         console.log(formRef.current)
         if(areValidRegistrationFields(formRef.current)) 
-            sendForm(formRef.current, location.pathname)
+            sendForm(formRef.current, "account/register")
             //.then(r => alert("done"))
             //.catch(err => alert("error post"));
     }

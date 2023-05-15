@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
@@ -20,5 +21,20 @@ public class TariffController : ControllerBase
         var tariffs = await _tariffService.GetAllActiveAsync();
         return new JsonResult(tariffs.Select(x => new
             { id = x.Id, name = x.Name, price = x.PriceInRubles, description = x.Description }));
+    }
+
+    [HttpGet("{tariffId:int}")]
+    public async Task<IActionResult> GetTariffById([FromRoute] int tariffId)
+    {
+        try
+        {
+            var tariff = await _tariffService.GetActiveTariffById(tariffId);
+            return new JsonResult(new
+                { id = tariff.Id, name = tariff.Name, price = tariff.PriceInRubles, description = tariff.Description });
+        }
+        catch (ObjectNotFoundException)
+        {
+            return NotFound();
+        }
     }
 }

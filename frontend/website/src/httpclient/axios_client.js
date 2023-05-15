@@ -12,7 +12,7 @@ export default class API {
                 "Access-Control-Allow-Origin": "https://localhost:7129"
             },
             defaults: {
-                withCredentials: true
+                withCredentials: true,
             }
         };
 
@@ -20,10 +20,6 @@ export default class API {
     };
 
     login = async (model) => {
-        // var keysTranslations = {
-        //     "Email": "Почта",
-        //     "Password": "Пароль"
-        // };
         var result = null
         this.axiosInstance.defaults.withCredentials = true;
         await this.axiosInstance.post(`/account/login/`, model)

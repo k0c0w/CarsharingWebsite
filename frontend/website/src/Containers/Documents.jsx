@@ -61,8 +61,8 @@ function Carousel({data}) {
             { currentIndex >= step && <button onClick={prev} className="left-arrow">&lt;</button>}
                 <div className="carousel-content-wrapper">
                     <div className="carousel-content">
-                        {slice.map(x => 
-                            <NewsCard/>)}
+                        {slice.map((x, i) => 
+                            <NewsCard key={i}/>)}
                     </div>
                 </div>
             { currentIndex < (length - step) && <button onClick={next} className="right-arrow">&gt;</button>}
@@ -95,7 +95,7 @@ const Document = ({documentInfo}) => (
 
 export function Documents (props) {
     const [documentLinks, setDocumentLinks] = useState([]);
-    useState(() => {API.getDataFromEndpoint("documents", setDocumentLinks)}, []);
+    useState(() => {new API().getDataFromEndpoint("documents", setDocumentLinks)}, []);
 
     return <>
     <DocumentTitle>Документы</DocumentTitle>

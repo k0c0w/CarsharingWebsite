@@ -1,6 +1,5 @@
 using Carsharing.ViewModels;
 using Contracts;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Exceptions;
@@ -13,12 +12,10 @@ namespace Carsharing.Controllers;
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;
-    private readonly IBookingService _bookingService;
 
-    public CarController(ICarService service, IBookingService bookingService)
+    public CarController(ICarService service)
     {
         _carService = service;
-        _bookingService = bookingService;
     }
     
     [HttpGet("models/{tariff:int}")]
@@ -38,20 +35,23 @@ public class CarController : ControllerBase
         }));
     }
     
-    [HttpGet("model/{tariff:int}")]
-    public async Task<IActionResult> GetCarModelByTariff([FromRoute] int tariff)
+    [HttpGet("model/{id:int}")]
+    public async Task<IActionResult> GetCarModelByTariff([FromRoute] int id)
     {
         try
         {
-            var model = await _carService.GetModelByTariffIdAsync(tariff);
-            return new JsonResult(new CarModelVM
+            var model = await _carService.GetModelByIdAsync(id);
+            return new JsonResult(new ExpandedCarModelVM
             {
                 Brand = model.Brand,
                 Description = model.Description,
                 Model = model.Model,
                 Url = model.ImageUrl,
-                TariffId = tariff,
-                Id = model.Id
+                TariffId = model.TariffId,
+                Id = model.Id,
+                Price = model.Price,
+                MaxMilage = model.Restrictions,
+                TariffName = model.TariffName
             });
         }
         catch (ObjectNotFoundException)
@@ -66,7 +66,7 @@ public class CarController : ControllerBase
         var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
         {
             Latitude = carSearch.Latitude,
-            Longitude = carSearch.Latitude,
+            Longitude = carSearch.Longitude,
             Radius = carSearch.Radius,
             CarModelId = carSearch.CarModelId
         });
@@ -77,12 +77,5 @@ public class CarController : ControllerBase
             ParkingLatitude = x.Location.Latitude,
             ParkingLongitude = x.Location.Longitude,
         }));
-    }
-
-    [HttpGet("rent")]
-    [Authorize(Policy = "CanBuy")]
-    public async Task<IActionResult> RentCar()
-    {
-        return Ok("You brought it!");
     }
 }

@@ -64,18 +64,23 @@ public class CarService : IAdminCarService
         });
     }
 
-    public async Task<CarModelDto> GetModelByTariffIdAsync(int tariff)
+    public async Task<ExtendedCarModelDto> GetModelByIdAsync(int id)
     {
-        var model = await _ctx.CarModels.FirstOrDefaultAsync(x => x.TariffId == tariff);
+        var model = await _ctx.CarModels.Where(x => x.Id == id)
+            .Include(x => x.Tariff)
+            .FirstOrDefaultAsync();
         if (model == null) throw new ObjectNotFoundException(nameof(CarModel));
-        return new CarModelDto
+        return new ExtendedCarModelDto
         {
             Brand = model.Brand,
             Description = model.Description,
             Id = model.Id,
             Model = model.Model,
             ImageUrl = CarModelDto.GenerateImageUrl(model.ImageName),
-            TariffId = tariff
+            TariffId = model.TariffId,
+            Price = model.Tariff.Price,
+            Restrictions = model.Tariff.MaxMileage,
+            TariffName = model.Tariff.Name
         };
     }
 
@@ -89,7 +94,7 @@ public class CarService : IAdminCarService
         if (carModel == null) throw new ObjectNotFoundException(nameof(CarModel));
         
         
-        var degreeDeviation = 0.01 * searchParams.Radius / 111;
+        var degreeDeviation = 0.001m * searchParams.Radius / 111m;
         var cars = await _ctx.Cars
             .Where(x => x.CarModelId == searchParams.CarModelId)
             .Where(x => !(x.HasToBeNonActive || x.IsTaken))

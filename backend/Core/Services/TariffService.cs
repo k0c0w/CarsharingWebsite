@@ -98,14 +98,26 @@ public class TariffService : IAdminTariffService
     public async Task<IEnumerable<TariffDto>> GetAllActiveAsync()
     {
         var tariffs = await _ctx.Tariffs.Where(x => x.IsActive).ToListAsync();
-        return tariffs.Select(x => new TariffDto
+        return tariffs.Select(x => MapToTariffDto(x));
+    }
+
+    private TariffDto MapToTariffDto(Tariff tariff)
+    {
+        return new TariffDto
         {
-            Id = x.TariffId,
-            Description = x.Description,
-            Name = x.Name,
-            MaxMileage = x?.MaxMileage,
-            PriceInRubles = x.Price,
-        });
+            Id = tariff.TariffId,
+            Description = tariff.Description,
+            Name = tariff.Name,
+            MaxMileage = tariff.MaxMileage,
+            PriceInRubles = tariff.Price,
+        };
+    }
+    
+    public async Task<TariffDto> GetActiveTariffById(int id)
+    {
+        var tariff = await GetTariffByIdAsync(id);
+        if (tariff == null || !tariff.IsActive) throw new ObjectNotFoundException(nameof(Tariff));
+        return MapToTariffDto(tariff);
     }
 
     private async Task<Tariff?> GetTariffByIdAsync(int id)

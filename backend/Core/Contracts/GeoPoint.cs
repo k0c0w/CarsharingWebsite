@@ -1,3 +1,3 @@
 namespace Contracts;
 
-public record GeoPoint(double Latitude, double Longitude);
+public record GeoPoint(decimal Latitude, decimal Longitude);
