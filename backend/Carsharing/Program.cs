@@ -1,5 +1,6 @@
 using Carsharing;
 using Carsharing.Authorization;
+using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -39,7 +40,7 @@ builder.Services
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
      options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.Cookie.SameSite = SameSiteMode.Lax;
+     options.Cookie.SameSite = SameSiteMode.None;
      options.Cookie.HttpOnly = true;
      options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
      options.Events.OnRedirectToLogin = context =>
@@ -95,11 +96,16 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddControllers();
 
-//todo: создать форматтер, чтобы ошибки отправлялись в общем стиле
 builder.Services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
-        new BadRequestObjectResult(actionContext.ModelState);
+    {
+        var modelState = actionContext.ModelState;
+
+        return new BadRequestObjectResult(new
+            { error = new { code = ErrorCode.ViewModelError, errors = modelState.Keys
+                .Select(x => new{key=x, messages=modelState[x].Errors.Select(x =>x.ErrorMessage)} )} });
+    };
 });
 
 
@@ -114,11 +120,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.Use(async (context, next) =>
-{
-    var cookies = context.Request.Cookies;
-    await next.Invoke();
-});
 
 app.UseCors("CORSAllowLocalHost3000");
 

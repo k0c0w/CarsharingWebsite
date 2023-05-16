@@ -14,7 +14,9 @@ using System.Xml;
 using AutoMapper;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using Carsharing.Helpers;
 using Carsharing.Persistence.GoogleAPI;
+using Carsharing.ViewModels;
 using Domain.Entities;
 using Domain;
 
@@ -53,68 +55,44 @@ public class AccountController : ControllerBase
 
         var client = await _userManager.FindByEmailAsync(dto.Email);
         if (client != null)
-        {
-            return BadRequest("A client with this email already exists");
-        }
-
-        var _userInfo = new UserInfo() { BirthDay = dto.Birthday };
-        var userInfo = await _carsharingContext.UserInfos.AddAsync(_userInfo);
-        User user = _mapper.Map<User>(dto);
-        user.UserInfo = userInfo.Entity;
-
+            return BadRequest(new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}});
+        
+        var user = _mapper.Map<User>(dto);
         var resultUserCreate = await _userManager.CreateAsync(user, dto.Password);
 
-        if (resultUserCreate.Succeeded != true)
-            return Unauthorized(resultUserCreate.Errors);
+        if (!resultUserCreate.Succeeded)
+            return Unauthorized( new {error= new ErrorsVM
+                {
+                    Code = (int)ErrorCode.ServiceError,
+                    Messages = resultUserCreate.Errors.Select(x => x.Description)
+                }});
 
-        _userInfo.UserId = user.Id;
-        _carsharingContext.Update(_userInfo);
-
-        List<Claim> claims = new List<Claim>()
-        {
-            new Claim(ClaimTypes.DateOfBirth, _userInfo?.BirthDay.ToString() ?? ""),
-            new Claim("Passport", _userInfo?.Passport?.ToString() ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
+        var userInfo = new UserInfo { BirthDay = dto.Birthday, UserId = user.Id};
+        await _carsharingContext.UserInfos.AddAsync(userInfo);
+        await _carsharingContext.SaveChangesAsync();
+        
+        var principal = await GetClaimsPrincipal(userInfo, user);
         await _signInManager.SignInAsync(user, false);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-
-        _carsharingContext.SaveChanges();
-
-        return Ok();
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        
+        return Created("/", null);
     }
-
-    // Login
+    
+    
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
-
         if (user == null)
-            return Unauthorized("Почта или пароль неверен.");
+            return Unauthorized(GetLoginError());
 
         var resultSignIn = await _signInManager.PasswordSignInAsync(user, dto.Password, false, false);
-
         if (!resultSignIn.Succeeded)
-        {
-            return Unauthorized("Почта или пароль неверен.");
-        }
+            return Unauthorized(GetLoginError());
 
         var userInfo = await _carsharingContext.UserInfos.FirstOrDefaultAsync(x => x.UserId == user.Id);
-
-        List<Claim> claims = new List<Claim>()
-        {
-            new Claim(ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
-            new Claim("Passport", userInfo?.Passport?.ToString() ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
+        var principal = await GetClaimsPrincipal(userInfo, user);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         return Ok();
     }
@@ -133,38 +111,35 @@ public class AccountController : ControllerBase
                 "https://localhost:7129/api/account/google-external-auth-callback"
                 );
             if (getTokenResult is null)
-                return StatusCode(500, "Не получилось получить доступ к сервису Google");
+                return BadRequest(GetGoogleError());
 
             var getUserResult = await GoogleAPI.GetUserAsync(tokenId: getTokenResult.id_token, accessToken: getTokenResult.access_token);
 
             if (getUserResult is null)
-                return StatusCode(500, "Не получилось получить доступ к сервису Google");
+                return BadRequest(GetGoogleError());
 
-            User user = _mapper.Map<User>(getUserResult);
+            var user = _mapper.Map<User>(getUserResult);
             UserInfo userInfo = null;
-
 
             if (await _userManager.FindByEmailAsync(user.Email) is null)
             {
                 ///TODO: выделить создание юзера и юзеринфо в сервис и сделать lock
 
-                UserInfo _userInfo = _mapper.Map<UserInfo>(getUserResult);
+                var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
 
                 var createUserResult = await _userManager.CreateAsync(user);
-                if (createUserResult.Succeeded == true)
+                if (createUserResult.Succeeded)
                 {
                     userInfoDb.Entity.UserId = user.Id;
                     userInfo = _carsharingContext.UserInfos.Update(userInfoDb.Entity).Entity;
                 }
                 else
-                {
-                    return BadRequest(createUserResult.Errors);
-                }
-                _carsharingContext.SaveChanges();
+                    return BadRequest(new{error=createUserResult.Errors});
+                
+                await _carsharingContext.SaveChangesAsync();
             }
-
 
             if (userInfo is null)
             {
@@ -186,9 +161,8 @@ public class AccountController : ControllerBase
 
             await _signInManager.SignInWithClaimsAsync(user, false, claims);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-
-
-            return Redirect("http://localhost:3000/profile");
+            
+            return Ok();
 
         }
         catch (Exception e)
@@ -200,13 +174,35 @@ public class AccountController : ControllerBase
 
     }
 
-    // Logout
     [HttpPost("logout")]
     public async Task LogOut()
     {
         await _signInManager.SignOutAsync();
     }
+    
+    private object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
 
+    private object GetGoogleError() => new
+    {
+        error = new ErrorsVM
+        {
+            Code = (int)ErrorCode.ExternalError,
+            Messages = new[] { "Не получилось получить доступ к сервису Google" }
+        }
+    };
+
+    private async Task<ClaimsPrincipal> GetClaimsPrincipal(UserInfo userInfo, User user)
+    {
+        List<Claim> claims = new List<Claim>
+        {
+            new (ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
+            new ("Passport", userInfo?.Passport ?? "")
+        };
+
+        var pr = await _signInManager.CreateUserPrincipalAsync(user);
+        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+        return pr;
+    }
 }
 
 
