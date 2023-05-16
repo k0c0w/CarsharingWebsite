@@ -11,11 +11,11 @@ namespace Carsharing.Helpers.Mappings
         {
             CreateMap<GetUserResult, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.email))
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.given_name))
-                .ForMember(dest => dest.UserSurname, opt => opt.MapFrom(src => src.family_name));
+                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.given_name))
+                .ForMember(dest => dest.Surname, opt => opt.MapFrom(src => src.family_name))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.email));
 
-
-            CreateMap<RegistrationDto, User>();
+            
 
             //Отдать BirthDay в User, чтобы не пришлось мапить.
             CreateMap<GetUserResult, UserInfo>()

@@ -25,7 +25,7 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя";
+    options.User.AllowedUserNameCharacters = "user0123456789";
 })
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();

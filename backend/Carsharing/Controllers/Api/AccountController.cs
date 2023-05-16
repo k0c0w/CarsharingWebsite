@@ -1,19 +1,12 @@
-using System.Text.RegularExpressions;
 using Carsharing.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Authorization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using System.Xml;
 using AutoMapper;
-using Microsoft.Net.Http.Headers;
-using System.Net;
 using Carsharing.Helpers;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels;
@@ -25,7 +18,6 @@ namespace Carsharing.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AllowAnonymous]
-//[ValidateAntiForgeryToken]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
@@ -50,15 +42,15 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser(RegistrationDto dto)
+    public async Task<IActionResult> RegisterUser(RegistrationVm vm)
     {
 
-        var client = await _userManager.FindByEmailAsync(dto.Email);
+        var client = await _userManager.FindByEmailAsync(vm.Email);
         if (client != null)
-            return BadRequest(new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}});
-        
-        var user = _mapper.Map<User>(dto);
-        var resultUserCreate = await _userManager.CreateAsync(user, dto.Password);
+            return BadRequest(new {error=new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}}});
+
+        var user = new User { Email = vm.Email, Surname = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}"};
+        var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
         if (!resultUserCreate.Succeeded)
             return Unauthorized( new {error= new ErrorsVM
@@ -67,7 +59,7 @@ public class AccountController : ControllerBase
                     Messages = resultUserCreate.Errors.Select(x => x.Description)
                 }});
 
-        var userInfo = new UserInfo { BirthDay = dto.Birthday, UserId = user.Id};
+        var userInfo = new UserInfo { BirthDay = vm.Birthday, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
         
@@ -78,15 +70,15 @@ public class AccountController : ControllerBase
         return Created("/", null);
     }
     
-    
+    //todo: csrf secure token
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<IActionResult> Login([FromBody] LoginVM vm)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
+        var user = await _userManager.FindByEmailAsync(vm.Email);
         if (user == null)
             return Unauthorized(GetLoginError());
 
-        var resultSignIn = await _signInManager.PasswordSignInAsync(user, dto.Password, false, false);
+        var resultSignIn = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
 
