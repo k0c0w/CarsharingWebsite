@@ -22,7 +22,7 @@ public class RegistrationVm : LoginVM
     public string Surname { get; set; }
 
     
-    [Required(ErrorMessage = "Укажите Вашу дату рождения.")]
+    [Required(ErrorMessage = "Пожалуйста, укажите Вашу дату рождения.")]
     [ValidateAge(AgeThreshold = 23, ErrorMessage = "Вам должно быть не менее 23 лет.")]
     [JsonPropertyName("birthday")]
     public DateTime Birthday { get; set; }

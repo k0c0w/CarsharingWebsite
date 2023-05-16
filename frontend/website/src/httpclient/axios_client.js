@@ -1,6 +1,6 @@
 import axios from "axios"
 
-export default class API {
+class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
             baseURL: url,
@@ -20,17 +20,18 @@ export default class API {
     };
 
     login = async (model) => {
-        var result = null
-        this.axiosInstance.defaults.withCredentials = true;
+        const result = {};
         await this.axiosInstance.post(`/account/login/`, model)
             .then(response => {
-                result = { message: response.data, isFailed: false }
+                result.status = response.status; 
             })
             .catch(error => {
-                // var errorMessage = error.response.data
-                // console.log(errorMessage)
-                // this._renameKeys(errorMessage, keysTranslations)
-                result = { message: error.response.data, isFailed: true }
+                if(error.response){
+                    result.error = error.response.data.error;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
             })
         return result;
     }
@@ -60,3 +61,7 @@ export default class API {
         }
     }
 }
+
+
+const API = new AxiosWrapper();
+export default API;

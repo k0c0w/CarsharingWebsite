@@ -7,12 +7,13 @@ namespace Carsharing.Forms;
 
 public class LoginVM
 {
-    [Required(ErrorMessage = "Поле 'почта' обязательно.")]
+    protected const string required = "Поле обязательно.";
+    [Required(ErrorMessage = required)]
     [RegExCheck(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Не верный формат почты")]
     [JsonPropertyName("email")]
     public string Email { get; set; }
 
-    [Required(ErrorMessage = "Поле 'пароль' обязательно.")]
+    [Required(ErrorMessage = required)]
     [MinLength(6, ErrorMessage = "Используйте пароль длиной в 6 символов и более.")]
     [JsonPropertyName("password")]
     public string Password { get; set; }
