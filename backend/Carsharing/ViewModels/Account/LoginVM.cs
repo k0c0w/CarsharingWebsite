@@ -9,7 +9,7 @@ public class LoginVM
 {
     protected const string required = "Поле обязательно.";
     [Required(ErrorMessage = required)]
-    [RegExCheck(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "Не верный формат почты")]
+    [EmailAddress(ErrorMessage = "Не верный формат почты")]
     [JsonPropertyName("email")]
     public string Email { get; set; }
 

@@ -32,7 +32,6 @@ const news = [<NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>, <
 function Carousel({data}) {
     const step = 3;
     const [currentIndex, setCurrentIndex] = useState(0);
-    console.log(currentIndex);
     const [length, setLength] = useState(data.length);
     const [slice, setSlice] = useState(data?.slice(currentIndex, currentIndex + step));
     useEffect(() => {
@@ -95,7 +94,15 @@ const Document = ({documentInfo}) => (
 
 export function Documents (props) {
     const [documentLinks, setDocumentLinks] = useState([]);
-    useState(() => {new API().getDataFromEndpoint("documents", setDocumentLinks)}, []);
+    useState(() => { 
+        async function fetchData(){
+            const response = await API.documents();
+            if(response.successed)
+                setDocumentLinks(response.data);
+        }
+        fetchData();
+        
+    }, []);
 
     return <>
     <DocumentTitle>Документы</DocumentTitle>

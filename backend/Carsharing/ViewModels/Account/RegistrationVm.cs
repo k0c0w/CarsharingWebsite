@@ -2,6 +2,7 @@ using Carsharing.Helpers.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Carsharing.Forms;
 
@@ -24,6 +25,13 @@ public class RegistrationVm : LoginVM
     
     [Required(ErrorMessage = "Пожалуйста, укажите Вашу дату рождения.")]
     [ValidateAge(AgeThreshold = 23, ErrorMessage = "Вам должно быть не менее 23 лет.")]
-    [JsonPropertyName("birthday")]
-    public DateTime Birthday { get; set; }
+    [JsonPropertyName("birthdate")]
+    public DateTime Birthdate { get; set; }
+    
+    [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
+    [Compare("MustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
+    [JsonPropertyName("accept")]
+    public bool Accept { get; set; }
+
+    [ValidateNever] public bool MustBe => true;
 }

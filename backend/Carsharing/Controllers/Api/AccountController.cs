@@ -59,7 +59,7 @@ public class AccountController : ControllerBase
                     Messages = resultUserCreate.Errors.Select(x => x.Description)
                 }});
 
-        var userInfo = new UserInfo { BirthDay = vm.Birthday, UserId = user.Id};
+        var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
         

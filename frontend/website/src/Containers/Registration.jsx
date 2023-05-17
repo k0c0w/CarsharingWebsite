@@ -61,6 +61,7 @@ export function Registration  ()  {
                     <button onClick={handleSend} className="button form-button">Регистрация</button>
                     <label className="form-accept">
                         <input id="data-processing-agreement" name="accept" type="checkbox"/>
+                        <p className="form-error">{errors.accept}</p>
                         <div className="form-accept_description">Согласие на обработку персональных данных</div>
                     </label>
                 </div>  

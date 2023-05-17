@@ -18,7 +18,7 @@ function days(startDate, endDate) {
 
 function sendReuest(startDate, endDate, carId, block) {
     block(true);
-    new API().axiosInstance.post('booking/rent', {
+    new API().axiosInstance.post("", {
         data:{
             car_id: carId,
             start_date: startDate.toJSON(),
@@ -47,7 +47,6 @@ function handleStatus(response) {
 }
 
 export default function CarRent() {
-    const api = new API();    
     const {modelId} = useParams();
     const [modelInfo, setModelInfo] = useState({});
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
@@ -70,30 +69,40 @@ export default function CarRent() {
       }
 
     
-    function getCarList() {
-        api.axiosInstance.get('cars/available', {params: {
+    async function getCarList() {
+        const response = await API.available_cars({
             CarModelId: modelId,
             Longitude: parseFloat(geo.longitude),
             Latitude: parseFloat(geo.latitude),
             Radius: 8192
-        }})
-        .then(x => {setCarList(x.data);})
-        .catch(err => alert("Невозможно получить список машин."))
+        });
+        if(response.successed){
+            setCarList(response.data);
+        }
+        else{
+            alert("Невозможно получить список машин.");
+        }
     }  
 
     useEffect(() => {
-        api.axiosInstance.get(`cars/model/${modelId}`)
-        .then(x => setModelInfo(x.data))
-        .then(() => {
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported by your browser");
-                navigate("/");
-              } else {
-                navigator.geolocation.getCurrentPosition(success, error);
-                getCarList();
-              }
-        })
-        .catch(err => { navigate('/notFound')});
+
+        async function fetchData(){
+            const response = await API.car_description(modelId);
+            if(response.successed){
+                setModelInfo(response.data);
+                if(!navigator.geolocation){
+                    alert("Geolocation is not supported by your browser");
+                    navigate("/");
+                }
+                else{
+                    navigator.geolocation.getCurrentPosition(success, error);
+                    getCarList();
+                }
+            }
+            else if(response.status === 404)
+                navigate("/notFound");
+        }
+        fetchData();
     }, []);
 
     function set(data){

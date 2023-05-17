@@ -21,6 +21,28 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
     };
 
+    book = async () => {
+        await this._post('booking/rent'); 
+    }
+
+    tariffs = async (id) => {
+        if(id)
+            return await this._get(`tariffs/${id}`);
+        return await this._get('tariffs');
+    }
+
+    car_description = async (modelId) => await this._get(`cars/model/${modelId}`);
+
+    car_prototypes = async (tariffId) => {
+        return await this._get(`cars/models/${tariffId}`);
+    }
+
+    available_cars = async (params) => await this._get('cars/available', params);
+
+    documents = async () => {
+        return await this._get(`documents`);
+    }
+
     login = async (form) => {
         return await this._post(`/account/login/`, this._getModelFromForm(form));
     }
@@ -29,7 +51,7 @@ class AxiosWrapper {
         return await this._post('/account/register', this._getModelFromForm(form));
     }
 
-    async _post(endpoint, model){
+    async _post(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model)
             .then(response => {
@@ -47,19 +69,36 @@ class AxiosWrapper {
         return result;
     }
 
-    getDataFromEndpoint(endpoint, dataSetterFunction) {
-        this.axiosInstance.get(endpoint)
+    async _get(endpoint, params) {
+        const response = {successed: false};
+        await this.axiosInstance.get(endpoint, {params: params})
             .then(r => {
-                dataSetterFunction(r.data)
+                response.response = r.response;
+                response.successed = true;
+                response.data = r.data;
+                response.status = r.status;
             })
-            .catch(err => console.log(`Error while recieving data from ${endpoint}`));
+            .catch(error =>{ 
+                if(error.response) {
+                    response.error = error.response.data.error;
+                    response.status = error.response.status;
+                }
+            else
+                alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.")}
+            );
+        return response;
     }
 
     _getModelFromForm(form) {
         return Array.from(form.elements)
             .filter((element) => element.name)
             .reduce(
-              (obj, input) => Object.assign(obj, { [input.name]: input.value }),
+              (obj, input) => {
+                let value = input.value;
+                if(input.type==="date")
+                    value = (new Date(input.value)).toJSON();
+    
+                return Object.assign(obj, { [input.name]:  value})},
               {}
             );
     }
