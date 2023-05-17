@@ -10,14 +10,12 @@ import { areValidLoginFields } from '../js/form-validators'
 import GoogleSignIn from '../Components/SignInButtons'
 import "../css/form.css";
 
-const getMessages = (errors, property) => errors.find(x => x.key==property)?.messages;
 
 export default function Login () {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({})
   const [formSummary, setFormSummary] = useState();
   const [requestSent, setRequestSent] = useState(false);
+  const formRef = useRef(null);
   const loginRef = useRef(null)
   const passwordRef = useRef(null)
   const navigator = useNavigate();
@@ -28,7 +26,8 @@ export default function Login () {
 
     setFormSummary("");
     setRequestSent(true);
-    const response = await API.login({ email: loginRef?.current?.value, password: passwordRef?.current?.value})
+    debugger;
+    const response = await API.login(formRef.current);
     setRequestSent(false);
     if (response.status === 401) {
       const error = response.error;
@@ -48,24 +47,22 @@ export default function Login () {
   return (
     <Section>
       <Container className='flex-container'>
-        <Form className='center flex-column'>
+        <Form ref={formRef} className='center flex-column'>
           <Bold id='loginHeader' className='form-header'>
             Вход
           </Bold>
           <div className='form-error-summary'>{formSummary}</div>
           <Input
             ref={loginRef}
+            name="email"
             type="email"
             placeholder='Почта'
-            set={e => setEmail(e)}
-            value={email}
             inputErrorMessage={errors?.login}/>
           <Input
             ref={passwordRef}
+            name="password"
             type='password'
             placeholder='Пароль'
-            set={e => setPassword(e)}
-            value={password}
             inputErrorMessage={errors?.password}/>
 
           <GoogleSignIn

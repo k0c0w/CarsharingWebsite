@@ -1,5 +1,7 @@
 import axios from "axios"
 
+
+
 class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
@@ -19,11 +21,20 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
     };
 
-    login = async (model) => {
-        const result = {};
-        await this.axiosInstance.post(`/account/login/`, model)
+    login = async (form) => {
+        return await this._post(`/account/login/`, this._getModelFromForm(form));
+    }
+
+    register = async (form) => {
+        return await this._post('/account/register', this._getModelFromForm(form));
+    }
+
+    async _post(endpoint, model){
+        const result = {successed: false};
+        await this.axiosInstance.post(endpoint, model)
             .then(response => {
                 result.status = response.status; 
+                result.successed = true;
             })
             .catch(error => {
                 if(error.response){
@@ -42,6 +53,15 @@ class AxiosWrapper {
                 dataSetterFunction(r.data)
             })
             .catch(err => console.log(`Error while recieving data from ${endpoint}`));
+    }
+
+    _getModelFromForm(form) {
+        return Array.from(form.elements)
+            .filter((element) => element.name)
+            .reduce(
+              (obj, input) => Object.assign(obj, { [input.name]: input.value }),
+              {}
+            );
     }
 
     _renameKey(obj, oldKey, newKey) {

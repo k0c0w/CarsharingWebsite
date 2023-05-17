@@ -9,7 +9,6 @@ import "../css/profile.css";
 import Figure from "../Components/Figure";
 import { useEffect, useRef, useState } from "react";
 import { areValidProfileEdit, isValidPasswordChange } from "../js/form-validators";
-import { sendForm } from "../js/common-functions";
 import API from "../httpclient/axios_client";
 
 const gap = { columnGap: "100px"};
@@ -25,8 +24,8 @@ export function ProfileChangePassword () {
     const location = useLocation();
     function handleSend(event) {
         event.preventDefault();
-        if(isValidPasswordChange(formRef.current))
-            sendForm(formRef.current, location.pathname);
+        if(isValidPasswordChange(formRef.current)) {}
+            //sendForm(formRef.current, location.pathname);
     }
 
     return <>
@@ -63,8 +62,8 @@ export function ProfileEdit () {
 
     function handleSend(event) {
         event.preventDefault();
-        if(areValidProfileEdit(formRef.current))
-            sendForm(formRef.current, location.pathname);
+        if(areValidProfileEdit(formRef.current)) {}
+            //sendForm(formRef.current, location.pathname);
     }
 
     return <>

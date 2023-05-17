@@ -13,14 +13,25 @@ function commonFromFieldsValidator(form) {
     return true;
 }
 
-function isValidAge(age) {
-    const value = age.value;
-    if(!Number.isInteger(parseFloat(value))) {
-        appendError(age, genereteErrorNode("Количество полных лет."));
+function getAge(birthDate) {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
+function isValidAge(birthdate) {
+    const value = birthdate.value;
+    const date = new Date(value);
+    if(!date) {
+        appendError(birthdate, genereteErrorNode("Укажите дату рождения."));
         return false;
     }
-    if(parseInt(value) < 23) {
-        appendError(age, genereteErrorNode("Вам должно быть 23 и более."))
+    if(23 > getAge(date)) {
+        appendError(birthdate, genereteErrorNode("Вам должно быть 23 и более."))
         return false;
     }
     return true;
@@ -115,7 +126,7 @@ export function areValidRegistrationFields(form) {
     try {
         if(!commonFromFieldsValidator(form)) return false;
 
-        const result = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#age")) 
+        const result = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#birthdate")) 
         & checkPasswords(form.querySelector("#password"), form.querySelector("#password_repeat"))
         & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
 
@@ -152,7 +163,7 @@ export function areValidLoginFields(login, password, setErrors) {
 export function areValidProfileEdit(form) {
     try {
         if(!commonFromFieldsValidator(form)) return false;
-        const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#age")) 
+        const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#birthdate")) 
         & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
         
         return commonFields 

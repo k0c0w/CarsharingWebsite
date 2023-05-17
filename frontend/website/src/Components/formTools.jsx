@@ -7,7 +7,6 @@ export const Input = React.forwardRef((props, ref) => (
              name={props.name} type={props.type} placeholder={props.placeholder} defaultValue={props.value}
              required={props.required}/>
         {props.inputErrorMessage && <p className="form-error">{props.inputErrorMessage}</p>}
-        {props.children}
     </div>
 ));
 
