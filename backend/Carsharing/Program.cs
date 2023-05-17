@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Carsharing;
 using Carsharing.Authorization;
 using Carsharing.Helpers;
@@ -101,10 +102,11 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
     o.InvalidModelStateResponseFactory = actionContext =>
     {
         var modelState = actionContext.ModelState;
-
+        var json = modelState.Keys
+            .ToDictionary(x => x, x => modelState[x].Errors.Select(x => x.ErrorMessage));
+        
         return new BadRequestObjectResult(new
-            { error = new { code = ErrorCode.ViewModelError, errors = modelState.Keys
-                .Select(x => new{key=x, messages=modelState[x].Errors.Select(x =>x.ErrorMessage)} )} });
+            { error = new { code = ErrorCode.ViewModelError, errors = json} });
     };
 });
 

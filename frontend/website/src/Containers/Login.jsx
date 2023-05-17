@@ -37,9 +37,8 @@ export default function Login () {
     }
     else if(response.status === 400){
       const error = response.error;
-      debugger;
       if(error.code === 1)
-        setErrors({login: getMessages(error.errors, "Email")[0], password: getMessages(error.errors, "Password")[0]})
+        setErrors({login: error.errors?.Email[0], password: error.errors?.Password[0]})
     }
     else{
       navigator('/');
