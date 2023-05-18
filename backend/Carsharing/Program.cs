@@ -74,6 +74,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHand
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddTariffService();
