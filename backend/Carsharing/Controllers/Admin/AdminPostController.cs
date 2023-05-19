@@ -1,7 +1,6 @@
-﻿using Contracts.NewsService;
-using Domain.Entities;
+﻿using Carsharing.ViewModels.Admin.Post;
+using Contracts.NewsService;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 using Services.Abstractions.Admin;
 
 namespace Carsharing.Controllers;
@@ -18,9 +17,13 @@ public class AdminPostController: ControllerBase
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreatePost([FromBody]PostDto postDto)
+    public async Task<IActionResult> CreatePost([FromBody]CreatePostVM postVm)
     {
-        await _postService.CreatePostAsync(postDto);
+        await _postService.CreatePostAsync(new PostDto
+        {
+            Title = postVm.Title,
+            Body = postVm.Body
+        });
         return Created("posts", null);
     }
     
@@ -39,11 +42,15 @@ public class AdminPostController: ControllerBase
     }
     
     [HttpPost("edit/{id:int}")]
-    public async Task<IActionResult> EditPost([FromRoute]int id,[FromBody]EditPostDto editPostDto)
+    public async Task<IActionResult> EditPost([FromRoute]int id,[FromBody]EditPostVM editPostVm)
     {
         try
         {
-            await _postService.EditPostAsync(id,editPostDto);
+            await _postService.EditPostAsync(id,new EditPostDto
+            {
+                Title = editPostVm.Title,
+                Body = editPostVm.Body
+            });
             return NoContent();
         }
         catch (Exception e)
@@ -63,8 +70,7 @@ public class AdminPostController: ControllerBase
     {
         try
         {
-            await _postService.GetPostByIdAsync(id);
-            return NoContent();
+            return new JsonResult(await _postService.GetPostByIdAsync(id));
         }
         catch (Exception e)
         {

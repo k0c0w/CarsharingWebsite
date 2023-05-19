@@ -46,7 +46,7 @@ public class PostService: IAdminPostService
         if (editPostDto.Body != null)
             oldPost.Body = editPostDto.Body;
         if (editPostDto.Title != null)
-            oldPost.Body = editPostDto.Title;
+            oldPost.Title = editPostDto.Title;
 
         _carsharingContext.News.Update(oldPost);
         await _carsharingContext.SaveChangesAsync();
