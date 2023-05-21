@@ -3,7 +3,7 @@ import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
 import PrivateRoute from './Containers/PrivateRoute';
-import {BrowserRouter, Routes, Route } from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import {useEffect, useState } from 'react';
 import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
@@ -38,7 +38,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header/>
+      <Header user={user}/>
       <Routes>
         <Route path="/">
           <Route index exact path="" element={<Index/>}/>
@@ -56,6 +56,7 @@ function App() {
             <Route exact path='edit' element={<ProfileEdit/>}/>
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>
+        <Route path='/logout' element={<Logout setUser={setUser}/>}/>
         <Route path="*" element={<>404</>}/>
         </Route>
       </Routes>
@@ -69,6 +70,15 @@ function toggleHeader(header){
   } else {
       header.classList.remove("fixed");
   }
+}
+
+function Logout({setUser}) {
+  API
+    .logout()
+    .then(r => {setUser(null); localStorage.clear()});
+
+  return <Navigate to='/'/>
+
 }
 
 export default App;

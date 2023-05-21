@@ -3,7 +3,7 @@ import "../../css/common.css";
 import Container from "../Container";
 
 
-export const DesktopHeaderContent = () => (
+export const DesktopHeaderContent = ({user}) => (
 <Container className="">
     <div className="flex-container header-content">
         <div>
@@ -14,7 +14,8 @@ export const DesktopHeaderContent = () => (
             <li className="header-content-menu-item"><NavLink to="/documents" className="header-content-menu-item-link">Документы и новости</NavLink></li>
             <li className="header-content-menu-item"><NavLink to="/profile" className="header-content-menu-item-link">Личный кабинет</NavLink></li>
         </ul>
-        <NavLink to="/login" className="header-content-menu-item-link">Войти</NavLink>
+        {user && <NavLink to="/login" className="header-content-menu-item-link">Выйти</NavLink>}
+        {!user && <NavLink to="/login" className="header-content-menu-item-link">Войти</NavLink>}
     </div>
 </Container>
 );

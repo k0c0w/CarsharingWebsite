@@ -51,6 +51,10 @@ class AxiosWrapper {
         return await this._post(`/account/login/`, this._getModelFromForm(form));
     }
 
+    logout = async () => {
+        return await this._post(`/account/logout/`);
+    }
+
     register = async (form) => {
         return await this._post('/account/register', this._getModelFromForm(form));
     }
