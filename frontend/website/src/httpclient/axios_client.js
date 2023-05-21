@@ -11,7 +11,8 @@ class AxiosWrapper {
                 'Content-type': 'application/json; charset=UTF-8',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
         };
