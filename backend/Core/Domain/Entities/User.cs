@@ -11,6 +11,7 @@ public class User : IdentityUser
     [Required]
     public string Surname { get; set; } = string.Empty;
     
+    [Required]
     public string FirstName { get; set; }
 
     [AllowNull]

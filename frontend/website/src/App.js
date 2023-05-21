@@ -18,14 +18,14 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    API.IsUserAuthorized().then(r => {
+    /*API.IsUserAuthorized().then(r => {
       if(r.successed)
         localStorage.setItem('user', true);
       else {
         localStorage.clear();
       }
       setUser(localStorage.getItem('user'));
-      });
+      });*/
 
 
     window.addEventListener('scroll', function () {
@@ -73,9 +73,10 @@ function toggleHeader(header){
 }
 
 function Logout({setUser}) {
-  API
-    .logout()
-    .then(r => {setUser(null); localStorage.clear()});
+  setUser(null);
+    API
+    .logout();
+
 
   return <Navigate to='/'/>
 

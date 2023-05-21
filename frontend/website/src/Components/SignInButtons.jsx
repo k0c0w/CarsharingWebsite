@@ -1,8 +1,9 @@
 import React from 'react'
+import {google} from '../js/configuration'
 
-export default function GoogleSignIn ({redirect_uri, client_id, scope}) {
+export default function GoogleSignIn () {
 
-  var url = `https://accounts.google.com/o/oauth2/auth?client_id=${client_id}&response_type=code&redirect_uri=${redirect_uri}&scope=${scope}`
+  const url = `https://accounts.google.com/o/oauth2/auth?client_id=${google.client_id}&response_type=code&redirect_uri=${google.redirect_uri}&scope=${google.scope}`
 
   return (
     <a href={url} >
