@@ -1,4 +1,5 @@
 import axios from "axios"
+import { async } from "q";
 
 
 
@@ -62,6 +63,20 @@ class AxiosWrapper {
     IsUserAuthorized = async () => {
         return await this._get('/Account/IsAuthorized');
     }
+
+    personalInfo = async ()  => {
+        return await this._get('/Account/PersonalInfo');
+    }
+
+    profile = async () => {
+        return await this._get('/Account');
+    }
+
+    tryChangePassword = async (form) => {
+        debugger;
+        return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
+    }
+
 
     async _post(endpoint, model) {
         const result = {successed: false};

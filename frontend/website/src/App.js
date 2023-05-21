@@ -51,7 +51,7 @@ function App() {
         <Route element={<FixHeader/>}>  
           <Route exact path="/login" element={<Login setUser={setUser} user={user}/>}/>
           <Route exact path="/registration" element={<Registration/>}/>
-          <Route path='/profile' element={<PrivateRoute user={user}/>}>
+          <Route path='/profile' >
             <Route exact path='' element={<Profile/>}/>
             <Route exact path='edit' element={<ProfileEdit/>}/>
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>

@@ -1,4 +1,4 @@
-using System.Security.Claims;
+using Carsharing.Helpers;
 using Carsharing.ViewModels.Profile;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,9 +6,9 @@ using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
-[Route("api/Account")]
-// todo: uncomment atributte [Authorize]
+[Route("Api/Account")]
 [ApiController]
+[Authorize]
 public class ProfileController : ControllerBase
 {
     private readonly IUserInfoService _userInfoService;
@@ -20,9 +20,8 @@ public class ProfileController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
-        //todo: var userId = User.GetId();
-        var info = await _userInfoService.GetProfileInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
-        return new JsonResult(new ProfileInfoVM()
+        var info = await _userInfoService.GetProfileInfoAsync(User.GetId());
+        return new JsonResult(new ProfileInfoVM
         {
             UserInfo = new UserInfoVM
             {
@@ -39,11 +38,20 @@ public class ProfileController : ControllerBase
         });
     }
 
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
+    {
+        var info = await _userInfoService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        if (info.Success) return NoContent();
+
+        return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+    }
+    
     [HttpGet("[action]")]
     public async Task<IActionResult> PersonalInfo()
     {
         //todo: var userId = User.GetId();
-        var info = await _userInfoService.GetPersonalInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
+        var info = await _userInfoService.GetPersonalInfoAsync("7b6d1618-c5ac-43d2-95d7-81f1e7d7b289");
         return new JsonResult(new PersonalInfoVM()
         {
             Email = info.Email,

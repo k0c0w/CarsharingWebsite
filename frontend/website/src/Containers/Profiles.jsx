@@ -1,31 +1,69 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {Form, MyFormProfileInput, Input} from "../Components/formTools";
 import Bold, {Dim} from "../Components/TextTags";
 import DocumentTitle from "../DocumentTitle";
 import Section from "../Components/Sections";
 import Container from "../Components/Container";
-
+import "../css/form.css";
 import "../css/profile.css";
 import Figure from "../Components/Figure";
 import { useEffect, useRef, useState } from "react";
 import { areValidProfileEdit, isValidPasswordChange } from "../js/form-validators";
 import API from "../httpclient/axios_client";
+import { getVMErrors } from "../js/common_functions";
 
 const gap = { columnGap: "100px"};
 
-function axiosData(endpoint, setter) {
-    API.axiosInstance.get(endpoint)
-        .then(r => setter(r.data))
-        .catch(err => alert("Ошибка при загрузке профиля. Проверьте интернет соединение."))
+
+async function fetchData(api, setData, navigator, location) {
+    const response = await api();
+
+    console.log(response)
+    if(response?.successed){
+        setData(response.data);
+    }
+    else if(response?.status){
+        if(response.status === 401){
+            navigator(`/login?return_uri=${location}`);
+        }
+        else
+            alert('Ошибка сервера! Повторите попытку позже.');
+    }
+    else
+        alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
 }
 
 export function ProfileChangePassword () {
     const formRef = useRef(null);
     const location = useLocation();
-    function handleSend(event) {
+    const [errors, setErrors] = useState({});
+    const [requestSent, setRequestSent] = useState(false);
+
+    async function handleSend(event) {
         event.preventDefault();
-        if(isValidPasswordChange(formRef.current)) {}
-            //sendForm(formRef.current, location.pathname);
+        if(isValidPasswordChange(formRef.current) && !requestSent) 
+        {
+            setErrors({});
+            if(formRef) {
+               setRequestSent(true); 
+               const response = await API.tryChangePassword(formRef.current);
+               setRequestSent(false);
+               if(response?.successed){
+                    alert("Пароль изменен.");
+               }
+               else if(!response.successed && response?.status){
+                    if(response.status === 400 && response.error){
+                        if(response.error.code === 1) setErrors(getVMErrors(response.error.errors));
+                        else if(response.error.code === 2) setErrors(setErrors({errorSummary: response.error.messages}));
+                        else setErrors({errorSummary: "При обновлении произошли ошибки"});
+                    }
+                    else setErrors({errorSummary: "При обновлении произошли ошибки"});
+               }
+               else
+                alert("Проверьте интренет подключение.");
+            }
+            setRequestSent(true);    
+        }
     }
 
     return <>
@@ -33,8 +71,10 @@ export function ProfileChangePassword () {
         <Section>
             <Form ref={formRef} className="center flex-column">
                 <Bold className="form-header">Смена пароля</Bold>
-                <Input required id="password" name="password" placeholder="новый пароль"/>
-                <Input required id="password_repeat" placeholder="повторите пароль"/>
+                <div className='form-error-summary'>{errors?.errorSummary}</div>
+                <Input required id="old_password" name="old_password" placeholder="текущий пароль" type="password"/>
+                <Input inputErrorMessage={errors['password']} required id="password" name="password" placeholder="новый пароль" type="password"/>
+                <Input required id="password_repeat" placeholder="повторите пароль" type="password"/>
                 <button className="button form-button" onClick={handleSend}>Сохранить</button>
             </Form>
         </Section>
@@ -42,23 +82,23 @@ export function ProfileChangePassword () {
 };
 
 const LeftProfileEdit = ({personalInfo}) => (<>
-    <Input id="email" name="email" placeholder="Почта" value={personalInfo?.email}/>
-    <Input id="passport" name="passport" placeholder="Паспорт" value={personalInfo?.passport}/>
-    <Input id="license" placeholder="Водительское удостоверение" value={personalInfo.driver_license} /></>);
+    <Input required id="email" name="email" placeholder="Почта" value={personalInfo.email} type="email"/>
+    <Input id="passport" name="passport" placeholder="Паспорт" value={personalInfo?.passport} type="text"/>
+    <Input id="license" placeholder="Водительское удостоверение" value={personalInfo?.driver_license} type="text"/></>);
 
 const RightProfileEdit = ({personalInfo}) => (<>
-    <Input id="name" name="name" placeholder="Имя" value={personalInfo?.name}/>
-    <Input id="surname" name="surname" placeholder="Фамилия" value={personalInfo?.surname}/>
-    <Input id="age" name="age" placeholder="Возраст" value={personalInfo?.age}/></>);
+    <Input required id="name" name="name" placeholder="Имя" value={personalInfo?.name} type="text"/>
+    <Input required id="surname" name="surname" placeholder="Фамилия" value={personalInfo?.surname} type="text"/>
+    <Input required id="birthdate" name="birthdate" placeholder="Дата рождения" value={personalInfo?.birthdate} type="date"/></>);
 
 export function ProfileEdit () {
     const formRef = useRef(null);
     const location = useLocation();
+    const navigator = useNavigate();
     const [personalInfo, setPersonalInfo] = useState({});
 
     useEffect(() => {
-        
-        axiosData("/profile/personalInfo", setPersonalInfo);
+        fetchData(API.personalInfo, setPersonalInfo, navigator, location.pathname);
     },[]);
 
     function handleSend(event) {
@@ -79,7 +119,7 @@ export function ProfileEdit () {
                 <MyFormProfileInput
                     leftBlock={<LeftProfileEdit personalInfo={personalInfo}/>}
                     rightBlock={<RightProfileEdit personalInfo={personalInfo}/>}/>
-                <div id="formButton" className="form-filed flex-container" style={gap}>
+                <div id="formButton" className="flex-container" style={gap}>
                     <button className="button form-button delete">Удалить аккаунт</button>
                     <button onClick={handleSend} className="button form-button">Сохранить</button>
                 </div>  
@@ -135,9 +175,11 @@ const ProfileInfo = ({userInfo}) => (
 
 export default function Profile() {
     const [profileInfo, setProfileInfo] = useState({rented_cars:[], user_info: {}});
+    const navigator = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
-        axiosData("/profile", setProfileInfo);
+        fetchData(API.profile, setProfileInfo, navigator, location.pathname);
     }, []);
 
     return <>
