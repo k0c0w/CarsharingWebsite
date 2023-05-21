@@ -13,6 +13,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
+using Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -74,6 +75,9 @@ builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHand
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+
+builder.Services.AddScoped<IUserInfoService, UserService>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddTariffService();

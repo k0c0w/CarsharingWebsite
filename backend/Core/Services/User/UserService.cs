@@ -30,12 +30,13 @@ public class UserService : IUserInfoService
     {
         var user = await GetUserInfoAsync(userId);
         var userSubscriptions = await _context.Subscriptions
-            .Where(x => x.IsActive && !x.IsExpired)
+            .Where(x => x.IsActive)
             .Where(x => x.UserId == userId)
             .Include( x=> x.Car)
                 .ThenInclude(x=> x.CarModel)
             .ToListAsync();
         var bookedCars = userSubscriptions
+            .Where(x => !x.IsExpired)   
             .OrderByDescending(x => x.EndDate)
             .Select(x => x.Car)
             .Select(x => new CarShortcutDto
@@ -87,7 +88,8 @@ public class UserService : IUserInfoService
             BirthDate = info.BirthDay,
             DriverLicense = info.DriverLicense,
             FirstName = user.FirstName,
-            LastName = user.Surname
+            LastName = user.Surname,
+            Email = user.Email
         };
     }
 }

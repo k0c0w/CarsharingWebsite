@@ -10,7 +10,7 @@ public class UserInfoDto
     
     public DateTime BirthDate { get; init; }
     
-    public string? PassportType { get; init; }
+    public string Email { get; init; }
     
     public string? Passport { get; init; }
     
