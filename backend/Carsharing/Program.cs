@@ -1,10 +1,8 @@
-using System.Text.Json;
 using Carsharing;
 using Carsharing.Authorization;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,22 +32,16 @@ builder.Services.AddIdentity<User, UserRole>(options =>
 
 // Auth
 builder.Services
-    .AddAuthentication(options =>
- {
-     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
- })
+ .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
-     options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.Cookie.SameSite = SameSiteMode.None;
-     options.Cookie.HttpOnly = true;
-     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+     //options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
      options.Events.OnRedirectToLogin = context =>
      {
          context.Response.StatusCode = StatusCodes.Status401Unauthorized;
          return Task.CompletedTask;
      };
+     options.LoginPath = "/Login";
 
      options.Events.OnRedirectToAccessDenied = context =>
      {
@@ -66,7 +58,7 @@ builder.Services.AddAuthorization(options =>
             options.RequireAuthenticatedUser()
                 .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .AddRequirements(new CanBuyRequirement(18));
+                .AddRequirements(new CanBuyRequirement(23));
         });
 });
 

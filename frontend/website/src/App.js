@@ -18,14 +18,14 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    API.IsUserAuthorized().then(r => {
+    /*API.IsUserAuthorized().then(r => {
       if(r.successed)
         localStorage.setItem('user', true);
       else {
         localStorage.clear();
       }
       setUser(localStorage.getItem('user'));
-      });
+      });*/
 
 
     window.addEventListener('scroll', function () {
@@ -51,7 +51,7 @@ function App() {
         <Route element={<FixHeader/>}>  
           <Route exact path="/login" element={<Login setUser={setUser} user={user}/>}/>
           <Route exact path="/registration" element={<Registration/>}/>
-          <Route path='/profile' >
+          <Route path='/profile' element={<PrivateRoute user={user}/>}>
             <Route exact path='' element={<Profile/>}/>
             <Route exact path='edit' element={<ProfileEdit/>}/>
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
@@ -73,9 +73,10 @@ function toggleHeader(header){
 }
 
 function Logout({setUser}) {
-  API
-    .logout()
-    .then(r => {setUser(null); localStorage.clear()});
+  setUser(null);
+    API
+    .logout();
+
 
   return <Navigate to='/'/>
 

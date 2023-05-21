@@ -42,11 +42,15 @@ function handleResponse(response, onSuccess, on401, setErrors) {
         else if(response.status === 400 && response.error){
             const error = response.error;
         
-            if(error.code === 1) setErrors(getVMErrors(error.errors));
-            else if(error.code === 2) setErrors({messages: error.messages});
-            else setErrors({messages: "При обновлении произошли ошибки."})
+            if(error.code === 1){
+                setErrors(getVMErrors(error.errors));
+            }
+            else if(error.code === 2){
+                setErrors({messages: error.messages});
+            }
+            else {setErrors({messages: "При обновлении произошли ошибки."})}
         }
-        else setErrors({fatal: "При обновлении произошли ошибки."})
+        else { setErrors({fatal: "При обновлении произошли ошибки."})}
     }
     else {
         alert("Проверьте подключение к интернету.");
@@ -64,7 +68,7 @@ export function ProfileChangePassword () {
         event.preventDefault();
         if(isValidPasswordChange(formRef.current) && !requestSent) 
         {
-            setErrors({});
+            
             if(formRef) {
                setRequestSent(true); 
                const response = await API.tryChangePassword(formRef.current);
@@ -132,7 +136,7 @@ export function ProfileEdit () {
                     <Bold className="form-header">{`${personalInfo?.name} ${personalInfo?.surname}`}</Bold>
                     <NavLink to="password" className="change-password">[сменить пароль]</NavLink>
                 </div>
-                <div className='form-error-summary'>{errors?.messages}</div>
+                <div className='form-error-summary'>{errors?.messages?.slice(3)}</div>
                 <MyFormProfileInput
                     leftBlock={<LeftProfileEdit errors={errors} personalInfo={personalInfo}/>}
                     rightBlock={<RightProfileEdit errors={errors} personalInfo={personalInfo}/>}/>

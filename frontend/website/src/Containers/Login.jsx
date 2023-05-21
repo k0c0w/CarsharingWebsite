@@ -18,8 +18,8 @@ export default function Login ({setUser, user}) {
   const formRef = useRef(null);
   const loginRef = useRef(null)
   const passwordRef = useRef(null)
-  const navigator = useNavigate();
   const location = useLocation();
+  const navigator = useNavigate();
 
    async function handleLogin (event) {
     event.preventDefault();
@@ -44,6 +44,7 @@ export default function Login ({setUser, user}) {
       setUser(true);
       const urlParams = new URLSearchParams(location.search);
       const returnUri = urlParams.get('return_uri');
+      debugger;
       if(returnUri)
         navigator(returnUri);
       else
@@ -52,7 +53,7 @@ export default function Login ({setUser, user}) {
   }
 
 
-  return user ? (<Navigate to ='/'/>) : (
+  return (
     <Section>
       <Container className='flex-container'>
         <Form ref={formRef} className='center flex-column'>
@@ -73,11 +74,7 @@ export default function Login ({setUser, user}) {
             placeholder='Пароль'
             inputErrorMessage={errors?.password}/>
 
-          <GoogleSignIn
-            redirect_uri='https://localhost:7129/api/account/google-external-auth-callback/'
-            scope='https://www.googleapis.com/auth/userinfo.email'
-            client_id='930943899094-n86i2ipn8jb3j51aj9d8k2tcojd89ilb.apps.googleusercontent.com'
-          />
+          <GoogleSignIn/>
           <div id='formButton' className='form-filed'style={{ marginTop: '15px' }}>
             <button className='button form-button' onClick={handleLogin}>
               Войти

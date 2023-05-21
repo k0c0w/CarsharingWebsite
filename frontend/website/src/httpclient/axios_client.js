@@ -1,22 +1,19 @@
 import axios from "axios"
-import { async } from "q";
-
 
 
 class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
-            baseURL: url,
             timeout: 10000,
-            ssl: false,
+            ssl: true,
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "https://localhost:7129"
+                "Access-Control-Allow-Origin": "https://localhost:7129",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Credentials": "true"
             },
-            defaults: {
-                withCredentials: true,
-            }
+            withCredentials: true,
         };
 
         this.axiosInstance = axios.create(options);
@@ -77,7 +74,6 @@ class AxiosWrapper {
     }
 
     tryChangePassword = async (form) => {
-        debugger;
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
     }
 
