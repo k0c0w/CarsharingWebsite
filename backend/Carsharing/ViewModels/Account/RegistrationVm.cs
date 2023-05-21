@@ -1,7 +1,6 @@
 using Carsharing.Helpers.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Carsharing.Forms;
@@ -29,9 +28,9 @@ public class RegistrationVm : LoginVM
     public DateTime Birthdate { get; set; }
     
     [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
-    [Compare("MustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
+    [Compare("AcceptMustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
     [JsonPropertyName("accept")]
-    public bool Accept { get; set; }
+    public string Accept { get; set; }
 
-    [ValidateNever] public bool MustBe => true;
+    [ValidateNever] public string AcceptMustBe => "on";
 }

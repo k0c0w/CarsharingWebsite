@@ -1,41 +1,65 @@
+using Carsharing.Helpers;
+using Carsharing.ViewModels.Profile;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
-[Area("Api")]
-public class ProfileController : Controller
+[Route("Api/Account")]
+[ApiController]
+[Authorize]
+public class ProfileController : ControllerBase
 {
+    private readonly IUserInfoService _userInfoService;
+    public ProfileController(IUserInfoService userInfoService)
+    {
+        _userInfoService = userInfoService;
+    }
     
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Profile()
     {
-        return Json(new 
+        var info = await _userInfoService.GetProfileInfoAsync(User.GetId());
+        return new JsonResult(new ProfileInfoVM
         {
-            rented_cars = new object[]
+            UserInfo = new UserInfoVM
             {
-                new { model="Sonata", license_plate="H132OP116" },
-                new { model="Sonata", license_plate="H133OP116" },
-                new { model="Highlander", license_plate="H135OP116" }
+                Balance = info.PersonalInfo.Balance,
+                Email = info.PersonalInfo.Email,
+                FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
             },
-            user_info = new
+            BookedCars = info.CurrentlyBookedCars.Select(x => new ProfileCarVM
             {
-                balance=23459.05f,
-                email="art.kazan@mail.ru",
-                full_name="Василий Пупкин"
-            }
+                Name = x.Model,
+                IsOpened = x.IsOpened,
+                LicensePlate = x.LicensePlate,
+            })
         });
     }
 
-    [HttpGet]
-    public IActionResult PersonalInfo()
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
     {
-        return Json(new
+        var info = await _userInfoService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        if (info.Success) return NoContent();
+
+        return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+    }
+    
+    [HttpGet("[action]")]
+    public async Task<IActionResult> PersonalInfo()
+    {
+        //todo: var userId = User.GetId();
+        var info = await _userInfoService.GetPersonalInfoAsync("7b6d1618-c5ac-43d2-95d7-81f1e7d7b289");
+        return new JsonResult(new PersonalInfoVM()
         {
-            email="art.kazan@mail.ru",
-            name="Василий",
-            surname="Пупкин",
-            age=25,
-            passport="9217 181511",
+            Email = info.Email,
+            Passport = info.Passport,
+            Surname = info.LastName,
+            BirthDate = DateOnly.FromDateTime(info.BirthDate),
+            DriverLicense = info.DriverLicense,
+            FirstName = info.FirstName
         });
     }
 }

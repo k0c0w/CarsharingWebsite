@@ -1,10 +1,8 @@
-using System.Text.Json;
 using Carsharing;
 using Carsharing.Authorization;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
+using Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -34,22 +33,16 @@ builder.Services.AddIdentity<User, UserRole>(options =>
 
 // Auth
 builder.Services
-    .AddAuthentication(options =>
- {
-     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
- })
+ .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
-     options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.Cookie.SameSite = SameSiteMode.None;
-     options.Cookie.HttpOnly = true;
-     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+     //options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
      options.Events.OnRedirectToLogin = context =>
      {
          context.Response.StatusCode = StatusCodes.Status401Unauthorized;
          return Task.CompletedTask;
      };
+     options.LoginPath = "/Login";
 
      options.Events.OnRedirectToAccessDenied = context =>
      {
@@ -66,7 +59,7 @@ builder.Services.AddAuthorization(options =>
             options.RequireAuthenticatedUser()
                 .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .AddRequirements(new CanBuyRequirement(18));
+                .AddRequirements(new CanBuyRequirement(23));
         });
 });
 
@@ -81,6 +74,9 @@ builder.Services.AddScoped<IAdminPostService, PostService>();
 builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAdminTariffService, TariffService>();
 builder.Services.AddScoped<ITariffService, TariffService>();
+
+builder.Services.AddScoped<IUserInfoService, UserService>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddTariffService();
@@ -131,14 +127,13 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseCors("CORSAllowLocalHost3000");
+app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseStaticFiles();
 
-app.UseRouting();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 

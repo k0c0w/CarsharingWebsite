@@ -53,7 +53,7 @@ public class AccountController : ControllerBase
         var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
         if (!resultUserCreate.Succeeded)
-            return Unauthorized( new {error= new ErrorsVM
+            return BadRequest( new {error= new ErrorsVM
                 {
                     Code = (int)ErrorCode.ServiceError,
                     Messages = resultUserCreate.Errors.Select(x => x.Description)
@@ -100,7 +100,7 @@ public class AccountController : ControllerBase
             var getTokenResult = await GoogleAPI.GetTokenAsync(code,
                 _configuration["Authorization:Google:AppId"] ?? "",
                 _configuration["Authorization:Google:AppSecret"] ?? "",
-                "https://localhost:7129/api/account/google-external-auth-callback"
+                _configuration["Authorization:Google:ReturnUri"]
                 );
             if (getTokenResult is null)
                 return BadRequest(GetGoogleError());
@@ -120,6 +120,8 @@ public class AccountController : ControllerBase
                 var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
+                user.UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}";
+                
 
                 var createUserResult = await _userManager.CreateAsync(user);
                 if (createUserResult.Succeeded)
@@ -153,14 +155,14 @@ public class AccountController : ControllerBase
 
             await _signInManager.SignInWithClaimsAsync(user, false, claims);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-            
-            return Ok();
+
+            return Redirect("/profile");
 
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return Redirect("https://localhost:3000/login/");
+            return Redirect("/login");
             //return StatusCode(500, "Не получилось получить доступ к сервису Google");
         }
 
@@ -171,6 +173,11 @@ public class AccountController : ControllerBase
     {
         await _signInManager.SignOutAsync();
     }
+
+
+    [HttpGet("IsAuthorized")]
+    [Authorize]
+    public IActionResult UserIsAuthorized() => Ok();
     
     private object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
 

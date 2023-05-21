@@ -9,15 +9,7 @@ import { areValidRegistrationFields } from "../js/form-validators";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
-function getErrors(errors)
-{
-    const state = {};
-    for(const[key, value] of Object.entries(errors)){
-        state[key.toLowerCase()] = value[0] ?? "";
-    }
-    return state;
-}
+import {getVMErrors} from "../js/common_functions.js";
 
 
 const gap = { columnGap: "100px"};
@@ -27,18 +19,21 @@ export function Registration  ()  {
     const navigator = useNavigate();
     const [errors, setErrors] = useState({});
     const [errorSummary, setErrorSummary] = useState([]);
+    const [requestSent, setRequestSent] = useState(false);
 
     async function handleSend(event) {
         event.preventDefault();
-        if(!areValidRegistrationFields(formRef.current)) return;
+        if(!areValidRegistrationFields(formRef.current) || requestSent) return;
         
         setErrorSummary([]);
         setErrors({});
+        setRequestSent(true);
         const result = await API.register(formRef.current);
-        if(result.status === 400 && result.error)
+        setRequestSent(false);
+        if(result?.status === 400 && result?.error)
         {
             if(result.error.code === 1)
-                setErrors(getErrors(result.error.errors));
+                setErrors(getVMErrors(result.error.errors));
             else if(result.error.code === 2)
                 setErrorSummary(result.error.messages)
         }

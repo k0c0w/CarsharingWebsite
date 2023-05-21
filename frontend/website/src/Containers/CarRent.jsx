@@ -146,7 +146,8 @@ export default function CarRent() {
                     <div className="renting-sidebar-period__holder">
                         <span>Преиод:</span>
                         <span>с</span>
-                        <input type="date" onChange={(e) => {setStartDate(new Date(e.target.value + 'T00:00'))}}/>
+                        <input type="data" disabled value={new Date()}/>
+                        {/*todo: <input type="date" onChange={(e) => {setStartDate(new Date(e.target.value + 'T00:00'))}}/>*/}
                         <span>по</span>
                         <input type="date" onChange={(e) => {setEndDate(new Date(e.target.value + 'T00:00'))}}/>
                     </div>

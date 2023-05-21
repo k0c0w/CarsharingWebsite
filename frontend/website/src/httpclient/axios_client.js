@@ -1,21 +1,20 @@
 import axios from "axios"
 
 
-
 class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
-            baseURL: url,
             timeout: 10000,
-            ssl: false,
+            ssl: true,
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "https://localhost:7129"
+                "Access-Control-Allow-Origin": "https://localhost:7129",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
             },
-            defaults: {
-                withCredentials: true,
-            }
+            withCredentials: true,
         };
 
         this.axiosInstance = axios.create(options);
@@ -40,16 +39,45 @@ class AxiosWrapper {
     available_cars = async (params) => await this._get('cars/available', params);
 
     documents = async () => {
-        return await this._get(`documents`);
+        return await this._get(`/information/documents`);
+    }
+
+    news = async () => {
+        return await this._get(`/information/news`);
     }
 
     login = async (form) => {
         return await this._post(`/account/login/`, this._getModelFromForm(form));
     }
 
+    logout = async () => {
+        return await this._post(`/account/logout/`);
+    }
+
     register = async (form) => {
         return await this._post('/account/register', this._getModelFromForm(form));
     }
+
+    IsUserAuthorized = async () => {
+        return await this._get('/Account/IsAuthorized');
+    }
+
+    personalInfo = async ()  => {
+        return await this._get('/Account/PersonalInfo');
+    }
+
+    editPersonalInfo = async (form)  => {
+        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    }
+
+    profile = async () => {
+        return await this._get('/Account');
+    }
+
+    tryChangePassword = async (form) => {
+        return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
+    }
+
 
     async _post(endpoint, model) {
         const result = {successed: false};
