@@ -3,6 +3,7 @@ using System;
 using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Entities.Migrations
 {
     [DbContext(typeof(CarsharingContext))]
-    partial class CarsharingContextModelSnapshot : ModelSnapshot
+    [Migration("20230521151031_FirstNameAndLastName")]
+    partial class FirstNameAndLastName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,10 +315,8 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Verified")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
+                    b.Property<bool?>("Verified")
+                        .HasColumnType("boolean");
 
                     b.HasKey("UserInfoId");
 

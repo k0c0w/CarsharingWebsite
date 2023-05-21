@@ -1,6 +1,4 @@
-﻿using Carsharing.ViewModels;
-using Carsharing.ViewModels.Admin.UserInfo;
-using Contracts.UserInfo;
+﻿using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -21,7 +19,7 @@ public class AdminUserController: ControllerBase
     [HttpGet("all")]
     public async Task<IActionResult> All()
     {
-        var users = await _userInfoService.GettAllInfoAsync();
+        var users = await _userInfoService.GetAllInfoAsync();
         return new JsonResult( users.Select(x =>new UserInfoVm
             {
                 UserInfoId = x.UserInfoId,
@@ -31,11 +29,11 @@ public class AdminUserController: ControllerBase
                 DriverLicense = x.DriverLicense,
                 Balance = x.Balance,
                 UserId = x.UserId,
-                Verified = x.Verifyed,
+                Verified = x.Verified,
                 User = new User
                 {
                     Id = x.User.Id,
-                    UserSurname = x.User.UserSurname,
+                    LastName = x.User.LastName,
                     UserName = x.User.UserName,
                     Email = x.User.Email,
                     PhoneNumber = x.User.PhoneNumber

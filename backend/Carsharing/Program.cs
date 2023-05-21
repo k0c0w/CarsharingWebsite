@@ -1,5 +1,6 @@
 using Carsharing;
 using Carsharing.Authorization;
+using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -11,6 +12,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
+using Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -24,7 +26,7 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя";
+    options.User.AllowedUserNameCharacters = "user0123456789";
 })
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();
@@ -39,7 +41,7 @@ builder.Services
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
      options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.Cookie.SameSite = SameSiteMode.Lax;
+     options.Cookie.SameSite = SameSiteMode.None;
      options.Cookie.HttpOnly = true;
      options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
      options.Events.OnRedirectToLogin = context =>
@@ -72,7 +74,9 @@ builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHand
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IUserInfoService, UserInfoService>();
+
+builder.Services.AddScoped<IUserInfoService, UserService>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddTariffService();
@@ -96,11 +100,17 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddControllers();
 
-//todo: создать форматтер, чтобы ошибки отправлялись в общем стиле
 builder.Services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
-        new BadRequestObjectResult(actionContext.ModelState);
+    {
+        var modelState = actionContext.ModelState;
+        var json = modelState.Keys
+            .ToDictionary(x => x, x => modelState[x].Errors.Select(x => x.ErrorMessage));
+        
+        return new BadRequestObjectResult(new
+            { error = new { code = ErrorCode.ViewModelError, errors = json} });
+    };
 });
 
 
@@ -115,21 +125,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.Use(async (context, next) =>
-{
-    var cookies = context.Request.Cookies;
-    await next.Invoke();
-});
 
 app.UseCors("CORSAllowLocalHost3000");
+app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 

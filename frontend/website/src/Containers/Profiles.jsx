@@ -9,13 +9,12 @@ import "../css/profile.css";
 import Figure from "../Components/Figure";
 import { useEffect, useRef, useState } from "react";
 import { areValidProfileEdit, isValidPasswordChange } from "../js/form-validators";
-import { sendForm } from "../js/common-functions";
 import API from "../httpclient/axios_client";
 
 const gap = { columnGap: "100px"};
 
 function axiosData(endpoint, setter) {
-    new API().axiosInstance.get(endpoint)
+    API.axiosInstance.get(endpoint)
         .then(r => setter(r.data))
         .catch(err => alert("Ошибка при загрузке профиля. Проверьте интернет соединение."))
 }
@@ -25,8 +24,8 @@ export function ProfileChangePassword () {
     const location = useLocation();
     function handleSend(event) {
         event.preventDefault();
-        if(isValidPasswordChange(formRef.current))
-            sendForm(formRef.current, location.pathname);
+        if(isValidPasswordChange(formRef.current)) {}
+            //sendForm(formRef.current, location.pathname);
     }
 
     return <>
@@ -63,8 +62,8 @@ export function ProfileEdit () {
 
     function handleSend(event) {
         event.preventDefault();
-        if(areValidProfileEdit(formRef.current))
-            sendForm(formRef.current, location.pathname);
+        if(areValidProfileEdit(formRef.current)) {}
+            //sendForm(formRef.current, location.pathname);
     }
 
     return <>
@@ -101,7 +100,7 @@ const CarList = ({cars}) => (
     <>
         <Bold>Мои машины:</Bold>
         <ul className="profile-carlist-list">
-            {cars.map(car => 
+            {cars?.map(car => 
             <li>
                 <Figure figureName="rented-car" className="border-solid">
                     <img className="rented-car-image" src="https://mobility.hyundai.ru/dist/images/cars/sonata2.png"/>

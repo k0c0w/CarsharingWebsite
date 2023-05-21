@@ -1,41 +1,84 @@
+using System.Security.Claims;
+using Carsharing.ViewModels;
+using Carsharing.ViewModels.Profile;
+using Contracts.UserInfo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
-[Area("Api")]
-public class ProfileController : Controller
+[Route("api/Account")]
+// todo: uncomment atributte [Authorize]
+[ApiController]
+public class ProfileController : ControllerBase
 {
+    private readonly IUserInfoService _userInfoService;
+    public ProfileController(IUserInfoService userInfoService)
+    {
+        _userInfoService = userInfoService;
+    }
     
     [HttpGet]
-    public IActionResult Index()
+    public async Task<IActionResult> Profile()
     {
-        return Json(new 
+        //todo: var userId = User.GetId();
+        var info = await _userInfoService.GetProfileInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
+        return new JsonResult(new ProfileInfoVM()
         {
-            rented_cars = new object[]
+            UserInfo = new UserInfoVM
             {
-                new { model="Sonata", license_plate="H132OP116" },
-                new { model="Sonata", license_plate="H133OP116" },
-                new { model="Highlander", license_plate="H135OP116" }
+                Balance = info.PersonalInfo.Balance,
+                Email = info.PersonalInfo.Email,
+                FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
             },
-            user_info = new
+            BookedCars = info.CurrentlyBookedCars.Select(x => new ProfileCarVM
             {
-                balance=23459.05f,
-                email="art.kazan@mail.ru",
-                full_name="Василий Пупкин"
-            }
+                Name = x.Model,
+                IsOpened = x.IsOpened,
+                LicensePlate = x.LicensePlate,
+            })
         });
     }
 
-    [HttpGet]
-    public IActionResult PersonalInfo()
+    [HttpGet("[action]")]
+    public async Task<IActionResult> PersonalInfo()
     {
-        return Json(new
+        //todo: var userId = User.GetId();
+        var info = await _userInfoService.GetPersonalInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
+        return new JsonResult(new PersonalInfoVM()
         {
-            email="art.kazan@mail.ru",
-            name="Василий",
-            surname="Пупкин",
-            age=25,
-            passport="9217 181511",
+            Email = info.Email,
+            Passport = info.Passport,
+            Surname = info.LastName,
+            BirthDate = DateOnly.FromDateTime(info.BirthDate),
+            DriverLicense = info.DriverLicense,
+            FirstName = info.FirstName
+        });
+    }
+    
+    [HttpPut("/edit/{id:int}")]
+    public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] EditUserVm userVm)
+    {
+        var result = await _userInfoService.EditUser(id, new EditUserDto
+        {
+            UserSurname = userVm.UserSurname,
+            UserName = userVm.UserName,
+            BirthDay = userVm.BirthDay,
+            Email = userVm.Email,
+            PhoneNumber = userVm.PhoneNumber,
+            Passport = userVm.Passport,
+            PassportType = userVm.PassportType,
+            DriverLicense = userVm.DriverLicense
+        });
+        if (result)
+        {
+            return new JsonResult(new { result = "Success" });
+        }
+
+        return new JsonResult(new
+        {
+            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере"
         });
     }
 }

@@ -1,6 +1,8 @@
 import axios from "axios"
 
-export default class API {
+
+
+class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
             baseURL: url,
@@ -19,28 +21,98 @@ export default class API {
         this.axiosInstance = axios.create(options);
     };
 
-    login = async (model) => {
-        var result = null
-        this.axiosInstance.defaults.withCredentials = true;
-        await this.axiosInstance.post(`/account/login/`, model)
+    book = async () => {
+        await this._post('booking/rent'); 
+    }
+
+    tariffs = async (id) => {
+        if(id)
+            return await this._get(`tariffs/${id}`);
+        return await this._get('tariffs');
+    }
+
+    car_description = async (modelId) => await this._get(`cars/model/${modelId}`);
+
+    car_prototypes = async (tariffId) => {
+        return await this._get(`cars/models/${tariffId}`);
+    }
+
+    available_cars = async (params) => await this._get('cars/available', params);
+
+    documents = async () => {
+        return await this._get(`/information/documents`);
+    }
+
+    news = async () => {
+        return await this._get(`/information/news`);
+    }
+
+    login = async (form) => {
+        return await this._post(`/account/login/`, this._getModelFromForm(form));
+    }
+
+    logout = async () => {
+        return await this._post(`/account/logout/`);
+    }
+
+    register = async (form) => {
+        return await this._post('/account/register', this._getModelFromForm(form));
+    }
+
+    IsUserAuthorized = async () => {
+        return await this._get('/Account/IsAuthorized');
+    }
+
+    async _post(endpoint, model) {
+        const result = {successed: false};
+        await this.axiosInstance.post(endpoint, model)
             .then(response => {
-                result = { message: response.data, isFailed: false }
+                result.status = response.status; 
+                result.successed = true;
             })
             .catch(error => {
-                // var errorMessage = error.response.data
-                // console.log(errorMessage)
-                // this._renameKeys(errorMessage, keysTranslations)
-                result = { message: error.response.data, isFailed: true }
+                if(error.response){
+                    result.error = error.response.data.error;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
             })
         return result;
     }
 
-    getDataFromEndpoint(endpoint, dataSetterFunction) {
-        this.axiosInstance.get(endpoint)
+    async _get(endpoint, params) {
+        const response = {successed: false};
+        await this.axiosInstance.get(endpoint, {params: params})
             .then(r => {
-                dataSetterFunction(r.data)
+                response.response = r.response;
+                response.successed = true;
+                response.data = r.data;
+                response.status = r.status;
             })
-            .catch(err => console.log(`Error while recieving data from ${endpoint}`));
+            .catch(error =>{ 
+                if(error.response) {
+                    response.error = error.response.data.error;
+                    response.status = error.response.status;
+                }
+            else
+                alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.")}
+            );
+        return response;
+    }
+
+    _getModelFromForm(form) {
+        return Array.from(form.elements)
+            .filter((element) => element.name)
+            .reduce(
+              (obj, input) => {
+                let value = input.value;
+                if(input.type==="date")
+                    value = (new Date(input.value)).toJSON();
+    
+                return Object.assign(obj, { [input.name]:  value})},
+              {}
+            );
     }
 
     _renameKey(obj, oldKey, newKey) {
@@ -60,3 +132,7 @@ export default class API {
         }
     }
 }
+
+
+const API = new AxiosWrapper();
+export default API;

@@ -1,34 +1,24 @@
-using System.Text.RegularExpressions;
 using Carsharing.Forms;
 using Microsoft.AspNetCore.Mvc;
-using Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Authorization;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using System.Xml;
 using AutoMapper;
-using Microsoft.Net.Http.Headers;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels;
-using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Domain;
-using Contracts.UserInfo;
-using Services.Abstractions;
+using Carsharing.Helpers;
+
 
 namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 [AllowAnonymous]
-//[ValidateAntiForgeryToken]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<User> _userManager;
@@ -36,93 +26,66 @@ public class AccountController : ControllerBase
     private readonly CarsharingContext _carsharingContext;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
-    private readonly IUserInfoService _userInfoService;
 
     public AccountController(
         CarsharingContext carsharingContext,
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration,
-        IUserInfoService userInfoService
-        )
+        IConfiguration configuration
+    )
     {
         _mapper = mapper;
         _configuration = configuration;
         _userManager = userManager;
         _signInManager = signInManager;
         _carsharingContext = carsharingContext;
-        _userInfoService = userInfoService;
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterUser(RegistrationDto dto)
+    public async Task<IActionResult> RegisterUser(RegistrationVm vm)
     {
 
-        var client = await _userManager.FindByEmailAsync(dto.Email);
+        var client = await _userManager.FindByEmailAsync(vm.Email);
         if (client != null)
-        {
-            return BadRequest("A client with this email already exists");
-        }
+            return BadRequest(new {error=new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}}});
 
-        var _userInfo = new UserInfo() { BirthDay = dto.Birthday };
-        var userInfo = await _carsharingContext.UserInfos.AddAsync(_userInfo);
-        User user = _mapper.Map<User>(dto);
-        user.UserInfo = userInfo.Entity;
+        var user = new User { Email = vm.Email, LastName = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}"};
+        var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
-        var resultUserCreate = await _userManager.CreateAsync(user, dto.Password);
+        if (!resultUserCreate.Succeeded)
+            return BadRequest( new {error= new ErrorsVM
+                {
+                    Code = (int)ErrorCode.ServiceError,
+                    Messages = resultUserCreate.Errors.Select(x => x.Description)
+                }});
 
-        if (resultUserCreate.Succeeded != true)
-            return Unauthorized(resultUserCreate.Errors);
-
-        _userInfo.UserId = user.Id;
-        _carsharingContext.Update(_userInfo);
-
-        List<Claim> claims = new List<Claim>()
-        {
-            new Claim(ClaimTypes.DateOfBirth, _userInfo?.BirthDay.ToString() ?? ""),
-            new Claim("Passport", _userInfo?.Passport?.ToString() ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
+        var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
+        await _carsharingContext.UserInfos.AddAsync(userInfo);
+        await _carsharingContext.SaveChangesAsync();
+        
+        var principal = await GetClaimsPrincipal(userInfo, user);
         await _signInManager.SignInAsync(user, false);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-
-        _carsharingContext.SaveChanges();
-
-        return Ok();
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+        
+        return Created("/", null);
     }
-
-    // Login
+    
+    //todo: csrf secure token
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    public async Task<IActionResult> Login([FromBody] LoginVM vm)
     {
-        var user = await _userManager.FindByEmailAsync(dto.Email);
-
+        var user = await _userManager.FindByEmailAsync(vm.Email);
         if (user == null)
-            return Unauthorized("Почта или пароль неверен.");
+            return Unauthorized(GetLoginError());
 
-        var resultSignIn = await _signInManager.PasswordSignInAsync(user, dto.Password, false, false);
-
+        var resultSignIn = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
         if (!resultSignIn.Succeeded)
-        {
-            return Unauthorized("Почта или пароль неверен.");
-        }
+            return Unauthorized(GetLoginError());
 
         var userInfo = await _carsharingContext.UserInfos.FirstOrDefaultAsync(x => x.UserId == user.Id);
-
-        List<Claim> claims = new List<Claim>()
-        {
-            new Claim(ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
-            new Claim("Passport", userInfo?.Passport?.ToString() ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
+        var principal = await GetClaimsPrincipal(userInfo, user);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         return Ok();
     }
@@ -141,39 +104,35 @@ public class AccountController : ControllerBase
                 "https://localhost:7129/api/account/google-external-auth-callback"
                 );
             if (getTokenResult is null)
-                return StatusCode(500, "Не получилось получить доступ к сервису Google");
-
+                return BadRequest(GetGoogleError());
             var getUserResult = await GoogleAPI.GetUserAsync(tokenId: getTokenResult.id_token, accessToken: getTokenResult.access_token);
 
             if (getUserResult is null)
-                return StatusCode(500, "Не получилось получить доступ к сервису Google");
+                return BadRequest(GetGoogleError());
 
-            User user = _mapper.Map<User>(getUserResult);
+            var user = _mapper.Map<User>(getUserResult);
             UserInfo userInfo = null;
-
-
+            
             if (await _userManager.FindByEmailAsync(user.Email) is null)
             {
                 ///TODO: выделить создание юзера и юзеринфо в сервис и сделать lock
-
-                UserInfo _userInfo = _mapper.Map<UserInfo>(getUserResult);
+                
+                var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
 
                 var createUserResult = await _userManager.CreateAsync(user);
-                if (createUserResult.Succeeded == true)
+                if (createUserResult.Succeeded)
                 {
                     userInfoDb.Entity.UserId = user.Id;
                     userInfo = _carsharingContext.UserInfos.Update(userInfoDb.Entity).Entity;
                 }
                 else
-                {
-                    return BadRequest(createUserResult.Errors);
-                }
-                _carsharingContext.SaveChanges();
+                    return BadRequest(new{error=createUserResult.Errors});
+                
+                await _carsharingContext.SaveChangesAsync();
             }
-
-
+            
             if (userInfo is null)
             {
                 try
@@ -194,10 +153,8 @@ public class AccountController : ControllerBase
 
             await _signInManager.SignInWithClaimsAsync(user, false, claims);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-
-
-            return Redirect("http://localhost:3000/profile");
-
+            
+            return Ok();
         }
         catch (Exception e)
         {
@@ -207,50 +164,40 @@ public class AccountController : ControllerBase
         }
 
     }
-
-    // Logout
+    
     [HttpPost("logout")]
     public async Task LogOut()
     {
         await _signInManager.SignOutAsync();
     }
 
-    [HttpPut("/edit/{id:int}")]
-    public async Task<IActionResult> Edit([FromRoute] int id,[FromBody] EditUserVm userVm)
+
+
+    [HttpGet("IsAuthorized")]
+    [Authorize]
+    public IActionResult UserIsAuthorized() => Ok();
+    
+    private object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
+
+    private object GetGoogleError() => new
     {
-        var result = await _userInfoService.EditUser(id, new EditUserDto
+        error = new ErrorsVM
         {
-            UserSurname = userVm.UserSurname,
-            UserName = userVm.UserName,
-            BirthDay = userVm.BirthDay,
-            Email = userVm.Email,
-            PhoneNumber = userVm.PhoneNumber,
-            Passport = userVm.Passport,
-            PassportType = userVm.PassportType,
-            DriverLicense = userVm.DriverLicense
-        });
-        if (result)
-        {
-            return new JsonResult(new {result ="Success"});
+            Code = (int)ErrorCode.ExternalError,
+            Messages = new[] { "Не получилось получить доступ к сервису Google" }
         }
-        return new JsonResult(new
+    };
+
+    private async Task<ClaimsPrincipal> GetClaimsPrincipal(UserInfo userInfo, User user)
+    {
+        List<Claim> claims = new List<Claim>
         {
-            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере"
-        });
+            new (ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
+            new ("Passport", userInfo?.Passport ?? "")
+        };
+
+        var pr = await _signInManager.CreateUserPrincipalAsync(user);
+        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
+        return pr;
     }
 }
-
-
-//{
-//  "email": "DioBrando003@yandex.ru",
-//  "password": "test00009AAAA111111++",
-//  "retryPassword": "test00009AAAA111111++",
-//  "userName": "Marsel",
-//  "userSurname": "Alm",
-//  "birthday": "2023-04-19T07:25:07.530Z"
-//}
-
-//{
-//  "email": "DioBr003@yandex.ru",
-//  "password": "test0000AAAA111111++"
-//}
