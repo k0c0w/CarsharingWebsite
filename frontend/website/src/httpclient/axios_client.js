@@ -68,6 +68,10 @@ class AxiosWrapper {
         return await this._get('/Account/PersonalInfo');
     }
 
+    editPersonalInfo = async (form)  => {
+        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    }
+
     profile = async () => {
         return await this._get('/Account');
     }

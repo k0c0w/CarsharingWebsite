@@ -18,7 +18,6 @@ const gap = { columnGap: "100px"};
 async function fetchData(api, setData, navigator, location) {
     const response = await api();
 
-    console.log(response)
     if(response?.successed){
         setData(response.data);
     }
@@ -33,9 +32,31 @@ async function fetchData(api, setData, navigator, location) {
         alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
 }
 
+function handleResponse(response, onSuccess, on401, setErrors) {
+    if(response?.successed){
+        onSuccess();
+    }
+    else if(!response?.successed && response?.status){
+        if(response.status === 401)
+            on401();
+        else if(response.status === 400 && response.error){
+            const error = response.error;
+        
+            if(error.code === 1) setErrors(getVMErrors(error.errors));
+            else if(error.code === 2) setErrors({messages: error.messages});
+            else setErrors({messages: "При обновлении произошли ошибки."})
+        }
+        else setErrors({fatal: "При обновлении произошли ошибки."})
+    }
+    else {
+        alert("Проверьте подключение к интернету.");
+    }
+}
+
 export function ProfileChangePassword () {
     const formRef = useRef(null);
     const location = useLocation();
+    const navigator = useNavigate();
     const [errors, setErrors] = useState({});
     const [requestSent, setRequestSent] = useState(false);
 
@@ -48,21 +69,8 @@ export function ProfileChangePassword () {
                setRequestSent(true); 
                const response = await API.tryChangePassword(formRef.current);
                setRequestSent(false);
-               if(response?.successed){
-                    alert("Пароль изменен.");
-               }
-               else if(!response.successed && response?.status){
-                    if(response.status === 400 && response.error){
-                        if(response.error.code === 1) setErrors(getVMErrors(response.error.errors));
-                        else if(response.error.code === 2) setErrors(setErrors({errorSummary: response.error.messages}));
-                        else setErrors({errorSummary: "При обновлении произошли ошибки"});
-                    }
-                    else setErrors({errorSummary: "При обновлении произошли ошибки"});
-               }
-               else
-                alert("Проверьте интренет подключение.");
+               handleResponse(response, () => alert("Пароль изменен."), () => navigator(`/login?return_uri=${location.pathname}`), setErrors);
             }
-            setRequestSent(true);    
         }
     }
 
@@ -71,7 +79,7 @@ export function ProfileChangePassword () {
         <Section>
             <Form ref={formRef} className="center flex-column">
                 <Bold className="form-header">Смена пароля</Bold>
-                <div className='form-error-summary'>{errors?.errorSummary}</div>
+                <div className='form-error-summary'>{errors?.messages}</div>
                 <Input required id="old_password" name="old_password" placeholder="текущий пароль" type="password"/>
                 <Input inputErrorMessage={errors['password']} required id="password" name="password" placeholder="новый пароль" type="password"/>
                 <Input required id="password_repeat" placeholder="повторите пароль" type="password"/>
@@ -81,15 +89,15 @@ export function ProfileChangePassword () {
     </>
 };
 
-const LeftProfileEdit = ({personalInfo}) => (<>
-    <Input required id="email" name="email" placeholder="Почта" value={personalInfo.email} type="email"/>
-    <Input id="passport" name="passport" placeholder="Паспорт" value={personalInfo?.passport} type="text"/>
-    <Input id="license" placeholder="Водительское удостоверение" value={personalInfo?.driver_license} type="text"/></>);
+const LeftProfileEdit = ({personalInfo, errors}) => (<>
+    <Input inputErrorMessage={errors['email']} required id="email" name="email" placeholder="Почта" value={personalInfo.email} type="email"/>
+    <Input inputErrorMessage={errors['passport']}  id="passport" name="passport" placeholder="Паспорт" value={personalInfo?.passport} type="text"/>
+    <Input inputErrorMessage={errors['license']}  id="license" placeholder="Водительское удостоверение" value={personalInfo?.driver_license} type="text"/></>);
 
-const RightProfileEdit = ({personalInfo}) => (<>
-    <Input required id="name" name="name" placeholder="Имя" value={personalInfo?.name} type="text"/>
-    <Input required id="surname" name="surname" placeholder="Фамилия" value={personalInfo?.surname} type="text"/>
-    <Input required id="birthdate" name="birthdate" placeholder="Дата рождения" value={personalInfo?.birthdate} type="date"/></>);
+const RightProfileEdit = ({personalInfo, errors}) => (<>
+    <Input inputErrorMessage={errors['name']} required id="name" name="name" placeholder="Имя" value={personalInfo?.name} type="text"/>
+    <Input inputErrorMessage={errors['surname']} required id="surname" name="surname" placeholder="Фамилия" value={personalInfo?.surname} type="text"/>
+    <Input inputErrorMessage={errors['birthdate']} required id="birthdate" name="birthdate" placeholder="Дата рождения" value={personalInfo?.birthdate} type="date"/></>);
 
 export function ProfileEdit () {
     const formRef = useRef(null);
@@ -97,14 +105,22 @@ export function ProfileEdit () {
     const navigator = useNavigate();
     const [personalInfo, setPersonalInfo] = useState({});
 
+    const [errors, setErrors] = useState({});
+    const [requestSent, setRequestSent] = useState(false);
+
     useEffect(() => {
         fetchData(API.personalInfo, setPersonalInfo, navigator, location.pathname);
     },[]);
 
-    function handleSend(event) {
+    async function handleSend(event) {
         event.preventDefault();
-        if(areValidProfileEdit(formRef.current)) {}
-            //sendForm(formRef.current, location.pathname);
+        if(requestSent || !areValidProfileEdit(formRef.current)) return;
+
+        setErrors({});
+        setRequestSent(true);
+        const response = await API.editPersonalInfo(formRef.current);
+        setRequestSent(false);
+        handleResponse(response, () => alert("Данные обновленны"), () => navigator(`/login?return_uri=${location.pathname}`), setErrors);
     }
 
     return <>
@@ -116,9 +132,10 @@ export function ProfileEdit () {
                     <Bold className="form-header">{`${personalInfo?.name} ${personalInfo?.surname}`}</Bold>
                     <NavLink to="password" className="change-password">[сменить пароль]</NavLink>
                 </div>
+                <div className='form-error-summary'>{errors?.messages}</div>
                 <MyFormProfileInput
-                    leftBlock={<LeftProfileEdit personalInfo={personalInfo}/>}
-                    rightBlock={<RightProfileEdit personalInfo={personalInfo}/>}/>
+                    leftBlock={<LeftProfileEdit errors={errors} personalInfo={personalInfo}/>}
+                    rightBlock={<RightProfileEdit errors={errors} personalInfo={personalInfo}/>}/>
                 <div id="formButton" className="flex-container" style={gap}>
                     <button className="button form-button delete">Удалить аккаунт</button>
                     <button onClick={handleSend} className="button form-button">Сохранить</button>
