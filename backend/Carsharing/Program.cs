@@ -75,7 +75,7 @@ builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 
-builder.Services.AddScoped<IUserInfoService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

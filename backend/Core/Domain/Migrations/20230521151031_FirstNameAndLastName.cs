@@ -11,9 +11,15 @@ namespace Entities.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "Surname",
+                name: "UserSurname",
                 table: "AspNetUsers",
                 newName: "LastName");
+
+            migrationBuilder.AddColumn<string>(
+                name: "FirstName",
+                table: "AspNetUsers",
+                type: "varchar(256)",
+                nullable: false);
         }
 
         /// <inheritdoc />
@@ -22,7 +28,29 @@ namespace Entities.Migrations
             migrationBuilder.RenameColumn(
                 name: "LastName",
                 table: "AspNetUsers",
-                newName: "Surname");
+                newName: "UserSurname");
+
+            migrationBuilder.DropColumn(
+                name: "FirstName",
+                table: "AspNetUsers");
         }
+
+
+        //protected override void Up(MigrationBuilder migrationBuilder)
+        //{
+        //    migrationBuilder.AddColumn<string>(
+        //        name: "LastName",
+        //        table: "AspNetUsers",
+        //        type: "varchar(256)",
+        //        nullable: false);
+        //}
+
+        ///// <inheritdoc />
+        //protected override void Down(MigrationBuilder migrationBuilder)
+        //{
+        //    migrationBuilder.DropColumn(
+        //        name: "LastName",
+        //        table: "AspNetUsers");
+        //}
     }
 }

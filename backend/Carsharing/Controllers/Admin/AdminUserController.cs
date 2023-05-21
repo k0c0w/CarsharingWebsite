@@ -9,9 +9,9 @@ namespace Carsharing.Controllers;
 [Route("/admin/api/[controller]")]
 public class AdminUserController: ControllerBase
 {
-    private readonly IUserInfoService _userInfoService;
+    private readonly IUserService _userInfoService;
 
-    public AdminUserController(IUserInfoService userInfoService)
+    public AdminUserController(IUserService userInfoService)
     {
         _userInfoService = userInfoService;
     }
@@ -34,6 +34,7 @@ public class AdminUserController: ControllerBase
                 {
                     Id = x.User.Id,
                     LastName = x.User.LastName,
+                    FirstName = x.User.FirstName,
                     UserName = x.User.UserName,
                     Email = x.User.Email,
                     PhoneNumber = x.User.PhoneNumber

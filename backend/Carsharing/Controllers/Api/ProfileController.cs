@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Profile;
 using Contracts.UserInfo;
@@ -13,17 +14,17 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class ProfileController : ControllerBase
 {
-    private readonly IUserInfoService _userInfoService;
-    public ProfileController(IUserInfoService userInfoService)
+    private readonly IUserService _userService;
+    public ProfileController(IUserService userService)
     {
-        _userInfoService = userInfoService;
+        _userService = userService;
     }
     
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
         //todo: var userId = User.GetId();
-        var info = await _userInfoService.GetProfileInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
+        var info = await _userService.GetProfileInfoAsync("bb5f0757-7dc8-4189-9dc3-9f66e2f2420c");
         return new JsonResult(new ProfileInfoVM()
         {
             UserInfo = new UserInfoVM
@@ -45,7 +46,7 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> PersonalInfo()
     {
         //todo: var userId = User.GetId();
-        var info = await _userInfoService.GetPersonalInfoAsync("c8e37715-1f4c-45aa-aca8-bbfadcac21fe");
+        var info = await _userService.GetPersonalInfoAsync("bb5f0757-7dc8-4189-9dc3-9f66e2f2420c");
         return new JsonResult(new PersonalInfoVM()
         {
             Email = info.Email,
@@ -60,10 +61,11 @@ public class ProfileController : ControllerBase
     [HttpPut("/edit/{id:int}")]
     public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] EditUserVm userVm)
     {
-        var result = await _userInfoService.EditUser(id, new EditUserDto
+
+        var result = await _userService.EditUser(id, new EditUserDto
         {
-            UserSurname = userVm.UserSurname,
-            UserName = userVm.UserName,
+            LastName = userVm.LastName,
+            FirstName = userVm.FirstName,
             BirthDay = userVm.BirthDay,
             Email = userVm.Email,
             PhoneNumber = userVm.PhoneNumber,

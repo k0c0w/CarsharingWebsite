@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.RegularExpressions;
 using Contracts;
 using Contracts.Results;
@@ -12,7 +13,7 @@ using Services.Exceptions;
 
 namespace Services.User;
 
-public class UserService : IUserInfoService
+public class UserService : IUserService
 {
     private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly CarsharingContext _context;
@@ -99,8 +100,8 @@ public class UserService : IUserInfoService
         try
         {
             var user = await FindUserInfo(id);
-            CheckUserSurname(user,editUserVm.UserSurname);
-            CheckUserName(user,editUserVm.UserName);
+            CheckLastName(user,editUserVm.LastName);
+            CheckFirstName(user,editUserVm.FirstName);
             CheckUserEmail(user,editUserVm.Email);
             CheckUserPhoneNum(user,editUserVm.PhoneNumber);
             CheckUserBirthday(user,editUserVm.BirthDay);
@@ -143,20 +144,21 @@ public class UserService : IUserInfoService
         return user;
     }
     
-    private void CheckUserSurname(UserInfo user,string val)
+    private void CheckLastName(UserInfo user,string val)
     {
-        if (Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
         {
-                user.User.LastName = val;  
+            user.User.LastName = val;
         }
+                 
     }
-    private void CheckUserName(UserInfo user, string val)
+    private void CheckFirstName(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
         {
-            user.User.UserName = val;
-            user.User.NormalizedUserName = val.ToUpper();
+            user.User.FirstName = val;
         }
+            
     }
     private void CheckUserEmail(UserInfo user, string val)
     {
@@ -168,7 +170,7 @@ public class UserService : IUserInfoService
     }
     private void CheckUserPhoneNum(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{10}"))
+        if (Regex.IsMatch(val, @"\d{10}$"))
         {
             user.User.PhoneNumber = val;
         }

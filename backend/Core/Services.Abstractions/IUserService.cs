@@ -6,7 +6,7 @@ using Domain.Entities;
 namespace Services.Abstractions;
 
 //todo: rename to IUserService
-public interface IUserInfoService
+public interface IUserService
 {
     Task<bool> EditUser(int id, EditUserDto editUserVm);
     Task<bool> Verify(int id);
