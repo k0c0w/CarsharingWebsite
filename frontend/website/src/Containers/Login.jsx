@@ -3,7 +3,7 @@ import Container from '../Components/Container'
 import React from 'react'
 import Form, { Input } from '../Components/formTools'
 import Bold from '../Components/TextTags'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import API from '../httpclient/axios_client'
 import { areValidLoginFields } from '../js/form-validators'
@@ -11,7 +11,7 @@ import GoogleSignIn from '../Components/SignInButtons'
 import "../css/form.css";
 
 
-export default function Login () {
+export default function Login ({setUser, user}) {
   const [errors, setErrors] = useState({})
   const [formSummary, setFormSummary] = useState();
   const [requestSent, setRequestSent] = useState(false);
@@ -19,6 +19,7 @@ export default function Login () {
   const loginRef = useRef(null)
   const passwordRef = useRef(null)
   const navigator = useNavigate();
+  const location = useLocation();
 
    async function handleLogin (event) {
     event.preventDefault();
@@ -26,7 +27,6 @@ export default function Login () {
 
     setFormSummary("");
     setRequestSent(true);
-    debugger;
     const response = await API.login(formRef.current);
     setRequestSent(false);
     if (response.status === 401) {
@@ -40,11 +40,19 @@ export default function Login () {
         setErrors({login: error.errors?.Email[0], password: error.errors?.Password[0]})
     }
     else{
-      navigator('/');
+      localStorage.setItem('user', true);
+      setUser(true);
+      const urlParams = new URLSearchParams(location.search);
+      const returnUri = urlParams.get('return_uri');
+      if(returnUri)
+        navigator(returnUri);
+      else
+        navigator('/');
     }
   }
 
-  return (
+
+  return user ? (<Navigate to ='/'/>) : (
     <Section>
       <Container className='flex-container'>
         <Form ref={formRef} className='center flex-column'>

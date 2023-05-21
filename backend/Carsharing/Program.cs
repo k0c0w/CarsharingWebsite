@@ -124,14 +124,13 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseCors("CORSAllowLocalHost3000");
+app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.UseStaticFiles();
 
-app.UseRouting();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 

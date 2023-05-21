@@ -2,20 +2,34 @@ import './App.css';
 import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
-import {BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-import { Fragment, useEffect, useState } from 'react';
+import PrivateRoute from './Containers/PrivateRoute';
+import {BrowserRouter, Routes, Route } from 'react-router-dom';
+import {useEffect, useState } from 'react';
 import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';
 import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profiles';
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
+import API from './httpclient/axios_client';
 
 
 function App() {
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
+    API.IsUserAuthorized().then(r => {
+      if(r.successed)
+        localStorage.setItem('user', true);
+      else {
+        localStorage.clear();
+      }
+      setUser(localStorage.getItem('user'));
+      });
+
+
     window.addEventListener('scroll', function () {
-      let header = document.getElementsByTagName('header')[0];
+      const header = document.getElementsByTagName('header')[0];
       if(header) {
         toggleHeader(header);
       }
@@ -29,13 +43,15 @@ function App() {
         <Route path="/">
           <Route index exact path="" element={<Index/>}/>
           <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
-          <Route path='rent/:modelId' element={<CarRent/>}/>
+          <Route element={<PrivateRoute user={user}/>}>
+            <Route path='rent/:modelId' element={<CarRent/>}/>
+          </Route>
         </Route>
         <Route exact path="/documents" element={<Documents/>}/>
         <Route element={<FixHeader/>}>  
-          <Route exact path="/login" element={<Login/>}/>
+          <Route exact path="/login" element={<Login setUser={setUser} user={user}/>}/>
           <Route exact path="/registration" element={<Registration/>}/>
-          <Route path='/profile'>
+          <Route path='/profile' element={<PrivateRoute user={user}/>}>
             <Route exact path='' element={<Profile/>}/>
             <Route exact path='edit' element={<ProfileEdit/>}/>
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>

@@ -14,7 +14,7 @@ import API from "../httpclient/axios_client";
 const gap = { columnGap: "100px"};
 
 function axiosData(endpoint, setter) {
-    new API().axiosInstance.get(endpoint)
+    API.axiosInstance.get(endpoint)
         .then(r => setter(r.data))
         .catch(err => alert("Ошибка при загрузке профиля. Проверьте интернет соединение."))
 }
@@ -57,6 +57,7 @@ export function ProfileEdit () {
     const [personalInfo, setPersonalInfo] = useState({});
 
     useEffect(() => {
+        
         axiosData("/profile/personalInfo", setPersonalInfo);
     },[]);
 
@@ -100,7 +101,7 @@ const CarList = ({cars}) => (
     <>
         <Bold>Мои машины:</Bold>
         <ul className="profile-carlist-list">
-            {cars.map(car => 
+            {cars?.map(car => 
             <li>
                 <Figure figureName="rented-car" className="border-solid">
                     <img className="rented-car-image" src="https://mobility.hyundai.ru/dist/images/cars/sonata2.png"/>

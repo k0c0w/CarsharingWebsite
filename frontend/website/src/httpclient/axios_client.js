@@ -40,7 +40,11 @@ class AxiosWrapper {
     available_cars = async (params) => await this._get('cars/available', params);
 
     documents = async () => {
-        return await this._get(`documents`);
+        return await this._get(`/information/documents`);
+    }
+
+    news = async () => {
+        return await this._get(`/information/news`);
     }
 
     login = async (form) => {
@@ -49,6 +53,10 @@ class AxiosWrapper {
 
     register = async (form) => {
         return await this._post('/account/register', this._getModelFromForm(form));
+    }
+
+    IsUserAuthorized = async () => {
+        return await this._get('/Account/IsAuthorized');
     }
 
     async _post(endpoint, model) {

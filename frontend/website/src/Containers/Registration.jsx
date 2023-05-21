@@ -35,6 +35,7 @@ export function Registration  ()  {
         setErrorSummary([]);
         setErrors({});
         const result = await API.register(formRef.current);
+    
         if(result.status === 400 && result.error)
         {
             if(result.error.code === 1)

@@ -22,7 +22,7 @@ export default function MyMap({className, geo, cars, chooseCarFunc}) {
                     </Placemark>
                 })}
                 <ZoomControl options={{ float: "left" }} />
-                <GeolocationControl  options={{ float: "left" }} />
+                {/*<GeolocationControl  options={{ float: "left" }} />*/}
             </YMap>
         </YMaps>
     </div>

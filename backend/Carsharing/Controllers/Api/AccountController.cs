@@ -53,7 +53,7 @@ public class AccountController : ControllerBase
         var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
         if (!resultUserCreate.Succeeded)
-            return Unauthorized( new {error= new ErrorsVM
+            return BadRequest( new {error= new ErrorsVM
                 {
                     Code = (int)ErrorCode.ServiceError,
                     Messages = resultUserCreate.Errors.Select(x => x.Description)
@@ -171,6 +171,11 @@ public class AccountController : ControllerBase
     {
         await _signInManager.SignOutAsync();
     }
+
+
+    [HttpGet("IsAuthorized")]
+    [Authorize]
+    public IActionResult UserIsAuthorized() => Ok();
     
     private object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
 
