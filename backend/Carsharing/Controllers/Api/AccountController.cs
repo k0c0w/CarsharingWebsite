@@ -14,9 +14,14 @@ using System.Xml;
 using AutoMapper;
 using Microsoft.Net.Http.Headers;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using Carsharing.Persistence.GoogleAPI;
+using Carsharing.ViewModels;
+using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Domain;
+using Contracts.UserInfo;
+using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
@@ -31,13 +36,15 @@ public class AccountController : ControllerBase
     private readonly CarsharingContext _carsharingContext;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
+    private readonly IUserInfoService _userInfoService;
 
     public AccountController(
         CarsharingContext carsharingContext,
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration
+        IConfiguration configuration,
+        IUserInfoService userInfoService
         )
     {
         _mapper = mapper;
@@ -45,6 +52,7 @@ public class AccountController : ControllerBase
         _userManager = userManager;
         _signInManager = signInManager;
         _carsharingContext = carsharingContext;
+        _userInfoService = userInfoService;
     }
 
     [HttpPost("register")]
@@ -207,6 +215,29 @@ public class AccountController : ControllerBase
         await _signInManager.SignOutAsync();
     }
 
+    [HttpPut("/edit/{id:int}")]
+    public async Task<IActionResult> Edit([FromRoute] int id,[FromBody] EditUserVm userVm)
+    {
+        var result = await _userInfoService.EditUser(id, new EditUserDto
+        {
+            UserSurname = userVm.UserSurname,
+            UserName = userVm.UserName,
+            BirthDay = userVm.BirthDay,
+            Email = userVm.Email,
+            PhoneNumber = userVm.PhoneNumber,
+            Passport = userVm.Passport,
+            PassportType = userVm.PassportType,
+            DriverLicense = userVm.DriverLicense
+        });
+        if (result)
+        {
+            return new JsonResult(new {result ="Success"});
+        }
+        return new JsonResult(new
+        {
+            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере"
+        });
+    }
 }
 
 

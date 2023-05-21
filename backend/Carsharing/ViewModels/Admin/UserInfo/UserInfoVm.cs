@@ -1,4 +1,6 @@
-﻿namespace Carsharing.ViewModels.Admin.UserInfo;
+﻿using Domain.Entities;
+
+namespace Carsharing.ViewModels.Admin.UserInfo;
 
 public class UserInfoVm
 {
@@ -9,4 +11,6 @@ public class UserInfoVm
     public int? DriverLicense { get; set; }
     public decimal Balance { get; set; }
     public string? UserId { get; set; }
+    public bool? Verified { get; set; }
+    public User User { get; set; }
 }
