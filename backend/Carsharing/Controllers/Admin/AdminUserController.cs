@@ -34,11 +34,10 @@ public class AdminUserController: ControllerBase
     
     [HttpPost]
     [Route("/editnameorsurname/{id}")]
-    public async Task<IActionResult> EditUserNameOrSurname([FromBody]EditUserNameOrSurnameVM editUserNameOrSurnameVm,[FromRoute]string id)
+    public async Task<IActionResult> EditFirstNameOrSecondName([FromBody]EditUserNameOrSurnameVM editUserNameOrSurnameVm,[FromRoute]string id)
     {
         try
         {
-            //почему-то говорит что юзернаме кривой
             var old = await _userManager.FindByIdAsync(id);
             if (editUserNameOrSurnameVm.FirstName != null)
                 old.FirstName = editUserNameOrSurnameVm.FirstName;
@@ -47,12 +46,9 @@ public class AdminUserController: ControllerBase
                 old.Surname = editUserNameOrSurnameVm.SecondName;
 
             var result = await _userManager.UpdateAsync(old);
-            if (result.Succeeded)
-            {
-                return NoContent();
-            }
-
-            return BadRequest(result.Errors);
+            
+            return NoContent();
+            
         }
         catch (Exception e)
         {
