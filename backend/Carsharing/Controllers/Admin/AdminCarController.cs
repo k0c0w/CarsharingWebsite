@@ -6,7 +6,7 @@ using Services.Abstractions.Admin;
 
 namespace Carsharing.Controllers;
 
-[Route("admin/car")]
+[Route("api/admin/car")]
 [ApiController]
 public class AdminCarController : ControllerBase
 {

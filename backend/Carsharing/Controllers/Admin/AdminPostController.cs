@@ -5,7 +5,7 @@ using Services.Abstractions.Admin;
 
 namespace Carsharing.Controllers;
 
-[Route("post")]
+[Route("api/admin/post")]
 [ApiController]
 public class AdminPostController: ControllerBase
 {
@@ -62,7 +62,14 @@ public class AdminPostController: ControllerBase
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
-        return new JsonResult(await _postService.GetAllPostsAsync());
+        return new JsonResult((await _postService.GetAllPostsAsync())
+            .Select(x => new PostVM()
+        {
+           Id = x.Id,
+           Title = x.Title,
+           Body = x.Body,
+           CreatedAt = x.CreatedAt
+        }));
     }
     
     [HttpGet("posts/{id:int}")]

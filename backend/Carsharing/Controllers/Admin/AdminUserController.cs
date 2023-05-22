@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Carsharing.Controllers;
-[Route("user")]
+[Route("api/admin/user")]
 [ApiController]
 public class AdminUserController: ControllerBase
 {
@@ -20,7 +20,7 @@ public class AdminUserController: ControllerBase
     }
 
     [HttpGet]
-    [Route("/users")]
+    [Route("users")]
     public async Task<IActionResult> GetAllUsers()
     {
         return new JsonResult(_userManager.Users.Select(x => new UserDto()
@@ -33,7 +33,7 @@ public class AdminUserController: ControllerBase
     }
     
     [HttpPost]
-    [Route("/editnameorsurname/{id}")]
+    [Route("editnameorsurname/{id}")]
     public async Task<IActionResult> EditFirstNameOrSecondName([FromBody]EditUserNameOrSurnameVM editUserNameOrSurnameVm,[FromRoute]string id)
     {
         try
@@ -58,21 +58,27 @@ public class AdminUserController: ControllerBase
     }
     
     [HttpPost]
-    [Route("/editrole/{id}")]
+    [Route("editrole/{id}")]
     public async Task<IActionResult> EditUserRole([FromBody]string role,[FromRoute]string id)
     {
+        await _roleManager.CreateAsync(new UserRole{Name = "Admin"});
         try
         {
-            //надо проверить
+            //нужно будет добавить ограничения кто кому может менять роль
             var user = await _userManager.FindByIdAsync(id);
         
             var userRole = await _userManager.GetRolesAsync(user);
 
             var newUserRole = await _roleManager.FindByNameAsync(role);
-            
-            await _userManager.AddToRoleAsync(user, newUserRole.Name);
 
-            await _userManager.RemoveFromRoleAsync(user, userRole.FirstOrDefault());
+            var removeRole = userRole.FirstOrDefault();
+
+            await _userManager.AddToRoleAsync(user, newUserRole.Name);
+            
+            if (removeRole != null)
+            {
+                await _userManager.RemoveFromRoleAsync(user, removeRole);
+            }
             
             return NoContent();
         }
