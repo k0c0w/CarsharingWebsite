@@ -40,11 +40,11 @@ public class AdminUserController: ControllerBase
         {
             //почему-то говорит что юзернаме кривой
             var old = await _userManager.FindByIdAsync(id);
-            if (editUserNameOrSurnameVm.UserName != null)
-                old.UserName = editUserNameOrSurnameVm.UserName;
+            if (editUserNameOrSurnameVm.FirstName != null)
+                old.FirstName = editUserNameOrSurnameVm.FirstName;
             
-            if (editUserNameOrSurnameVm.Surname != null)
-                old.Surname = editUserNameOrSurnameVm.Surname;
+            if (editUserNameOrSurnameVm.SecondName != null)
+                old.Surname = editUserNameOrSurnameVm.SecondName;
 
             var result = await _userManager.UpdateAsync(old);
             if (result.Succeeded)

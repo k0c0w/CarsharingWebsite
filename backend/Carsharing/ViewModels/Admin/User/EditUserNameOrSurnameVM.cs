@@ -2,6 +2,6 @@
 
 public class EditUserNameOrSurnameVM
 {
-    public string UserName { get; set; }
-    public string Surname { get; set; }
+    public string FirstName { get; set; }
+    public string SecondName { get; set; }
 }
