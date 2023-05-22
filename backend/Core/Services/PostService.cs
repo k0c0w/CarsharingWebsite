@@ -58,7 +58,8 @@ public class PostService: IAdminPostService
         {
             Body = x.Body,
             Title = x.Title,
-            Id = x.Id
+            Id = x.Id,
+            CreatedAt = x.CreatedAt
         });
     }
 
