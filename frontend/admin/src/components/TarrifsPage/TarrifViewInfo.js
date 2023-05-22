@@ -7,7 +7,6 @@ export function TarrifViewInfo({ tarrifModel }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-
     return (
         <>
             <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', justifyContent: 'center', color: color.grey[100] }}>
@@ -17,8 +16,10 @@ export function TarrifViewInfo({ tarrifModel }) {
                 <div>{tarrifModel?.name}</div>
                 <h4>Длительность:</h4>
                 <div>{tarrifModel?.period}</div>
-                <h4>Длительность:</h4>
-                <div>{tarrifModel?.period}</div>
+                <h4>Стоимость:</h4>
+                <div>{tarrifModel?.price}</div>
+                <h4>Статус:</h4>
+                <div>{tarrifModel.is_active ? "Активен" : "Отключен"}</div>
             </div>
         </>
     )

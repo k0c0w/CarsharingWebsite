@@ -8,11 +8,12 @@ import '../../styles/popup.css'
 import { ColorModeContext, tokens } from '../../theme';
 import TarrifsGrid from './TarrifsGrid';
 import { Popup } from '../Popup';
-import { CarForm, CarFormTitle, CarFormSubmit } from './TarrifForm';
+import { TarrifForm, TarrifFormTitle, TarrifFormSubmit } from './TarrifForm';
 import { TarrifViewInfo, TarrifViewInfoTitle } from './TarrifViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
-import { axiosInstance } from '../../httpclient/axios_client';
+import API from '../../httpclient/axios_client';
 import { TableAddRefreshButtons } from '../TableCommon';
+
 
 function send() {
     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
@@ -20,15 +21,14 @@ function send() {
 
     var body = JSON.stringify(obj);
     console.log(body);
-
-    axiosInstance.post(`/tariff/create`, body)
-    .then((response) => console.log(response))
+    var result = API.getCars(body);
 }
 
 function TarrifTable({ tariffsData, refreshRows }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
+    
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);
     // Закрытие popup'a
@@ -36,10 +36,11 @@ function TarrifTable({ tariffsData, refreshRows }) {
     // Модель формы для popup'а
     const [popupInput, setPopup] = useState(
         {
-            title: <CarFormTitle></CarFormTitle>,
-            submit: <CarFormSubmit></CarFormSubmit>,
+            title: <TarrifFormTitle></TarrifFormTitle>,
+            submit: <TarrifFormSubmit></TarrifFormSubmit>,
             close: () => setD('none'),
-            inputsModel: <CarForm handler={console.log}></CarForm>,
+            axiosRequest: () => {},
+            inputsModel: <TarrifForm handler={console.log}></TarrifForm>,
         }
     );
 
@@ -47,8 +48,11 @@ function TarrifTable({ tariffsData, refreshRows }) {
         var popup = {
             title: <TarrifViewInfoTitle></TarrifViewInfoTitle>,
             close: () => setD('none'),
-            inputsModel: <TarrifViewInfo tarrifModel={model}></TarrifViewInfo>
+            axiosRequest: (data) => API.createTariff(data),
+            inputsModel: <TarrifViewInfo tarrifModel={model}></TarrifViewInfo>,
+            submit: false
         };
+        console.log(model)
         setPopup(popup);
         setD('block');
     }
@@ -56,21 +60,24 @@ function TarrifTable({ tariffsData, refreshRows }) {
 
     const handleClickAdd = () => {
         var popup = {
-            title: <CarFormTitle title='Добавить'></CarFormTitle>,
+            title: <TarrifViewInfoTitle title='Добавить'></TarrifViewInfoTitle>,
             close: () => setD('none'),
-            submit: <CarFormSubmit handler={send}></CarFormSubmit>,
-            inputsModel: <CarForm></CarForm>,
+            axiosRequest: (data) => API.createTariff(data),
+            submit: <TarrifFormSubmit handler={send}></TarrifFormSubmit>,
+            inputsModel: <TarrifForm></TarrifForm>,
         };
         setPopup(popup);
+        debugger
         console.log(selected[0]);
         setD('block');
     }
-    const handleClickChange = () => {
+    const handleClickEdit = () => {
         var popup = {
-            title: <CarFormTitle title='Изменить'></CarFormTitle>,
+            title: <TarrifFormTitle title='Изменить'></TarrifFormTitle>,
             close: () => setD('none'),
-            submit: <CarFormSubmit></CarFormSubmit>,
-            inputsModel: <CarForm carModel={selected[0]}></CarForm>,
+            submit: <TarrifFormSubmit></TarrifFormSubmit>,
+            axiosRequest: (body) => API.updateTariff(body),
+            inputsModel: <TarrifForm isEdit={true} carModel={selected[0]}></TarrifForm>,
         };
         setPopup(popup);
         console.log(selected[0]);
@@ -88,14 +95,14 @@ function TarrifTable({ tariffsData, refreshRows }) {
                             disabled={selected.length !== 1}
                             variant={'contained'}
                             style={{ backgroundColor: (selected.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickChange()}
+                            onClick={()=>handleClickEdit()}
                             >
                             Изменить
                         </Button>
                         <Button
                             variant={'contained'}
                             disabled={selected.length === 0}
-                            style={{ backgroundColor: color.redAccent[200], color: color.primary[900], marginRight: '20px' }}>Посмотреть данные</Button>
+                            style={{ backgroundColor: color.redAccent[200], color: color.primary[900], marginRight: '20px' }}>Удалить</Button>
                     </div>
                 </footer>
             </Box>

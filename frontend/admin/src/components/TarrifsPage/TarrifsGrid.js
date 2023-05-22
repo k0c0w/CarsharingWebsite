@@ -4,7 +4,7 @@ import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import { tokens } from '../../theme';
-import {axiosInstance } from '../../httpclient/axios_client';
+import API from '../../httpclient/axios_client';
 
 
 
@@ -70,7 +70,7 @@ function TarrifsGrid({handleClickInfo, handleSelect, rows=[]}) {
     
     //  ----- Оптимизировать -----  //
     var _handleSelect = async (listId) => {
-        const rows = await axiosInstance.get('/tariff/tariffs');
+        // const rows = await API.getTariff();
         var result = []
         listId.forEach(id => {
             rows.forEach( row => {
