@@ -3,7 +3,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'https://localhost:7129/admin') {
+    constructor(url = 'https://localhost:7129/api/admin') {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -13,7 +13,8 @@ class AxiosWrapper {
                 'Content-type': 'application/json; charset=UTF-8',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
-                "Access-Control-Allow-Credentials": "true"
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
         };
@@ -51,7 +52,7 @@ class AxiosWrapper {
             return result;
         }
         debugger;
-        result = await this._put("/tariff/edit/"+body.id, _body); 
+        result = await this._put("tariff/edit/"+body.id, _body); 
         return result;
     }
 

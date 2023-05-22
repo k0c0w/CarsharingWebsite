@@ -38,7 +38,6 @@ function TarrifMngmt() {
         
 
         console.log(tariffsData);
-        debugger
     }
 
     useEffect( () => {

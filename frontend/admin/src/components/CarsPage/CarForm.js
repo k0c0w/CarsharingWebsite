@@ -34,7 +34,7 @@ export function CarForm({carModel}) {
     var loadTarrifs = async () => { 
         var tarrifs = await API.getTariffs()
         console.log("tarrifs");
-        debugger
+
         setTarrifs(tarrifs.data);
     };
 
