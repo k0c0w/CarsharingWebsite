@@ -26,6 +26,7 @@ public class CarService : IAdminCarService
         var car = await _ctx.Cars.FindAsync(carId);
         if (car != null)
         {
+            //Поч два раза isOpened?
             car.IsOpened = false;
             car.IsOpened = false;
             await _ctx.SaveChangesAsync();
