@@ -1,0 +1,108 @@
+.form-field {
+    margin-bottom: 24px;
+    position: relative;
+    width: 125% ;
+}
+
+.form-error-summary {color:red; font:9px; margin-bottom: 10px}
+
+.form-error {
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 21px;
+    color: #e63312;
+}
+
+.form-input.error { border-color: #e63312; }
+
+.form-input {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 20px;
+    padding: 21px 30px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    width: 100%;
+    outline: 0;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    color: #191818;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.form-header {
+    letter-spacing: 5px;
+    font-size: 35px;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.form-button {
+    min-width: 180px;
+}
+
+.form-accept {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0;
+    padding-right: 20px;
+    max-width: 480px;
+}
+
+.form-accept_description {
+    font-size: 14px;
+    line-height: 1.2;
+    color: #666;
+}
+
+.form-accept input[type="checkbox"] {
+    margin-right: 32px;
+}
+
+.form-accept > .form-error {     left: 0;
+    text-align: center;
+    right: 0;
+}
+
+#formButton .softblue-regular { margin-left: 20px; }
+#loginHeader ~ .form-field { width: 100%;}
+
+/*медиа запросы*/
+@media only screen and (max-width: 480px) {
+    #myFormInput { flex-direction: column;}
+    #formButton { flex-direction: column-reverse;}
+    .form-input { padding: 13px 24px; font-size: 16px;}
+    .form-field { width: 100%!important; margin-bottom: 16px; }
+    .form-accept { padding-left: 10px; padding-right: 0; margin-bottom: 15px;}
+    #formButton .form-button {
+        font-size: 16px;
+        line-height: 24px;
+        margin-bottom: 16px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 250px;
+        border-radius: 4px;
+        height: 50px;
+    }
+    .form-header { font-size: 25px;  margin-bottom: 16px; letter-spacing: 1px;}
+
+    .form-error { left: 25px; top: 20px; font-size: 8px; }
+}
+
+@media (max-width: 767px) {
+    .questions__form-error {
+        left: 26px;
+        top: 29px;
+        font-size: 12px;
+    }
+}
