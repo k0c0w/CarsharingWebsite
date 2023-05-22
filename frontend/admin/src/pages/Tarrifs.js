@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-
 import TarrifTable from '../components/TarrifsPage/TarrifTableManagement'
-import {refreshData} from '../httpclient/axios_client'
+import API from '../httpclient/axios_client'
 import { TableSearchField } from '../components/TableCommon';
 
 
@@ -26,12 +25,25 @@ const attrs = [
 
 
 
-const tariffEndpoint = "tariff/tariffs";
-
 function TarrifMngmt() {
     const [tariffsData, setTariffsData] = useState([]);
+
+    var loadData = async () => {
+        var result = await API.getTariffs()
+
+        console.log(result);
     
-    useEffect(()=>{refreshData(setTariffsData, tariffEndpoint)}, []);
+        if (result.error !== null)
+            setTariffsData(result.data);
+        
+
+        console.log(tariffsData);
+        debugger
+    }
+
+    useEffect( () => {
+        loadData()
+    } , []);
 
     return (
         <>
@@ -40,7 +52,7 @@ function TarrifMngmt() {
             </h1>
             <TableSearchField data={tariffsData} attrs={attrs} defaultAttrName="Price" setData={setTariffsData}/>
             <div className='commandsList'>
-                <TarrifTable tariffsData={tariffsData} refreshRows={() => refreshData(setTariffsData, tariffEndpoint)}/>
+                <TarrifTable tariffsData={tariffsData} refreshRows={() => loadData()}/>
             </div>
         </>
     )

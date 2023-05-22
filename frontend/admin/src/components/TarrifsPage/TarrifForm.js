@@ -38,12 +38,11 @@ var handleSubmit = (e) => {
         var name = element?.name ?? "not exist";
         result[name] = element?.value ?? "not exist";
     });
-
     return (result);
 }
 
 
-export function CarForm({ carModel: tarrifModel }) {
+export function TarrifForm({ carModel: tarrifModel, isEdit }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -52,12 +51,13 @@ export function CarForm({ carModel: tarrifModel }) {
     return (
         <>
             <div className='inputs' id='form'>
+                { isEdit && <input hidden name="id" defaultValue={tarrifModel?.id}></input> }
                 <StyledTextField
                     variant="outlined"
                     size='small'
                     label="Имя"
                     name='name'
-                    value={tarrifModel?.name}
+                    defaultValue={tarrifModel?.name}
                 >
                 </StyledTextField>
 
@@ -68,7 +68,7 @@ export function CarForm({ carModel: tarrifModel }) {
                     label="Цена"
                     border="white"
                     name='price'
-                    value={tarrifModel?.price}
+                    defaultValue={tarrifModel?.price}
                 >
                 </StyledTextField>
 
@@ -90,7 +90,19 @@ export function CarForm({ carModel: tarrifModel }) {
                     name='description'
                     minRows={2} maxRows={10}
                     multiline={true}
-                    value={tarrifModel?.description}
+                    defaultValue={tarrifModel?.description}
+                    >
+                </StyledTextField>
+                <StyledTextField
+                    style={{ border: '25px' }}
+                    placeholder={'Макс. пробег'}
+                    fullWidth={true}
+                    variant="outlined"
+                    name='max_mileage'
+                    itemType='number'
+                    type='number'
+                    multiline={true}
+                    defaultValue={tarrifModel?.max_mileage}
                     >
                 </StyledTextField>
             </div>
@@ -98,22 +110,21 @@ export function CarForm({ carModel: tarrifModel }) {
     )
 }
 
-export const CarFormTitle = ({title='Добавить объект'}) => {
+export const TarrifFormTitle = ({title='Добавить объект'}) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
     return (<h3 style={{ color: color.grey[100] }}>{title}</h3 >);
 }
 
-export const CarFormSubmit = ({ handler, title='Сделать запрос' }) => {
+export const TarrifFormSubmit = ({ handler, title='Сделать запрос' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
-    return (
-        <Button disableFocusRipple className="submit" type="submit"
-            style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
-            onClick={(e) => handler(handleSubmit(e))}>
-            {title}
-        </Button>
-    );
+    // return (
+    //     <Button disableFocusRipple className="submit" type="submit"
+    //         style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
+    //         onClick={(e) => handler(handleSubmit(e))}>
+    //         {title}
+    //     </Button>
+    // );
 }

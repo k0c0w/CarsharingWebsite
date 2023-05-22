@@ -9,7 +9,7 @@ import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 import { useState } from 'react';
-import axiosInstance from '../../httpclient/axios_client';
+import API from '../../httpclient/axios_client';
 
 
 
@@ -31,17 +31,15 @@ export function CarForm({carModel}) {
     const color = tokens(theme.palette.mode);
     const [tarrifs, setTarrifs] = useState([]);
     
-    const getTarrifs = async () => {
-        axiosInstance.get(`tariff/tariffs`)
-        .then((response) => response.data)
-        .then((response) => { 
-            setTarrifs(response);
-            console.log(response);
-        })
-        .catch(err => console.log("Error ocured ehn recived tariff list for carform"));
-    }
-    useEffect(() => {
-        getTarrifs();
+    var loadTarrifs = async () => { 
+        var tarrifs = await API.getTariffs()
+        console.log("tarrifs");
+        debugger
+        setTarrifs(tarrifs.data);
+    };
+
+    useEffect( () => {
+        loadTarrifs()
     },[])
     
     const StyledTextField = styleTextField(color.primary[100]);

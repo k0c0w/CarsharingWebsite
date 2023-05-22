@@ -11,7 +11,7 @@ import { Popup } from '../Popup';
 import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
 import { CarViewInfo, CarViewInfoTitle } from './CarViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
-import { axiosInstance } from '../../httpclient/axios_client';
+import API from '../../httpclient/axios_client';
 
 
 
@@ -20,7 +20,7 @@ import { axiosInstance } from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function CarTable({ handleSelect, refreshRows, carsData }) {
+function CarTable({ refreshRows, carsData }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -31,8 +31,8 @@ function CarTable({ handleSelect, refreshRows, carsData }) {
 
         var body = JSON.stringify(obj);
         console.log(body);
-        axiosInstance.post(`/carmodel/create`, body)
-        .then((response) => console.log(response));
+        var result = API.getCars(body);
+        console.log(result);
     }
 
     // selected from data grid of cars
@@ -45,10 +45,12 @@ function CarTable({ handleSelect, refreshRows, carsData }) {
             title: <CarFormTitle></CarFormTitle>,
             submit: <CarFormSubmit></CarFormSubmit>,
             close: () => setD('none'),
+            axiosRequest: () => {},
             inputsModel: <CarForm handler={console.log}></CarForm>,
         }
     );
 
+    // открывают попап с нужным действием
     var handleClickInfo = (model) => {
         const popup = {
             title: <CarViewInfoTitle></CarViewInfoTitle>,
@@ -63,7 +65,8 @@ function CarTable({ handleSelect, refreshRows, carsData }) {
             title: <CarFormTitle title='Добавить'></CarFormTitle>,
             close: () => setD('none'),
             inputsModel: <CarForm></CarForm>,
-            settings: {method: "post", endpointUrl: "carmodel/create"}
+            axiosRequest: () => API.createCarModel(),
+            submit: true
         };
         setPopup(popup);
         console.log(selected[0]);
@@ -73,6 +76,7 @@ function CarTable({ handleSelect, refreshRows, carsData }) {
         const popup = {
             title: <CarFormTitle title='Изменить'></CarFormTitle>,
             close: () => setD('none'),
+            axiosRequest: () => API.createCarModel(),
             submit: <CarFormSubmit></CarFormSubmit>,
             inputsModel: <CarForm carModel={selected[0]}></CarForm>,
         };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CarTable from '../components/CarsPage/CarTableManagement';
 
 import '../styles/car-page.css';
-import { refreshData } from '../httpclient/axios_client';
+import API from '../httpclient/axios_client';
 import { TableSearchField } from '../components/TableCommon';
 
 
@@ -29,7 +29,17 @@ const carsEndpoint = "carmodel";
 function CarsMngmt() {
     const [carsData, setCarsData] = useState([]);
     
-    useEffect(()=>{refreshData(setCarsData, carsEndpoint)}, []);
+    var loadData = async () => {
+        var result = await API.getCars();
+        console.log(result);
+
+        if (result.error !== null)
+        setCarsData(result.data);
+    }
+
+    useEffect(()=>{ 
+        loadData()
+    }, []);
 
 
     return (
@@ -39,7 +49,7 @@ function CarsMngmt() {
             </h1>
             <TableSearchField data={carsData} attrs={attrs} defaultAttrName="Brand" setData={setCarsData}/>
             <div className='commandsList'>
-                <CarTable carsData={carsData} refreshRows={()=>refreshData(setCarsData, carsEndpoint)}/>
+                <CarTable carsData={carsData} refreshRows={()=>loadData()}/>
             </div>
         </>
     )
