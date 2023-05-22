@@ -74,6 +74,9 @@ public class UserService : IUserService
         {
             var user = await FindUserInfo(userInfoID);
             user.Verified = true;
+            //Если у нас не будет подтверждение отправляться по почте
+            user.User.EmailConfirmed = true;
+            user.User.PhoneNumberConfirmed = true;
             _context.UserInfos.Update(user);
             _context.SaveChanges();
             return true;
@@ -95,15 +98,15 @@ public class UserService : IUserService
     }
     
     
-    public async Task<bool> EditUser(int id, EditUserDto? editUserVm)
+    public async Task<string> EditUser(int id, EditUserDto? editUserVm)
     {
         try
         {
             var user = await FindUserInfo(id);
+            if(! await CheckUserEmail(user,editUserVm.Email)) {throw new Exception("Почта уже зарегестрирова");}
+            if(! await CheckUserPhoneNum(user,editUserVm.PhoneNumber)) {throw new Exception("Телефон используется другим пользователем или введен неверно");}
             CheckLastName(user,editUserVm.LastName);
             CheckFirstName(user,editUserVm.FirstName);
-            CheckUserEmail(user,editUserVm.Email);
-            CheckUserPhoneNum(user,editUserVm.PhoneNumber);
             CheckUserBirthday(user,editUserVm.BirthDay);
             CheckUserPassport(user,editUserVm.Passport);
             CheckUserPassportType(user,editUserVm.PassportType);
@@ -111,11 +114,11 @@ public class UserService : IUserService
             user.Verified = false;
             _context.UserInfos.Update(user);
             _context.SaveChanges();
-            return true;
+            return "success";
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            return false;
+            return e.Message;
         }
     }
     
@@ -157,23 +160,40 @@ public class UserService : IUserService
         if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
         {
             user.User.FirstName = val;
-        }
-            
+        }            
     }
-    private void CheckUserEmail(UserInfo user, string val)
+    private async Task<bool> CheckUserEmail(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        var existeduser = await  _userManager.FindByEmailAsync(val);
+        if (existeduser == null)
         {
             user.User.Email = val;
             user.User.NormalizedEmail = val.ToUpper();
+            user.User.EmailConfirmed = false;
+            return true;
         }
+
+        return false;
+
     }
-    private void CheckUserPhoneNum(UserInfo user, string val)
+    private async Task<bool> CheckUserPhoneNum(UserInfo user, string val)
     {
         if (Regex.IsMatch(val, @"\d{10}$"))
         {
+            var users = await GetAllInfoAsync();
+            users = users.Select(x => x).Where(x => x.User.Id != user.User.Id).ToList();
+            foreach (var el in users)
+            {
+                if (el.User.PhoneNumber == val)
+                {
+                    return false;
+                }
+            }
             user.User.PhoneNumber = val;
+            user.User.PhoneNumberConfirmed = false;
+            return true;
         }
+        return false;
     }
     private void CheckUserBirthday(UserInfo user, DateTime val)
     {

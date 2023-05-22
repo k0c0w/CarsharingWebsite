@@ -8,7 +8,7 @@ namespace Services.Abstractions;
 //todo: rename to IUserService
 public interface IUserService
 {
-    Task<bool> EditUser(int id, EditUserDto editUserVm);
+    Task<string> EditUser(int id, EditUserDto editUserVm);
     Task<bool> Verify(int id);
 
     Task<List<UserInfo>> GetAllInfoAsync();

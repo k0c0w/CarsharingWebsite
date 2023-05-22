@@ -73,14 +73,15 @@ public class ProfileController : ControllerBase
             PassportType = userVm.PassportType,
             DriverLicense = userVm.DriverLicense
         });
-        if (result)
+        if (result == "success")
         {
             return new JsonResult(new { result = "Success" });
         }
-
+        
         return new JsonResult(new
         {
-            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере"
+            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере",
+            errorType = $"{result}"
         });
     }
 }

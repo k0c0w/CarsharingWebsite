@@ -12,12 +12,12 @@ public class BookingController : Controller
 {
     private readonly IBookingService _service;
     
-    public BookingController(IBookingService service)
+    public BookingController( IBookingService service)
     {
         _service = service;
     }
     
-    
+    //Добавил в BookingVm userInfoId, для заполнения Dto и в принципе сделал через UserInfoId
     [HttpPost("rent")]
     public async Task<IActionResult> BookCar([FromBody] BookingVM bookingInfo)
     {
@@ -25,6 +25,7 @@ public class BookingController : Controller
         {
             await _service.BookCarAsync(new RentCarDto()
             {
+                PotentialRenterUserInfoId = bookingInfo.UserInfoId,
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
