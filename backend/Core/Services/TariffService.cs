@@ -44,7 +44,7 @@ public class TariffService : IAdminTariffService
         var tariff = await GetTariffByIdAsync(id);
         if(tariff == null) return;
 
-        var sameTariff = await _ctx.Tariffs.FirstOrDefaultAsync(x => x.Name == update.Name);
+        var sameTariff = await _ctx.Tariffs.FirstOrDefaultAsync(x => x.Name == update.Name && x.TariffId != id);
         if (sameTariff != null) throw new AlreadyExistsException();
         tariff.Description = update.Description;
         tariff.Name = update.Name;

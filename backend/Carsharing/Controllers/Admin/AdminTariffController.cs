@@ -8,7 +8,7 @@ using Services.Exceptions;
 namespace Carsharing.Controllers;
 
 [ApiController]
-[Route("admin/api/tariff")]
+[Route("api/admin/tariff")]
 //todo: [Authorize(Roles = "Admin")]
 public class AdminTariffController : ControllerBase
 {

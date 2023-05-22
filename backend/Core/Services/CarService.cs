@@ -2,6 +2,7 @@
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
@@ -13,7 +14,7 @@ public class CarService : IAdminCarService
 {
     private readonly CarsharingContext _ctx;
     private readonly IFileProvider _fileProvider;
-    
+
     public CarService(CarsharingContext context, IFileProvider fileProvider)
     {
         _ctx = context;
@@ -25,6 +26,7 @@ public class CarService : IAdminCarService
         var car = await _ctx.Cars.FindAsync(carId);
         if (car != null)
         {
+            //Поч два раза isOpened?
             car.IsOpened = false;
             car.IsOpened = false;
             await _ctx.SaveChangesAsync();
@@ -45,6 +47,24 @@ public class CarService : IAdminCarService
         catch (DbUpdateConcurrencyException)
         {
             //логировать что машина уже занята?
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetCarHasToBeNonActiveAsync(int id)
+    {
+        try
+        {
+            var requestedCar = await _ctx.Cars.FindAsync(id);
+            if (requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+            requestedCar.HasToBeNonActive = true;
+            await _ctx.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            //логировать что машина уже не активна?
         }
 
         return false;
