@@ -28,16 +28,21 @@ const attrs = [
 function TarrifMngmt() {
     const [tariffsData, setTariffsData] = useState([]);
 
-    var loadData = async () => {
-        var result = await API.getTariffs()
 
-        console.log(result);
+    const onStateUpdate = (id, state) => {
+        const index = tariffsData.findIndex(x => x.id == id);
+        if (index !== -1) {
+            const data = [...tariffsData]
+            data[index] = Object.assign({}, data[index], { is_active: state });
+            setTariffsData(data)
+        }
+    } 
+
+    const loadData = async () => {
+        var result = await API.getTariffs()
     
         if (result.error !== null)
             setTariffsData(result.data);
-        
-
-        console.log(tariffsData);
     }
 
     useEffect( () => {
@@ -51,7 +56,7 @@ function TarrifMngmt() {
             </h1>
             <TableSearchField data={tariffsData} attrs={attrs} defaultAttrName="Price" setData={setTariffsData}/>
             <div className='commandsList'>
-                <TarrifTable tariffsData={tariffsData} refreshRows={() => loadData()}/>
+                <TarrifTable tariffsData={tariffsData} refreshRows={() => loadData()} onUpdate={onStateUpdate}/>
             </div>
         </>
     )

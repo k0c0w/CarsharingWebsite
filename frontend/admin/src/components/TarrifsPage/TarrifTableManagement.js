@@ -15,16 +15,15 @@ import API from '../../httpclient/axios_client';
 import { TableAddRefreshButtons } from '../TableCommon';
 
 
-function send() {
+async function send() {
     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
 
     var body = JSON.stringify(obj);
-    console.log(body);
     var result = API.getCars(body);
 }
 
-function TarrifTable({ tariffsData, refreshRows }) {
+function TarrifTable({ tariffsData, refreshRows, onUpdate }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -45,21 +44,27 @@ function TarrifTable({ tariffsData, refreshRows }) {
     );
 
     const handleClickInfo = (model) => {
-        var popup = {
+        const popup = {
             title: <TarrifViewInfoTitle></TarrifViewInfoTitle>,
             close: () => setD('none'),
             axiosRequest: (data) => API.createTariff(data),
             inputsModel: <TarrifViewInfo tarrifModel={model}></TarrifViewInfo>,
             submit: false
         };
-        console.log(model)
         setPopup(popup);
         setD('block');
     }
 
+    const handleSwitch = async (tariffId, state) => {
+        const result = await API.changeTraiffState(tariffId, state);
+        if(result.successed){
+            onUpdate(tariffId, state);
+        }
+    }
+
 
     const handleClickAdd = () => {
-        var popup = {
+        const popup = {
             title: <TarrifViewInfoTitle title='Добавить'></TarrifViewInfoTitle>,
             close: () => setD('none'),
             axiosRequest: (data) => API.createTariff(data),
@@ -67,12 +72,11 @@ function TarrifTable({ tariffsData, refreshRows }) {
             inputsModel: <TarrifForm></TarrifForm>,
         };
         setPopup(popup);
-        debugger
         console.log(selected[0]);
         setD('block');
     }
     const handleClickEdit = () => {
-        var popup = {
+        const popup = {
             title: <TarrifFormTitle title='Изменить'></TarrifFormTitle>,
             close: () => setD('none'),
             submit: <TarrifFormSubmit></TarrifFormSubmit>,
@@ -86,7 +90,7 @@ function TarrifTable({ tariffsData, refreshRows }) {
     return (
         <>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>
-            <TarrifsGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={tariffsData}></TarrifsGrid>
+            <TarrifsGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={tariffsData} handleSwitch={handleSwitch}></TarrifsGrid>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>

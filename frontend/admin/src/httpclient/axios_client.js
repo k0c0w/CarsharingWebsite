@@ -26,48 +26,52 @@ class AxiosWrapper {
     };
 
     getTariffs = async () => {
-        var result = await this._get("/tariff/all");
+        const result = await this._get("/tariff/all");
         return result;
     }
 
     deleteTariffs = async (body) => {
-        var result = await this._post("/tariff/delete", body); 
+        const result = await this._post("/tariff/delete", body); 
         return result;
     }
 
+    changeTraiffState = async(id, state) => {
+        const response = await this._put(`/tariff/setstate/${id}`, state)
+        return response
+    }
+
     updateTariff = async (body) => {
-        var result = {};
-        var _body = {};
+        let result = {};
+        const _body = {};
         _body.price = body.price;
         _body.description = body.description;
         _body.name = body.name
-        _body.MaxMileage = body.max_mileage
-        console.log("-----------")
-        // _body = JSON.stringify( _body)
-        console.log(_body)
-        if (body.id === undefined)
+        console.log(body);
+        _body.max_millage = body.max_millage;
+        if (!body.id)
         {
             result.error = "no id provided";
             result.status = "404";
             return result;
         }
-        debugger;
+        console.log(_body);
         result = await this._put("tariff/edit/"+body.id, _body); 
+
         return result;
     }
 
     createTariff = async (body) => {
-        var result = await this._post("/tariff/create", body);
+        const result = await this._post("/tariff/create", body);
         return result
     }
 
     createCarModel = async (body) => {
-        var result = await this._post("/car/model/create", body);
+        const result = await this._post("/car/model/create", body);
         return result
     }
 
     getCars = async () => {
-        var result = await this._get("/car/models");
+        const result = await this._get("/car/models");
         return result;
     }
 
@@ -77,18 +81,18 @@ class AxiosWrapper {
             email: "user@example.com",
             password: "veryCoolEmail1!!+"
         }
-        var result = await this._post("/auth/login", body);
+        const result = await this._post("/auth/login", body);
 
         return result
     }
 
     become = async () => {
-        var result = await this._get("/auth/admin");
+        const result = await this._get("/auth/admin");
         return result
     }
 
     register = async () => {
-        var body = 
+        const body = 
             {
                 email: "user@example.com",
                 password: "veryCoolEmail1!!+",
@@ -98,7 +102,7 @@ class AxiosWrapper {
                 accept: "on"
             }
         
-        var result = await this.axiosInstanceAuthorize.post("/Account/register", body);
+        const result = await this.axiosInstanceAuthorize.post("/Account/register", body);
         return result
     }
 
@@ -186,8 +190,8 @@ class AxiosWrapper {
 
     _renameKeys(obj, keys) {
         
-        for (var key in keys){
-            for (var elem in obj) {
+        for (let key in keys){
+            for (let elem in obj) {
                 console.log(elem)
                 if (elem === key) {
                     this._renameKey(obj, elem, keys[key])

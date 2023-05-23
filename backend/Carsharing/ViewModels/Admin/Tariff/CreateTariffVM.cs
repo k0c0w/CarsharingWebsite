@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Carsharing.ViewModels.Admin;
 
@@ -13,9 +14,9 @@ public class CreateTariffVM
     public decimal Price { get; set; }
     
     [Range(0, int.MaxValue, ErrorMessage = "Не может быть отрицательным")]
+    [JsonPropertyName("max_millage")]
     public int? MaxMillage { get; init; }
     
     [Required]
-    [MinLength(1)]
     public string Description { get; set; }
 }

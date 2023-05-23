@@ -73,18 +73,9 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 </StyledTextField>
 
                 <StyledTextField
-                    id="Длительность"
-                    label="Длительность"
-                    helperText=""
-                    name='period'
-                    border="white"
-                    // defaultValue={tarrifModel?.period ?? ""} 
-                >
-                </StyledTextField>
-
-                <StyledTextField
                     style={{ border: '25px' }}
                     placeholder={'Описание'}
+                    label="Описание"
                     fullWidth={true}
                     variant="outlined"
                     name='description'
@@ -96,13 +87,13 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 <StyledTextField
                     style={{ border: '25px' }}
                     placeholder={'Макс. пробег'}
+                    label="Макс пробег"
                     fullWidth={true}
                     variant="outlined"
-                    name='max_mileage'
+                    name='max_millage'
                     itemType='number'
-                    type='number'
                     multiline={true}
-                    defaultValue={tarrifModel?.max_mileage}
+                    defaultValue={tarrifModel?.max_millage}
                     >
                 </StyledTextField>
             </div>

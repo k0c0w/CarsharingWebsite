@@ -6,8 +6,6 @@ import { Button } from '@mui/material';
 import API from '../httpclient/axios_client';
 
 function getFormSettings ({form, additionalData}) {
-    // const finalFormEndpoint = endpointUrl || form.action;
-    // const finalMethod = method || form.method;
     const data = Array.from(form.elements)
         .filter(element => element.type !== "file")
         .filter((element) => element.name)
@@ -23,15 +21,13 @@ async function sendForm(formRef, axiosRequest) {
     if(formRef){
         const data = getFormSettings({form: formRef.current});
         var result = await axiosRequest(data)
+        console.log(result)
         if (result.successed !== true){
             alert(result.error);
         }
         else {
-            // console.log("truee!!!!")
             alert("Saved!");
         }
-        // .then(x => alert("Successfuly saved"))
-        // .catch(err => alert(err.error))
     }
 }
 
