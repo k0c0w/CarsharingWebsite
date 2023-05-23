@@ -23,7 +23,7 @@ async function send() {
     var result = API.getCars(body);
 }
 
-function TarrifTable({ tariffsData, refreshRows, onUpdate }) {
+function TarrifTable({ tariffsData, refreshRows, onUpdate, onDelete }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -62,6 +62,15 @@ function TarrifTable({ tariffsData, refreshRows, onUpdate }) {
         }
     }
 
+    const handleDelete = async (id) => {
+        //todo: modal view to confirm deletion
+        console.log(id)
+        const response = await API.deleteTariff(id);
+        if(response.successed){
+            onDelete(id);
+        }
+        else alert("Ошибка удаления. Возможно есть привязанные машины.");
+    }
 
     const handleClickAdd = () => {
         const popup = {
@@ -105,7 +114,7 @@ function TarrifTable({ tariffsData, refreshRows, onUpdate }) {
                         </Button>
                         <Button
                             variant={'contained'}
-                            disabled={selected.length === 0}
+                            disabled={selected.length === 0} onClick={() => handleDelete(selected[0].id)}
                             style={{ backgroundColor: color.redAccent[200], color: color.primary[900], marginRight: '20px' }}>Удалить</Button>
                     </div>
                 </footer>

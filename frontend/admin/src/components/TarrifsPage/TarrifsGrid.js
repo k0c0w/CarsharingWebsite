@@ -68,7 +68,7 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
         },
         {
             field: 'switchState',
-            headerName: 'Включить/Выключить',
+            headerName: 'Текущий статус',
             flex: 1,
             menu:false,
             sortable: false,
@@ -80,19 +80,17 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                     borderRadius={"5px"}
                     sx= {{ height: '30px', width: '10px',  }}
                     >
-                        {!is_active && <Button 
+                        {is_active && <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={(e)=>handleSwitch(params.row.id, true)}
-                            disabled={is_active}
+                            onClick={(e)=>handleSwitch(params.row.id, false)}
                             >
                             On
                         </Button>}
-                        {is_active &&<Button 
+                        {!is_active &&<Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
-                            onClick={(e)=>handleSwitch(params.row.id, false)}
-                            disabled={!is_active}
+                            onClick={(e)=>handleSwitch(params.row.id, true)}
                             >
                             Off
                         </Button>}

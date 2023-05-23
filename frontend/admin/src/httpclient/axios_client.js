@@ -30,8 +30,8 @@ class AxiosWrapper {
         return result;
     }
 
-    deleteTariffs = async (body) => {
-        const result = await this._post("/tariff/delete", body); 
+    deleteTariff = async (id) => {
+        const result = await this._delete(`/tariff/delete/${id}`); 
         return result;
     }
 
@@ -132,6 +132,24 @@ class AxiosWrapper {
     async _put(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.put(endpoint,JSON.stringify( model ))
+            .then(response => {
+                result.status = response.status; 
+                result.successed = true;
+            })
+            .catch(error => {
+                if(error.response){
+                    result.error = error.response.data.error ?? error.response.statusText;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            })
+        return result;
+    }
+
+    async _delete(endpoint, model) {
+        const result = {successed: false};
+        await this.axiosInstance.delete(endpoint,JSON.stringify( model ))
             .then(response => {
                 result.status = response.status; 
                 result.successed = true;

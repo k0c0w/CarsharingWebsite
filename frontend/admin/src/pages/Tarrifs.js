@@ -24,19 +24,28 @@ const attrs = [
 ];
 
 
+const findIndexById = (array, id) => array.findIndex(x => x.id == id);
 
 function TarrifMngmt() {
     const [tariffsData, setTariffsData] = useState([]);
 
-
     const onStateUpdate = (id, state) => {
-        const index = tariffsData.findIndex(x => x.id == id);
+        const index = findIndexById(tariffsData, id);
         if (index !== -1) {
             const data = [...tariffsData]
             data[index] = Object.assign({}, data[index], { is_active: state });
             setTariffsData(data)
         }
     } 
+
+    const onDelete = (id) => {
+        const index = findIndexById(tariffsData, id);
+        if (index !== -1) {
+            const data = [...tariffsData]
+            data.splice(index, 1);
+            setTariffsData(data)
+        }
+    }
 
     const loadData = async () => {
         var result = await API.getTariffs()
@@ -56,7 +65,7 @@ function TarrifMngmt() {
             </h1>
             <TableSearchField data={tariffsData} attrs={attrs} defaultAttrName="Price" setData={setTariffsData}/>
             <div className='commandsList'>
-                <TarrifTable tariffsData={tariffsData} refreshRows={() => loadData()} onUpdate={onStateUpdate}/>
+                <TarrifTable tariffsData={tariffsData} refreshRows={() => loadData()} onDelete={onDelete} onUpdate={onStateUpdate}/>
             </div>
         </>
     )

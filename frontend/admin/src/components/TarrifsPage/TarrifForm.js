@@ -1,45 +1,9 @@
 import React, { useContext } from 'react';
-import Button from '@mui/material/Button';
-import { TextField, Input, colors } from '@mui/material';
-import { maxWidth } from '@mui/system';
-import InputBase from '@mui/material/InputBase';
-import MenuItem from '@mui/material/MenuItem';
-
 import '../../styles/car-page.css';
 import { ColorModeContext, tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 
-
-const tarrifs = [
-    {
-        value: '5H',
-        label: '5H',
-    },
-    {
-        value: '1D',
-        label: '1D',
-    },
-    {
-        value: '1W',
-        label: '1W',
-    },
-    {
-        value: '7W',
-        label: '7W',
-    },
-];
-
-var handleSubmit = (e) => {
-    var inputs = e.target.parentNode.getElementsByTagName('input')
-    var result = {};
-
-    Array.from(inputs).forEach(element => {
-        var name = element?.name ?? "not exist";
-        result[name] = element?.value ?? "not exist";
-    });
-    return (result);
-}
 
 
 export function TarrifForm({ carModel: tarrifModel, isEdit }) {
@@ -55,7 +19,7 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 <StyledTextField
                     variant="outlined"
                     size='small'
-                    label="Имя"
+                    label="Название"
                     name='name'
                     defaultValue={tarrifModel?.name}
                 >
@@ -111,11 +75,4 @@ export const TarrifFormTitle = ({title='Добавить объект'}) => {
 export const TarrifFormSubmit = ({ handler, title='Сделать запрос' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    // return (
-    //     <Button disableFocusRipple className="submit" type="submit"
-    //         style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
-    //         onClick={(e) => handler(handleSubmit(e))}>
-    //         {title}
-    //     </Button>
-    // );
 }
