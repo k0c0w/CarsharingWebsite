@@ -101,7 +101,7 @@ public class AccountController : ControllerBase
             var getTokenResult = await GoogleAPI.GetTokenAsync(code,
                 _configuration["Authorization:Google:AppId"] ?? "",
                 _configuration["Authorization:Google:AppSecret"] ?? "",
-                "https://localhost:7129/api/account/google-external-auth-callback"
+                _configuration["Authorization:Google:ReturnUri"]
                 );
             if (getTokenResult is null)
                 return BadRequest(GetGoogleError());
@@ -120,6 +120,8 @@ public class AccountController : ControllerBase
                 var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
+                user.UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}";
+                
 
                 var createUserResult = await _userManager.CreateAsync(user);
                 if (createUserResult.Succeeded)
@@ -153,14 +155,13 @@ public class AccountController : ControllerBase
 
             await _signInManager.SignInWithClaimsAsync(user, false, claims);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
-            
-            return Ok();
+
+            return Redirect("/profile");
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            return Redirect("https://localhost:3000/login/");
-            //return StatusCode(500, "Не получилось получить доступ к сервису Google");
+            return Redirect("/login");
         }
 
     }

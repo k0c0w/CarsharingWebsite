@@ -1,4 +1,4 @@
-﻿using Carsharing.ViewModels.Admin.UserInfo;
+using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -6,14 +6,18 @@ using Services.Abstractions;
 namespace Carsharing.Controllers;
 
 [ApiController]
-[Route("/admin/api/[controller]")]
+[Route("/api/admin/user")]
 public class AdminUserController: ControllerBase
 {
     private readonly IUserService _userInfoService;
+    private readonly RoleManager<UserRole> _roleManager;
+    private readonly UserManager<User> _userManager;
 
-    public AdminUserController(IUserService userInfoService)
+    public AdminUserController(IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
     {
         _userInfoService = userInfoService;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
     [HttpGet("all")]
@@ -56,5 +60,35 @@ public class AdminUserController: ControllerBase
             return new JsonResult(new {result = "Fail"});
         }
     }
+    
+    [HttpPost]
+    [Route("editrole/{id}/{role}")]
+    public async Task<IActionResult> EditUserRole([FromRoute]string role,[FromRoute]string id)
+    {
+        try
+        {
+            //нужно будет добавить ограничения кто кому может менять роль
+            var user = await _userManager.FindByIdAsync(id);
+        
+            var userRole = await _userManager.GetRolesAsync(user);
 
+            var newUserRole = await _roleManager.FindByNameAsync(role);
+
+            var removeRole = userRole.FirstOrDefault();
+
+            await _userManager.AddToRoleAsync(user, newUserRole.Name);
+            
+            if (removeRole != null)
+            {
+                await _userManager.RemoveFromRoleAsync(user, removeRole);
+            }
+            
+            return NoContent();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return NotFound();
+        }
+    }
 }

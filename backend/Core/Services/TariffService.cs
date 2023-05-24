@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using AutoMapper;
 using Contracts.Tariff;
 using Domain;
 using Domain.Entities;
@@ -11,9 +12,11 @@ namespace Services;
 public class TariffService : IAdminTariffService
 {
     private readonly CarsharingContext _ctx;
+    private readonly IMapper _mapper;
 
-    public TariffService(CarsharingContext context)
+    public TariffService(CarsharingContext context, IMapper mapper)
     {
+        _mapper = mapper;
         _ctx = context;
     }
 
@@ -41,10 +44,10 @@ public class TariffService : IAdminTariffService
     public async Task EditAsync(int id, CreateTariffDto update)
     {
         ThrowIfInvalid(update);
-        var tariff = await GetTariffByIdAsync(id);
+        var tariff = await _ctx.Tariffs.FindAsync(id);
         if(tariff == null) return;
 
-        var sameTariff = await _ctx.Tariffs.FirstOrDefaultAsync(x => x.Name == update.Name);
+        var sameTariff = await _ctx.Tariffs.FirstOrDefaultAsync(x => x.Name == update.Name && x.TariffId != id);
         if (sameTariff != null) throw new AlreadyExistsException();
         tariff.Description = update.Description;
         tariff.Name = update.Name;
@@ -60,7 +63,7 @@ public class TariffService : IAdminTariffService
     
     public async Task DeleteAsync(int id)
     {
-        var tariff = await GetTariffByIdAsync(id);
+        var tariff = await _ctx.Tariffs.FindAsync(id);
         if(tariff == null) return;
 
         var modelsReferencingToTariff = await _ctx.CarModels.Where(x => x.TariffId == id).ToListAsync();
@@ -82,6 +85,13 @@ public class TariffService : IAdminTariffService
             PriceInRubles = x.Price,
             IsActive = x.IsActive
         });
+    }
+
+    public async Task<AdminTariffDto> GetTariffByIdAsync(int id)
+    {
+        var tariff = await _ctx.Tariffs.FirstOrDefaultAsync(tariff => tariff.TariffId == id);
+
+        return _mapper.Map<AdminTariffDto>(tariff);
     }
 
     private void ThrowIfInvalid(CreateTariffDto tariffDto)
@@ -115,14 +125,9 @@ public class TariffService : IAdminTariffService
     
     public async Task<TariffDto> GetActiveTariffById(int id)
     {
-        var tariff = await GetTariffByIdAsync(id);
+        var tariff = await _ctx.Tariffs.FindAsync(id);
         if (tariff == null || !tariff.IsActive) throw new ObjectNotFoundException(nameof(Tariff));
         return MapToTariffDto(tariff);
-    }
-
-    private async Task<Tariff?> GetTariffByIdAsync(int id)
-    {
-        return await _ctx.Tariffs.FindAsync(id);
     }
 
     private async Task UpdateTariffAsync(Tariff tariff)
@@ -133,7 +138,7 @@ public class TariffService : IAdminTariffService
 
     private async Task SwitchTariffStateAsync(int id, bool state)
     {
-        var tariff = await GetTariffByIdAsync(id);
+        var tariff = await _ctx.Tariffs.FindAsync(id);
         if(tariff == null) return;
         tariff.IsActive = state;
         await UpdateTariffAsync(tariff);

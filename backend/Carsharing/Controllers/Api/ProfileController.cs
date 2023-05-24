@@ -9,9 +9,9 @@ using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
-[Route("api/Account")]
-// todo: uncomment atributte [Authorize]
+[Route("Api/Account")]
 [ApiController]
+[Authorize]
 public class ProfileController : ControllerBase
 {
     private readonly IUserService _userService;
@@ -23,8 +23,7 @@ public class ProfileController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
-        //todo: var userId = User.GetId();
-        var info = await _userService.GetProfileInfoAsync("bb5f0757-7dc8-4189-9dc3-9f66e2f2420c");
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
         return new JsonResult(new ProfileInfoVM()
         {
             UserInfo = new UserInfoVM
@@ -42,11 +41,19 @@ public class ProfileController : ControllerBase
         });
     }
 
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
+    {
+        var info = await _userInfoService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        if (info.Success) return NoContent();
+
+        return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+    }
+    
     [HttpGet("[action]")]
     public async Task<IActionResult> PersonalInfo()
     {
-        //todo: var userId = User.GetId();
-        var info = await _userService.GetPersonalInfoAsync("bb5f0757-7dc8-4189-9dc3-9f66e2f2420c");
+        var info = await _userService.GetPersonalInfoAsync(User.GetId());
         return new JsonResult(new PersonalInfoVM()
         {
             Email = info.Email,
