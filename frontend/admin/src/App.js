@@ -30,6 +30,10 @@ const _routes = [
   {
     path: '/users',
     name: "Пользователи"
+  },
+  {
+    path: '/login',
+    name: "Войти"
   }
 ]
 
@@ -41,38 +45,21 @@ const _roles = {
 };
 
 
-function toggleHeader(header){
-  if (window.scrollY > 20) {
-    header.classList.add("fixed");
-  } else {
-      header.classList.remove("fixed");
-  }
-}
-
-const ProtectedRoute = ({ user, children }) => {
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
-
-
 function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [theme, colorMode] = useMode();
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
 
-  var authorize = () => API.isAdmin().then(r => {
+  const authorize = () => API.isAdmin().then(r => {
       if(r.successed){
-        var roles = r?.data?.roles;
-        var isAuthorized = true;
+        const roles = r?.data?.roles;
+        const isAuthorized = true;
         setAuth({ roles, isAuthorized });
-        debugger;
+
       }
       else{
-        var roles = [];
-        var isAuthorized = false;
+        const roles = [];
+        const isAuthorized = false;
         setAuth({ roles, isAuthorized });
       }
   });
@@ -82,7 +69,7 @@ function App() {
   },[])
 
   
-  var handlePath = (path) => setPath(path);
+  const handlePath = (path) => setPath(path);
 
   return (
     <>
@@ -90,7 +77,7 @@ function App() {
         <ThemeProvider theme={theme} >
           <CssBaseline />
           <Header></Header>
-          <SideNavBar path={path} routes={_routes} handlePath={handlePath}></SideNavBar>
+          <SideNavBar isAuthorized={auth.isAuthorized} path={path} routes={_routes} handlePath={handlePath}></SideNavBar>
           <div className='Page' >
             <Routes>
               <Route element={<RequireAuth allowedRoles={[_roles.Admin, _roles.Manager]} /> } >
@@ -100,7 +87,6 @@ function App() {
               </ Route> 
               <Route path='*' element={<div></div>} />
               <Route path='/login' element={<Login />} />
-              <Route path='/unauthorized' element={<div>Не авторизован</div>} />
             </Routes>
           </div>
         </ThemeProvider>

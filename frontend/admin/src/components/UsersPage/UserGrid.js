@@ -39,10 +39,9 @@ function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
             field: 'email',
             headerName: 'Почта',
             type: 'string',
-            flex:1
         },
         {
-            field: 'user_name',
+            field: 'name',
             headerName: 'Имя',
         },
         {
@@ -101,9 +100,8 @@ function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
     ]
     
     //  ----- Оптимизировать -----  //
-    var _handleSelect = async (listId) => {
-        var result = []
-        debugger
+    const _handleSelect = async (listId) => {
+        const result = []
         listId.forEach(id => {
             rows.forEach( row => {
                 if (row.id == id) {
@@ -112,11 +110,8 @@ function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
             })
         })
         setSelected(result);
-        console.log(result);
         handleSelect(result);
     }
-    console.log(rows)
-    debugger;
     return (
         <Box
             width="100%"

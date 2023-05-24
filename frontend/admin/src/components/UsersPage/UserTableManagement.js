@@ -24,17 +24,6 @@ function UserTable({ refreshRows, usersData }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-
-    function send() {
-        const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-        const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-
-        var body = JSON.stringify(obj);
-        console.log(body);
-        var result = API.getCars(body);
-        console.log(result);
-    }
-
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);
     // Закрытие popup'a
@@ -51,7 +40,7 @@ function UserTable({ refreshRows, usersData }) {
     );
 
     // открывают попап с нужным действием
-    var handleClickInfo = (model) => {
+    const handleClickInfo = (model) => {
         const popup = {
             title: <UserFormTitle></UserFormTitle>,
             close: () => setD('none'),
@@ -60,24 +49,24 @@ function UserTable({ refreshRows, usersData }) {
         setPopup(popup);
         setD('block');
     }
-    var handleClickAdd = () => {
+    const handleClickAdd = () => {
         const popup = {
             title: <UserFormTitle title='Добавить'></UserFormTitle>,
             close: () => setD('none'),
             inputsModel: <UserForm></UserForm>,
-            axiosRequest: (e) => API.createCarModel(e),
+            axiosRequest: (e) => API.createUser(e),
             submit: true
         };
         setPopup(popup);
         console.log(selected[0]);
         setD('block');
     }
-    var handleClickChange = () => {
+    const handleClickChange = () => {
         const popup = {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
             axiosRequest: (e) => API.createCarModel(e),
-            submit: <UserFormSubmit></UserFormSubmit>,
+            submit: <UserFormSubmit/>,
             inputsModel: <UserForm carModel={selected[0]}></UserForm>,
         };
         setPopup(popup);

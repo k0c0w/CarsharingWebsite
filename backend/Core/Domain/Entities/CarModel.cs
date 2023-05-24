@@ -18,5 +18,5 @@ public class CarModel
 
     public virtual Tariff? Tariff { get; set; }
 
-    public string ImageName => $"{Brand.Replace(' ', '_')}_{Model.Replace(' ', '_')}_{TariffId}";
+    public string ImageName => $"{Brand.Replace(' ', '_')}_{Model.Replace(' ', '_')}_{TariffId}.png";
 }

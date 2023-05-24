@@ -14,6 +14,7 @@ using System.Security.Claims;
 namespace Carsharing.Controllers.Admin
 {
     [Route("api/admin/auth")]
+    [ApiController]
     public class AdminAuthController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
@@ -35,28 +36,14 @@ namespace Carsharing.Controllers.Admin
             if (user == null)
                 return Unauthorized(GetLoginError());
 
-            //var result = await _userManager.CheckPasswordAsync(user, vm.Password);
-            //if (result)
-            //    return Unauthorized(GetLoginError());
             var result = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
             if (!result.Succeeded)
                 return Unauthorized(GetLoginError());
-
-            Console.WriteLine(User);
-
-            var roles = new string[] { "admin", "manager" };
-            //var isRole = (await _userManager.GetRolesAsync(user)).Any(userRole => roles.Any(role => role == userRole));
-            var isRole = true;
-
-            if (isRole)
-            {
-                await _signInManager.SignInAsync(user, false);
-                var userRoles = await _userManager.GetRolesAsync(user);
-                LoginAdminVM response = new LoginAdminVM() { Roles = userRoles };
-                return new JsonResult(response);
-            }
-
-            return Unauthorized();
+            
+            await _signInManager.SignInAsync(user, false);
+            var userRoles = await _userManager.GetRolesAsync(user);
+            LoginAdminVM response = new LoginAdminVM() { Roles = userRoles };
+            return new JsonResult(response);
         }
 
         [HttpGet("become")]

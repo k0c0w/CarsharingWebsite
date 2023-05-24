@@ -28,7 +28,7 @@ function getFormSettings ({form, additionalData}) {
 async function sendForm(formRef, axiosRequest) {
     if(formRef){
         const data = getFormSettings({form: formRef.current});
-        var result = await axiosRequest(data)
+        const result = await axiosRequest(data)
         console.log(result)
         if (result.successed !== true){
             alert(result.error);

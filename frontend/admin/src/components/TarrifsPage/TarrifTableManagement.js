@@ -64,7 +64,6 @@ function TarrifTable({ tariffsData, refreshRows, onUpdate, onDelete }) {
 
     const handleDelete = async (id) => {
         //todo: modal view to confirm deletion
-        console.log(id)
         const response = await API.deleteTariff(id);
         if(response.successed){
             onDelete(id);

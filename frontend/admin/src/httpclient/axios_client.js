@@ -20,8 +20,8 @@ class AxiosWrapper {
 
         this.axiosInstance = axios.create(options);
 
-        options.baseURL = 'https://localhost:7129/api'
-        this.axiosInstanceAuthorize = axios.create(options);
+        options.baseURL = 'https://localhost:7129/api/'
+        this.mainSiteAxios = axios.create(options);
     };
 
     // Tariffs
@@ -68,6 +68,26 @@ class AxiosWrapper {
         return result
     }
 
+    createUser = async (body) => {
+        const result = {successed: false};
+        await  this.mainSiteAxios.post("/account/register", body)
+
+            .then(response => {
+                result.status = response.status; 
+                result.data = response.data;
+                result.successed = true;
+            })
+            .catch(error => {
+                if(error.response){
+                    result.error = error.response.data.error ?? error.response.statusText;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            })
+        return result;
+    }
+
 
     // Car models
     createCarModel = async (body) => {
@@ -89,7 +109,7 @@ class AxiosWrapper {
 
     // Users
     getUsers = async () => {
-        const result = await this._get("/user/users");
+        const result = await this._get("/user/all");
         return result;
     }
 
@@ -121,10 +141,6 @@ class AxiosWrapper {
 
     // Auth
     login = async (body) => {
-        body = {
-            email: "userewwwwwst@example.com",
-            password: "veryCoolEmail1!!+"
-        }
         const result = await this._post("/auth/login", body);
 
         return result
@@ -135,24 +151,6 @@ class AxiosWrapper {
 
         return result
     }
-
-    register = async () => {
-        const body = 
-            {
-                email: "userewwwwwst@example.com",
-                password: "veryCoolEmail1!!+",
-                name: "user",
-                surname: "user",
-                birthdate: "1991-05-21T20:29:53.682Z",
-                accept: "on"
-            }
-        
-        const result = await this.axiosInstanceAuthorize.post("/Account/register", body);
-
-        await this.become();
-        return result
-    }
-
 
     isAdmin = async () => {
         return await this._get('/auth/isAdmin');

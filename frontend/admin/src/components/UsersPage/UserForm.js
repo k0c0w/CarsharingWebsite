@@ -25,80 +25,32 @@ var handleSubmit = (e) => {
     return (result);
 }
 
+const commonStyle = {
+    variant:"outlined",
+    size:'small',
+    style: { border: '25px' },
+    border:"white"
+}
 
-export function UserForm({carModel}) {
+export function UserForm({user}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    const [tarrifs, setTarrifs] = useState([]);
-    
-    var loadTarrifs = async () => { 
-        var tarrifs = await API.getTariffs()
-        console.log("tarrifs");
-
-        setTarrifs(tarrifs.data);
-    };
-
-    useEffect( () => {
-        loadTarrifs()
-    },[])
     
     const StyledTextField = styleTextField(color.primary[100]);
 
     return (
         <>
             <div className='inputs' id='form'>
-                <StyledTextField
-                    variant="outlined"
-                    size='small'
-                    label="Производитель"
-                    name='brand'
-                    type={'text'}
-                    value={carModel?.brand.trimEnd().trimStart()}
-                >
-                </StyledTextField>
+                <StyledTextField {...commonStyle} 
+                    label="Имя" name='name' type={'text'} value={user?.name.trimEnd().trimStart()}/>
 
-                <StyledTextField
-                    placeholder={'Модель'}
-                    variant="outlined"
-                    size='small'
-                    label="Модель"
-                    border="white"
-                    name='model'
-                    type={'text'}
-                    value={carModel?.number.trimEnd().trimStart()}
-                >
-                </StyledTextField>
-
-                <StyledTextField
-                    id="Тариф"
-                    select
-                    type={'number'}
-                    label="Тариф"
-                    helperText=""
-                    name='tariffId'
-                    defaultValue={carModel?.tariff_id}
-                >
-                    {tarrifs.map((option) => (
-                        <MenuItem key={option.id} value={option.id}>
-                            {option.name}
-                        </MenuItem>
-                    ))}
-                </StyledTextField>
-
-                <StyledTextField
-                    style={{ border: '25px' }}
-                    placeholder={'Описание'}
-                    fullWidth={true}
-                    variant="outlined"
-                    name='description'
-                    minRows={2} maxRows={10}
-                    multiline={true}
-                    value={carModel?.description}
-                    type={'text'}
-                >
-                </StyledTextField>
-
-                <InputBase placeholder='Фото машины' name='Image' label='Фото машины' type='file' accept="image/*"></InputBase>
+                <StyledTextField {...commonStyle} placeholder={'Фамилия'}label="Фамилия"name='surname'type={'text'}
+                    value={user?.surname.trimEnd().trimStart()}/>
+                <StyledTextField {...commonStyle} placeholder={'Почта'} name='email' value={user?.email} type={'email'}/>
+                <StyledTextField {...commonStyle}
+                    placeholder={'Дата рождения'} name='birthdate'value={user?.birthdate} type={'date'}/>
+                <StyledTextField {...commonStyle} placeholder={'Пароль'} name='password' value={user?.password} type={'password'}/>
+                <input name='accept' value='on' hidden/>
 
             </div>
         </>
