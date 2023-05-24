@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Profile;
@@ -24,7 +23,7 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> Profile()
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        return new JsonResult(new ProfileInfoVM()
+        return new JsonResult(new ProfileInfoVM
         {
             UserInfo = new UserInfoVM
             {
@@ -44,7 +43,7 @@ public class ProfileController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
     {
-        var info = await _userInfoService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        var info = await _userService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
         if (info.Success) return NoContent();
 
         return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
@@ -65,30 +64,26 @@ public class ProfileController : ControllerBase
         });
     }
     
-    [HttpPut("/edit/{id:int}")]
-    public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] EditUserVm userVm)
+    [HttpPut("edit")]
+    public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
     {
-
-        var result = await _userService.EditUser(id, new EditUserDto
+        var result = await _userService.EditUser(User.GetId(), new EditUserDto
         {
             LastName = userVm.LastName,
             FirstName = userVm.FirstName,
             BirthDay = userVm.BirthDay,
             Email = userVm.Email,
-            PhoneNumber = userVm.PhoneNumber,
-            Passport = userVm.Passport,
-            PassportType = userVm.PassportType,
+            Passport = userVm.Passport?.Substring(4),
+            PassportType = userVm.Passport?.Substring(0, 4),
             DriverLicense = userVm.DriverLicense
         });
-        if (result == "success")
-        {
-            return new JsonResult(new { result = "Success" });
-        }
+        if (result)
+            return NoContent();
         
-        return new JsonResult(new
+        return new BadRequestObjectResult(new {error=new
         {
-            error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере",
-            errorType = $"{result}"
-        });
+            code = (int)ErrorCode.ServiceError,
+            messages= new [] { "Одно или несколько полей содержат некорректные данные."}
+        }});
     }
 }

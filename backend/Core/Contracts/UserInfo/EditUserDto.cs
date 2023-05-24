@@ -10,5 +10,5 @@ public class EditUserDto
     public DateTime BirthDay { get; set; }
     public string? PassportType { get; set; }
     public string? Passport { get; set; }
-    public int DriverLicense { get; set; }
+    public int? DriverLicense { get; set; }
 }

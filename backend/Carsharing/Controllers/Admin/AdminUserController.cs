@@ -1,5 +1,6 @@
 using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 
@@ -24,31 +25,27 @@ public class AdminUserController: ControllerBase
     public async Task<IActionResult> All()
     {
         var users = await _userInfoService.GetAllInfoAsync();
-        return new JsonResult( users.Select(x =>new UserInfoVm
+        return new JsonResult( users.Select(x =>new UserVM
             {
-                UserInfoId = x.UserInfoId,
-                BirthDay = x.BirthDay,
-                Passport = x.Passport,
-                PassportType = x.PassportType,
-                DriverLicense = x.DriverLicense,
-                Balance = x.Balance,
-                UserId = x.UserId,
-                Verified = x.Verified,
-                User = new User
+                Email = x.User.Email,
+                Id = x.UserId,
+                EmailConfirmed = x.User.EmailConfirmed,
+                FirstName = x.User.FirstName,
+                LastName = x.User.LastName,
+                PersonalInfo = new UserInfoVM
                 {
-                    Id = x.User.Id,
-                    LastName = x.User.LastName,
-                    FirstName = x.User.FirstName,
-                    UserName = x.User.UserName,
-                    Email = x.User.Email,
-                    PhoneNumber = x.User.PhoneNumber
+                    Balance = x.Balance,
+                    Passport = x.PassportType != null ? $"{x.PassportType} {x.Passport}" : null,
+                    Verified = x.Verified,
+                    BirthDay = DateOnly.FromDateTime(x.BirthDay),
+                    DriverLicense = x.DriverLicense
                 }
             })
         );
     }
 
-    [HttpPut("verify/{id:int}")]
-    public async Task<IActionResult> VerifyUserChanges([FromRoute]int id)
+    [HttpPut("verify/{id:required}")]
+    public async Task<IActionResult> VerifyUserChanges([FromRoute]string id)
     {
         var result  = await _userInfoService.Verify(id);
         if (result)

@@ -1,15 +1,14 @@
-using System.Text;
 using System.Text.RegularExpressions;
 using Contracts;
 using Contracts.Results;
 using Contracts.User;
-using Contracts.UserInfo;
 using Domain;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
 using Services.Exceptions;
+using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Services.User;
 
@@ -26,13 +25,13 @@ public class UserService : IUserService
     
     public async Task<UserInfoDto> GetPersonalInfoAsync(string userId)
     {
-        var user = await GetUserInfoAsync(userId);
+        var user = await GetUserWithInfoAsync(userId);
         return Map(user);
     }
 
     public async Task<ProfileInfoDto> GetProfileInfoAsync(string userId)
     {
-        var user = await GetUserInfoAsync(userId);
+        var user = await GetUserWithInfoAsync(userId);
         var userSubscriptions = await _context.Subscriptions
             .Where(x => x.IsActive)
             .Where(x => x.UserId == userId)
@@ -68,17 +67,16 @@ public class UserService : IUserService
         return new PasswordChangeResult(result.Succeeded, result.Errors.Select(x => x.Description));
     }
 
-    public async Task<bool> Verify(int userInfoID)
+    public async Task<bool> Verify(string userId)
     {
         try
         {
-            var user = await FindUserInfo(userInfoID);
+            var user = (await GetUserWithInfoAsync(userId)).UserInfo;
             user.Verified = true;
-            //Если у нас не будет подтверждение отправляться по почте
+            //todo: убрать когда будет подтверждение по почте
             user.User.EmailConfirmed = true;
-            user.User.PhoneNumberConfirmed = true;
             _context.UserInfos.Update(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
         catch (Exception e)
@@ -98,45 +96,32 @@ public class UserService : IUserService
     }
     
     
-    public async Task<string> EditUser(int id, EditUserDto? editUserVm)
+    public async Task<bool> EditUser(string userId, EditUserDto? editUserDto)
     {
         try
         {
-            var user = await FindUserInfo(id);
-            if(! await CheckUserEmail(user,editUserVm.Email)) {throw new Exception("Почта уже зарегестрирова");}
-            if(! await CheckUserPhoneNum(user,editUserVm.PhoneNumber)) {throw new Exception("Телефон используется другим пользователем или введен неверно");}
-            CheckLastName(user,editUserVm.LastName);
-            CheckFirstName(user,editUserVm.FirstName);
-            CheckUserBirthday(user,editUserVm.BirthDay);
-            CheckUserPassport(user,editUserVm.Passport);
-            CheckUserPassportType(user,editUserVm.PassportType);
-            CheckUserDriverLicense(user,editUserVm.DriverLicense);
-            user.Verified = false;
-            _context.UserInfos.Update(user);
-            _context.SaveChanges();
-            return "success";
+            var user = await GetUserWithInfoAsync(userId);
+            if(! await CheckUserEmail(user,editUserDto.Email)) {throw new Exception("Почта уже зарегестрирова");}
+            CheckName(user,editUserDto.LastName);
+            CheckName(user,editUserDto.FirstName);
+            CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
+            CheckUserPassport(user.UserInfo,editUserDto.Passport);
+            CheckUserPassportType(user.UserInfo,editUserDto.PassportType);
+            CheckUserDriverLicense(user.UserInfo,editUserDto.DriverLicense);
+            user.UserInfo.Verified = false;
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
-            return e.Message;
+            return false;
         }
     }
-    
-    private async Task<UserInfo> FindUserInfo(int id)
+
+    private async Task<Domain.Entities.User> GetUserWithInfoAsync(string userId)
     {
-        var user = await _context.UserInfos
-            .AsNoTracking()
-            .Include(u => u.User)
-            .Select(x => x)
-            .Where(e => e.UserInfoId == id)
-            .ToListAsync();
-            
-        return user.First();
-    }
-    
-    private async Task<Domain.Entities.User> GetUserInfoAsync(string userId)
-    {
-        var user = await _context.Users.Include(x => x.UserInfo).FirstOrDefaultAsync(x => x.Id == userId);
+        var user = await _context.Users
+            .Include(x => x.UserInfo).FirstOrDefaultAsync(x => x.Id == userId);
         if (user == null) throw new ObjectNotFoundException(nameof(User));
         if (user.UserInfo == null)
         {
@@ -147,41 +132,36 @@ public class UserService : IUserService
         return user;
     }
     
-    private void CheckLastName(UserInfo user,string val)
+    private void CheckName(Domain.Entities.User user,string val)
     {
-        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
         {
-            user.User.LastName = val;
+            user.LastName = val;
         }
                  
     }
-    private void CheckFirstName(UserInfo user, string val)
+    private void CheckFirstName(Domain.Entities.User user, string val)
     {
         if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
         {
-            user.User.FirstName = val;
+            user.FirstName = val;
         }            
     }
-    private async Task<bool> CheckUserEmail(UserInfo user, string val)
+    private async Task<bool> CheckUserEmail(Domain.Entities.User user, string val)
     {
         var existeduser = await  _userManager.FindByEmailAsync(val);
-        if (existeduser == null)
-        {
-            user.User.Email = val;
-            user.User.NormalizedEmail = val.ToUpper();
-            user.User.EmailConfirmed = false;
-            return true;
-        }
-
-        return false;
-
+        if (existeduser != null && existeduser.Id != user.Id) return false;
+        user.Email = val;
+        user.NormalizedEmail = val.ToUpper();
+        user.EmailConfirmed = false;
+        return true;
     }
-    private async Task<bool> CheckUserPhoneNum(UserInfo user, string val)
+    private async Task<bool> CheckUserPhoneNum(Domain.Entities.User user, string val)
     {
         if (Regex.IsMatch(val, @"\d{10}$"))
         {
             var users = await GetAllInfoAsync();
-            users = users.Select(x => x).Where(x => x.User.Id != user.User.Id).ToList();
+            users = users.Select(x => x).Where(x => x.User.Id != user.Id).ToList();
             foreach (var el in users)
             {
                 if (el.User.PhoneNumber == val)
@@ -189,8 +169,8 @@ public class UserService : IUserService
                     return false;
                 }
             }
-            user.User.PhoneNumber = val;
-            user.User.PhoneNumberConfirmed = false;
+            user.PhoneNumber = val;
+            user.PhoneNumberConfirmed = false;
             return true;
         }
         return false;
@@ -204,21 +184,21 @@ public class UserService : IUserService
     }
     private void CheckUserPassport(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{10}"))
+        if (Regex.IsMatch(val, @"\d{6}"))
         {
             user.Passport = val;
         }
     }
     private void CheckUserPassportType(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if (Regex.IsMatch(val, @"\d{4}"))
         {
             user.PassportType = val;
         }
     }
-    private void CheckUserDriverLicense(UserInfo user, int val)
+    private void CheckUserDriverLicense(UserInfo user, int? val)
     {
-        if (val.ToString().Length == 10)
+        if (val is > 0 and <= 999999999 )
         {
             user.DriverLicense = val;
         }

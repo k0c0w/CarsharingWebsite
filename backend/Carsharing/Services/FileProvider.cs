@@ -18,7 +18,6 @@ public class FileProvider : IFileProvider
         var filePath = Path.Combine(folder, file.Name);
         if (File.Exists(filePath))
             throw new InvalidOperationException($"File '{file.Name}' already exists!");
-
         await using var fs = File.Create(filePath);
         await file.Content.CopyToAsync(fs);
     }
