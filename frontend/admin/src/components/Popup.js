@@ -6,14 +6,22 @@ import { Button } from '@mui/material';
 import API from '../httpclient/axios_client';
 
 function getFormSettings ({form, additionalData}) {
+    let file = {}
     const data = Array.from(form.elements)
-        .filter(element => element.type !== "file")
+        .filter( element  => { 
+            if (element.type === "file"){
+                file = { value: element?.files[0], name: element.name }
+                return false
+            }
+            return true
+        })
         .filter((element) => element.name)
         .reduce((obj, input) => Object.assign(obj, { [input.name]: input.value }),{});
+   
+    data[file.name] = file.value
 
     if (additionalData) 
         Object.assign(data, additionalData);
-    console.log(data)
     return data;
 }
 

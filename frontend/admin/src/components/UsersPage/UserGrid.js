@@ -10,60 +10,91 @@ import Button from '@mui/material/Button';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
+import useAuth from '../../hooks/useAuth';
+import API from '../../httpclient/axios_client';
 
 
 
 
 
-function CarsGrid({handleClickInfo, handleSelect, rows}) {
+function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
+    const { auth } = useAuth();
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
+    var isAdmin = () => auth?.roles?.find(role => role == "Admin");
+
+    
+
     const [selected, setSelected] = useState([]);
     
-    
+    debugger;
     const columns = [
         {
             field: 'id',
             headerName: 'Id',
-            type: 'number'
-        },
-        {
-            field: 'brand',
-            headerName: 'Производитель',
-            flex: 1,
             type: 'string'
         },
         {
-            field: 'model',
-            headerName: 'модель',
-            flex: 1
+            field: 'email',
+            headerName: 'Почта',
+            type: 'string',
+            flex:1
         },
         {
-            field: 'tariff_id',
-            headerName: 'Тариф',
-            flex: 1
+            field: 'user_name',
+            headerName: 'Имя',
+        },
+        {
+            field: 'surname',
+            headerName: 'Фамилия',
         },
         {
             field: 'func',
             headerName: 'Func',
-            flex: 1,
+            flex: 3,
             menu:false,
             sortable: false,
             renderCell: (params) => {
                 return (
+                    <>
                     <Box
-                    width="60%"
-                    borderRadius={"5px"}
-                    sx= {{ height: '30px', width: '10px',  }}>
+                    width="15px"
+                    borderRadius={"1px"}
+                    sx= {{ height: '30px', width: '5px'  }}>
                         <Button 
                             variant={'contained'} 
-                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
+                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
                             onClick={(e)=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
+                        { isAdmin && <>
+                        <Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px',  }}
+                            onClick={(e)=>API.makePersonManager(params.row.id)}
+                            >
+                            Роль - менеджер
+                        </Button>
+                        <Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
+                            onClick={(e)=>API.makePersonAdmin(params.row.id)}
+                            >
+                            Роль - админ
+                        </Button>
+                        <Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
+                            onClick={(e)=>API.makePersonUser(params.row.id)}
+                            >
+                            Убрать роль
+                        </Button>
+                        </>}
                     </Box>
+                    
+                    </>
                 )
             }
         }
@@ -72,6 +103,7 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
     //  ----- Оптимизировать -----  //
     var _handleSelect = async (listId) => {
         var result = []
+        debugger
         listId.forEach(id => {
             rows.forEach( row => {
                 if (row.id == id) {
@@ -83,7 +115,8 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
         console.log(result);
         handleSelect(result);
     }
-
+    console.log(rows)
+    debugger;
     return (
         <Box
             width="100%"
@@ -128,6 +161,6 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
     )
 }
 
-export default CarsGrid;
+export default UserGrid;
 
 

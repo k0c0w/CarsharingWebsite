@@ -14,5 +14,7 @@ public interface IAdminTariffService : ITariffService
 
     Task DeleteAsync(int id);
 
+    Task<AdminTariffDto> GetTariffByIdAsync(int id);
+
     Task<IEnumerable<AdminTariffDto>> GetAllAsync();
 }

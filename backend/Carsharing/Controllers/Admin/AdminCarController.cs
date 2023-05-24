@@ -1,8 +1,11 @@
+using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
 using Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions.Admin;
+using System.Text.Json;
 
 namespace Carsharing.Controllers;
 
@@ -11,7 +14,12 @@ namespace Carsharing.Controllers;
 public class AdminCarController : ControllerBase
 {
     private readonly IAdminCarService _carService;
-    public AdminCarController(IAdminCarService carService) => _carService = carService;
+    private readonly IMapper _mapper;
+    public AdminCarController(IAdminCarService carService, IMapper mapper)
+    {
+        _mapper = mapper;
+        _carService = carService;
+    }
 
     [HttpGet("models")]
     public async Task<IActionResult> GetCarModels()
@@ -27,20 +35,16 @@ public class AdminCarController : ControllerBase
             Url = x.ImageUrl
         }));
     }
-    
-    
+
+
+    [Consumes("multipart/form-data")]
     [HttpPost("model/create")]
-    public async Task<IActionResult> CreateCarModel([FromBody] CreateCarModelVM create)
+    public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelVM create)
     {
-        await _carService.CreateModelAsync(new CreateCarModelDto
-        {
-            Brand = create.Brand,
-            Model = create.Model,
-            Description = create.Description,
-            TariffId = create.TariffId
-        });
+        await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
         return Created("models", null);
     }
+
 
     [HttpPut("model/{id:int}")]
     public async Task<IActionResult> UpdateCarModelInfo([FromRoute] int id, [FromBody] EditCarModelVM edit)
@@ -73,6 +77,20 @@ public class AdminCarController : ControllerBase
             return NoContent();
         }
         catch
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpDelete("models")]
+    public async Task<IActionResult> DeleteRange([FromBody] IEnumerable<int> modelsId)
+    {
+        try
+        {
+
+            return NoContent();
+        }
+        catch(Exception ex)
         {
             return BadRequest();
         }

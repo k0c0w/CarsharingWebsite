@@ -27,7 +27,7 @@ public class AdminUserController: ControllerBase
         {
             Id = x.Id,
             Email = x.Email,
-            UserName = x.UserName,
+            UserName = x.FirstName,
             Surname = x.Surname
         }));
     }
@@ -58,8 +58,8 @@ public class AdminUserController: ControllerBase
     }
     
     [HttpPost]
-    [Route("editrole/{id}")]
-    public async Task<IActionResult> EditUserRole([FromBody]string role,[FromRoute]string id)
+    [Route("editrole/{id}/{role}")]
+    public async Task<IActionResult> EditUserRole([FromRoute]string role,[FromRoute]string id)
     {
         await _roleManager.CreateAsync(new UserRole{Name = "Admin"});
         try

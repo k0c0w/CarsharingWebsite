@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +15,13 @@ public class CarService : IAdminCarService
 {
     private readonly CarsharingContext _ctx;
     private readonly IFileProvider _fileProvider;
+    private readonly IMapper _mapper;
 
-    public CarService(CarsharingContext context, IFileProvider fileProvider)
+    public CarService(CarsharingContext context, IFileProvider fileProvider, IMapper mapper)
     {
         _ctx = context;
         _fileProvider = fileProvider;
+        _mapper = mapper;
     }
 
     public async Task ReleaseCarAsync(int carId)
@@ -215,14 +218,16 @@ public class CarService : IAdminCarService
     public async Task<IEnumerable<CarModelDto>> GetAllModelsAsync()
     {
         var models = await _ctx.CarModels.ToListAsync();
-        return models.Select(x => new CarModelDto
-        {
-            Id = x.Id,
-            Brand = x.Brand,
-            Model = x.Model,
-            Description = x.Description,
-            TariffId = x.TariffId
-        });
+        return _mapper.Map<IEnumerable<CarModelDto>>(models);
+        //return models.Select(x => new CarModelDto
+        //{
+        //    Id = x.Id,
+        //    Brand = x.Brand,
+        //    Model = x.Model,
+        //    Description = x.Description,
+        //    TariffId = x.TariffId,
+        //    ImageUrl = x.ImageName
+        //});
     }
 
     public async Task<IEnumerable<CarDto>> GetAllCarsAsync()

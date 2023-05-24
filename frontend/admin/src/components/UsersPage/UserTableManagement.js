@@ -6,10 +6,10 @@ import { TableAddRefreshButtons } from '../TableCommon';
 import '../../styles/car-page.css';
 import '../../styles/popup.css'
 import { tokens } from '../../theme';
-import CarsGrid from './CarsGrid';
+import UserGrid from './UserGrid';
 import { Popup } from '../Popup';
-import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
-import { CarViewInfo, CarViewInfoTitle } from './CarViewInfo';
+import { UserForm, UserFormTitle, UserFormSubmit } from './UserForm';
+import { UserViewInfo } from './UserViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
 
@@ -20,7 +20,7 @@ import API from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function CarTable({ refreshRows, carsData }) {
+function UserTable({ refreshRows, usersData }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -42,29 +42,29 @@ function CarTable({ refreshRows, carsData }) {
     // Модель формы для popup'а
     const [popupInput, setPopup] = useState(
         {
-            title: <CarFormTitle></CarFormTitle>,
-            submit: <CarFormSubmit></CarFormSubmit>,
+            title: <UserFormTitle></UserFormTitle>,
+            submit: <UserFormSubmit></UserFormSubmit>,
             close: () => setD('none'),
             axiosRequest: () => {},
-            inputsModel: <CarForm handler={console.log}></CarForm>,
+            inputsModel: <UserForm handler={console.log}></UserForm>,
         }
     );
 
     // открывают попап с нужным действием
     var handleClickInfo = (model) => {
         const popup = {
-            title: <CarViewInfoTitle></CarViewInfoTitle>,
+            title: <UserFormTitle></UserFormTitle>,
             close: () => setD('none'),
-            inputsModel: <CarViewInfo carModel={model}></CarViewInfo>
+            inputsModel: <UserViewInfo userModel={model}></UserViewInfo>
         };
         setPopup(popup);
         setD('block');
     }
     var handleClickAdd = () => {
         const popup = {
-            title: <CarFormTitle title='Добавить'></CarFormTitle>,
+            title: <UserFormTitle title='Добавить'></UserFormTitle>,
             close: () => setD('none'),
-            inputsModel: <CarForm></CarForm>,
+            inputsModel: <UserForm></UserForm>,
             axiosRequest: (e) => API.createCarModel(e),
             submit: true
         };
@@ -74,11 +74,11 @@ function CarTable({ refreshRows, carsData }) {
     }
     var handleClickChange = () => {
         const popup = {
-            title: <CarFormTitle title='Изменить'></CarFormTitle>,
+            title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
             axiosRequest: (e) => API.createCarModel(e),
-            submit: <CarFormSubmit></CarFormSubmit>,
-            inputsModel: <CarForm carModel={selected[0]}></CarForm>,
+            submit: <UserFormSubmit></UserFormSubmit>,
+            inputsModel: <UserForm carModel={selected[0]}></UserForm>,
         };
         setPopup(popup);
         console.log(selected[0]);
@@ -89,7 +89,7 @@ function CarTable({ refreshRows, carsData }) {
         <>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows}/>
 
-            <CarsGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={carsData}/>
+            <UserGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={usersData}/>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>
@@ -117,4 +117,4 @@ function CarTable({ refreshRows, carsData }) {
     )
 }
 
-export default CarTable;
+export default UserTable;

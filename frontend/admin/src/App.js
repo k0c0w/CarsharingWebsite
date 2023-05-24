@@ -11,8 +11,10 @@ import TarrifMngmt from './pages/Tarrifs';
 import UserMngmt from './pages/Users';
 import Login from './pages/Login';
 import API from './httpclient/axios_client';
+import RequireAuth from './components/RequireAuth';
+import useAuth from './hooks/useAuth';
 
-var routes = [
+const _routes = [
   {
     path: '/',
     name: "Главная"
@@ -30,6 +32,13 @@ var routes = [
     name: "Пользователи"
   }
 ]
+
+
+const _roles = {
+  Admin: "Admin",
+  Manager: "Manager",
+  User: "User"
+};
 
 
 function toggleHeader(header){
@@ -52,24 +61,25 @@ const ProtectedRoute = ({ user, children }) => {
 function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [theme, colorMode] = useMode();
-  const [user, setUser] = useState(null);
+  const { setAuth } = useAuth();
 
-  API.isAdmin().then(r => {
-      if(r.successed)
-        localStorage.setItem('user', true);
-      else {
-        localStorage.clear();
+  var authorize = () => API.isAdmin().then(r => {
+      if(r.successed){
+        var roles = r?.data?.roles;
+        var isAuthorized = true;
+        setAuth({ roles, isAuthorized });
+        debugger;
       }
-      setUser(localStorage.getItem('user'));
+      else{
+        var roles = [];
+        var isAuthorized = false;
+        setAuth({ roles, isAuthorized });
+      }
   });
 
-
-  window.addEventListener('scroll', function () {
-      const header = document.getElementsByTagName('header')[0];
-      if(header) {
-        toggleHeader(header);
-      }
-  })
+  useEffect(()=>{
+      authorize()
+  },[])
 
   
   var handlePath = (path) => setPath(path);
@@ -80,13 +90,17 @@ function App() {
         <ThemeProvider theme={theme} >
           <CssBaseline />
           <Header></Header>
-          <SideNavBar path={path} routes={routes} handlePath={handlePath}></SideNavBar>
+          <SideNavBar path={path} routes={_routes} handlePath={handlePath}></SideNavBar>
           <div className='Page' >
             <Routes>
-              <Route path='/tariffs' element={<ProtectedRoute user={user}> <TarrifMngmt />  </ProtectedRoute>} />
-              <Route path='/cars' element={<ProtectedRoute user={user}> <CarsMngmt /> </ProtectedRoute>} />
-              <Route path='/users' element={<ProtectedRoute user={user}> <UserMngmt /> </ProtectedRoute>} />
+              <Route element={<RequireAuth allowedRoles={[_roles.Admin, _roles.Manager]} /> } >
+                <Route path='/tariffs' element={<TarrifMngmt />} />
+                <Route path='/cars' element={<CarsMngmt /> } />
+                <Route path='/users' element={<UserMngmt />} />
+              </ Route> 
+              <Route path='*' element={<div></div>} />
               <Route path='/login' element={<Login />} />
+              <Route path='/unauthorized' element={<div>Не авторизован</div>} />
             </Routes>
           </div>
         </ThemeProvider>

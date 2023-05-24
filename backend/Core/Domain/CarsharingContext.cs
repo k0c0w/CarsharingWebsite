@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
+
 namespace Domain;
 
 public class CarsharingContext : IdentityDbContext<User>
@@ -46,6 +47,30 @@ public class CarsharingContext : IdentityDbContext<User>
         modelBuilder.ApplyConfiguration(new UserInfoConfiguration());
 
         modelBuilder.Entity<CarModel>().Ignore(x => x.ImageName);
+
+        List<UserRole> roles = new List<UserRole>()
+        {
+            new UserRole()
+            {
+                Id = "-1",
+                Name = Role.Manager.ToString(),
+                NormalizedName = Role.Manager.ToString().ToUpper(),
+            },
+            new UserRole()
+            {
+                Id = "-2",
+                Name = Role.User.ToString(),
+                NormalizedName = Role.User.ToString().ToUpper(),
+            },
+            new UserRole()
+            {
+                Id = "-3",
+                Name = Role.Admin.ToString(),
+                NormalizedName = Role.Admin.ToString().ToUpper(),
+            }
+        };
+
+        modelBuilder.Entity<UserRole>().HasData(roles);
     }
 
     private void SetUniqueFields(ModelBuilder modelBuilder)

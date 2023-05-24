@@ -10,7 +10,6 @@ class AxiosWrapper {
             ssl: false,
             headers: {
                 'Accept': 'application/json',
-                'Content-type': 'application/json; charset=UTF-8',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials": "true",
@@ -25,8 +24,14 @@ class AxiosWrapper {
         this.axiosInstanceAuthorize = axios.create(options);
     };
 
+    // Tariffs
     getTariffs = async () => {
         const result = await this._get("/tariff/all");
+        return result;
+    }
+
+    getTariffById = async (id) => {
+        const result = await this._get("/tariff/"+id);
         return result;
     }
 
@@ -46,7 +51,6 @@ class AxiosWrapper {
         _body.price = body.price;
         _body.description = body.description;
         _body.name = body.name
-        console.log(body);
         _body.max_millage = body.max_millage;
         if (!body.id)
         {
@@ -54,7 +58,6 @@ class AxiosWrapper {
             result.status = "404";
             return result;
         }
-        console.log(_body);
         result = await this._put("tariff/edit/"+body.id, _body); 
 
         return result;
@@ -65,8 +68,16 @@ class AxiosWrapper {
         return result
     }
 
+
+    // Car models
     createCarModel = async (body) => {
-        const result = await this._post("/car/model/create", body);
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+        
+        const result = await this._post("/car/model/create", body, config);
         return result
     }
 
@@ -75,10 +86,43 @@ class AxiosWrapper {
         return result;
     }
 
+
+    // Users
+    getUsers = async () => {
+        const result = await this._get("/user/users");
+        return result;
+    }
+
+    makePersonUser = async (id) => {
+        const role = {
+            role:  "User"
+        }
+        const result = await this._post(`/user/editrole/${id}/User`, {})
+        return result;
+    }
+
+    makePersonManager = async (id) => {
+        const role = {
+            role:  "Manager"
+        }
+        const result = await this._post(`/user/editrole/${id}/Manager`,{})
+        return result;
+    }
+
+    makePersonAdmin = async (id) => {
+        const role = {
+            role:  "Admin"
+        }
+        var result = await this._post(`/user/editrole/${id}/Admin`, {})
+        return result;
+    }
+
+    
+
+    // Auth
     login = async (body) => {
-        this.become()
         body = {
-            email: "user@example.com",
+            email: "userewwwwwst@example.com",
             password: "veryCoolEmail1!!+"
         }
         const result = await this._post("/auth/login", body);
@@ -87,22 +131,25 @@ class AxiosWrapper {
     }
 
     become = async () => {
-        const result = await this._get("/auth/admin");
+        const result = await this._get("/auth/become");
+
         return result
     }
 
     register = async () => {
         const body = 
             {
-                email: "user@example.com",
+                email: "userewwwwwst@example.com",
                 password: "veryCoolEmail1!!+",
-                name: "Марсель",
-                surname: "Альметов",
+                name: "user",
+                surname: "user",
                 birthdate: "1991-05-21T20:29:53.682Z",
                 accept: "on"
             }
         
         const result = await this.axiosInstanceAuthorize.post("/Account/register", body);
+
+        await this.become();
         return result
     }
 
@@ -111,11 +158,17 @@ class AxiosWrapper {
         return await this._get('/auth/isAdmin');
     }
 
-    async _post(endpoint, model) {
+    logout = async () => {
+        await this.axiosInstanceAuthorize.post("/Account/LogOut");
+    }
+
+    async _post(endpoint, model, props) {
         const result = {successed: false};
-        await this.axiosInstance.post(endpoint, model)
+        await this.axiosInstance.post(endpoint, model, props)
+
             .then(response => {
                 result.status = response.status; 
+                result.data = response.data;
                 result.successed = true;
             })
             .catch(error => {
@@ -128,6 +181,9 @@ class AxiosWrapper {
             })
         return result;
     }
+
+
+
 
     async _put(endpoint, model) {
         const result = {successed: false};
