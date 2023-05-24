@@ -1,15 +1,18 @@
+using System.Text.RegularExpressions;
 using Contracts;
 using Contracts.Results;
 using Contracts.User;
 using Domain;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Services.Abstractions;
 using Services.Exceptions;
+using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Services.User;
 
-public class UserService : IUserInfoService
+public class UserService : IUserService
 {
     private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly CarsharingContext _context;
@@ -22,13 +25,13 @@ public class UserService : IUserInfoService
     
     public async Task<UserInfoDto> GetPersonalInfoAsync(string userId)
     {
-        var user = await GetUserInfoAsync(userId);
+        var user = await GetUserWithInfoAsync(userId);
         return Map(user);
     }
 
     public async Task<ProfileInfoDto> GetProfileInfoAsync(string userId)
     {
-        var user = await GetUserInfoAsync(userId);
+        var user = await GetUserWithInfoAsync(userId);
         var userSubscriptions = await _context.Subscriptions
             .Where(x => x.IsActive)
             .Where(x => x.UserId == userId)
@@ -64,9 +67,61 @@ public class UserService : IUserInfoService
         return new PasswordChangeResult(result.Succeeded, result.Errors.Select(x => x.Description));
     }
 
-    private async Task<Domain.Entities.User> GetUserInfoAsync(string userId)
+    public async Task<bool> Verify(string userId)
     {
-        var user = await _context.Users.Include(x => x.UserInfo).FirstOrDefaultAsync(x => x.Id == userId);
+        try
+        {
+            var user = (await GetUserWithInfoAsync(userId)).UserInfo;
+            user.Verified = true;
+            //todo: убрать когда будет подтверждение по почте
+            user.User.EmailConfirmed = true;
+            _context.UserInfos.Update(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+    
+    public async Task<List<UserInfo>> GetAllInfoAsync()
+    {
+
+        var userInfos = await _context.UserInfos
+                .AsNoTracking()
+                .Include(u => u.User)
+                .ToListAsync();
+        return userInfos;
+    }
+    
+    
+    public async Task<bool> EditUser(string userId, EditUserDto? editUserDto)
+    {
+        try
+        {
+            var user = await GetUserWithInfoAsync(userId);
+            if(! await CheckUserEmail(user,editUserDto.Email)) {throw new Exception("Почта уже зарегестрирова");}
+            CheckName(user,editUserDto.LastName);
+            CheckName(user,editUserDto.FirstName);
+            CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
+            CheckUserPassport(user.UserInfo,editUserDto.Passport);
+            CheckUserPassportType(user.UserInfo,editUserDto.PassportType);
+            CheckUserDriverLicense(user.UserInfo,editUserDto.DriverLicense);
+            user.UserInfo.Verified = false;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+    }
+
+    private async Task<Domain.Entities.User> GetUserWithInfoAsync(string userId)
+    {
+        var user = await _context.Users
+            .Include(x => x.UserInfo).FirstOrDefaultAsync(x => x.Id == userId);
         if (user == null) throw new ObjectNotFoundException(nameof(User));
         if (user.UserInfo == null)
         {
@@ -76,7 +131,79 @@ public class UserService : IUserInfoService
 
         return user;
     }
-
+    
+    private void CheckName(Domain.Entities.User user,string val)
+    {
+        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
+        {
+            user.LastName = val;
+        }
+                 
+    }
+    private void CheckFirstName(Domain.Entities.User user, string val)
+    {
+        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        {
+            user.FirstName = val;
+        }            
+    }
+    private async Task<bool> CheckUserEmail(Domain.Entities.User user, string val)
+    {
+        var existeduser = await  _userManager.FindByEmailAsync(val);
+        if (existeduser != null && existeduser.Id != user.Id) return false;
+        user.Email = val;
+        user.NormalizedEmail = val.ToUpper();
+        user.EmailConfirmed = false;
+        return true;
+    }
+    private async Task<bool> CheckUserPhoneNum(Domain.Entities.User user, string val)
+    {
+        if (Regex.IsMatch(val, @"\d{10}$"))
+        {
+            var users = await GetAllInfoAsync();
+            users = users.Select(x => x).Where(x => x.User.Id != user.Id).ToList();
+            foreach (var el in users)
+            {
+                if (el.User.PhoneNumber == val)
+                {
+                    return false;
+                }
+            }
+            user.PhoneNumber = val;
+            user.PhoneNumberConfirmed = false;
+            return true;
+        }
+        return false;
+    }
+    private void CheckUserBirthday(UserInfo user, DateTime val)
+    {
+        if (DateTime.Now < val.Date)
+        {
+            user.BirthDay = val;
+        }
+    }
+    private void CheckUserPassport(UserInfo user, string val)
+    {
+        if (Regex.IsMatch(val, @"\d{6}"))
+        {
+            user.Passport = val;
+        }
+    }
+    private void CheckUserPassportType(UserInfo user, string val)
+    {
+        if (Regex.IsMatch(val, @"\d{4}"))
+        {
+            user.PassportType = val;
+        }
+    }
+    private void CheckUserDriverLicense(UserInfo user, int? val)
+    {
+        if (val is > 0 and <= 999999999 )
+        {
+            user.DriverLicense = val;
+        }
+    }
+    
     private UserInfoDto Map(Domain.Entities.User user)
     {
         var info = user.UserInfo;
@@ -88,7 +215,7 @@ public class UserService : IUserInfoService
             BirthDate = info.BirthDay,
             DriverLicense = info.DriverLicense,
             FirstName = user.FirstName,
-            LastName = user.Surname,
+            LastName = user.LastName,
             Email = user.Email
         };
     }

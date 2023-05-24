@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Entities.Migrations
 {
     [DbContext(typeof(CarsharingContext))]
-    [Migration("20230521121432_FirstNameRequired")]
-    partial class FirstNameRequired
+    [Migration("20230521151031_FirstNameAndLastName")]
+    partial class FirstNameAndLastName
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.4")
+                .HasAnnotation("ProductVersion", "7.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -239,6 +239,10 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -263,10 +267,6 @@ namespace Entities.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -314,6 +314,9 @@ namespace Entities.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool?>("Verified")
+                        .HasColumnType("boolean");
 
                     b.HasKey("UserInfoId");
 

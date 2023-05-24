@@ -7,11 +7,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
-using Carsharing.Helpers;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels;
 using Domain.Entities;
 using Domain;
+using Carsharing.Helpers;
+
 
 namespace Carsharing.Controllers;
 
@@ -32,7 +33,7 @@ public class AccountController : ControllerBase
         IMapper mapper,
         SignInManager<User> signInManager,
         IConfiguration configuration
-        )
+    )
     {
         _mapper = mapper;
         _configuration = configuration;
@@ -49,7 +50,7 @@ public class AccountController : ControllerBase
         if (client != null)
             return BadRequest(new {error=new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}}});
 
-        var user = new User { Email = vm.Email, Surname = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}"};
+        var user = new User { Email = vm.Email, LastName = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}"};
         var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
         if (!resultUserCreate.Succeeded)
@@ -104,7 +105,6 @@ public class AccountController : ControllerBase
                 );
             if (getTokenResult is null)
                 return BadRequest(GetGoogleError());
-
             var getUserResult = await GoogleAPI.GetUserAsync(tokenId: getTokenResult.id_token, accessToken: getTokenResult.access_token);
 
             if (getUserResult is null)
@@ -112,11 +112,11 @@ public class AccountController : ControllerBase
 
             var user = _mapper.Map<User>(getUserResult);
             UserInfo userInfo = null;
-
+            
             if (await _userManager.FindByEmailAsync(user.Email) is null)
             {
                 ///TODO: выделить создание юзера и юзеринфо в сервис и сделать lock
-
+                
                 var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
@@ -134,7 +134,7 @@ public class AccountController : ControllerBase
                 
                 await _carsharingContext.SaveChangesAsync();
             }
-
+            
             if (userInfo is null)
             {
                 try
@@ -157,22 +157,21 @@ public class AccountController : ControllerBase
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
 
             return Redirect("/profile");
-
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
             return Redirect("/login");
-            //return StatusCode(500, "Не получилось получить доступ к сервису Google");
         }
 
     }
-
+    
     [HttpPost("logout")]
     public async Task LogOut()
     {
         await _signInManager.SignOutAsync();
     }
+
 
 
     [HttpGet("IsAuthorized")]
@@ -203,18 +202,3 @@ public class AccountController : ControllerBase
         return pr;
     }
 }
-
-
-//{
-//  "email": "DioBrando003@yandex.ru",
-//  "password": "test00009AAAA111111++",
-//  "retryPassword": "test00009AAAA111111++",
-//  "userName": "Marsel",
-//  "userSurname": "Alm",
-//  "birthday": "2023-04-19T07:25:07.530Z"
-//}
-
-//{
-//  "email": "DioBr003@yandex.ru",
-//  "password": "test0000AAAA111111++"
-//}

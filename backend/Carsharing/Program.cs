@@ -74,7 +74,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<IAdminTariffService, TariffService>();
 builder.Services.AddScoped<ITariffService, TariffService>();
 
-builder.Services.AddScoped<IUserInfoService, UserService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
@@ -132,6 +132,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseStaticFiles();
+
+app.UseRouting();
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

@@ -20,4 +20,6 @@ public class BookingVM
     [DateEnd(DateStartProperty="StartDate", ErrorMessage = "Не верные даты.")]
     [JsonPropertyName("end_date")]
     public DateTime EndDate { get; set; }
+    
+    public int UserInfoId { get; set; }
 }

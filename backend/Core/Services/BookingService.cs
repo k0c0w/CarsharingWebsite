@@ -31,7 +31,7 @@ public class BookingService : IBookingService
             throw new ObjectNotFoundException(
                 $"car({rentCarInfo.CarId}) is not associated with tariff({rentCarInfo.TariffId})");
         
-        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserId);
+        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserInfoId);
         var total = tariff.Price * rentCarInfo.Days;
         if (userInfo.Balance < total) throw new InvalidOperationException("Not enough money to book car");
         await AssignCarToUserAsync(userInfo, rentCarInfo, tariff.Price);
@@ -48,7 +48,7 @@ public class BookingService : IBookingService
             StartDate = details.Start, 
             EndDate = details.End, 
             IsActive = true, 
-            UserId = details.PotentialRenterUserId,
+            UserId = userInfo.UserId,
             CarId = details.CarId
         };
         _ctx.Subscriptions.Add(sub);
@@ -62,14 +62,11 @@ public class BookingService : IBookingService
         }
     }
     
-    private async Task<UserInfo> GetConfirmedUserInfoAsync(string userId)
+    private async Task<UserInfo> GetConfirmedUserInfoAsync(int userInfoId)
     {
-        var userInfo = await _ctx.UserInfos.FindAsync(userId);
-        if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userId}");
-        //todo: isConfirmed переделать
-        var isConfirmed = userInfo.PassportType != null && userInfo.Passport != null
-                                                        && userInfo.DriverLicense != null;
-        if (!isConfirmed) throw new InvalidOperationException("Profile is not confirmed");
+        var userInfo = await _ctx.UserInfos.FindAsync(userInfoId);
+        if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userInfoId}");
+        if (!userInfo.Verified) throw new InvalidOperationException("Profile is not confirmed");
         return userInfo;
     }
 }

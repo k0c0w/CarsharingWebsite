@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions.Admin;
 using System.Text.Json;
+using Carsharing.Helpers;
 
 namespace Carsharing.Controllers;
 
@@ -41,8 +42,15 @@ public class AdminCarController : ControllerBase
     [HttpPost("model/create")]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelVM create)
     {
-        await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
-        return Created("models", null);
+        try
+        {
+            await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
+            return Created("models", null);
+        }
+        catch (ObjectDisposedException)
+        {
+            return new JsonResult(new {error=new {code=(int)ErrorCode.ServiceError, messages=new [] {"Модель создана, но фотография не сохранилась."}}});
+        }
     }
 
 

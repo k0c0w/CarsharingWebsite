@@ -1,11 +1,18 @@
+using Contracts.UserInfo;
 using Contracts.Results;
 using Contracts.User;
+using Domain.Entities;
 
 namespace Services.Abstractions;
 
 //todo: rename to IUserService
-public interface IUserInfoService
+public interface IUserService
 {
+    Task<bool> EditUser(string userId, EditUserDto editUserDto);
+    Task<bool> Verify(string userId);
+
+    Task<List<UserInfo>> GetAllInfoAsync();
+    
     Task<UserInfoDto> GetPersonalInfoAsync(string userId);
 
     Task<ProfileInfoDto> GetProfileInfoAsync(string userId);

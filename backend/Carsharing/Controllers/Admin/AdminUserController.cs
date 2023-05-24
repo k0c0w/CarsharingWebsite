@@ -1,59 +1,60 @@
-﻿using Carsharing.ViewModels.Admin.User;
-using Contracts;
+using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Services.Abstractions;
 
 namespace Carsharing.Controllers;
-[Route("api/admin/user")]
+
 [ApiController]
+[Route("/api/admin/user")]
 public class AdminUserController: ControllerBase
 {
-    private readonly UserManager<User> _userManager;
+    private readonly IUserService _userInfoService;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly UserManager<User> _userManager;
 
-    public AdminUserController(UserManager<User> userManager, RoleManager<UserRole> roleManager)
+    public AdminUserController(IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
     {
-        _userManager = userManager;
+        _userInfoService = userInfoService;
         _roleManager = roleManager;
+        _userManager = userManager;
     }
 
-    [HttpGet]
-    [Route("users")]
-    public async Task<IActionResult> GetAllUsers()
+    [HttpGet("all")]
+    public async Task<IActionResult> All()
     {
-        return new JsonResult(_userManager.Users.Select(x => new UserDto()
-        {
-            Id = x.Id,
-            Email = x.Email,
-            UserName = x.FirstName,
-            Surname = x.Surname
-        }));
+        var users = await _userInfoService.GetAllInfoAsync();
+        return new JsonResult( users.Select(x =>new UserVM
+            {
+                Email = x.User.Email,
+                Id = x.UserId,
+                EmailConfirmed = x.User.EmailConfirmed,
+                FirstName = x.User.FirstName,
+                LastName = x.User.LastName,
+                PersonalInfo = new UserInfoVM
+                {
+                    Balance = x.Balance,
+                    Passport = x.PassportType != null ? $"{x.PassportType} {x.Passport}" : null,
+                    Verified = x.Verified,
+                    BirthDay = DateOnly.FromDateTime(x.BirthDay),
+                    DriverLicense = x.DriverLicense
+                }
+            })
+        );
     }
-    
-    [HttpPost]
-    [Route("editnameorsurname/{id}")]
-    public async Task<IActionResult> EditFirstNameOrSecondName([FromBody]EditUserNameOrSurnameVM editUserNameOrSurnameVm,[FromRoute]string id)
-    {
-        try
-        {
-            var old = await _userManager.FindByIdAsync(id);
-            if (editUserNameOrSurnameVm.FirstName != null)
-                old.FirstName = editUserNameOrSurnameVm.FirstName;
-            
-            if (editUserNameOrSurnameVm.SecondName != null)
-                old.Surname = editUserNameOrSurnameVm.SecondName;
 
-            var result = await _userManager.UpdateAsync(old);
-            
-            return NoContent();
-            
+    [HttpPut("verify/{id:required}")]
+    public async Task<IActionResult> VerifyUserChanges([FromRoute]string id)
+    {
+        var result  = await _userInfoService.Verify(id);
+        if (result)
+        {
+            return new JsonResult(new { result = "Success"});
         }
-        catch (Exception e)
+        else
         {
-            
-            return NotFound();
+            return new JsonResult(new {result = "Fail"});
         }
     }
     
@@ -61,7 +62,6 @@ public class AdminUserController: ControllerBase
     [Route("editrole/{id}/{role}")]
     public async Task<IActionResult> EditUserRole([FromRoute]string role,[FromRoute]string id)
     {
-        await _roleManager.CreateAsync(new UserRole{Name = "Admin"});
         try
         {
             //нужно будет добавить ограничения кто кому может менять роль
@@ -88,6 +88,4 @@ public class AdminUserController: ControllerBase
             return NotFound();
         }
     }
-    
-    
 }

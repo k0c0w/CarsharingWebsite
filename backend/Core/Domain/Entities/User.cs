@@ -9,7 +9,7 @@ namespace Domain.Entities;
 public class User : IdentityUser
 {
     [Required]
-    public string Surname { get; set; } = string.Empty;
+    public string LastName { get; set; }
     
     [Required]
     public string FirstName { get; set; }
