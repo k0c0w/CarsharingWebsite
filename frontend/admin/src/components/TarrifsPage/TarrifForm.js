@@ -1,45 +1,9 @@
 import React, { useContext } from 'react';
-import Button from '@mui/material/Button';
-import { TextField, Input, colors } from '@mui/material';
-import { maxWidth } from '@mui/system';
-import InputBase from '@mui/material/InputBase';
-import MenuItem from '@mui/material/MenuItem';
-
 import '../../styles/car-page.css';
 import { ColorModeContext, tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 
-
-const tarrifs = [
-    {
-        value: '5H',
-        label: '5H',
-    },
-    {
-        value: '1D',
-        label: '1D',
-    },
-    {
-        value: '1W',
-        label: '1W',
-    },
-    {
-        value: '7W',
-        label: '7W',
-    },
-];
-
-var handleSubmit = (e) => {
-    var inputs = e.target.parentNode.getElementsByTagName('input')
-    var result = {};
-
-    Array.from(inputs).forEach(element => {
-        var name = element?.name ?? "not exist";
-        result[name] = element?.value ?? "not exist";
-    });
-    return (result);
-}
 
 
 export function TarrifForm({ carModel: tarrifModel, isEdit }) {
@@ -55,7 +19,7 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 <StyledTextField
                     variant="outlined"
                     size='small'
-                    label="Имя"
+                    label="Название"
                     name='name'
                     defaultValue={tarrifModel?.name}
                 >
@@ -73,18 +37,9 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 </StyledTextField>
 
                 <StyledTextField
-                    id="Длительность"
-                    label="Длительность"
-                    helperText=""
-                    name='period'
-                    border="white"
-                    // defaultValue={tarrifModel?.period ?? ""} 
-                >
-                </StyledTextField>
-
-                <StyledTextField
                     style={{ border: '25px' }}
                     placeholder={'Описание'}
+                    label="Описание"
                     fullWidth={true}
                     variant="outlined"
                     name='description'
@@ -96,13 +51,13 @@ export function TarrifForm({ carModel: tarrifModel, isEdit }) {
                 <StyledTextField
                     style={{ border: '25px' }}
                     placeholder={'Макс. пробег'}
+                    label="Макс пробег"
                     fullWidth={true}
                     variant="outlined"
-                    name='max_mileage'
+                    name='max_millage'
                     itemType='number'
-                    type='number'
                     multiline={true}
-                    defaultValue={tarrifModel?.max_mileage}
+                    defaultValue={tarrifModel?.max_millage}
                     >
                 </StyledTextField>
             </div>
@@ -120,11 +75,4 @@ export const TarrifFormTitle = ({title='Добавить объект'}) => {
 export const TarrifFormSubmit = ({ handler, title='Сделать запрос' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    // return (
-    //     <Button disableFocusRipple className="submit" type="submit"
-    //         style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
-    //         onClick={(e) => handler(handleSubmit(e))}>
-    //         {title}
-    //     </Button>
-    // );
 }

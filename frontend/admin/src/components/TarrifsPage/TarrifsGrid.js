@@ -10,7 +10,7 @@ import API from '../../httpclient/axios_client';
 
 
 
-function TarrifsGrid({handleClickInfo, handleSelect, rows=[]}) {
+function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     const [selected, setSelected] = useState([]);
@@ -37,14 +37,14 @@ function TarrifsGrid({handleClickInfo, handleSelect, rows=[]}) {
             // cellClassName: 'number-column-cell'
         },
         {
-            field: 'period',
-            headerName: 'Period',
+            field: 'max_millage',
+            headerName: 'Max millage',
             flex: 1,
             // cellClassName: 'number-column-cell'
         },
         {
             field: 'func',
-            headerName: 'Func',
+            headerName: '',
             flex: 1,
             menu:false,
             sortable: false,
@@ -65,13 +65,45 @@ function TarrifsGrid({handleClickInfo, handleSelect, rows=[]}) {
                     </Box>
                 )
             }
+        },
+        {
+            field: 'switchState',
+            headerName: 'Текущий статус',
+            flex: 1,
+            menu:false,
+            sortable: false,
+            renderCell: (params) => {
+                const is_active = params.row.is_active;
+                return (
+                    <Box
+                    width="20%"
+                    borderRadius={"5px"}
+                    sx= {{ height: '30px', width: '10px',  }}
+                    >
+                        {is_active && <Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
+                            onClick={(e)=>handleSwitch(params.row.id, false)}
+                            >
+                            On
+                        </Button>}
+                        {!is_active &&<Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
+                            onClick={(e)=>handleSwitch(params.row.id, true)}
+                            >
+                            Off
+                        </Button>}
+                    </Box>
+                )
+            }
         }
     ]
     
     //  ----- Оптимизировать -----  //
-    var _handleSelect = async (listId) => {
+    const _handleSelect = async (listId) => {
         // const rows = await API.getTariff();
-        var result = []
+        const result = []
         listId.forEach(id => {
             rows.forEach( row => {
                 if (row.id == id) {

@@ -26,87 +26,91 @@ class AxiosWrapper {
 
     // Tariffs
     getTariffs = async () => {
-        var result = await this._get("/tariff/all");
+        const result = await this._get("/tariff/all");
         return result;
     }
 
     getTariffById = async (id) => {
-        var result = await this._get("/tariff/"+id);
+        const result = await this._get("/tariff/"+id);
         return result;
     }
 
-    deleteTariffs = async (body) => {
-        var result = await this._post("/tariff/delete", body); 
+    deleteTariff = async (id) => {
+        const result = await this._delete(`/tariff/delete/${id}`); 
         return result;
+    }
+
+    changeTraiffState = async(id, state) => {
+        const response = await this._put(`/tariff/setstate/${id}`, state)
+        return response
     }
 
     updateTariff = async (body) => {
-        var result = {};
-        var _body = {};
+        let result = {};
+        const _body = {};
         _body.price = body.price;
         _body.description = body.description;
         _body.name = body.name
-        _body.MaxMileage = body.max_mileage
-        console.log(_body)
-        if (body.id === undefined)
+        _body.max_millage = body.max_millage;
+        if (!body.id)
         {
             result.error = "no id provided";
             result.status = "404";
             return result;
         }
-        debugger;
         result = await this._put("tariff/edit/"+body.id, _body); 
+
         return result;
     }
 
     createTariff = async (body) => {
-        var result = await this._post("/tariff/create", body);
+        const result = await this._post("/tariff/create", body);
         return result
     }
 
 
     // Car models
     createCarModel = async (body) => {
-        var config = {
+        const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         }
         
-        var result = await this._post("/car/model/create", body, config);
+        const result = await this._post("/car/model/create", body, config);
         return result
     }
 
     getCars = async () => {
-        var result = await this._get("/car/models");
+        const result = await this._get("/car/models");
         return result;
     }
 
 
     // Users
     getUsers = async () => {
-        var result = await this._get("/user/users");
+        const result = await this._get("/user/users");
         return result;
     }
 
     makePersonUser = async (id) => {
-        var role = {
+        const role = {
             role:  "User"
         }
-        var result = await this._post(`/user/editrole/${id}/User`, {})
+        const result = await this._post(`/user/editrole/${id}/User`, {})
         return result;
     }
 
     makePersonManager = async (id) => {
-        var role = {
+        const role = {
             role:  "Manager"
         }
-        var result = await this._post(`/user/editrole/${id}/Manager`,{})
+        const result = await this._post(`/user/editrole/${id}/Manager`,{})
         return result;
     }
 
     makePersonAdmin = async (id) => {
-        var role = {
+        const role = {
             role:  "Admin"
         }
         var result = await this._post(`/user/editrole/${id}/Admin`, {})
@@ -121,18 +125,19 @@ class AxiosWrapper {
             email: "userewwwwwst@example.com",
             password: "veryCoolEmail1!!+"
         }
-        var result = await this._post("/auth/login", body);
+        const result = await this._post("/auth/login", body);
 
         return result
     }
 
     become = async () => {
-        var result = await this._get("/auth/become");
+        const result = await this._get("/auth/become");
+
         return result
     }
 
     register = async () => {
-        var body = 
+        const body = 
             {
                 email: "userewwwwwst@example.com",
                 password: "veryCoolEmail1!!+",
@@ -142,7 +147,7 @@ class AxiosWrapper {
                 accept: "on"
             }
         
-        var result = await this.axiosInstanceAuthorize.post("/Account/register", body);
+        const result = await this.axiosInstanceAuthorize.post("/Account/register", body);
 
         await this.become();
         return result
@@ -183,6 +188,24 @@ class AxiosWrapper {
     async _put(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.put(endpoint,JSON.stringify( model ))
+            .then(response => {
+                result.status = response.status; 
+                result.successed = true;
+            })
+            .catch(error => {
+                if(error.response){
+                    result.error = error.response.data.error ?? error.response.statusText;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            })
+        return result;
+    }
+
+    async _delete(endpoint, model) {
+        const result = {successed: false};
+        await this.axiosInstance.delete(endpoint,JSON.stringify( model ))
             .then(response => {
                 result.status = response.status; 
                 result.successed = true;
@@ -241,8 +264,8 @@ class AxiosWrapper {
 
     _renameKeys(obj, keys) {
         
-        for (var key in keys){
-            for (var elem in obj) {
+        for (let key in keys){
+            for (let elem in obj) {
                 console.log(elem)
                 if (elem === key) {
                     this._renameKey(obj, elem, keys[key])
