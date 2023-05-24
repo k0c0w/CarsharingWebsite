@@ -8,10 +8,31 @@ import API from '../httpclient/axios_client';
 function getFormSettings ({form, additionalData}) {
     // const finalFormEndpoint = endpointUrl || form.action;
     // const finalMethod = method || form.method;
-    const data = Array.from(form.elements)
-        .filter(element => element.type !== "file")
+    // let data = new FormData();
+    let file = {}
+    var data = Array.from(form.elements)
+        .filter( element  => { 
+            if (element.type === "file"){
+                file = { value: element?.files[0], name: element.name }
+                return false
+            }
+            return true
+        })
         .filter((element) => element.name)
         .reduce((obj, input) => Object.assign(obj, { [input.name]: input.value }),{});
+    
+    // Object.keys(fields).forEach(function(key) {
+    //     data.append(key, fields[key]);
+    // });
+
+    // data.append(file.name, file)
+    data[file.name] = file.value
+
+    console.log(data)
+    debugger;
+
+    console.log(data);
+    debugger;
 
     if (additionalData) 
         Object.assign(data, additionalData);

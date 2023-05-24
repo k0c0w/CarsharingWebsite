@@ -26,7 +26,7 @@ var handleSubmit = (e) => {
 }
 
 
-export function CarForm({carModel}) {
+export function UserForm({carModel}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     const [tarrifs, setTarrifs] = useState([]);
@@ -105,14 +105,14 @@ export function CarForm({carModel}) {
     )
 };
 
-export const CarFormTitle = ({ title = 'Добавить объект' }) => {
+export const UserFormTitle = ({ title = 'Добавить объект' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
     return (<h3 style={{ color: color.grey[100] }}>{title}</h3 >);
 }
 
-export const CarFormSubmit = ({ handler, title = 'Создать' }) => {
+export const UserFormSubmit = ({ handler, title = 'Создать' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 

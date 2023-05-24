@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
-
+import UserTable from '../components/UsersPage/UserTableManagement';
+import API from '../httpclient/axios_client'
+import { TableSearchField } from '../components/TableCommon';
 import { styleTextField } from '../styleComponents';
 import { getElementsByTagNames } from '../functions/getElementsByTags';
 import axiosInstance from '../httpclient/axios_client';
@@ -9,19 +11,19 @@ import axiosInstance from '../httpclient/axios_client';
 
 const attrs = [
     {
-        value: 'Name',
+        value: 'User_name',
         label: 'Имя',
         labelHelper: "Имени"
     },
     {
-        value: 'Period',
-        label: 'Длительность',
-        labelHelper: "Длительности"
+        value: 'Email',
+        label: 'Почта',
+        labelHelper: "Почта"
     },
     {
-        value: 'Price',
-        label: 'Цена (p.)',
-        labelHelper: "Ценe"
+        value: 'Surname',
+        label: 'Фамилия',
+        labelHelper: "Фамилия"
     },
     {
         value: 'Id',
@@ -30,14 +32,6 @@ const attrs = [
     }
 ];
 
-var getAttr = (value) => {
-    var result = null;
-    attrs.forEach(attr => {
-        if (attr.value === value)
-            result = attr;
-    })
-    return result;
-}
 
 
 
@@ -45,7 +39,6 @@ function UserMngmt() {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     // Аттрибут для поиска 
-    const [attr, setAttr] = useState("Period");
 
     function send() {
         const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
@@ -54,25 +47,40 @@ function UserMngmt() {
 
         var body = JSON.stringify(obj);
         console.log(body);
-
-        //body = '{"email":"string","password":"string","retryPassword":"string","name":"string","surname":"string","age":0}'
-
-        axiosInstance.post(`/client/register`,body)
-            .then((response) => console.log(response));
     }
 
+    const [usersData, setUsersData] = useState([]);
+    
+    var loadData = async () => {
+        var result = await API.getUsers();
+        console.log(result);
+
+        if (result.error !== null)
+        setUsersData(result.data);
+    }
+
+    useEffect(()=>{ 
+        loadData()
+    }, []);
 
     const TextField = styleTextField(color.primary[100]);
 
     return (
         <>
+            <h1>
+                User Models
+            </h1>
+            <TableSearchField data={usersData} attrs={attrs} defaultAttrName="UserName" setData={setUsersData}/>
+            <div className='commandsList'>
+                <UserTable usersData={usersData} refreshRows={()=>loadData()}/>
+            </div>
             <div>
                 <div className='inputs' id='form'>
                     <TextField
                         variant="outlined"
                         size='small'
                         label="имя пользователя"
-                        name='name'
+                        name='user_name'
                         type={'text'}
                     >
                     </TextField>

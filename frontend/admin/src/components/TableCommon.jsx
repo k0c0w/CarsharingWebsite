@@ -44,6 +44,7 @@ const getAttr = (attrs, value) => {
 
 function getFilteredList (oldList, value, attr) {
   const proccessed_value = value?.trimEnd()?.trimStart()
+  debugger;
   if (proccessed_value.length < 1) return oldList
   const lowerAttr = attr.toLowerCase()
   const newList = oldList.filter(x => x[lowerAttr] == proccessed_value)
@@ -62,7 +63,10 @@ export const TableSearchField = ({
   const StyledTextField = styleTextField(color.primary[100])
   const [attr, setAttr] = useState(defaultAttrName)
   const serachFieldRef = useRef(null)
+  debugger
   const searchFunc = customSearchFunc ? customSearchFunc : getFilteredList
+
+  console.log(attr)
 
   return (
     <div style={{ marginTop: '70px' }}>
