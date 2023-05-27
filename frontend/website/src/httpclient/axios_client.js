@@ -1,21 +1,20 @@
 import axios from "axios"
 
 
-
 class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
-            baseURL: url,
             timeout: 10000,
-            ssl: false,
+            ssl: true,
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "https://localhost:7129"
+                "Access-Control-Allow-Origin": "https://localhost:7129",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
             },
-            defaults: {
-                withCredentials: true,
-            }
+            withCredentials: true,
         };
 
         this.axiosInstance = axios.create(options);
@@ -62,6 +61,23 @@ class AxiosWrapper {
     IsUserAuthorized = async () => {
         return await this._get('/Account/IsAuthorized');
     }
+
+    personalInfo = async ()  => {
+        return await this._get('/Account/PersonalInfo');
+    }
+
+    editPersonalInfo = async (form)  => {
+        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    }
+
+    profile = async () => {
+        return await this._get('/Account');
+    }
+
+    tryChangePassword = async (form) => {
+        return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
+    }
+
 
     async _post(endpoint, model) {
         const result = {successed: false};
