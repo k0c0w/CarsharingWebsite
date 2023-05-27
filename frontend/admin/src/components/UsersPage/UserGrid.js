@@ -17,7 +17,7 @@ import API from '../../httpclient/axios_client';
 
 
 
-function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
+function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
     const { auth } = useAuth();
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
@@ -28,7 +28,6 @@ function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
 
     const [selected, setSelected] = useState([]);
     
-    debugger;
     const columns = [
         {
             field: 'id',
@@ -94,6 +93,30 @@ function UserGrid({handleClickInfo, handleSelect, handleMakeAdmin, rows}) {
                     </Box>
                     
                     </>
+                )
+            }
+        },
+        {
+            field: 'verify',
+            headerName: 'Подтвердить',
+            menu:false,
+            sortable: false,
+            renderCell: (params) => {
+                const is_verified = params.row.personal_info.is_info_verified;
+                return (
+                    <Box
+                    width="20%"
+                    borderRadius={"5px"}
+                    sx= {{ height: '30px', width: '10px',  }}
+                    >
+                        {!is_verified && <Button 
+                            variant={'contained'} 
+                            style={{ backgroundColor: "orange", color: color.primary[900], marginLeft: 'auto' }}
+                            onClick={(e)=>handleVerify(params.row.id, false)}
+                            >
+                            Verify info
+                        </Button>}
+                    </Box>
                 )
             }
         }

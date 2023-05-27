@@ -10,6 +10,7 @@ class AxiosWrapper {
             ssl: false,
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'application/json',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials": "true",
@@ -160,6 +161,10 @@ class AxiosWrapper {
         await this.axiosInstanceAuthorize.post("/Account/LogOut");
     }
 
+    verify_profile = async (id) => {
+        return await this._put(`/User/verify/${id}`)
+    }
+
     async _post(endpoint, model, props) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model, props)
@@ -185,7 +190,7 @@ class AxiosWrapper {
 
     async _put(endpoint, model) {
         const result = {successed: false};
-        await this.axiosInstance.put(endpoint,JSON.stringify( model ))
+        await this.axiosInstance.put(endpoint, model)
             .then(response => {
                 result.status = response.status; 
                 result.successed = true;

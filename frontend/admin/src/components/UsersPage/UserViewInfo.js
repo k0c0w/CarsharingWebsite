@@ -1,7 +1,6 @@
 import React, { useEffect,useState } from "react";
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
-import API from "../../httpclient/axios_client";
 
 
 export function UserViewInfo({ userModel }) {
