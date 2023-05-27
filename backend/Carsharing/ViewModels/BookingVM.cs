@@ -21,5 +21,5 @@ public class BookingVM
     [JsonPropertyName("end_date")]
     public DateTime EndDate { get; set; }
     
-    public int UserInfoId { get; set; }
+    public string UserId { get; set; }
 }

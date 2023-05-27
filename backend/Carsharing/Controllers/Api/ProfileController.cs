@@ -15,9 +15,11 @@ namespace Carsharing.Controllers;
 public class ProfileController : ControllerBase
 {
     private readonly IUserService _userService;
-    public ProfileController(IUserService userService)
+    private readonly IBalanceService _balanceService;
+    public ProfileController(IBalanceService balanceService, IUserService userService)
     {
         _userService = userService;
+        _balanceService = balanceService;
     }
     
     [HttpGet]
@@ -58,8 +60,8 @@ public class ProfileController : ControllerBase
         });
     }
     
-    [HttpPut("/edit/{id:int}")]
-    public async Task<IActionResult> Edit([FromRoute] int id, [FromBody] EditUserVm userVm)
+    [HttpPut("/edit/{id}")]
+    public async Task<IActionResult> Edit([FromRoute] string id, [FromBody] EditUserVm userVm)
     {
 
         var result = await _userService.EditUser(id, new EditUserDto
@@ -83,5 +85,25 @@ public class ProfileController : ControllerBase
             error = "Вы ввели неверные данные, в связи с чем произошла ошибка на сервере",
             errorType = $"{result}"
         });
+    }
+    
+    [HttpGet("increase")]
+    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.IncreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+
     }
 }

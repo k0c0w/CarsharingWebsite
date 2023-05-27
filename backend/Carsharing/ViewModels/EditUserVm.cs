@@ -38,6 +38,7 @@ public class EditUserVm
     [JsonPropertyName("PassportType")]
     public string PassportType { get; set; }
     [JsonPropertyName("Passport")]
+    [RegExCheck($"{phoneRegEx}",ErrorMessage ="Пасспорт должен быть прямой последовательностью из 10 цифр")]
     public string Passport { get; set; }
     [JsonPropertyName("DriverLicense")]
     public int DriverLicense { get; set; } 

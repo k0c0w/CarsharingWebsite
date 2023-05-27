@@ -1,4 +1,5 @@
-﻿using Carsharing.ViewModels.Admin.UserInfo;
+﻿using System.Collections.Immutable;
+using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
@@ -10,17 +11,19 @@ namespace Carsharing.Controllers;
 public class AdminUserController: ControllerBase
 {
     private readonly IUserService _userInfoService;
+    private readonly IBalanceService _balanceService;
 
-    public AdminUserController(IUserService userInfoService)
+    public AdminUserController(IBalanceService balanceService, IUserService userInfoService)
     {
         _userInfoService = userInfoService;
+        _balanceService = balanceService;
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> All()
     {
         var users = await _userInfoService.GetAllInfoAsync();
-        return new JsonResult( users.Select(x =>new UserInfoVm
+        return new JsonResult( users.Select(x => new UserInfoVm
             {
                 UserInfoId = x.UserInfoId,
                 BirthDay = x.BirthDay,
@@ -43,8 +46,8 @@ public class AdminUserController: ControllerBase
         );
     }
 
-    [HttpPut("verify/{id:int}")]
-    public async Task<IActionResult> VerifyUserChanges([FromRoute]int id)
+    [HttpPut("verify/{id}")]
+    public async Task<IActionResult> VerifyUserChanges([FromRoute]string id)
     {
         var result  = await _userInfoService.Verify(id);
         if (result)
@@ -57,4 +60,42 @@ public class AdminUserController: ControllerBase
         }
     }
 
+    [HttpGet("increase")]
+    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.IncreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+
+    }
+
+    [HttpGet("decrease")]
+    public async Task<IActionResult> DecreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.DecreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+    }
 }

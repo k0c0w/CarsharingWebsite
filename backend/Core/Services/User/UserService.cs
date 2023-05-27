@@ -68,7 +68,7 @@ public class UserService : IUserService
         return new PasswordChangeResult(result.Succeeded, result.Errors.Select(x => x.Description));
     }
 
-    public async Task<bool> Verify(int userInfoID)
+    public async Task<bool> Verify(string userInfoID)
     {
         try
         {
@@ -98,7 +98,7 @@ public class UserService : IUserService
     }
     
     
-    public async Task<string> EditUser(int id, EditUserDto? editUserVm)
+    public async Task<string> EditUser(string id, EditUserDto? editUserVm)
     {
         try
         {
@@ -122,13 +122,13 @@ public class UserService : IUserService
         }
     }
     
-    private async Task<UserInfo> FindUserInfo(int id)
+    private async Task<UserInfo> FindUserInfo(string id)
     {
         var user = await _context.UserInfos
             .AsNoTracking()
             .Include(u => u.User)
             .Select(x => x)
-            .Where(e => e.UserInfoId == id)
+            .Where(e => e.UserId == id)
             .ToListAsync();
             
         return user.First();

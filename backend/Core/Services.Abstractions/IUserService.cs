@@ -5,11 +5,10 @@ using Domain.Entities;
 
 namespace Services.Abstractions;
 
-//todo: rename to IUserService
 public interface IUserService
 {
-    Task<string> EditUser(int id, EditUserDto editUserVm);
-    Task<bool> Verify(int id);
+    Task<string> EditUser(string id, EditUserDto editUserVm);
+    Task<bool> Verify(string id);
 
     Task<List<UserInfo>> GetAllInfoAsync();
     

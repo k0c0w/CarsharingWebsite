@@ -31,7 +31,7 @@ public class BookingService : IBookingService
             throw new ObjectNotFoundException(
                 $"car({rentCarInfo.CarId}) is not associated with tariff({rentCarInfo.TariffId})");
         
-        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserInfoId);
+        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserId);
         var total = tariff.Price * rentCarInfo.Days;
         if (userInfo.Balance < total) throw new InvalidOperationException("Not enough money to book car");
         await AssignCarToUserAsync(userInfo, rentCarInfo, tariff.Price);
@@ -62,10 +62,10 @@ public class BookingService : IBookingService
         }
     }
     
-    private async Task<UserInfo> GetConfirmedUserInfoAsync(int userInfoId)
+    private async Task<UserInfo> GetConfirmedUserInfoAsync(string userId)
     {
-        var userInfo = await _ctx.UserInfos.FindAsync(userInfoId);
-        if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userInfoId}");
+        var userInfo = await _ctx.UserInfos.FirstOrDefaultAsync(x => x.UserId == userId);
+        if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userId}");
         if (!userInfo.Verified) throw new InvalidOperationException("Profile is not confirmed");
         return userInfo;
     }

@@ -12,6 +12,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
+using Services.Abstractions.Admin;
 using Services.User;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,6 +75,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHand
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IAdminCarService, CarService>();
+builder.Services.AddScoped<IBalanceService, BalanceService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 

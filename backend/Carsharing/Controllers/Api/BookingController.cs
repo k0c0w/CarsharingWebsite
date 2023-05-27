@@ -25,13 +25,16 @@ public class BookingController : Controller
         {
             await _service.BookCarAsync(new RentCarDto()
             {
-                PotentialRenterUserInfoId = bookingInfo.UserInfoId,
+                PotentialRenterUserId = bookingInfo.UserId,
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
                 TariffId = bookingInfo.TariffId,
             });
-            throw new NotImplementedException();
+            return new JsonResult(new
+            {
+                result = "You Succesfully arended the car."
+            });
         }
         catch (ObjectNotFoundException)
         {
