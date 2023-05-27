@@ -32,8 +32,7 @@ export function CarForm({carModel}) {
     const [tarrifs, setTarrifs] = useState([]);
     
     var loadTarrifs = async () => { 
-        var tarrifs = await API.getTariffs()
-        console.log("tarrifs");
+        var tarrifs = await API.getTariffs();
 
         setTarrifs(tarrifs.data);
     };
