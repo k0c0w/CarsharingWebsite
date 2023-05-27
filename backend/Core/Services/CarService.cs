@@ -26,7 +26,6 @@ public class CarService : IAdminCarService
         if (car != null)
         {
             car.IsOpened = false;
-            car.IsOpened = false;
             await _ctx.SaveChangesAsync();
         }
     }
