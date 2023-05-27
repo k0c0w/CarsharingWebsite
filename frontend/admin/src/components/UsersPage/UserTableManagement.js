@@ -39,6 +39,13 @@ function UserTable({ refreshRows, usersData }) {
         }
     );
 
+        const handleVerify = (id) => {
+            const response = API.verify_profile(c);
+            if(response.successed){
+                
+            }
+        }
+
     // открывают попап с нужным действием
     const handleClickInfo = (model) => {
         const popup = {
@@ -78,7 +85,7 @@ function UserTable({ refreshRows, usersData }) {
         <>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows}/>
 
-            <UserGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={usersData}/>
+            <UserGrid handleVerify={handleVerify} handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={usersData}/>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>

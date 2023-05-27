@@ -50,6 +50,16 @@ function UserMngmt() {
             setUsersData(result.data);
     }
 
+    onVerified(id) {
+        const index = array.findIndex(x => x.id == id);
+        if (index !== -1) {
+            const data = [...tariffsData]
+            data[index].personal_info.is_info_verified = true;
+            setTariffsData(data)
+        }
+
+    }
+
     useEffect(()=>{ 
         loadData()
     }, []);

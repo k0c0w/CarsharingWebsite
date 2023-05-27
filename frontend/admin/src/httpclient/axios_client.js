@@ -161,6 +161,10 @@ class AxiosWrapper {
         await this.axiosInstanceAuthorize.post("/Account/LogOut");
     }
 
+    verify_profile = async (id) => {
+        return await this._put(`/User/verify/${id}`)
+    }
+
     async _post(endpoint, model, props) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model, props)
