@@ -24,6 +24,45 @@ class AxiosWrapper {
         options.baseURL = 'https://localhost:7129/api/'
         this.mainSiteAxios = axios.create(options);
     };
+    
+    //Posts
+    getPosts = async () => {
+        const result = await this._get("/post/posts");
+        return result;
+    }
+
+    getPostById = async (id) => {
+        const result = await this._get("/post/posts"+id);
+        return result;
+    }
+
+    deletePost = async (id) => {
+        const result = await this._delete(`/post/delete/${id}`);
+        return result;
+    }
+
+    updatePost = async (body) => {
+        let result = {};
+        const _body = {};
+        _body.title = body.title;
+        _body.body = body.body;
+        if (!body.id)
+        {
+            result.error = "no id provided";
+            result.status = "404";
+            return result;
+        }
+        console.log(_body,body)
+        result = await this._put("post/edit/"+body.id, _body);
+
+        return result;
+    }
+
+    createPost = async (body) => {
+        const result = await this._post("/post/create", body);
+        return result
+    }
+    
 
     // Tariffs
     getTariffs = async () => {
