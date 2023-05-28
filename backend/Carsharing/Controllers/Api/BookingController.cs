@@ -31,15 +31,18 @@ public class BookingController : Controller
                 CarId = bookingInfo.CarId,
                 TariffId = bookingInfo.TariffId,
             });
-            throw new NotImplementedException();
+            return new JsonResult(new
+            {
+                result = "Car is successfuly booked"
+            });
         }
         catch (ObjectNotFoundException)
         {
             return BadRequest(new { error = "Не возможно забронировать. Некоторые аргументы не действительны." });
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = "Не возможно забронировать" });
+            return BadRequest(new { error = "Не возможно забронировать", type = $"{ex.Message}" });
         }
         catch (CarAlreadyBookedException)
         {
