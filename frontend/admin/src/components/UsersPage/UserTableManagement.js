@@ -8,7 +8,7 @@ import '../../styles/popup.css'
 import { tokens } from '../../theme';
 import UserGrid from './UserGrid';
 import { Popup } from '../Popup';
-import { UserForm, UserFormTitle, UserFormSubmit } from './UserForm';
+import { UserForm, UserFormTitle, UserFormSubmit, EditUserForm } from './UserForm';
 import { UserViewInfo } from './UserViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
@@ -20,20 +20,9 @@ import API from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function UserTable({ refreshRows, usersData }) {
+function UserTable({ refreshRows, usersData, onVerified, onEdit }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
-
-    function send() {
-        const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-        const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-
-        var body = JSON.stringify(obj);
-        console.log(body);
-        var result = API.getCars(body);
-        console.log(result);
-    }
 
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);
@@ -50,8 +39,15 @@ function UserTable({ refreshRows, usersData }) {
         }
     );
 
+        const handleVerify = async (id) => {
+            const response = await API.verify_profile(id);
+            if(response && response.successed){
+                onVerified(id);
+            }
+        }
+
     // открывают попап с нужным действием
-    var handleClickInfo = (model) => {
+    const handleClickInfo = (model) => {
         const popup = {
             title: <UserFormTitle></UserFormTitle>,
             close: () => setD('none'),
@@ -60,25 +56,23 @@ function UserTable({ refreshRows, usersData }) {
         setPopup(popup);
         setD('block');
     }
-    var handleClickAdd = () => {
+    const handleClickAdd = () => {
         const popup = {
             title: <UserFormTitle title='Добавить'></UserFormTitle>,
             close: () => setD('none'),
             inputsModel: <UserForm></UserForm>,
-            axiosRequest: (e) => API.createCarModel(e),
+            axiosRequest: (e) => API.createUser(e),
             submit: true
         };
         setPopup(popup);
         console.log(selected[0]);
         setD('block');
     }
-    var handleClickChange = () => {
+    const handleClickChange = () => {
         const popup = {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
-            axiosRequest: (e) => API.createCarModel(e),
-            submit: <UserFormSubmit></UserFormSubmit>,
-            inputsModel: <UserForm carModel={selected[0]}></UserForm>,
+            inputsModel: <EditUserForm user={selected[0]} saveCallback={onEdit}></EditUserForm>,
         };
         setPopup(popup);
         console.log(selected[0]);
@@ -89,7 +83,7 @@ function UserTable({ refreshRows, usersData }) {
         <>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows}/>
 
-            <UserGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={usersData}/>
+            <UserGrid handleVerify={handleVerify} handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={usersData}/>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>

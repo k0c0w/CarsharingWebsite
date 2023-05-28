@@ -10,6 +10,7 @@ class AxiosWrapper {
             ssl: false,
             headers: {
                 'Accept': 'application/json',
+                'Content-Type': 'application/json',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
                 "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials": "true",
@@ -20,134 +21,160 @@ class AxiosWrapper {
 
         this.axiosInstance = axios.create(options);
 
-        options.baseURL = 'https://localhost:7129/api'
-        this.axiosInstanceAuthorize = axios.create(options);
+        options.baseURL = 'https://localhost:7129/api/'
+        this.mainSiteAxios = axios.create(options);
     };
-
-    // Tariffs
-    getTariffs = async () => {
-        var result = await this._get("/tariff/all");
+    
+    //Posts
+    getPosts = async () => {
+        const result = await this._get("/post/posts");
         return result;
     }
 
-    getTariffById = async (id) => {
-        var result = await this._get("/tariff/"+id);
+    getPostById = async (id) => {
+        const result = await this._get("/post/posts"+id);
         return result;
     }
 
-    deleteTariffs = async (body) => {
-        var result = await this._post("/tariff/delete", body); 
+    deletePost = async (id) => {
+        const result = await this._delete(`/post/delete/${id}`);
         return result;
     }
 
-    updateTariff = async (body) => {
-        var result = {};
-        var _body = {};
-        _body.price = body.price;
-        _body.description = body.description;
-        _body.name = body.name
-        _body.MaxMileage = body.max_mileage
-        console.log(_body)
-        if (body.id === undefined)
+    updatePost = async (body) => {
+        let result = {};
+        const _body = {};
+        _body.title = body.title;
+        _body.body = body.body;
+        if (!body.id)
         {
             result.error = "no id provided";
             result.status = "404";
             return result;
         }
-        debugger;
+        console.log(_body,body)
+        result = await this._put("post/edit/"+body.id, _body);
+
+        return result;
+    }
+
+    createPost = async (body) => {
+        const result = await this._post("/post/create", body);
+        return result
+    }
+    
+
+    // Tariffs
+    getTariffs = async () => {
+        const result = await this._get("/tariff/all");
+        return result;
+    }
+
+    getTariffById = async (id) => {
+        const result = await this._get("/tariff/"+id);
+        return result;
+    }
+
+    deleteTariff = async (id) => {
+        const result = await this._delete(`/tariff/delete/${id}`); 
+        return result;
+    }
+
+    changeTraiffState = async(id, state) => {
+        const response = await this._put(`/tariff/setstate/${id}`, state)
+        return response
+    }
+
+    updateTariff = async (body) => {
+        let result = {};
+        const _body = {};
+        _body.price = body.price;
+        _body.description = body.description;
+        _body.name = body.name
+        _body.max_millage = body.max_millage;
+        if (!body.id)
+        {
+            result.error = "no id provided";
+            result.status = "404";
+            return result;
+        }
         result = await this._put("tariff/edit/"+body.id, _body); 
+
         return result;
     }
 
     createTariff = async (body) => {
-        var result = await this._post("/tariff/create", body);
+        const result = await this._post("/tariff/create", body);
         return result
+    }
+
+    createUser = async (body) => {
+        const result = {successed: false};
+        await  this.mainSiteAxios.post("/account/register", body)
+
+            .then(response => {
+                result.status = response.status; 
+                result.data = response.data;
+                result.successed = true;
+            })
+            .catch(error => {
+                if(error.response){
+                    result.error = error.response.data.error ?? error.response.statusText;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            })
+        return result;
     }
 
 
     // Car models
     createCarModel = async (body) => {
-        var config = {
+        const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         }
         
-        var result = await this._post("/car/model/create", body, config);
+        const result = await this._post("/car/model/create", body, config);
         return result
     }
 
     getCars = async () => {
-        var result = await this._get("/car/models");
+        const result = await this._get("/car/models");
         return result;
     }
 
 
     // Users
     getUsers = async () => {
-        var result = await this._get("/user/users");
+        const result = await this._get("/user/all");
         return result;
     }
 
-    makePersonUser = async (id) => {
-        var role = {
-            role:  "User"
-        }
-        var result = await this._post(`/user/editrole/${id}/User`, {})
+    grantRole = async (id, role) => {
+        const result = await this._post(`/user/${id}/GrantRole/${role}`)
         return result;
     }
 
-    makePersonManager = async (id) => {
-        var role = {
-            role:  "Manager"
-        }
-        var result = await this._post(`/user/editrole/${id}/Manager`,{})
+    revokeRole = async (id, role) => {
+        const result = await this._delete(`/user/${id}/RevokeRole/${role}`)
         return result;
-    }
-
-    makePersonAdmin = async (id) => {
-        var role = {
-            role:  "Admin"
-        }
-        var result = await this._post(`/user/editrole/${id}/Admin`, {})
-        return result;
-    }
-
-    
+    }    
 
     // Auth
     login = async (body) => {
-        body = {
-            email: "userewwwwwst@example.com",
-            password: "veryCoolEmail1!!+"
-        }
-        var result = await this._post("/auth/login", body);
+        const result = await this._post("/auth/login", body);
 
         return result
     }
 
     become = async () => {
-        var result = await this._get("/auth/become");
+        const result = await this._get("/auth/become");
+
         return result
     }
-
-    register = async () => {
-        var body = 
-            {
-                email: "userewwwwwst@example.com",
-                password: "veryCoolEmail1!!+",
-                name: "user",
-                surname: "user",
-                birthdate: "1991-05-21T20:29:53.682Z",
-                accept: "on"
-            }
-        
-        var result = await this.axiosInstanceAuthorize.post("/Account/register", body);
-
-        await this.become();
-        return result
-    }
-
 
     isAdmin = async () => {
         return await this._get('/auth/isAdmin');
@@ -155,6 +182,26 @@ class AxiosWrapper {
 
     logout = async () => {
         await this.axiosInstanceAuthorize.post("/Account/LogOut");
+    }
+
+    verify_profile = async (id) => {
+        return await this._put(`/User/verify/${id}`)
+    }
+
+    giveMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceIncrease`, value);
+    }
+
+    subtractMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceIncrease`, value);
+    }
+
+    editUser = async (id, model) => {
+        return await this._put(`/User/Edit/${id}`, JSON.stringify(model));
+    }
+
+    getUserInfo = async (id) => {
+        return await this._get(`/User/${id}`);
     }
 
     async _post(endpoint, model, props) {
@@ -187,7 +234,25 @@ class AxiosWrapper {
 
     async _put(endpoint, model) {
         const result = {successed: false};
-        await this.axiosInstance.put(endpoint,JSON.stringify( model ))
+        await this.axiosInstance.put(endpoint, model)
+            .then(response => {
+                result.status = response.status; 
+                result.successed = true;
+            })
+            .catch(error => {
+                if(error.response){
+                    result.error = error.response.data.error ?? error.response.statusText;
+                    result.status = error.response.status;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            })
+        return result;
+    }
+
+    async _delete(endpoint, model) {
+        const result = {successed: false};
+        await this.axiosInstance.delete(endpoint,JSON.stringify( model ))
             .then(response => {
                 result.status = response.status; 
                 result.successed = true;
@@ -246,8 +311,8 @@ class AxiosWrapper {
 
     _renameKeys(obj, keys) {
         
-        for (var key in keys){
-            for (var elem in obj) {
+        for (let key in keys){
+            for (let elem in obj) {
                 console.log(elem)
                 if (elem === key) {
                     this._renameKey(obj, elem, keys[key])

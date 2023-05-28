@@ -12,7 +12,8 @@ public class UserInfo
     public string? Passport { get; set; }
     public int? DriverLicense { get; set; }
     public decimal Balance { get; set; }
-    public string? UserId { get; set; } 
+    public string? UserId { get; set; }
+    public bool Verified { get; set; }
 
     [AllowNull]
     public virtual User User { get; set; } = null;

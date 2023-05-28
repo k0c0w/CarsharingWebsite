@@ -163,6 +163,7 @@ export function areValidLoginFields(login, password, setErrors) {
 export function areValidProfileEdit(form) {
     try {
         if(!commonFromFieldsValidator(form)) return false;
+
         const commonFields = checkEmail(form.querySelector("#email")) & isValidAge(form.querySelector("#birthdate")) 
         & checkNameAndSurname(form.querySelector("#name"), form.querySelector("#surname")); 
         

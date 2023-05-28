@@ -41,7 +41,7 @@ public class AdminPostController: ControllerBase
         }
     }
     
-    [HttpPost("edit/{id:int}")]
+    [HttpPut("edit/{id:int}")]
     public async Task<IActionResult> EditPost([FromRoute]int id,[FromBody]EditPostVM editPostVm)
     {
         try
@@ -68,7 +68,9 @@ public class AdminPostController: ControllerBase
            Id = x.Id,
            Title = x.Title,
            Body = x.Body,
-           CreatedAt = x.CreatedAt
+           CreatedAt = 
+               new DateTime(x.CreatedAt.Year,x.CreatedAt.Month,x.CreatedAt.Day,
+                   x.CreatedAt.Hour,x.CreatedAt.Minute,x.CreatedAt.Second)
         }));
     }
     

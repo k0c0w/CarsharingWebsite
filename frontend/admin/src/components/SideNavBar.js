@@ -1,10 +1,11 @@
 import '../styles/side-navbar.css'
 import React from 'react';
-import {  Link } from 'react-router-dom';
+import {  Link, Navigate } from 'react-router-dom';
 
-function SideNavBar({ routes, handlePath, path }) {
+function SideNavBar({isAuthorized, routes, handlePath, path }) {
     
-    return (
+
+    return isAuthorized &&
         <div id="mySidenav" className="sidenav">
             <div className='navList'>
                 {routes.map((nav) => (
@@ -14,7 +15,7 @@ function SideNavBar({ routes, handlePath, path }) {
                 ))}
             </div>
         </div>
-    )
+    
 }
 
 export default SideNavBar;

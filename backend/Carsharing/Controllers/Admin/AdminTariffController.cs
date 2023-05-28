@@ -1,5 +1,6 @@
 using AutoMapper;
 using Carsharing.ViewModels.Admin;
+using Carsharing.ViewModels.Admin.Car;
 using Contracts.Tariff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -73,11 +74,17 @@ public class AdminTariffController : ControllerBase
     }
 
     [HttpPut("edit/{id:int}")]
-    public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffDto edit)
+    public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffVM edit)
     {
         try
         {
-            await _service.EditAsync(id, edit);
+            await _service.EditAsync(id, new CreateTariffDto()
+            {
+                Description = edit.Description,
+                Name = edit.Name,
+                MaxMileage = edit.MaxMillage,
+                PriceInRubles = edit.Price
+            } );
             return NoContent();
         }
         catch (AlreadyExistsException)

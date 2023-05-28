@@ -29,8 +29,6 @@ public class CarService : IAdminCarService
         var car = await _ctx.Cars.FindAsync(carId);
         if (car != null)
         {
-            //Поч два раза isOpened?
-            car.IsOpened = false;
             car.IsOpened = false;
             await _ctx.SaveChangesAsync();
         }
@@ -275,4 +273,19 @@ public class CarService : IAdminCarService
     }
 
     private IQueryable<Car> CarsByModelId(int id) => _ctx.Cars.Where(x => x.CarModelId == id);
+
+    public async Task<string> OpenCar(int carId)
+    {
+        var car = await _ctx.Cars.FindAsync(carId);
+        car.IsOpened = true;
+        _ctx.SaveChangesAsync();
+        return "success";
+    }
+    public async Task<string> CloseCar(int carId)
+    {
+        var car = await _ctx.Cars.FindAsync(carId);
+        car.IsOpened = false;
+        _ctx.SaveChangesAsync();
+        return "success";
+    }
 }

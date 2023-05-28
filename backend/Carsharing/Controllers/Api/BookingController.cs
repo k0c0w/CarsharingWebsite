@@ -12,12 +12,12 @@ public class BookingController : Controller
 {
     private readonly IBookingService _service;
     
-    public BookingController(IBookingService service)
+    public BookingController( IBookingService service)
     {
         _service = service;
     }
     
-    
+    //Добавил в BookingVm userInfoId, для заполнения Dto и в принципе сделал через UserInfoId
     [HttpPost("rent")]
     public async Task<IActionResult> BookCar([FromBody] BookingVM bookingInfo)
     {
@@ -25,20 +25,24 @@ public class BookingController : Controller
         {
             await _service.BookCarAsync(new RentCarDto()
             {
+                PotentialRenterUserInfoId = bookingInfo.UserInfoId,
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
                 TariffId = bookingInfo.TariffId,
             });
-            throw new NotImplementedException();
+            return new JsonResult(new
+            {
+                result = "Car is successfuly booked"
+            });
         }
         catch (ObjectNotFoundException)
         {
             return BadRequest(new { error = "Не возможно забронировать. Некоторые аргументы не действительны." });
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = "Не возможно забронировать" });
+            return BadRequest(new { error = "Не возможно забронировать", type = $"{ex.Message}" });
         }
         catch (CarAlreadyBookedException)
         {
