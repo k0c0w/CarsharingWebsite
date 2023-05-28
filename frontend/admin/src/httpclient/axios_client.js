@@ -149,6 +149,22 @@ class AxiosWrapper {
         return await this._put(`/User/verify/${id}`)
     }
 
+    giveMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceIncrease`, value);
+    }
+
+    subtractMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceIncrease`, value);
+    }
+
+    editUser = async (id, model) => {
+        return await this._put(`/User/Edit/${id}`, JSON.stringify(model));
+    }
+
+    getUserInfo = async (id) => {
+        return await this._get(`/User/${id}`);
+    }
+
     async _post(endpoint, model, props) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model, props)

@@ -84,7 +84,7 @@ public class ProfileController : ControllerBase
             PassportType = userVm.Passport?.Substring(0, 4),
             DriverLicense = userVm.DriverLicense
         });
-        if (result == "success")
+        if (result)
         {
             return new JsonResult(new { result = "Success" });
         }
@@ -92,7 +92,7 @@ public class ProfileController : ControllerBase
         return new BadRequestObjectResult(new {error=new
         {
             code = (int)ErrorCode.ServiceError,
-            errorType = $"{result}"
+            errorType = $"Ошибка сохранения"
         }});
     }
     
