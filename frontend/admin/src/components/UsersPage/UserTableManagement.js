@@ -8,7 +8,7 @@ import '../../styles/popup.css'
 import { tokens } from '../../theme';
 import UserGrid from './UserGrid';
 import { Popup } from '../Popup';
-import { UserForm, UserFormTitle, UserFormSubmit } from './UserForm';
+import { UserForm, UserFormTitle, UserFormSubmit, EditUserForm } from './UserForm';
 import { UserViewInfo } from './UserViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
@@ -20,7 +20,7 @@ import API from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function UserTable({ refreshRows, usersData }) {
+function UserTable({ refreshRows, usersData, onVerified }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -39,10 +39,10 @@ function UserTable({ refreshRows, usersData }) {
         }
     );
 
-        const handleVerify = (id) => {
-            const response = API.verify_profile(c);
+        const handleVerify = async (id) => {
+            const response = await API.verify_profile(id);
             if(response.successed){
-                
+                onVerified(id);
             }
         }
 
@@ -73,8 +73,7 @@ function UserTable({ refreshRows, usersData }) {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
             axiosRequest: (e) => API.createCarModel(e),
-            submit: <UserFormSubmit/>,
-            inputsModel: <UserForm carModel={selected[0]}></UserForm>,
+            inputsModel: <EditUserForm user={selected[0]}></EditUserForm>,
         };
         setPopup(popup);
         console.log(selected[0]);

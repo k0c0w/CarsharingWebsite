@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import Paper from '@mui/material/Paper';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
 import useAuth from '../../hooks/useAuth';
 import API from '../../httpclient/axios_client';
 
+function getRoleFromSelect(id){
+    const select = document.getElementById(`${id}_select`);
+    return select.value;
+}
 
 
+async function revokeRole(id){
+    const response = await API.grantRole(id, getRoleFromSelect(id));
+    if(!response.successed){
+        alert("Ошибка revoke");
+    }
+    else{ alert("Роль забрана")}
+}
+
+async function grantRole(id) {
+    const response = await API.revokeRole(id, getRoleFromSelect(id));
+    if(!response.successed){
+        alert("Ошибка Grant");
+    } else {alert("Роль выдана")}
+}
 
 
 function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
@@ -50,49 +61,51 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
         {
             field: 'func',
             headerName: 'Func',
-            flex: 3,
+            flex: 1,
             menu:false,
             sortable: false,
             renderCell: (params) => {
                 return (
                     <>
-                    <Box
-                    width="15px"
-                    borderRadius={"1px"}
-                    sx= {{ height: '30px', width: '5px'  }}>
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
                             onClick={(e)=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
-                        </Button>
+                        </Button>                             
+                    </>
+                )
+            }
+        },
+        {
+            field: 'roles',
+            headerName: 'Роль менеджмент',
+            sortable: false,
+            flex:3,
+            renderCell: (params) => {
+                const id = params.row.id;
+                return (
+                    <Box>
                         { isAdmin && <>
-                        <Button 
-                            variant={'contained'} 
-                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px',  }}
-                            onClick={(e)=>API.makePersonManager(params.row.id)}
-                            >
-                            Роль - менеджер
+                        <select id={`${id}_select`} style={{ backgroundColor: color.primary[900], color: color.primary[100], marginRight: '10px',  }}
+                            name="role">
+                            <option value="Admin">Admin</option>
+                            <option value="Manager">Manager</option>
+                        </select>
+                        <Button id={`${id}_grant`}
+                            variant={'contained'} style={{ backgroundColor:"#228b22", marginRight: '10px'}}
+                            onClick={()=>grantRole(params.row.id)}>
+                            Выдать
                         </Button>
                         <Button 
-                            variant={'contained'} 
-                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={(e)=>API.makePersonAdmin(params.row.id)}
-                            >
-                            Роль - админ
-                        </Button>
-                        <Button 
-                            variant={'contained'} 
-                            style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
-                            onClick={(e)=>API.makePersonUser(params.row.id)}
-                            >
-                            Убрать роль
+                            variant={'contained'} id={`${id}_revoke`}
+                            style={{ backgroundColor: "#FF4500", color: color.primary[900]}}
+                            onClick={()=>revokeRole(params.row.id)}>
+                            Убрать
                         </Button>
                         </>}
                     </Box>
-                    
-                    </>
                 )
             }
         },

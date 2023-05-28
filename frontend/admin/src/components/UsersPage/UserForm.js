@@ -10,6 +10,7 @@ import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 import { useState } from 'react';
 import API from '../../httpclient/axios_client';
+import { Box, Select } from '@mui/material';
 
 
 
@@ -56,6 +57,49 @@ export function UserForm({user}) {
         </>
     )
 };
+
+export function EditUserForm ({user}){
+    const theme = useTheme();
+    const color = tokens(theme.palette.mode);
+    
+    const StyledTextField = styleTextField(color.primary[100]);
+
+    return (
+        <>
+            <div className='inputs' id='form'>
+                <StyledTextField {...commonStyle} 
+                    label="Имя" name='name' type={'text'} value={user?.name.trimEnd().trimStart()}/>
+                <StyledTextField {...commonStyle} placeholder={'Фамилия'}label="Фамилия"name='surname'type={'text'}
+                    value={user?.surname.trimEnd().trimStart()}/>
+                <StyledTextField {...commonStyle} placeholder={'Почта'} name='email' value={user?.email} type={'email'}/>
+                <StyledTextField {...commonStyle}
+                    placeholder={'Дата рождения'} name='birthdate' value={user?.birthdate} type={'date'}/>
+
+                
+            </div>
+            <Box>
+                <label>
+                    <div>Текущий баланс: {}</div>
+                    <label>
+                        <div>
+                            Изменить:
+                        </div>
+                        <Select {...commonStyle} style={{minWidth: "100px"}}>
+                            <option value="add">Пополнить</option>
+                            <option value="subtract">Убавить</option>
+                        </Select>
+                    </label>
+                    
+                    <StyledTextField {...commonStyle}
+                        label="Сумма в рублях" placeholder={'рубли'} type='number'
+                    />
+                    <Button {...commonStyle} >Выполнить запрос</Button>
+                </label>
+            </Box>
+
+        </>
+    )
+}
 
 export const UserFormTitle = ({ title = 'Добавить объект' }) => {
     const theme = useTheme();
