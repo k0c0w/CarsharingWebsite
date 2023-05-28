@@ -114,31 +114,15 @@ class AxiosWrapper {
         return result;
     }
 
-    makePersonUser = async (id) => {
-        const role = {
-            role:  "User"
-        }
-        const result = await this._post(`/user/editrole/${id}/User`, {})
+    grantRole = async (id, role) => {
+        const result = await this._post(`/user/${id}/GrantRole/${role}`)
         return result;
     }
 
-    makePersonManager = async (id) => {
-        const role = {
-            role:  "Manager"
-        }
-        const result = await this._post(`/user/editrole/${id}/Manager`,{})
+    revokeRole = async (id, role) => {
+        const result = await this._delete(`/user/${id}/RevokeRole/${role}`)
         return result;
-    }
-
-    makePersonAdmin = async (id) => {
-        const role = {
-            role:  "Admin"
-        }
-        var result = await this._post(`/user/editrole/${id}/Admin`, {})
-        return result;
-    }
-
-    
+    }    
 
     // Auth
     login = async (body) => {

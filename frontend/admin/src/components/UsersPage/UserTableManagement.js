@@ -41,7 +41,6 @@ function UserTable({ refreshRows, usersData, onVerified }) {
 
         const handleVerify = async (id) => {
             const response = await API.verify_profile(id);
-            debugger;
             if(response.successed){
                 onVerified(id);
             }
@@ -74,7 +73,7 @@ function UserTable({ refreshRows, usersData, onVerified }) {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
             axiosRequest: (e) => API.createCarModel(e),
-            submit: <UserFormSubmit/>,
+            //submit: <UserFormSubmit/>,
             inputsModel: <UserForm carModel={selected[0]}></UserForm>,
         };
         setPopup(popup);

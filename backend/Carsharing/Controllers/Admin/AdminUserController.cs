@@ -1,3 +1,4 @@
+using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -58,34 +59,45 @@ public class AdminUserController: ControllerBase
         }
     }
     
-    [HttpPost]
-    [Route("editrole/{id}/{role}")]
-    public async Task<IActionResult> EditUserRole([FromRoute]string role,[FromRoute]string id)
+    [HttpPost("{id:required}/GrantRole/{role:required}")]
+    public async Task<IActionResult> GrantRole([FromRoute]string role,[FromRoute]string id)
     {
-        try
-        {
-            //нужно будет добавить ограничения кто кому может менять роль
-            var user = await _userManager.FindByIdAsync(id);
+        //нужно будет добавить ограничения кто кому может менять роль
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound(RoleError("No such user"));
+
+        var newUserRole = await _roleManager.FindByNameAsync(role);
+        if (newUserRole == null) return NotFound(RoleError("No such role"));
         
-            var userRole = await _userManager.GetRolesAsync(user);
+        var userRole = await _userManager.GetRolesAsync(user);
+        if (userRole.Contains(newUserRole.Name))
+            return Ok();
 
-            var newUserRole = await _roleManager.FindByNameAsync(role);
+        await _userManager.AddToRoleAsync(user, newUserRole.Name);
 
-            var removeRole = userRole.FirstOrDefault();
+        return Ok();
+    }
+    
+    [HttpDelete("{id:required}/RevokeRole/{role:required}")]
+    public async Task<IActionResult> RevokeRole([FromRoute]string role,[FromRoute]string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound(RoleError("No such user"));
 
-            await _userManager.AddToRoleAsync(user, newUserRole.Name);
-            
-            if (removeRole != null)
-            {
-                await _userManager.RemoveFromRoleAsync(user, removeRole);
-            }
-            
+        var newUserRole = await _roleManager.FindByNameAsync(role);
+        if (newUserRole == null) return NotFound(RoleError("No such role"));
+    
+        var userRole = await _userManager.GetRolesAsync(user);
+        if (!userRole.Contains(newUserRole.Name))
             return NoContent();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            return NotFound();
-        }
+        
+        await _userManager.RemoveFromRoleAsync(user, newUserRole.Name);
+
+        return NoContent();
+    }
+
+    private object RoleError(string message)
+    {
+        return new { error = new { code = (int)ErrorCode.ServiceError, message = message } };
     }
 }
