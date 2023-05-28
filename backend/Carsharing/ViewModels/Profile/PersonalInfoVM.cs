@@ -13,6 +13,9 @@ public record PersonalInfoVM
     [JsonPropertyName("surname")]
     public string Surname { get; init; }
     
+    [JsonPropertyName("phone")]
+    public string Phone { get; init; }
+    
     [JsonPropertyName("passport")]
     public string? Passport { get; init; }
     

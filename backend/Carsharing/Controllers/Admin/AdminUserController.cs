@@ -13,12 +13,14 @@ public class AdminUserController: ControllerBase
     private readonly IUserService _userInfoService;
     private readonly RoleManager<UserRole> _roleManager;
     private readonly UserManager<User> _userManager;
+    private readonly IBalanceService _balanceService;
 
-    public AdminUserController(IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
+    public AdminUserController(IBalanceService balanceService, IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
     {
         _userInfoService = userInfoService;
         _roleManager = roleManager;
         _userManager = userManager;
+        _balanceService = balanceService;
     }
 
     [HttpGet("all")]
@@ -56,6 +58,45 @@ public class AdminUserController: ControllerBase
         {
             return new JsonResult(new {result = "Fail"});
         }
+    }
+    
+    [HttpGet("increase")]
+    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.IncreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+
+    }
+
+    [HttpGet("decrease")]
+    public async Task<IActionResult> DecreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.DecreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
     }
     
     [HttpPost]

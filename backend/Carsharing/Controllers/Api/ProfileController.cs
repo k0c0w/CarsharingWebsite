@@ -14,9 +14,12 @@ namespace Carsharing.Controllers;
 public class ProfileController : ControllerBase
 {
     private readonly IUserService _userService;
-    public ProfileController(IUserService userService)
+    
+    private readonly IBalanceService _balanceService;
+    public ProfileController(IBalanceService balanceService, IUserService userService)
     {
         _userService = userService;
+        _balanceService = balanceService;
     }
     
     [HttpGet]
@@ -58,6 +61,7 @@ public class ProfileController : ControllerBase
             Email = info.Email,
             Passport = info.Passport,
             Surname = info.LastName,
+            Phone = info.Phone,
             BirthDate = DateOnly.FromDateTime(info.BirthDate),
             DriverLicense = info.DriverLicense,
             FirstName = info.FirstName
@@ -73,17 +77,40 @@ public class ProfileController : ControllerBase
             FirstName = userVm.FirstName,
             BirthDay = userVm.BirthDay,
             Email = userVm.Email,
+            PhoneNumber = userVm.PhoneNumber,
             Passport = userVm.Passport?.Substring(4),
             PassportType = userVm.Passport?.Substring(0, 4),
             DriverLicense = userVm.DriverLicense
         });
-        if (result)
-            return NoContent();
+        if (result == "success")
+        {
+            return new JsonResult(new { result = "Success" });
+        }
         
         return new BadRequestObjectResult(new {error=new
         {
             code = (int)ErrorCode.ServiceError,
-            messages= new [] { "Одно или несколько полей содержат некорректные данные."}
+            errorType = $"{result}"
         }});
+    }
+    
+    [HttpGet("increase")]
+    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    {
+        var result = await _balanceService.IncreaseBalance(id, val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+
     }
 }
