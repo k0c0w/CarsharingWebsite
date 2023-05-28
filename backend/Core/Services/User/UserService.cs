@@ -115,7 +115,6 @@ public class UserService : IUserService
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
             CheckUserPassport(user.UserInfo,editUserDto.Passport);
             CheckUserPassportType(user.UserInfo,editUserDto.PassportType);
-            CheckUserDriverLicense(user.UserInfo,editUserDto.DriverLicense);
             user.UserInfo.Verified = false;
             await _context.SaveChangesAsync();
             return true;

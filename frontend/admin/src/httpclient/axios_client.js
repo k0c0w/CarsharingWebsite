@@ -150,7 +150,6 @@ class AxiosWrapper {
     }
 
     giveMoney = async (id, value) => {
-        console.log(id, value);
         return await this._post(`/User/${id}/BalanceIncrease`, value);
     }
 
