@@ -13,6 +13,8 @@ using Services;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.User;
+using Carsharing.ChatHub;
+using Carsharing.Hubs.ChatEntities;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -78,7 +80,12 @@ builder.Services.AddScoped<IUserInfoService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddSignalR();
+
 builder.Services.AddTariffService();
+
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
+
 
 if (builder.Environment.IsDevelopment())
 {
@@ -134,6 +141,7 @@ app.UseAuthorization();
 app.UseStaticFiles();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chat");
 app.MapFallbackToFile("index.html");
 
 app.Run();

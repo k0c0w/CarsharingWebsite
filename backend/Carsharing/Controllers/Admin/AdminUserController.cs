@@ -1,9 +1,12 @@
-﻿using Carsharing.ViewModels.Admin.User;
+﻿using AutoMapper;
+using Carsharing.Hubs.ChatEntities;
+using Carsharing.ViewModels.Admin.User;
 using Contracts;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Carsharing.Controllers;
 [Route("api/admin/user")]
@@ -12,9 +15,17 @@ public class AdminUserController: ControllerBase
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly IMapper _mapper;
+    private readonly IDictionary<string, UserConnection> _connections;
 
-    public AdminUserController(UserManager<User> userManager, RoleManager<UserRole> roleManager)
+    public AdminUserController(
+        UserManager<User> userManager, 
+        RoleManager<UserRole> roleManager,
+        IMapper mapper,
+        IDictionary<string, UserConnection> connections)
     {
+        _mapper = mapper;
+        _connections = connections;
         _userManager = userManager;
         _roleManager = roleManager;
     }
@@ -88,6 +99,27 @@ public class AdminUserController: ControllerBase
             return NotFound();
         }
     }
-    
+
+
+    [HttpGet("getOpenChats")]
+    public async Task<IActionResult> GetOpenChats()
+    {
+        var openConn = _connections.Where(elem => elem.Value.IsOpen)
+            .Select(elem =>
+            {
+                var userId = elem.Value.Room.UserId;
+                var user = _userManager.FindByIdAsync(userId).GetAwaiter().GetResult();
+
+                return new OpenChatsVM()
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.Surname,
+                    UserId = userId,
+                    ConnectionId = elem.Key
+                };
+            });
+
+        return new JsonResult(openConn);
+    }
     
 }

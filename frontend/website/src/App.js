@@ -12,6 +12,7 @@ import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profil
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
 import API from './httpclient/axios_client';
+import Chat from './Containers/Chat';
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>
         <Route path='/logout' element={<Logout setUser={setUser}/>}/>
+        <Route path='/chat' element={<Chat />} />
         <Route path="*" element={<>404</>}/>
         </Route>
       </Routes>

@@ -1,0 +1,21 @@
+.chats {
+    margin-top: 50px;
+}
+
+.chat-wrapper {
+    margin-top: 25px;
+    border-radius: 10px;
+    color: black;
+    background-color: #c8c8c879;
+    padding: 10px;
+    font-size: large;
+    font-family: Roboto,'Source Sans Pro',sans-serif;
+    max-width: 45%;
+    transition: 0.5s;
+}
+
+.chat-wrapper:hover {
+    z-index: 50;
+    background-color: #8ea8c579;
+    box-shadow: #8ea8c579;
+} 
