@@ -9,6 +9,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import TarrifMngmt from './pages/Tarrifs';
 import UserMngmt from './pages/Users';
+import {PostMngmt} from "./pages/Posts";
 import Login from './pages/Login';
 import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
@@ -26,6 +27,10 @@ const _routes = [
   {
     path: '/tariffs',
     name: "Тарифы"
+  },
+  {
+    path: 'posts',
+    name: "Новости"
   },
   {
     path: '/users',
@@ -81,6 +86,7 @@ function App() {
           <div className='Page' >
             <Routes>
               <Route element={<RequireAuth allowedRoles={[_roles.Admin, _roles.Manager]} /> } >
+                <Route path= '/posts' element={<PostMngmt/>} />
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
