@@ -20,7 +20,7 @@ import API from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function UserTable({ refreshRows, usersData, onVerified }) {
+function UserTable({ refreshRows, usersData, onVerified, onEdit }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -41,7 +41,7 @@ function UserTable({ refreshRows, usersData, onVerified }) {
 
         const handleVerify = async (id) => {
             const response = await API.verify_profile(id);
-            if(response.successed){
+            if(response && response.successed){
                 onVerified(id);
             }
         }
@@ -72,8 +72,7 @@ function UserTable({ refreshRows, usersData, onVerified }) {
         const popup = {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
-            axiosRequest: (e) => API.createCarModel(e),
-            inputsModel: <EditUserForm user={selected[0]}></EditUserForm>,
+            inputsModel: <EditUserForm user={selected[0]} saveCallback={onEdit}></EditUserForm>,
         };
         setPopup(popup);
         console.log(selected[0]);

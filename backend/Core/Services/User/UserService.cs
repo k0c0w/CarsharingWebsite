@@ -22,7 +22,15 @@ public class UserService : IUserService
         _context = context;
         _userManager = manager;
     }
-    
+
+    public async Task<UserInfo?> GetUserInfoByIdAsync(string id)
+    {
+        return await _context.UserInfos
+            .AsNoTracking()
+            .Include(u => u.User)
+            .FirstOrDefaultAsync(x => x.UserId == id);
+    }
+
     public async Task<UserInfoDto> GetPersonalInfoAsync(string userId)
     {
         var user = await GetUserWithInfoAsync(userId);
@@ -102,7 +110,7 @@ public class UserService : IUserService
         {
             var user = await GetUserWithInfoAsync(userId);
             if(! await CheckUserEmail(user,editUserDto.Email)) {throw new Exception("Почта уже зарегестрирова");}
-            CheckName(user,editUserDto.LastName);
+            CheckLastName(user,editUserDto.LastName);
             CheckName(user,editUserDto.FirstName);
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
             CheckUserPassport(user.UserInfo,editUserDto.Passport);
@@ -136,16 +144,17 @@ public class UserService : IUserService
     {
         if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
         {
-            user.LastName = val;
+            user.FirstName = val;
         }
                  
     }
-    private void CheckFirstName(Domain.Entities.User user, string val)
+    private void CheckLastName(Domain.Entities.User user,string val)
     {
-        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
         {
-            user.FirstName = val;
-        }            
+            user.LastName = val;
+        }
+                 
     }
     private async Task<bool> CheckUserEmail(Domain.Entities.User user, string val)
     {
@@ -177,21 +186,21 @@ public class UserService : IUserService
     }
     private void CheckUserBirthday(UserInfo user, DateTime val)
     {
-        if (DateTime.Now < val.Date)
+        if (DateTime.Now > val.Date)
         {
             user.BirthDay = val;
         }
     }
     private void CheckUserPassport(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{6}"))
+        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{6}"))
         {
             user.Passport = val;
         }
     }
     private void CheckUserPassportType(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{4}"))
+        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{4}"))
         {
             user.PassportType = val;
         }

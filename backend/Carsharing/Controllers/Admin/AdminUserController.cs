@@ -1,5 +1,6 @@
 using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
+using Contracts.UserInfo;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,48 @@ public class AdminUserController: ControllerBase
             })
         );
     }
+    
+    [HttpGet("{id:required}")]
+    public async Task<IActionResult> GetUser([FromRoute] string id)
+    {
+        if (string.IsNullOrEmpty(id)) return BadRequest();
+        var user = await _userInfoService.GetUserInfoByIdAsync(id);
+        if (user == null) return NotFound(ServiceError("No such user"));
+        return new JsonResult( new UserVM
+            {
+                Email = user.User.Email,
+                Id = user.UserId,
+                EmailConfirmed = user.User.EmailConfirmed,
+                FirstName = user.User.FirstName,
+                LastName = user.User.LastName,
+                PersonalInfo = new UserInfoVM
+                {
+                    Balance = user.Balance,
+                    Passport = user.PassportType != null ? $"{user.PassportType} {user.Passport}" : null,
+                    Verified = user.Verified,
+                    BirthDay = DateOnly.FromDateTime(user.BirthDay),
+                    DriverLicense = user.DriverLicense
+                }
+            }
+        );
+    }
+
+    [HttpPut("Edit/{id:required}")]
+    public async Task<IActionResult> EditUser([FromRoute] string id, [FromBody] EditUserVM edit)
+    {
+        if (string.IsNullOrEmpty(id)) return NotFound(ServiceError("No such user"));
+        var result = await _userInfoService.EditUser(id, new EditUserDto()
+        {
+            Email = edit.email,
+            FirstName = edit.name,
+            BirthDay = edit.birthdate,
+            LastName = edit.surname
+        });
+        if (result)
+            return NoContent();
+
+        return new JsonResult(ServiceError("Часть информации не сохранена"));
+    }
 
     [HttpPut("verify/{id:required}")]
     public async Task<IActionResult> VerifyUserChanges([FromRoute]string id)
@@ -64,10 +107,10 @@ public class AdminUserController: ControllerBase
     {
         //нужно будет добавить ограничения кто кому может менять роль
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound(RoleError("No such user"));
+        if (user == null) return NotFound(ServiceError("No such user"));
 
         var newUserRole = await _roleManager.FindByNameAsync(role);
-        if (newUserRole == null) return NotFound(RoleError("No such role"));
+        if (newUserRole == null) return NotFound(ServiceError("No such role"));
         
         var userRole = await _userManager.GetRolesAsync(user);
         if (userRole.Contains(newUserRole.Name))
@@ -82,10 +125,10 @@ public class AdminUserController: ControllerBase
     public async Task<IActionResult> RevokeRole([FromRoute]string role,[FromRoute]string id)
     {
         var user = await _userManager.FindByIdAsync(id);
-        if (user == null) return NotFound(RoleError("No such user"));
+        if (user == null) return NotFound(ServiceError("No such user"));
 
         var newUserRole = await _roleManager.FindByNameAsync(role);
-        if (newUserRole == null) return NotFound(RoleError("No such role"));
+        if (newUserRole == null) return NotFound(ServiceError("No such role"));
     
         var userRole = await _userManager.GetRolesAsync(user);
         if (!userRole.Contains(newUserRole.Name))
@@ -96,7 +139,7 @@ public class AdminUserController: ControllerBase
         return NoContent();
     }
 
-    private object RoleError(string message)
+    private object ServiceError(string message)
     {
         return new { error = new { code = (int)ErrorCode.ServiceError, message = message } };
     }

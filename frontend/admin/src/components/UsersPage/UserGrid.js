@@ -61,7 +61,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
         {
             field: 'func',
             headerName: 'Func',
-            flex: 1,
+            flex: 2,
             menu:false,
             sortable: false,
             renderCell: (params) => {
@@ -114,6 +114,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
             headerName: 'Подтвердить',
             menu:false,
             sortable: false,
+            flex:4,
             renderCell: (params) => {
                 const is_verified = params.row.personal_info.is_info_verified;
                 return (

@@ -56,6 +56,19 @@ function UserMngmt() {
         }
     }
 
+    const onEdit = async (id) => {
+        const index = usersData.findIndex(x => x.id == id);
+        if (index !== -1) {
+            const response = await API.getUserInfo(id);
+            if(response && response.successed){
+                const user = response.data;
+                const data = [...usersData]
+                data[index] = user;
+                setUsersData(data)
+            }
+        }
+    }
+
     useEffect(()=>{ 
         loadData()
     }, []);
@@ -67,7 +80,7 @@ function UserMngmt() {
             </h1>
             <TableSearchField data={usersData} attrs={attrs} defaultAttrName="UserName" setData={setUsersData}/>
             <div className='commandsList'>
-                <UserTable usersData={usersData} refreshRows={()=>loadData()} onVerified={onVerified}/>
+                <UserTable usersData={usersData} refreshRows={()=>loadData()} onVerified={onVerified} onEdit={onEdit}/>
             </div>
         </>
     )

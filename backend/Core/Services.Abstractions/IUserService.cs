@@ -13,6 +13,8 @@ public interface IUserService
 
     Task<List<UserInfo>> GetAllInfoAsync();
     
+    Task<UserInfo> GetUserInfoByIdAsync(string id);
+    
     Task<UserInfoDto> GetPersonalInfoAsync(string userId);
 
     Task<ProfileInfoDto> GetProfileInfoAsync(string userId);
