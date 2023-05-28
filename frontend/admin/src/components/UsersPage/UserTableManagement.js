@@ -20,7 +20,7 @@ import API from '../../httpclient/axios_client';
 // A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
 
 
-function UserTable({ refreshRows, usersData }) {
+function UserTable({ refreshRows, usersData, onVerified }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -39,10 +39,11 @@ function UserTable({ refreshRows, usersData }) {
         }
     );
 
-        const handleVerify = (id) => {
-            const response = API.verify_profile(c);
+        const handleVerify = async (id) => {
+            const response = await API.verify_profile(id);
+            debugger;
             if(response.successed){
-                
+                onVerified(id);
             }
         }
 

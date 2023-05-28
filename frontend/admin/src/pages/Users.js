@@ -4,8 +4,6 @@ import { tokens } from '../theme';
 import UserTable from '../components/UsersPage/UserTableManagement';
 import API from '../httpclient/axios_client'
 import { TableSearchField } from '../components/TableCommon';
-import { styleTextField } from '../styleComponents';
-import { getElementsByTagNames } from '../functions/getElementsByTags';
 
 
 const attrs = [
@@ -40,7 +38,6 @@ function UserMngmt() {
     // Аттрибут для поиска 
 
     
-
     const [usersData, setUsersData] = useState([]);
     
     var loadData = async () => {
@@ -50,14 +47,13 @@ function UserMngmt() {
             setUsersData(result.data);
     }
 
-    onVerified(id) {
-        const index = array.findIndex(x => x.id == id);
+    const onVerified = async (id) => {
+        const index = usersData.findIndex(x => x.id == id);
         if (index !== -1) {
-            const data = [...tariffsData]
+            const data = [...usersData]
             data[index].personal_info.is_info_verified = true;
-            setTariffsData(data)
+            setUsersData(data)
         }
-
     }
 
     useEffect(()=>{ 
@@ -71,7 +67,7 @@ function UserMngmt() {
             </h1>
             <TableSearchField data={usersData} attrs={attrs} defaultAttrName="UserName" setData={setUsersData}/>
             <div className='commandsList'>
-                <UserTable usersData={usersData} refreshRows={()=>loadData()}/>
+                <UserTable usersData={usersData} refreshRows={()=>loadData()} onVerified={onVerified}/>
             </div>
         </>
     )
