@@ -13,13 +13,15 @@ namespace Carsharing.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
-    private readonly IUserService _userService;
     
+    private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
-    public ProfileController(IBalanceService balanceService, IUserService userService)
+    private readonly ICarService _carService;
+    public ProfileController(ICarService carService, IBalanceService balanceService, IUserService userService)
     {
         _userService = userService;
         _balanceService = balanceService;
+        _carService = carService;
     }
     
     [HttpGet]
@@ -95,9 +97,9 @@ public class ProfileController : ControllerBase
     }
     
     [HttpGet("increase")]
-    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    public async Task<IActionResult> IncreaseBalance([FromQuery] decimal val)
     {
-        var result = await _balanceService.IncreaseBalance(id, val);
+        var result = await _balanceService.IncreaseBalance(User.GetId(), val);
 
         if (result == "success")
         {
@@ -112,5 +114,29 @@ public class ProfileController : ControllerBase
             result = "Не удалось пополнить баланс"
         });
 
+    }
+
+    [HttpGet("open/{licensePlate:required}")]
+    public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
+    {
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
+        var result = await _carService.OpenCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        
+        return new JsonResult(new
+        {
+            result = "Car now is open"
+        });
+    }
+    
+    [HttpGet("close/{licensePlate:required}")]
+    public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
+    {
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
+        var result = await _carService.CloseCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        
+        return new JsonResult(new
+        {
+            result = "Car now is close"
+        });
     }
 }
