@@ -8,7 +8,7 @@ import '../../styles/popup.css'
 import { tokens } from '../../theme';
 import UserGrid from './UserGrid';
 import { Popup } from '../Popup';
-import { UserForm, UserFormTitle, UserFormSubmit } from './UserForm';
+import { UserForm, UserFormTitle, UserFormSubmit, EditUserForm } from './UserForm';
 import { UserViewInfo } from './UserViewInfo';
 import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
@@ -73,8 +73,7 @@ function UserTable({ refreshRows, usersData, onVerified }) {
             title: <UserFormTitle title='Изменить'></UserFormTitle>,
             close: () => setD('none'),
             axiosRequest: (e) => API.createCarModel(e),
-            //submit: <UserFormSubmit/>,
-            inputsModel: <UserForm carModel={selected[0]}></UserForm>,
+            inputsModel: <EditUserForm user={selected[0]}></EditUserForm>,
         };
         setPopup(popup);
         console.log(selected[0]);

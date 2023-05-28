@@ -10,7 +10,7 @@ import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 import { useState } from 'react';
 import API from '../../httpclient/axios_client';
-import { Box } from '@mui/material';
+import { Box, Select } from '@mui/material';
 
 
 
@@ -73,30 +73,28 @@ export function EditUserForm ({user}){
                     value={user?.surname.trimEnd().trimStart()}/>
                 <StyledTextField {...commonStyle} placeholder={'Почта'} name='email' value={user?.email} type={'email'}/>
                 <StyledTextField {...commonStyle}
-                    placeholder={'Дата рождения'} name='birthdate'value={user?.birthdate} type={'date'}/>
+                    placeholder={'Дата рождения'} name='birthdate' value={user?.birthdate} type={'date'}/>
 
                 
             </div>
             <Box>
                 <label>
-                    Пополнить баланс:
+                    <div>Текущий баланс: {}</div>
                     <label>
-                        <select>
-                            <option>Пополнить</option>
-                            <option>Убавить</option>
-                        </select>
+                        <div>
+                            Изменить:
+                        </div>
+                        <Select {...commonStyle} style={{minWidth: "100px"}}>
+                            <option value="add">Пополнить</option>
+                            <option value="subtract">Убавить</option>
+                        </Select>
                     </label>
                     
                     <StyledTextField {...commonStyle}
-                        label="Сумма в рублях"
+                        label="Сумма в рублях" placeholder={'рубли'} type='number'
                     />
+                    <Button {...commonStyle} >Выполнить запрос</Button>
                 </label>
-                <div>
-                    Уменьшить баланс:
-                    <StyledTextField {...commonStyle}
-                        label="Пополнить"
-                    />
-                </div>
             </Box>
 
         </>
