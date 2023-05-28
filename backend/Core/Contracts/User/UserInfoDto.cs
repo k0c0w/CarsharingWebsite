@@ -16,5 +16,7 @@ public class UserInfoDto
     
     public int? DriverLicense { get; init; }
     
+    public string Phone { get; init; }
+    
     public decimal Balance { get; init; }
 }

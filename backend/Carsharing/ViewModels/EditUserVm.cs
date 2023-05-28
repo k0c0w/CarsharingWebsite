@@ -25,14 +25,19 @@ public class EditUserVm
     [EmailAddress(ErrorMessage ="В почте должен содержаться спецсимвол @")]
     [JsonPropertyName("email")]
     public string Email { get; set; }
+    //TODO PhoneNumber
     
+    [MaxLength(10,ErrorMessage ="Длина телефона  должна быть строго 10 цифр")]
+    [RegExCheck(@"(^$)|(^\d{10}$)",ErrorMessage ="Телефон должен быть прямой последовательностью из 10 цифр")]
+    [JsonPropertyName("Phone")]
+    public string PhoneNumber { get; set; }
 
     [ValidateAge(AgeThreshold = 23, ErrorMessage = "Вам должно быть не менее 23 лет.")]
     [JsonPropertyName("birthdate")]
     public DateTime BirthDay { get; set; }
     
     [JsonPropertyName("passport")]
-    [RegExCheck(@"(^$)|(^\d{10}$)")]
+    [RegExCheck(@"(^$)|(^\d{10}$)", ErrorMessage = "Пасспорт должен быть прямой последовательностью из 10 цифр")]
     public string? Passport { get; set; }
     
     [JsonPropertyName("license")]
