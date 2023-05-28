@@ -26,15 +26,17 @@ const NewsCard = ({data}) => (
 );
 
 function Carousel({data}) {
-    const step = 3;
+    const step = parseInt(3);
     const [currentIndex, setCurrentIndex] = useState(0);
+    let temp = data?.slice(currentIndex, currentIndex + step)
     const [length, setLength] = useState(data.length);
-    const [slice, setSlice] = useState(data?.slice(currentIndex, currentIndex + step));
+    const [slice, setSlice] = useState(temp);
     useEffect(() => {
         setLength(data.length)
     }, [data]);
     useEffect(() => {
-        setSlice(data?.slice(currentIndex, currentIndex + step));
+        temp = data?.slice(currentIndex, currentIndex + step);
+        setSlice(temp);
     }, [currentIndex]);
 
     const next = () => {
@@ -68,11 +70,11 @@ function Carousel({data}) {
 
 
 
-const News = ({data}) => (
+const News = (props) => (
     <Section id="news" className="news-screen greeting-background news-background news-mobile">
         <Container>
            <div className="flex-container">
-            <Carousel data = {data}/>
+            <Carousel {...props}/>
            </div>
         </Container>
     </Section>
