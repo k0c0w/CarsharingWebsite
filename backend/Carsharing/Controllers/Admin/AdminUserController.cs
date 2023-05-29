@@ -104,9 +104,10 @@ public class AdminUserController: ControllerBase
         }
     }
     
-    [HttpGet("increase")]
-    public async Task<IActionResult> IncreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    [HttpPost("{id:required}/BalanceIncrease")]
+    public async Task<IActionResult> IncreaseBalance([FromRoute] string id, [FromBody] decimal val)
     {
+        if (val <= 0) return BadRequest();
         var result = await _balanceService.IncreaseBalance(id, val);
 
         if (result == "success")
@@ -124,9 +125,10 @@ public class AdminUserController: ControllerBase
 
     }
 
-    [HttpGet("decrease")]
-    public async Task<IActionResult> DecreaseBalance([FromQuery] string id, [FromQuery] decimal val)
+    [HttpPost("{id:required}/BalanceDecrease")]
+    public async Task<IActionResult> DecreaseBalance([FromRoute] string id, [FromBody] decimal val)
     {
+        if (val <= 0) return BadRequest();
         var result = await _balanceService.DecreaseBalance(id, val);
 
         if (result == "success")

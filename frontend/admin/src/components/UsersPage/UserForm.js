@@ -66,8 +66,11 @@ async function onMoneyButtonClick(id, selectRef, moneyRef, setMoneySent, setErro
         const select = selectRef.current.value;
         if(select == "add"){
             const response = await API.giveMoney(id, money);
-            if(response.successed)
-                saveCallback()
+            debugger;
+            if(response.successed){
+                saveCallback();
+                setError({});
+            }
             else
                 setError({moneyError: "Не сохранено"})
 
@@ -117,8 +120,16 @@ export function EditUserForm ({user, saveCallback}){
     const [moneySent, setMoneySent] = useState(false);
     const [editSent, setEditSent] = useState(false);
     const [error, setError] = useState({})
+    const [balance, setBalance] = useState(parseFloat(user.personal_info.account_balance))
 
     const StyledTextField = styleTextField(color.primary[100]);
+
+    function changeBalance() {
+        if(selectRef?.current.value == "add" && moneyRef?.current)
+            setBalance(balance + parseFloat(moneyRef.current.value))
+        else if(selectRef?.current.value == "subtract" && moneyRef?.current)
+            setBalance(balance - parseFloat(moneyRef.current.value))
+    }
 
     return (
         <>
@@ -136,7 +147,7 @@ export function EditUserForm ({user, saveCallback}){
             </form>
             <Box>
                 <label style={{color:color.primary[100] }}>
-                    <div>Текущий баланс: {user.personal_info.account_balance}</div>
+                    <div>Текущий баланс: {balance}</div>
                     <label>
                         <div>
                             Изменить:
@@ -150,7 +161,7 @@ export function EditUserForm ({user, saveCallback}){
                     <input ref={moneyRef} style={{width:"inherit"}}
                         label="Сумма в рублях" placeholder={'рубли'} type='number'
                     />
-                    {!moneySent && <Button {...commonStyle} onClick={() => onMoneyButtonClick(user.id, selectRef, moneyRef, setMoneySent, setError, ()=>saveCallback(user.id))}>
+                    {!moneySent && <Button {...commonStyle} onClick={() => onMoneyButtonClick(user.id, selectRef, moneyRef, setMoneySent, setError, () =>{saveCallback(user.id); changeBalance();})}>
                         Выполнить запрос</Button>}
                 </label>
             </Box>

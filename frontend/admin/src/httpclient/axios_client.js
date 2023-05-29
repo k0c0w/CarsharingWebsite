@@ -193,7 +193,7 @@ class AxiosWrapper {
     }
 
     subtractMoney = async (id, value) => {
-        return await this._post(`/User/${id}/BalanceIncrease`, value);
+        return await this._post(`/User/${id}/BalanceDecrease`, value);
     }
 
     editUser = async (id, model) => {
