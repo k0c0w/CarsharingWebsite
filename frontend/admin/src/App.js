@@ -9,10 +9,12 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import TarrifMngmt from './pages/Tarrifs';
 import UserMngmt from './pages/Users';
+import CarParkMngmt from './pages/CarPark';
 import Login from './pages/Login';
 import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
 import useAuth from './hooks/useAuth';
+
 
 const _routes = [
   {
@@ -26,6 +28,10 @@ const _routes = [
   {
     path: '/tariffs',
     name: "Тарифы"
+  },
+  {
+    path: '/carpark',
+    name: "Автопарк"
   },
   {
     path: '/users',
@@ -84,6 +90,7 @@ function App() {
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
+                <Route path='/carpark' element={<CarParkMngmt/>} />
               </ Route> 
               <Route path='*' element={<div></div>} />
               <Route path='/login' element={<Login />} />
