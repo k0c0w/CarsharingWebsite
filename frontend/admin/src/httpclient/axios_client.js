@@ -225,6 +225,11 @@ class AxiosWrapper {
     }
 
 
+    // Chat 
+    getOpenChats = async () => {
+        var result = await this._get("/user/getOpenChats");
+        return result;
+    } 
 
 
     async _put(endpoint, model) {

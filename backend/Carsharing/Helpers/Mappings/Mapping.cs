@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Carsharing.Forms;
+using Carsharing.Hubs.ChatEntities;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels.Admin;
 using Carsharing.ViewModels.Admin.Car;
+using Carsharing.ViewModels.Admin.User;
 using Contracts;
 using Contracts.Tariff;
 using Domain.Entities;
@@ -40,6 +43,8 @@ namespace Carsharing.Helpers.Mappings
             CreateMap<Tariff, AdminTariffDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TariffId))
                 .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.Price));
+
+            CreateMap<OpenChatsVM, UserConnection>().ReverseMap();
 
             CreateMap<TariffVM, AdminTariffDto>().ReverseMap();
         }

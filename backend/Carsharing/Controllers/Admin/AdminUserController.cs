@@ -1,3 +1,12 @@
+﻿using AutoMapper;
+using Carsharing.Hubs.ChatEntities;
+using Carsharing.ViewModels.Admin.User;
+using Contracts;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
 using Contracts.UserInfo;
@@ -14,15 +23,21 @@ public class AdminUserController: ControllerBase
 {
     private readonly IUserService _userInfoService;
     private readonly RoleManager<UserRole> _roleManager;
+    private readonly IMapper _mapper;
+    private readonly IDictionary<string, UserConnection> _connections;
+
     private readonly UserManager<User> _userManager;
     private readonly IBalanceService _balanceService;
 
-    public AdminUserController(IBalanceService balanceService, IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
+    public AdminUserController(IMapper mapper,
+        IDictionary<string, UserConnection> connections, IBalanceService balanceService, IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
     {
         _userInfoService = userInfoService;
         _roleManager = roleManager;
         _userManager = userManager;
         _balanceService = balanceService;
+         _mapper = mapper;
+        _connections = connections;
     }
 
     [HttpGet("all")]
@@ -141,6 +156,27 @@ public class AdminUserController: ControllerBase
         {
             result = "Не удалось пополнить баланс"
         });
+    }
+
+    [HttpGet("getOpenChats")]
+    public async Task<IActionResult> GetOpenChats()
+    {
+        var openConn = _connections.Where(elem => elem.Value.IsOpen)
+            .Select(elem =>
+            {
+                var userId = elem.Value.Room.UserId;
+                var user = _userManager.FindByIdAsync(userId).GetAwaiter().GetResult();
+
+                return new OpenChatsVM()
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.Surname,
+                    UserId = userId,
+                    ConnectionId = elem.Key
+                };
+            });
+
+        return new JsonResult(openConn);
     }
     
     [HttpPost("{id:required}/GrantRole/{role:required}")]

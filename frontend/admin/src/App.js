@@ -13,12 +13,14 @@ import {PostMngmt} from "./pages/Posts";
 import Login from './pages/Login';
 import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
+import Chats from './pages/Chats';
+import Chat from './pages/Chat';
 import useAuth from './hooks/useAuth';
 
 const _routes = [
   {
     path: '/',
-    name: "Главная"
+    name: "Чаты"
   },
   {
     path: '/cars',
@@ -90,8 +92,9 @@ function App() {
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
+                <Route path="/chat" element={<Chat />} />
+                <Route path='*' element={<Chats />} />
               </ Route> 
-              <Route path='*' element={<div></div>} />
               <Route path='/login' element={<Login />} />
             </Routes>
           </div>
