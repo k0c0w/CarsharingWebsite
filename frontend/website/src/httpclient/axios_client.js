@@ -21,8 +21,8 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
     };
 
-    book = async () => {
-        await this._post('booking/rent'); 
+    book = async (model) => {
+        return await this._post('booking/rent', model); 
     }
 
     tariffs = async (id) => {

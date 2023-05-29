@@ -56,7 +56,8 @@ public class UserService : IUserService
                 Model = x.CarModel.Model,
                 Id = x.Id,
                 IsOpened = x.IsOpened,
-                LicensePlate = x.LicensePlate
+                LicensePlate = x.LicensePlate,
+                Image = $"/models/{x.CarModel.ImageName}"
             })
             .ToArray();
 

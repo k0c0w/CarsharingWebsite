@@ -41,6 +41,7 @@ public class ProfileController : ControllerBase
                 Name = x.Model,
                 IsOpened = x.IsOpened,
                 LicensePlate = x.LicensePlate,
+                ImageUrl = x.Image
             })
         });
     }

@@ -126,7 +126,7 @@ public class CarService : IAdminCarService
             .Take(limit)
             .ToListAsync();
         return cars.Select(x => new FreeCarDto
-            { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude) });
+            { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude), Plate = x.LicensePlate});
     }
 
     public async Task<IEnumerable<CarDto>> GetAvailableCarsByModelAsync(int modelId)
