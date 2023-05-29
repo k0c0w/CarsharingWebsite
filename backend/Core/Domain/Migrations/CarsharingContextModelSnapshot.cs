@@ -17,7 +17,7 @@ namespace Entities.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -66,7 +66,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("CarModelId");
 
-                    b.ToTable("Cars");
+                    b.ToTable("Cars", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.CarModel", b =>
@@ -96,7 +96,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("TariffId");
 
-                    b.ToTable("CarModels");
+                    b.ToTable("CarModels", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Document", b =>
@@ -113,7 +113,7 @@ namespace Entities.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("WebsiteDocuments");
+                    b.ToTable("WebsiteDocuments", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
@@ -137,7 +137,7 @@ namespace Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("News");
+                    b.ToTable("News", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Subscription", b =>
@@ -172,7 +172,7 @@ namespace Entities.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Tariff", b =>
@@ -207,7 +207,7 @@ namespace Entities.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Tariffs", t =>
+                    b.ToTable("Tariffs", null, t =>
                         {
                             t.HasCheckConstraint("CK_Tariff_Price", "\"Price\" > 0");
                         });
@@ -236,10 +236,6 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -264,6 +260,10 @@ namespace Entities.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -312,17 +312,12 @@ namespace Entities.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Verified")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.HasKey("UserInfoId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserInfos");
+                    b.ToTable("UserInfos", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -1,19 +1,13 @@
 ﻿using AutoMapper;
 using Carsharing.Hubs.ChatEntities;
 using Carsharing.ViewModels.Admin.User;
-using Contracts;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
-using Contracts.UserInfo;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Carsharing.Controllers;
 
@@ -172,7 +166,7 @@ public class AdminUserController: ControllerBase
                 return new OpenChatsVM()
                 {
                     FirstName = user.FirstName,
-                    LastName = user.Surname,
+                    LastName = user.LastName,
                     UserId = userId,
                     ConnectionId = elem.Key
                 };
