@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Container from "./Container";
+import "../css/index.css"
 
 export const Section = React.forwardRef((props, ref) => 
     (<section className={`frame ${props.className ? props.className : ""}`} style={props?.style} ref={ref} id={props?.id} onClick={props?.onClick}>{props.children}</section>));

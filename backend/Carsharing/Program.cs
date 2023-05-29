@@ -1,8 +1,8 @@
 using Carsharing;
 using Carsharing.Authorization;
+using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +11,12 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
+using Services.Abstractions.Admin;
+using Services.User;
+using Carsharing.ChatHub;
+using Carsharing.Hubs.ChatEntities;
+using Microsoft.Extensions.FileProviders;
+using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -24,29 +30,23 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZАаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщЪъЫыЬьЭэЮюЯя";
+    options.User.AllowedUserNameCharacters = "user0123456789";
 })
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();
 
 // Auth
 builder.Services
-    .AddAuthentication(options =>
- {
-     options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
- })
+ .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
-     options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
-     options.Cookie.SameSite = SameSiteMode.Lax;
-     options.Cookie.HttpOnly = true;
-     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+     //options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
      options.Events.OnRedirectToLogin = context =>
      {
          context.Response.StatusCode = StatusCodes.Status401Unauthorized;
          return Task.CompletedTask;
      };
+     options.LoginPath = "/Login";
 
      options.Events.OnRedirectToAccessDenied = context =>
      {
@@ -63,18 +63,32 @@ builder.Services.AddAuthorization(options =>
             options.RequireAuthenticatedUser()
                 .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme)
                 .RequireAuthenticatedUser()
-                .AddRequirements(new CanBuyRequirement(18));
+                .AddRequirements(new CanBuyRequirement(23));
         });
 });
 
 
 builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
+builder.Services.AddScoped<IAdminCarService, CarService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
 builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IAdminPostService, PostService>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IAdminTariffService, TariffService>();
+builder.Services.AddScoped<ITariffService, TariffService>();
+builder.Services.AddScoped<IBalanceService, BalanceService>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddSignalR();
+
 builder.Services.AddTariffService();
+
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
+
 
 if (builder.Environment.IsDevelopment())
 {
@@ -95,11 +109,17 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddControllers();
 
-//todo: создать форматтер, чтобы ошибки отправлялись в общем стиле
 builder.Services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
-        new BadRequestObjectResult(actionContext.ModelState);
+    {
+        var modelState = actionContext.ModelState;
+        var json = modelState.Keys
+            .ToDictionary(x => x, x => modelState[x].Errors.Select(x => x.ErrorMessage));
+        
+        return new BadRequestObjectResult(new
+            { error = new { code = ErrorCode.ViewModelError, errors = json} });
+    };
 });
 
 
@@ -114,22 +134,26 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.Use(async (context, next) =>
-{
-    var cookies = context.Request.Cookies;
-    await next.Invoke();
-});
-
-app.UseCors("CORSAllowLocalHost3000");
-
-app.UseAuthentication();
-
-app.UseAuthorization();
-
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseCors("CORSAllowLocalHost3000");
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+    RequestPath = "/admin",
+});
+
+
 app.MapControllers();
+app.MapHub<ChatHub>("/chat");
 app.MapFallbackToFile("index.html");
 
 app.Run();

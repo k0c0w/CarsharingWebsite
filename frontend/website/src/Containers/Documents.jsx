@@ -12,46 +12,42 @@ import { useEffect, useState } from "react";
 import API from "../httpclient/axios_client";
 import "../css/carousel.css";
 
-const NewsCard = (props) => (
+const NewsCard = ({data}) => (
     <Figure figureName="news">
         <div>
-            <h3 style={{display:"inline-block"}}>Новый тариф доступен!</h3>
-            <div>12 января</div>
+            <h3 style={{display:"inline-block"}}>{data.title}</h3>
+            <div>{data.date}</div>
         </div>
         <Line style={{width:"inherit"}}/>
         <Dim className="truncate-text">
-        существенных финансовых и административных условий. Не следует, однако забывать, что консультация с широким активом обеспечивает широкому кругу (специалистов) участие в формировании позиций, занимаемых участниками в отношении поставленных задач.gmfdpomjfdpkgmdflogdfoigdofijgdfoijgodifjgodfijgdofijgdijfgji
+            {data.body}
         </Dim>
     </Figure>
 );
 
-const news = [<NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>, <NewsCard/>];
-
-
-
 function Carousel({data}) {
-    const step = 3;
+    const step = parseInt(3);
     const [currentIndex, setCurrentIndex] = useState(0);
-    console.log(currentIndex);
+    let temp = data?.slice(currentIndex, currentIndex + step)
     const [length, setLength] = useState(data.length);
-    const [slice, setSlice] = useState(data?.slice(currentIndex, currentIndex + step));
+    const [slice, setSlice] = useState(temp);
     useEffect(() => {
         setLength(data.length)
     }, [data]);
     useEffect(() => {
-        setSlice(data?.slice(currentIndex, currentIndex + step));
+        temp = data?.slice(currentIndex, currentIndex + step);
+        setSlice(temp);
     }, [currentIndex]);
 
     const next = () => {
         if (currentIndex < (length - step)) {
-            setCurrentIndex(currentIndex + step);console.log(currentIndex);
+            setCurrentIndex(currentIndex + step);
         }
     }
     
     const prev = () => {
         if (currentIndex >= step) {
             setCurrentIndex(currentIndex - step);
-            console.log(currentIndex);
         }
     }
 
@@ -62,7 +58,7 @@ function Carousel({data}) {
                 <div className="carousel-content-wrapper">
                     <div className="carousel-content">
                         {slice.map((x, i) => 
-                            <NewsCard key={i}/>)}
+                            <NewsCard data={x} key={i}/>)}
                     </div>
                 </div>
             { currentIndex < (length - step) && <button onClick={next} className="right-arrow">&gt;</button>}
@@ -74,11 +70,11 @@ function Carousel({data}) {
 
 
 
-const News = () => (
+const News = (props) => (
     <Section id="news" className="news-screen greeting-background news-background news-mobile">
         <Container>
            <div className="flex-container">
-            <Carousel data = {news}/>
+            <Carousel {...props}/>
            </div>
         </Container>
     </Section>
@@ -95,12 +91,27 @@ const Document = ({documentInfo}) => (
 
 export function Documents (props) {
     const [documentLinks, setDocumentLinks] = useState([]);
-    useState(() => {new API().getDataFromEndpoint("documents", setDocumentLinks)}, []);
+    const [news, setNews] = useState([]);
+    useState(() => { 
+        async function fetchDocuments(){
+            const response = await API.documents();
+            if(response.successed)
+                setDocumentLinks(response.data);
+        }
+
+        async function fetchNews() {
+            const response = await API.news();
+            if(response.successed)
+                setNews(response.data);
+        }
+
+        fetchDocuments();
+        fetchNews();
+    }, []);
 
     return <>
     <DocumentTitle>Документы</DocumentTitle>
-    {/*<News/>*/}
-    <News/>
+    <News data={news}/>
     <Section style={{backgroundColor: "#DEF0F0"}}>
         <Container>
             <SectionTitle>Документы</SectionTitle>

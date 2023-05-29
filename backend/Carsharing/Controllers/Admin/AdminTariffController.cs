@@ -1,4 +1,6 @@
+using AutoMapper;
 using Carsharing.ViewModels.Admin;
+using Carsharing.ViewModels.Admin.Car;
 using Contracts.Tariff;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,30 +10,25 @@ using Services.Exceptions;
 namespace Carsharing.Controllers;
 
 [ApiController]
-[Route("admin/api/tariff")]
+[Route("api/admin/tariff")]
 //todo: [Authorize(Roles = "Admin")]
 public class AdminTariffController : ControllerBase
 {
     private readonly IAdminTariffService _service;
+    private readonly IMapper _mapper;
 
-    public AdminTariffController(IAdminTariffService service)
+    public AdminTariffController(IAdminTariffService service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAllTariffs()
     {
         var tariffs = await _service.GetAllAsync();
-        return new JsonResult(tariffs.Select(x => new TariffVM
-        {
-            Id = x.Id,
-            Name = x.Name,
-            Description = x.Description,
-            MaxMileage = x.MaxMileage,
-            PriceInRubles = x.PriceInRubles,
-            IsActive = x.IsActive
-        }));
+        var tariffsVM = _mapper.Map<IEnumerable<TariffVM>>(tariffs);
+        return new JsonResult(tariffsVM);
     }
 
     [HttpPost("[action]")]
@@ -77,11 +74,17 @@ public class AdminTariffController : ControllerBase
     }
 
     [HttpPut("edit/{id:int}")]
-    public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffDto edit)
+    public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffVM edit)
     {
         try
         {
-            await _service.EditAsync(id, edit);
+            await _service.EditAsync(id, new CreateTariffDto()
+            {
+                Description = edit.Description,
+                Name = edit.Name,
+                MaxMileage = edit.MaxMillage,
+                PriceInRubles = edit.Price
+            } );
             return NoContent();
         }
         catch (AlreadyExistsException)
@@ -101,6 +104,20 @@ public class AdminTariffController : ControllerBase
         catch(InvalidOperationException ex)
         {
             return BadRequest(new {error=ex.Message});
+        }
+    }
+
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetTariff([FromRoute] int id)
+    {
+        try
+        {
+            var tariff = await _service.GetTariffByIdAsync(id);
+            return new JsonResult(_mapper.Map<TariffVM>(tariff));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
     }
 }

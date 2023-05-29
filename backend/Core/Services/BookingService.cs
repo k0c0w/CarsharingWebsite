@@ -22,15 +22,15 @@ public class BookingService : IBookingService
     public async Task BookCarAsync(RentCarDto rentCarInfo)
     {
         if (rentCarInfo.Start > rentCarInfo.End || rentCarInfo.Days == 0) throw new ArgumentException("Wrong date bounds");
-        var tariff = await _ctx.Tariffs.FindAsync(rentCarInfo.TariffId);
-        if (tariff == null) throw new ObjectNotFoundException($"No such tariff: id {rentCarInfo.TariffId}");
-        var carSupportsTariff = await _ctx.Cars.Include(x => x.CarModel)
-            .Where(x => x.Id == rentCarInfo.CarId && x.CarModel.TariffId == rentCarInfo.TariffId)
-            .AnyAsync();
-        if (!carSupportsTariff)
+        var carSupportsTariff = await _ctx.Cars
+            .Include(x => x.CarModel)
+            .ThenInclude(x => x.Tariff)
+            .Where(x => x.Id == rentCarInfo.CarId)
+            .FirstOrDefaultAsync();
+        if (carSupportsTariff == null)
             throw new ObjectNotFoundException(
                 $"car({rentCarInfo.CarId}) is not associated with tariff({rentCarInfo.TariffId})");
-        
+        var tariff = carSupportsTariff.CarModel.Tariff;
         var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo.PotentialRenterUserId);
         var total = tariff.Price * rentCarInfo.Days;
         if (userInfo.Balance < total) throw new InvalidOperationException("Not enough money to book car");
@@ -48,7 +48,7 @@ public class BookingService : IBookingService
             StartDate = details.Start, 
             EndDate = details.End, 
             IsActive = true, 
-            UserId = details.PotentialRenterUserId,
+            UserId = userInfo.UserId,
             CarId = details.CarId
         };
         _ctx.Subscriptions.Add(sub);
@@ -64,12 +64,10 @@ public class BookingService : IBookingService
     
     private async Task<UserInfo> GetConfirmedUserInfoAsync(string userId)
     {
-        var userInfo = await _ctx.UserInfos.FindAsync(userId);
-        if (userInfo == null) throw new ObjectNotFoundException($"No such UserInfo with id:{userId}");
-        //todo: isConfirmed переделать
-        var isConfirmed = userInfo.PassportType != null && userInfo.Passport != null
-                                                        && userInfo.DriverLicense != null;
-        if (!isConfirmed) throw new InvalidOperationException("Profile is not confirmed");
+        var user = await _ctx.Users.Include(x => x.UserInfo).FirstOrDefaultAsync( x=> x.Id== userId);
+        var userInfo = user.UserInfo;
+        if (userInfo == null) throw new ObjectNotFoundException($"No such User with id:{userId}");
+        if (!userInfo.Verified) throw new InvalidOperationException("Profile is not confirmed");
         return userInfo;
     }
 }

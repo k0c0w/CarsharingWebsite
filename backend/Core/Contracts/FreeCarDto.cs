@@ -7,4 +7,6 @@ public record FreeCarDto
     public int CarId { get; init; }
     
     public int TariffId { get; init; }
+    
+    public string Plate { get; init; }
 }

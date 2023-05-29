@@ -16,13 +16,17 @@ export default function BeforeTariffs () {
     const [tariff, setTariff] = useState(null);
     const {tariffId} = useParams();
     const navigator = useNavigate();
-    const api = new API();
 
     useEffect(() => {
-        api.axiosInstance
-        .get(`/tariffs/${tariffId}`)
-        .then(r => setTariff(r.data))
-        .catch(() => navigator("/notFound"));
+        async function fetchData() {
+            const response = await API.tariffs(tariffId);
+            if(response.successed)
+                setTariff(response.data);
+            else if(response.status === 404)
+                navigator('/notFound');
+        }
+
+        fetchData();
       }, []);
 
     return <Tariffs id={tariffId} title={tariff?.name} price={tariff?.price}
@@ -30,16 +34,18 @@ export default function BeforeTariffs () {
 }
 
 export function CarListSection ({tariffId, price}) {
-
-    const api = new API();
     const [cars, setCars] = useState([]);
     const [loaded, setLoaded] = useState(false);
-    function whenRecieved(data){
-        setCars(data);
-        setLoaded(true);
-    }
+
     useEffect(() => {
-         api.getDataFromEndpoint(`cars/models/${tariffId}`, whenRecieved);
+        async function fetchData(){
+            const response = await API.car_prototypes(tariffId);
+            if(response.successed) {
+                setCars(response.data);
+                setLoaded(true);
+            }
+        }
+        fetchData();
     }, []);
 
     return (

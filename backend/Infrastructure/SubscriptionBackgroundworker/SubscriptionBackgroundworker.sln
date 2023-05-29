@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SubscriptionBackgroundworker", "SubscriptionBackgroundworker.csproj", "{3ACA0320-79C7-40AE-A110-9B69EF0787AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "..\..\Core\Domain\Domain.csproj", "{5F9AE56C-6AAE-4B66-B137-3B2CB1FA93E3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3ACA0320-79C7-40AE-A110-9B69EF0787AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ACA0320-79C7-40AE-A110-9B69EF0787AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ACA0320-79C7-40AE-A110-9B69EF0787AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ACA0320-79C7-40AE-A110-9B69EF0787AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F9AE56C-6AAE-4B66-B137-3B2CB1FA93E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F9AE56C-6AAE-4B66-B137-3B2CB1FA93E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F9AE56C-6AAE-4B66-B137-3B2CB1FA93E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F9AE56C-6AAE-4B66-B137-3B2CB1FA93E3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

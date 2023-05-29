@@ -4,6 +4,8 @@
     width: 125% ;
 }
 
+.form-error-summary {color:red; font:9px; margin-bottom: 10px}
+
 .form-error {
     position: absolute;
     left: 30px;

@@ -1,10 +1,13 @@
-﻿using Contracts;
+﻿using AutoMapper;
+using Contracts;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
+
 using File = Contracts.File;
 
 namespace Services;
@@ -13,11 +16,13 @@ public class CarService : IAdminCarService
 {
     private readonly CarsharingContext _ctx;
     private readonly IFileProvider _fileProvider;
-    
-    public CarService(CarsharingContext context, IFileProvider fileProvider)
+    private readonly IMapper _mapper;
+
+    public CarService(CarsharingContext context, IFileProvider fileProvider, IMapper mapper)
     {
         _ctx = context;
         _fileProvider = fileProvider;
+        _mapper = mapper;
     }
 
     public async Task ReleaseCarAsync(int carId)
@@ -25,7 +30,6 @@ public class CarService : IAdminCarService
         var car = await _ctx.Cars.FindAsync(carId);
         if (car != null)
         {
-            car.IsOpened = false;
             car.IsOpened = false;
             await _ctx.SaveChangesAsync();
         }
@@ -45,6 +49,24 @@ public class CarService : IAdminCarService
         catch (DbUpdateConcurrencyException)
         {
             //логировать что машина уже занята?
+        }
+
+        return false;
+    }
+
+    public async Task<bool> SetCarHasToBeNonActiveAsync(int id)
+    {
+        try
+        {
+            var requestedCar = await _ctx.Cars.FindAsync(id);
+            if (requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+            requestedCar.HasToBeNonActive = true;
+            await _ctx.SaveChangesAsync();
+            return true;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            //логировать что машина уже не активна?
         }
 
         return false;
@@ -105,7 +127,7 @@ public class CarService : IAdminCarService
             .Take(limit)
             .ToListAsync();
         return cars.Select(x => new FreeCarDto
-            { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude) });
+            { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude), Plate = x.LicensePlate});
     }
 
     public async Task<IEnumerable<CarDto>> GetAvailableCarsByModelAsync(int modelId)
@@ -195,14 +217,16 @@ public class CarService : IAdminCarService
     public async Task<IEnumerable<CarModelDto>> GetAllModelsAsync()
     {
         var models = await _ctx.CarModels.ToListAsync();
-        return models.Select(x => new CarModelDto
-        {
-            Id = x.Id,
-            Brand = x.Brand,
-            Model = x.Model,
-            Description = x.Description,
-            TariffId = x.TariffId
-        });
+        return _mapper.Map<IEnumerable<CarModelDto>>(models);
+        //return models.Select(x => new CarModelDto
+        //{
+        //    Id = x.Id,
+        //    Brand = x.Brand,
+        //    Model = x.Model,
+        //    Description = x.Description,
+        //    TariffId = x.TariffId,
+        //    ImageUrl = x.ImageName
+        //});
     }
 
     public async Task<IEnumerable<CarDto>> GetAllCarsAsync()
@@ -250,4 +274,19 @@ public class CarService : IAdminCarService
     }
 
     private IQueryable<Car> CarsByModelId(int id) => _ctx.Cars.Where(x => x.CarModelId == id);
+
+    public async Task<string> OpenCar(int carId)
+    {
+        var car = await _ctx.Cars.FindAsync(carId);
+        car.IsOpened = true;
+        _ctx.SaveChangesAsync();
+        return "success";
+    }
+    public async Task<string> CloseCar(int carId)
+    {
+        var car = await _ctx.Cars.FindAsync(carId);
+        car.IsOpened = false;
+        _ctx.SaveChangesAsync();
+        return "success";
+    }
 }

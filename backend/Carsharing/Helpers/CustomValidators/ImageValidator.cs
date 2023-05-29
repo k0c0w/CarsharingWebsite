@@ -15,7 +15,8 @@ public class ImageValidator : ValidationAttribute
         var file = value as IFormFile;
         if (file == null)
             throw new ArgumentException("Property or field must be IFormFile", paramName: nameof(value));
-        if (file.ContentType != "image/x-png")
+        //if (file.ContentType != "image/x-png")
+        if (!file.ContentType.StartsWith("image/"))
         {
             ErrorMessage = "Ожидался 'Content-type: image/x-png'";
             return false;

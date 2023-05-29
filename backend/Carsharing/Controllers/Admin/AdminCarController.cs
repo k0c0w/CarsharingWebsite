@@ -1,17 +1,29 @@
+using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
 using Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 using Services.Abstractions.Admin;
+using System.Text.Json;
+using Carsharing.Helpers;
 
 namespace Carsharing.Controllers;
 
-[Route("car")]
+[Route("api/admin/car")]
 [ApiController]
 public class AdminCarController : ControllerBase
 {
     private readonly IAdminCarService _carService;
-    public AdminCarController(IAdminCarService carService) => _carService = carService;
+    private readonly IMapper _mapper;
+
+    public AdminCarController(IAdminCarService carService, IMapper mapper)
+    {
+        _mapper = mapper;
+        _carService = carService;
+    }
 
     [HttpGet("models")]
     public async Task<IActionResult> GetCarModels()
@@ -27,20 +39,29 @@ public class AdminCarController : ControllerBase
             Url = x.ImageUrl
         }));
     }
-    
-    
+
+
+    [Consumes("multipart/form-data")]
     [HttpPost("model/create")]
-    public async Task<IActionResult> CreateCarModel([FromBody] CreateCarModelVM create)
+    public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelVM create)
     {
-        await _carService.CreateModelAsync(new CreateCarModelDto
+        try
         {
-            Brand = create.Brand,
-            Model = create.Model,
-            Description = create.Description,
-            TariffId = create.TariffId
-        });
-        return Created("models", null);
+            await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
+            var path = Path.Combine("wwwroot", "models", "image.png");
+
+            return Created("models", null);
+        }
+        catch (ArgumentException)
+        {
+            return new JsonResult(new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { "Фотография не прикреплена!" } } });
+        }
+        catch (ObjectDisposedException)
+        {
+            return new JsonResult(new {error=new {code=(int)ErrorCode.ServiceError, messages=new [] {"Модель создана, но фотография не сохранилась."}}});
+        }
     }
+
 
     [HttpPut("model/{id:int}")]
     public async Task<IActionResult> UpdateCarModelInfo([FromRoute] int id, [FromBody] EditCarModelVM edit)
@@ -73,6 +94,20 @@ public class AdminCarController : ControllerBase
             return NoContent();
         }
         catch
+        {
+            return BadRequest();
+        }
+    }
+
+    [HttpDelete("models")]
+    public async Task<IActionResult> DeleteRange([FromBody] IEnumerable<int> modelsId)
+    {
+        try
+        {
+
+            return NoContent();
+        }
+        catch(Exception ex)
         {
             return BadRequest();
         }

@@ -76,6 +76,7 @@ public class CarController : ControllerBase
             Id = x.CarId,
             ParkingLatitude = x.Location.Latitude,
             ParkingLongitude = x.Location.Longitude,
+            LicensePlate = x.Plate
         }));
     }
 }

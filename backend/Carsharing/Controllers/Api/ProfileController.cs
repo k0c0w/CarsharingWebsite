@@ -1,41 +1,143 @@
+using Carsharing.Helpers;
+using Carsharing.ViewModels;
+using Carsharing.ViewModels.Profile;
+using Contracts.UserInfo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Services.Abstractions;
 
 namespace Carsharing.Controllers;
 
-[Area("Api")]
-public class ProfileController : Controller
+[Route("Api/Account")]
+[ApiController]
+[Authorize]
+public class ProfileController : ControllerBase
 {
     
-    [HttpGet]
-    public IActionResult Index()
+    private readonly IUserService _userService;
+    private readonly IBalanceService _balanceService;
+    private readonly ICarService _carService;
+    public ProfileController(ICarService carService, IBalanceService balanceService, IUserService userService)
     {
-        return Json(new 
+        _userService = userService;
+        _balanceService = balanceService;
+        _carService = carService;
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
+        return new JsonResult(new ProfileInfoVM
         {
-            rented_cars = new object[]
+            UserInfo = new UserInfoVM
             {
-                new { model="Sonata", license_plate="H132OP116" },
-                new { model="Sonata", license_plate="H133OP116" },
-                new { model="Highlander", license_plate="H135OP116" }
+                Balance = info.PersonalInfo.Balance,
+                Email = info.PersonalInfo.Email,
+                FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
             },
-            user_info = new
+            BookedCars = info.CurrentlyBookedCars.Select(x => new ProfileCarVM
             {
-                balance=23459.05f,
-                email="art.kazan@mail.ru",
-                full_name="Василий Пупкин"
-            }
+                Name = x.Model,
+                IsOpened = x.IsOpened,
+                LicensePlate = x.LicensePlate,
+                ImageUrl = x.Image
+            })
         });
     }
 
-    [HttpGet]
-    public IActionResult PersonalInfo()
+    [HttpPost("[action]")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
     {
-        return Json(new
+        var info = await _userService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        if (info.Success) return NoContent();
+
+        return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+    }
+    
+    [HttpGet("[action]")]
+    public async Task<IActionResult> PersonalInfo()
+    {
+        var info = await _userService.GetPersonalInfoAsync(User.GetId());
+        return new JsonResult(new PersonalInfoVM()
         {
-            email="art.kazan@mail.ru",
-            name="Василий",
-            surname="Пупкин",
-            age=25,
-            passport="9217 181511",
+            Email = info.Email,
+            Passport = info.Passport,
+            Surname = info.LastName,
+            Phone = info.Phone,
+            BirthDate = DateOnly.FromDateTime(info.BirthDate),
+            DriverLicense = info.DriverLicense,
+            FirstName = info.FirstName
+        });
+    }
+    
+    [HttpPut("PersonalInfo/Edit")]
+    public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
+    {
+        var result = await _userService.EditUser(User.GetId(), new EditUserDto
+        {
+            LastName = userVm.LastName,
+            FirstName = userVm.FirstName,
+            BirthDay = userVm.BirthDay,
+            Email = userVm.Email,
+            PhoneNumber = userVm.PhoneNumber,
+            Passport = userVm.Passport?.Substring(4),
+            PassportType = userVm.Passport?.Substring(0, 4),
+            DriverLicense = userVm.DriverLicense
+        });
+        if (result)
+        {
+            return new JsonResult(new { result = "Success" });
+        }
+        
+        return new BadRequestObjectResult(new {error=new
+        {
+            code = (int)ErrorCode.ServiceError,
+            message = $"Ошибка сохранения"
+        }});
+    }
+    
+    [HttpGet("increase")]
+    public async Task<IActionResult> IncreaseBalance([FromQuery] decimal val)
+    {
+        var result = await _balanceService.IncreaseBalance(User.GetId(), val);
+
+        if (result == "success")
+        {
+            return new JsonResult(new
+            {
+                result = $"Success, your Balance increased on {val}"
+            });
+        }
+
+        return new JsonResult(new
+        {
+            result = "Не удалось пополнить баланс"
+        });
+
+    }
+
+    [HttpGet("open/{licensePlate:required}")]
+    public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
+    {
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
+        var result = await _carService.OpenCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        
+        return new JsonResult(new
+        {
+            result = "Car now is open"
+        });
+    }
+    
+    [HttpGet("close/{licensePlate:required}")]
+    public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
+    {
+        var info = await _userService.GetProfileInfoAsync(User.GetId());
+        var result = await _carService.CloseCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        
+        return new JsonResult(new
+        {
+            result = "Car now is close"
         });
     }
 }

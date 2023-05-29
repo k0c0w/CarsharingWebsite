@@ -26,7 +26,7 @@ public class InformationController : ControllerBase
     }
 
     [HttpGet("[action]")]
-    public async Task<IActionResult> News([FromQuery] int page, [FromQuery] int limit = 20, 
+    public async Task<IActionResult> News([FromQuery] int page = 1, [FromQuery] int limit = 20, 
         [FromQuery] bool byDescending = true)
     {
         if (page <= 0 || limit <= 0) return new JsonResult(Array.Empty<object>());

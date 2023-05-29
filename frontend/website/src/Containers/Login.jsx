@@ -3,91 +3,79 @@ import Container from '../Components/Container'
 import React from 'react'
 import Form, { Input } from '../Components/formTools'
 import Bold from '../Components/TextTags'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import API from '../httpclient/axios_client'
 import { areValidLoginFields } from '../js/form-validators'
 import GoogleSignIn from '../Components/SignInButtons'
+import "../css/form.css";
 
-const loginVM = {
-    Email: [""],
-    Password: [""]
-}
 
-export default function Login () {
-  var api = new API()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+export default function Login ({setUser, user}) {
   const [errors, setErrors] = useState({})
-
-  const [errorsAfter, setErrorsAfter] = useState(loginVM)
+  const [formSummary, setFormSummary] = useState();
+  const [requestSent, setRequestSent] = useState(false);
+  const formRef = useRef(null);
   const loginRef = useRef(null)
   const passwordRef = useRef(null)
+  const location = useLocation();
   const navigator = useNavigate();
 
    async function handleLogin (event) {
-
     event.preventDefault();
-        if(!areValidLoginFields(loginRef.current, passwordRef.current, setErrors)) return;
+    if(requestSent || !areValidLoginFields(loginRef.current, passwordRef.current, setErrors)) return;
 
-    const body = {
-      email: loginRef?.current?.value,
-      password: passwordRef?.current?.value
+    setFormSummary("");
+    setRequestSent(true);
+    const response = await API.login(formRef.current);
+    setRequestSent(false);
+    if (response.status === 401) {
+      const error = response.error;
+      if(error.code === 2)
+        setFormSummary(error.messages)
     }
-    console.log(body)
-    const response = await api.login(body)
-    console.log(response)
-    if (response.isFailed === true) {
-      setErrorsAfter(response.message)
+    else if(response.status === 400){
+      const error = response.error;
+      if(error.code === 1)
+        setErrors({login: error.errors?.Email[0], password: error.errors?.Password[0]})
     }
     else{
-      navigator('/');
+      setUser(true);
+      const urlParams = new URLSearchParams(location.search);
+      const returnUri = urlParams.get('return_uri');
+      if(returnUri)
+        navigator(returnUri);
+      else
+        navigator('/');
     }
   }
+
 
   return (
     <Section>
       <Container className='flex-container'>
-        <Form className='center flex-column'>
+        <Form ref={formRef} className='center flex-column'>
           <Bold id='loginHeader' className='form-header'>
-            Войти
+            Вход
           </Bold>
-          <div style={{color:'red', font:"9px", marginBottom: "10px"}}>{!errorsAfter.Email && !errorsAfter.Password && <>{errorsAfter}</>}</div>
+          <div className='form-error-summary'>{formSummary}</div>
           <Input
             ref={loginRef}
-            name='Email'
+            name="email"
+            type="email"
             placeholder='Почта'
-            set={e => setEmail(e)}
-            value={email}
-            inputErrorMessage={errors['login']}
-            ><div color='red'>{errorsAfter.Email ? errorsAfter.Email[0] : ""}</div></Input>
+            inputErrorMessage={errors?.login}/>
           <Input
             ref={passwordRef}
-            name='Password'
+            name="password"
+            type='password'
             placeholder='Пароль'
-            set={e => setPassword(e)}
-            value={password}
-            inputErrorMessage={errors['password']}>
-              <div style={{color:"red"}}>{errorsAfter.Password ? errorsAfter.Password[0] : ""}</div>
-          </Input>
-          
-          <GoogleSignIn
-            redirect_uri='https://localhost:7129/api/account/google-external-auth-callback/'
-            scope='https://www.googleapis.com/auth/userinfo.email'
-            client_id='930943899094-n86i2ipn8jb3j51aj9d8k2tcojd89ilb.apps.googleusercontent.com'
-          />
-          <div
-            id='formButton'
-            className='form-filed'
-            style={{ marginTop: '15px' }}
-          >
-            <button
-              className='button form-button'
-              onClick={(event) => {
-                handleLogin(event)
-              }}
-            >
-              Login
+            inputErrorMessage={errors?.password}/>
+
+          <GoogleSignIn/>
+          <div id='formButton' className='form-filed'style={{ marginTop: '15px' }}>
+            <button className='button form-button' onClick={handleLogin}>
+              Войти
             </button>
             <NavLink className='softblue-regular' to='/registration'>
               Регистрация

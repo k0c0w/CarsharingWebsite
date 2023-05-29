@@ -20,7 +20,7 @@ public class TariffVM
     [JsonPropertyOrder(3)]
     public bool IsActive { get; init; }
     
-    [JsonPropertyName("max_mileage")]
+    [JsonPropertyName("max_millage")]
     [JsonPropertyOrder(4)]
     public int? MaxMileage { get; init; }
     

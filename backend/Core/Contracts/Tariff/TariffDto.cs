@@ -11,4 +11,6 @@ public class TariffDto
     public decimal PriceInRubles { get; init; }
     
     public int? MaxMileage { get; init; }
+    
+    public string Image { get; init; }
 }

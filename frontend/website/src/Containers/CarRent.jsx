@@ -16,47 +16,39 @@ function days(startDate, endDate) {
 }
 
 
-function sendReuest(startDate, endDate, carId, block) {
+async function sendReuest(startDate, endDate, carId, block) {
     block(true);
-    new API().axiosInstance.post('booking/rent', {
-        data:{
+    const response = await API.book({
             car_id: carId,
             start_date: startDate.toJSON(),
-            end_date: endDate.toJSON(),
-        }
-    })
-    .then(e => alert("Успешно забронирована."))
-    .catch(e =>handleStatus(e.response))
-    .finally(block(false));
-}
-
-function handleStatus(response) {
-    if(!response){
-        alert("Ошибка");
-        return;
+            end_date: endDate.toJSON()
+        })
+    block(false);
+    if(response && response.successed){
+        alert("Успешно забронирована.")
     }
-
-    switch(response.status){
-        case 401:
+    else if (response) {
+        if(response.status === 401)
             document.location.href = `/login?return_uri=${document.location.href}`;
-            break;
-        case 400:
+        else if(response.status === 400)
             alert("Машина не может быть забронирована. Недоступна или недостаточно средств.");
-            break;
+    }
+    else{
+        alert("Ошибка");
     }
 }
+
 
 export default function CarRent() {
-    const api = new API();    
     const {modelId} = useParams();
     const [modelInfo, setModelInfo] = useState({});
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
     const [carList, setCarList] = useState([]);
     const [block, setBlock] = useState(false);
-    const [startDate, setStartDate] = useState(null);
+    const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
+    const [chose, setChose] = useState(null);
     const navigate = useNavigate();
-    let car = null;
 
     function success(position) {
         const latitude = position.coords.latitude;
@@ -70,40 +62,54 @@ export default function CarRent() {
       }
 
     
-    function getCarList() {
-        api.axiosInstance.get('cars/available', {params: {
+    async function getCarList() {
+        const response = await API.available_cars({
             CarModelId: modelId,
             Longitude: parseFloat(geo.longitude),
             Latitude: parseFloat(geo.latitude),
             Radius: 8192
-        }})
-        .then(x => {setCarList(x.data);})
-        .catch(err => alert("Невозможно получить список машин."))
+        });
+        if(response.successed){
+            setCarList(response.data);
+        }
+        else{
+            alert("Невозможно получить список машин.");
+        }
     }  
 
     useEffect(() => {
-        api.axiosInstance.get(`cars/model/${modelId}`)
-        .then(x => setModelInfo(x.data))
-        .then(() => {
-            if (!navigator.geolocation) {
-                alert("Geolocation is not supported by your browser");
-                navigate("/");
-              } else {
-                navigator.geolocation.getCurrentPosition(success, error);
-                getCarList();
-              }
-        })
-        .catch(err => { navigate('/notFound')});
+
+        async function fetchData(){
+            const response = await API.car_description(modelId);
+            if(response.successed){
+                setModelInfo(response.data);
+                if(!navigator.geolocation){
+                    alert("Geolocation is not supported by your browser");
+                    navigate("/");
+                }
+                else{
+                    navigator.geolocation.getCurrentPosition(success, error);
+                    getCarList();
+                    console.log(modelInfo)
+                }
+            }
+            else if(response.status === 404)
+                navigate("/notFound");
+        }
+        fetchData();
     }, []);
 
-    function set(data){
-        car = data;
+    function set(id){
+        const obj = carList.find(x => x.id == id)
+        if(obj){
+            setChose(obj)
+        }
     }
 
     function rentCar(){
 
-        if(startDate && endDate && startDate <= endDate && car){
-            sendReuest(startDate, endDate, car, setBlock);
+        if(startDate && endDate && startDate <= endDate && chose){
+            sendReuest(startDate, endDate, chose.id, setBlock);
         }
         else{
             alert("Не все поля заполнены. Убедитесь, что выбрали машину.");
@@ -137,11 +143,13 @@ export default function CarRent() {
                     <div className="renting-sidebar-period__holder">
                         <span>Преиод:</span>
                         <span>с</span>
-                        <input type="date" onChange={(e) => {setStartDate(new Date(e.target.value + 'T00:00'))}}/>
+                        <input type="data" disabled value={new Date()}/>
+                        {/*todo: <input type="date" onChange={(e) => {setStartDate(new Date(e.target.value + 'T00:00'))}}/>*/}
                         <span>по</span>
                         <input type="date" onChange={(e) => {setEndDate(new Date(e.target.value + 'T00:00'))}}/>
                     </div>
                     <div className="renting-sidebar-period__error">{startDate > endDate && <>Неверная дата!</>}</div>
+                    {chose && <Dim>Выбранная машина: {chose?.license_plate}</Dim>}
                     { startDate != null && endDate != null && startDate <= endDate && modelInfo?.price 
                     && <Dim>Расчетная стоимость: {(days(startDate, endDate) * modelInfo?.price)?.toFixed(2)} р</Dim>}
                     {!block && <button className="button" onClick={rentCar}>Аренда</button>}
