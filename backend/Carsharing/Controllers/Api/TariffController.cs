@@ -30,7 +30,10 @@ public class TariffController : ControllerBase
         {
             var tariff = await _tariffService.GetActiveTariffById(tariffId);
             return new JsonResult(new
-                { id = tariff.Id, name = tariff.Name, price = tariff.PriceInRubles, description = tariff.Description });
+            {
+                id = tariff.Id, name = tariff.Name, price = tariff.PriceInRubles, description = tariff.Description,
+                image_url=tariff.Image
+            });
         }
         catch (ObjectNotFoundException)
         {
