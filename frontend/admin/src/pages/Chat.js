@@ -138,9 +138,9 @@ export default function Chat ({ savedConnection, setSavedConnection }) {
   
     return (
       <div className='app'>
-        { isConnected() &&  //{() => closeConnection()}</div>
+        { isConnected() && 
         <div className='leave-room'>
-          <Button variant='danger' onClick={() => getLatestMessages()}>
+          <Button variant='danger' onClick={() => closeConnection()}>
             Leave Room
           </Button>
         </div>

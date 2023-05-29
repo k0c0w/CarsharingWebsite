@@ -163,7 +163,6 @@ public class AccountController : ControllerBase
             Console.WriteLine(e);
             return Redirect("/login");
         }
-
     }
     
     [HttpPost("logout")]

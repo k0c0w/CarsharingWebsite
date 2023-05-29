@@ -13,20 +13,16 @@ import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
 import API from './httpclient/axios_client';
 import Chat from './Containers/Chat';
+import NotFound from './Containers/NotFound';
 
 
 function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    /*API.IsUserAuthorized().then(r => {
-      if(r.successed)
-        localStorage.setItem('user', true);
-      else {
-        localStorage.clear();
-      }
-      setUser(localStorage.getItem('user'));
-      });*/
+    API.IsUserAuthorized().then(r => {
+      setUser("user");
+      });
 
 
     window.addEventListener('scroll', function () {
@@ -42,7 +38,7 @@ function App() {
       <Header user={user}/>
       <Routes>
         <Route path="/">
-          <Route index exact path="" element={<Index/>}/>
+          <Route index exact path="" element={<Index user={user}/>}/>
           <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
           <Route element={<PrivateRoute user={user}/>}>
             <Route path='rent/:modelId' element={<CarRent/>}/>
@@ -58,8 +54,7 @@ function App() {
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>
         <Route path='/logout' element={<Logout setUser={setUser}/>}/>
-        <Route path='/chat' element={<Chat />} />
-        <Route path="*" element={<>404</>}/>
+        <Route path="*" element={<NotFound/>}/>
         </Route>
       </Routes>
     </BrowserRouter>

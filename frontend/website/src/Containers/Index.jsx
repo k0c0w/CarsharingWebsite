@@ -17,7 +17,7 @@ function scrollTo({ref, hash}) {
 }
 
 
-export default function Index() {
+export default function Index({user}) {
     const tariffs = useRef(null);
     const chat = useRef(null);
     const [tariffsData, setTariffsData] = useState([]);
@@ -40,6 +40,6 @@ export default function Index() {
         </GreetingSection>
         <IndexAbout/>
         <IndexTariffs ref={tariffs} tariffs={tariffsData}/>
-        <IndexChat ref = {chat}/>
+        <IndexChat user={user} ref = {chat}/>
         </>;
 }
