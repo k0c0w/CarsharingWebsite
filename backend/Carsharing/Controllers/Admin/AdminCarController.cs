@@ -52,6 +52,10 @@ public class AdminCarController : ControllerBase
 
             return Created("models", null);
         }
+        catch (ArgumentException)
+        {
+            return new JsonResult(new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { "Фотография не прикреплена!" } } });
+        }
         catch (ObjectDisposedException)
         {
             return new JsonResult(new {error=new {code=(int)ErrorCode.ServiceError, messages=new [] {"Модель создана, но фотография не сохранилась."}}});
