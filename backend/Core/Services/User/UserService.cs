@@ -22,7 +22,15 @@ public class UserService : IUserService
         _context = context;
         _userManager = manager;
     }
-    
+
+    public async Task<UserInfo?> GetUserInfoByIdAsync(string id)
+    {
+        return await _context.UserInfos
+            .AsNoTracking()
+            .Include(u => u.User)
+            .FirstOrDefaultAsync(x => x.UserId == id);
+    }
+
     public async Task<UserInfoDto> GetPersonalInfoAsync(string userId)
     {
         var user = await GetUserWithInfoAsync(userId);
@@ -48,7 +56,8 @@ public class UserService : IUserService
                 Model = x.CarModel.Model,
                 Id = x.Id,
                 IsOpened = x.IsOpened,
-                LicensePlate = x.LicensePlate
+                LicensePlate = x.LicensePlate,
+                Image = $"/models/{x.CarModel.ImageName}"
             })
             .ToArray();
 
@@ -75,7 +84,6 @@ public class UserService : IUserService
             user.Verified = true;
             //todo: убрать когда будет подтверждение по почте
             user.User.EmailConfirmed = true;
-            user.User.PhoneNumberConfirmed = true;
             _context.UserInfos.Update(user);
             await _context.SaveChangesAsync();
             return true;
@@ -95,27 +103,26 @@ public class UserService : IUserService
                 .ToListAsync();
         return userInfos;
     }
-
-    public async Task<string> EditUser(string id, EditUserDto? editUserDto)
+    
+    
+    public async Task<bool> EditUser(string userId, EditUserDto? editUserDto)
     {
         try
         {
-            var user = await GetUserWithInfoAsync(id);
+            var user = await GetUserWithInfoAsync(userId);
             if(! await CheckUserEmail(user,editUserDto.Email)) {throw new Exception("Почта уже зарегестрирова");}
-            if(! await CheckUserPhoneNum(user,editUserDto.PhoneNumber)) {throw new Exception("Телефон используется другим пользователем или введен неверно");}
-            if(! await CheckUserDriverLicense(user.UserInfo,editUserDto.DriverLicense)) {throw new Exception("Права используется другим пользователем или введены неверно");}
             CheckLastName(user,editUserDto.LastName);
-            CheckFirstName(user,editUserDto.FirstName);
+            CheckName(user,editUserDto.FirstName);
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
             CheckUserPassport(user.UserInfo,editUserDto.Passport);
             CheckUserPassportType(user.UserInfo,editUserDto.PassportType);
             user.UserInfo.Verified = false;
-            _context.SaveChanges();
-            return "success";
+            await _context.SaveChangesAsync();
+            return true;
         }
         catch (Exception e)
         {
-            return e.Message;
+            return false;
         }
     }
 
@@ -137,20 +144,13 @@ public class UserService : IUserService
     {
         if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
         {
-            user.LastName = val;
+            user.FirstName = val;
         }
                  
     }
-    private void CheckFirstName(Domain.Entities.User user, string val)
-    {
-        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
-        {
-            user.FirstName = val;
-        }            
-    }
     private void CheckLastName(Domain.Entities.User user,string val)
     {
-        if(Regex.IsMatch(val, @"^[A-Z][a-zA-Z]*$"))
+        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
         {
             user.LastName = val;
         }
@@ -186,45 +186,31 @@ public class UserService : IUserService
     }
     private void CheckUserBirthday(UserInfo user, DateTime val)
     {
-        if (DateTime.Now < val.Date)
+        if (DateTime.Now > val.Date)
         {
             user.BirthDay = val;
         }
     }
     private void CheckUserPassport(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{6}"))
+        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{6}"))
         {
             user.Passport = val;
         }
     }
-    
     private void CheckUserPassportType(UserInfo user, string val)
     {
-        if (Regex.IsMatch(val, @"\d{4}"))
+        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{4}"))
         {
             user.PassportType = val;
         }
     }
-    private async Task<bool> CheckUserDriverLicense(UserInfo user, int? val)
+    private void CheckUserDriverLicense(UserInfo user, int? val)
     {
         if (val is > 0 and <= 999999999 )
         {
-            var users = await GetAllInfoAsync();
-            users = users.Select(x => x).Where(x => x.User.Id != user.User.Id).ToList();
-            foreach (var el in users)
-            {
-                if (el.DriverLicense == val)
-                {
-                    return false;
-                }
-            }
             user.DriverLicense = val;
-            return true;
-            
         }
-
-        return false;
     }
     
     private UserInfoDto Map(Domain.Entities.User user)
@@ -239,8 +225,7 @@ public class UserService : IUserService
             DriverLicense = info.DriverLicense,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Email = user.Email,
-            Phone = user.PhoneNumber
+            Email = user.Email
         };
     }
 }

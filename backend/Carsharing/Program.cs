@@ -13,6 +13,10 @@ using Services;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.User;
+using Carsharing.ChatHub;
+using Carsharing.Hubs.ChatEntities;
+using Microsoft.Extensions.FileProviders;
+using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -79,7 +83,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddSignalR();
+
 builder.Services.AddTariffService();
+
+builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
+
 
 if (builder.Environment.IsDevelopment())
 {
@@ -125,6 +134,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseCors("CORSAllowLocalHost3000");
 app.UseRouting();
@@ -132,11 +143,17 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
 
-app.UseRouting();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+    RequestPath = "/admin",
+});
+
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chat");
 app.MapFallbackToFile("index.html");
 
 app.Run();

@@ -1,0 +1,109 @@
+Form Button {
+    width: 100%;
+}
+
+.chat h2 {
+    color: #313131;
+}
+
+.chat h6 {
+    color: greenyellow;
+}
+
+.chat  hr.line {
+    border: 1px solid #313131;
+    width: 175px;
+}
+
+.chat  .app {
+    margin: auto;
+    padding-top: 40px;
+    width: 96%;
+    height: 90%;
+    margin-top: 70px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat  .lobby {
+    width: 400px;
+    margin: auto;
+}
+
+
+.chat .leave-room {
+    text-align: right;
+    background-color: red;
+    border-radius: 5px;
+    color: white;
+    width: fit-content;
+    margin-bottom: 4px;
+    display: flex;
+    align-self: center;
+}
+
+
+
+.chat .message-container {
+    height: 600px;    
+    background-color: white;
+    overflow: auto;
+    border-radius: 5px;
+    margin-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}
+
+.chat .user-message {
+    text-align: right;
+    padding-right: 15px;
+    background-color: cadetblue;
+    border-radius: 5px;
+    font-size: 20px;
+    width: fit-content;
+}
+
+.chat .message {
+    display: inline-flex;
+    margin: 0px auto 0px auto;
+    padding: 15px;
+    font-size: 26px;
+    color:white;
+    border-radius: 20px;
+    margin-top: 3px;
+}
+
+.chat .from-user {
+    font-size: small;
+    margin-bottom: 3px;
+    margin-right: 5px;
+    margin: 5px;
+}
+
+.chat .other-message {
+    margin-top: 25px;
+    margin: 5px;
+    align-self: baseline;
+    background-color: #a7a4a4;
+}
+
+.chat .info-message {
+    margin-top: 25px;
+    margin: 5px;
+    align-self: center;
+    background-color: white;
+}
+
+.chat .info-message-text {
+    margin-top: 25px;
+    color: black;
+    font-size: 16px;
+}
+
+.chat  .chat-button-start {
+    width: 35%;
+    background-color: aqua;
+}
+

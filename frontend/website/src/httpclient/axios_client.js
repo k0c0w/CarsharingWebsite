@@ -4,13 +4,14 @@ import axios from "axios"
 class AxiosWrapper {
     constructor(url = 'https://localhost:7129/api') {
         const options = {
+            baseURL: url,
             timeout: 10000,
-            ssl: true,
+            ssl: false,
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
                 "Access-Control-Allow-Origin": "https://localhost:7129",
-                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Origin": "http://localhost:3001",
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
@@ -20,8 +21,8 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
     };
 
-    book = async () => {
-        await this._post('booking/rent'); 
+    book = async (model) => {
+        return await this._post('booking/rent', model); 
     }
 
     tariffs = async (id) => {

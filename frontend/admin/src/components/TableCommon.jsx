@@ -64,7 +64,6 @@ export const TableSearchField = ({
   const serachFieldRef = useRef(null)
   const searchFunc = customSearchFunc ? customSearchFunc : getFilteredList
 
-
   return (
     <div style={{ marginTop: '70px' }}>
       <StyledTextField

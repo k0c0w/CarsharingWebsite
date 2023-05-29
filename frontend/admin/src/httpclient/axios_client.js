@@ -24,6 +24,45 @@ class AxiosWrapper {
         options.baseURL = 'https://localhost:7129/api/'
         this.mainSiteAxios = axios.create(options);
     };
+    
+    //Posts
+    getPosts = async () => {
+        const result = await this._get("/post/posts");
+        return result;
+    }
+
+    getPostById = async (id) => {
+        const result = await this._get("/post/posts"+id);
+        return result;
+    }
+
+    deletePost = async (id) => {
+        const result = await this._delete(`/post/delete/${id}`);
+        return result;
+    }
+
+    updatePost = async (body) => {
+        let result = {};
+        const _body = {};
+        _body.title = body.title;
+        _body.body = body.body;
+        if (!body.id)
+        {
+            result.error = "no id provided";
+            result.status = "404";
+            return result;
+        }
+        console.log(_body,body)
+        result = await this._put("post/edit/"+body.id, _body);
+
+        return result;
+    }
+
+    createPost = async (body) => {
+        const result = await this._post("/post/create", body);
+        return result
+    }
+    
 
     // Tariffs
     getTariffs = async () => {
@@ -148,11 +187,27 @@ class AxiosWrapper {
     }
 
     logout = async () => {
-        await this.axiosInstanceAuthorize.post("/Account/LogOut");
+        await this.mainSiteAxios.post("/Account/LogOut");
     }
 
     verify_profile = async (id) => {
         return await this._put(`/User/verify/${id}`)
+    }
+
+    giveMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceIncrease`, value);
+    }
+
+    subtractMoney = async (id, value) => {
+        return await this._post(`/User/${id}/BalanceDecrease`, value);
+    }
+
+    editUser = async (id, model) => {
+        return await this._put(`/User/Edit/${id}`, JSON.stringify(model));
+    }
+
+    getUserInfo = async (id) => {
+        return await this._get(`/User/${id}`);
     }
 
     async _post(endpoint, model, props) {
@@ -176,6 +231,11 @@ class AxiosWrapper {
     }
 
 
+    // Chat 
+    getOpenChats = async () => {
+        var result = await this._get("/user/getOpenChats");
+        return result;
+    } 
 
 
     async _put(endpoint, model) {

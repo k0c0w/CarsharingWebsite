@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using Carsharing.Forms;
+using Carsharing.Hubs.ChatEntities;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels.Admin;
 using Carsharing.ViewModels.Admin.Car;
+using Carsharing.ViewModels.Admin.User;
 using Contracts;
 using Contracts.Tariff;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System.Collections;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -41,24 +45,30 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TariffId))
                 .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.Price));
 
+            CreateMap<OpenChatsVM, UserConnection>().ReverseMap();
+
             CreateMap<TariffVM, AdminTariffDto>().ReverseMap();
         }
 
 
         private static Contracts.File IFormFileToStream(IFormFile formFile)
         {
-            using Stream stream = new MemoryStream();
+            Contracts.File file;
 
-            formFile.CopyTo(stream);
+            var _stream = formFile.OpenReadStream();
 
+            //_stream.Seek(0, SeekOrigin.Begin);
 
-            var file = new Contracts.File()
+            file = new Contracts.File()
             {
                 Name = formFile.FileName,
-                Content = stream
+                Content = _stream
             };
+
+
             return file;
 
+            _stream.Dispose();
         }
     }
 }

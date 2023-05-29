@@ -11,4 +11,6 @@ public record CarShortcutDto
     public int Id { get; set; }
 
     public string LicensePlate { get; set; }
+    
+    public string Image { get; init; }
 }

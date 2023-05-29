@@ -4,6 +4,8 @@ using Carsharing.ViewModels.Admin.Car;
 using Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 using Services.Abstractions.Admin;
 using System.Text.Json;
 using Carsharing.Helpers;
@@ -16,6 +18,7 @@ public class AdminCarController : ControllerBase
 {
     private readonly IAdminCarService _carService;
     private readonly IMapper _mapper;
+
     public AdminCarController(IAdminCarService carService, IMapper mapper)
     {
         _mapper = mapper;
@@ -45,7 +48,13 @@ public class AdminCarController : ControllerBase
         try
         {
             await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
+            var path = Path.Combine("wwwroot", "models", "image.png");
+
             return Created("models", null);
+        }
+        catch (ArgumentException)
+        {
+            return new JsonResult(new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { "Фотография не прикреплена!" } } });
         }
         catch (ObjectDisposedException)
         {

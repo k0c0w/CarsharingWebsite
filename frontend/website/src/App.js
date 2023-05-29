@@ -12,20 +12,21 @@ import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profil
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
 import API from './httpclient/axios_client';
+import Chat from './Containers/Chat';
+import NotFound from './Containers/NotFound';
 
 
 function App() {
   const [user, setUser] = useState(null);
 
+  async function checkAuth() {
+    const response = await API.IsUserAuthorized();
+    if(response.successed)
+        setUser("user");
+  }
+
   useEffect(() => {
-    /*API.IsUserAuthorized().then(r => {
-      if(r.successed)
-        localStorage.setItem('user', true);
-      else {
-        localStorage.clear();
-      }
-      setUser(localStorage.getItem('user'));
-      });*/
+      checkAuth();
 
 
     window.addEventListener('scroll', function () {
@@ -38,10 +39,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header user={user}/>
+      <Header user={user} setUser={setUser}/>
       <Routes>
         <Route path="/">
-          <Route index exact path="" element={<Index/>}/>
+          <Route index exact path="" element={<Index user={user}/>}/>
           <Route exact path='tariffs/:tariffId' element={<BeforeTariffs/>}/>
           <Route element={<PrivateRoute user={user}/>}>
             <Route path='rent/:modelId' element={<CarRent/>}/>
@@ -57,7 +58,7 @@ function App() {
             <Route exact path='edit/password' element={<ProfileChangePassword/>}/>
           </Route>
         <Route path='/logout' element={<Logout setUser={setUser}/>}/>
-        <Route path="*" element={<>404</>}/>
+        <Route path="*" element={<NotFound/>}/>
         </Route>
       </Routes>
     </BrowserRouter>
@@ -73,9 +74,7 @@ function toggleHeader(header){
 }
 
 function Logout({setUser}) {
-  setUser(null);
-    API
-    .logout();
+
 
 
   return <Navigate to='/'/>

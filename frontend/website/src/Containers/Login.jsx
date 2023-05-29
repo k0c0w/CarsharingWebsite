@@ -40,11 +40,9 @@ export default function Login ({setUser, user}) {
         setErrors({login: error.errors?.Email[0], password: error.errors?.Password[0]})
     }
     else{
-      localStorage.setItem('user', true);
       setUser(true);
       const urlParams = new URLSearchParams(location.search);
       const returnUri = urlParams.get('return_uri');
-      debugger;
       if(returnUri)
         navigator(returnUri);
       else

@@ -18,8 +18,9 @@ const gap = { columnGap: "100px"};
 async function fetchData(api, setData, navigator, location) {
     const response = await api();
 
-    if(response?.successed){
-        setData(response.data);
+        if(response?.successed){
+            console.log(response.data)
+            setData(response.data);
     }
     else if(response?.status){
         if(response.status === 401){
@@ -165,7 +166,7 @@ const CarList = ({cars}) => (
             {cars?.map(car => 
             <li>
                 <Figure figureName="rented-car" className="border-solid">
-                    <img className="rented-car-image" src="https://mobility.hyundai.ru/dist/images/cars/sonata2.png"/>
+                    <img className="rented-car-image" src={car.image_url}/>
                     <div className="rented-car-info">
                         <Bold>{car.model}</Bold>
                         <div className="rented-car-info__sign">{car.license_plate}</div>
@@ -208,7 +209,7 @@ export default function Profile() {
        <Container className="profileContainer-padding">
             <div className="profile-holder">
                 <Figure figureName="info-holder" className="profile-carlist-figure">
-                    <CarList cars={profileInfo.rented_cars}/>
+                    <CarList cars={profileInfo.booked_cars}/>
                 </Figure>
                 <Figure figureName="info-holder" className="profile-info-figure">
                     <ProfileInfo userInfo={profileInfo.user_info}/>

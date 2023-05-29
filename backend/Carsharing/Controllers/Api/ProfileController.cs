@@ -41,6 +41,7 @@ public class ProfileController : ControllerBase
                 Name = x.Model,
                 IsOpened = x.IsOpened,
                 LicensePlate = x.LicensePlate,
+                ImageUrl = x.Image
             })
         });
     }
@@ -70,7 +71,7 @@ public class ProfileController : ControllerBase
         });
     }
     
-    [HttpPut("edit")]
+    [HttpPut("PersonalInfo/Edit")]
     public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
     {
         var result = await _userService.EditUser(User.GetId(), new EditUserDto
@@ -84,7 +85,7 @@ public class ProfileController : ControllerBase
             PassportType = userVm.Passport?.Substring(0, 4),
             DriverLicense = userVm.DriverLicense
         });
-        if (result == "success")
+        if (result)
         {
             return new JsonResult(new { result = "Success" });
         }
@@ -92,7 +93,7 @@ public class ProfileController : ControllerBase
         return new BadRequestObjectResult(new {error=new
         {
             code = (int)ErrorCode.ServiceError,
-            errorType = $"{result}"
+            message = $"Ошибка сохранения"
         }});
     }
     

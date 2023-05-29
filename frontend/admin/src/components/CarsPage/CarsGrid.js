@@ -53,9 +53,9 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
             renderCell: (params) => {
                 return (
                     <Box
-                    width="60%"
+                    width="40%"
                     borderRadius={"5px"}
-                    sx= {{ height: '30px', width: '10px',  }}>
+                    sx= {{ height: '30px', width: '1px',  }}>
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}

@@ -25,7 +25,7 @@ public class BookingController : Controller
         {
             await _service.BookCarAsync(new RentCarDto()
             {
-                PotentialRenterUserInfoId = bookingInfo.UserInfoId,
+                PotentialRenterUserId = User.GetId(),
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
