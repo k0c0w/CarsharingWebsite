@@ -31,5 +31,7 @@
   <ItemGroup>
     <Folder Include="AdminPanelResources" />
     <Folder Include="MainSiteContent" />
+    <Folder Include="AdminPanelResources\" />
+    <Folder Include="MainSiteContent\" />
   </ItemGroup>
 </Project>

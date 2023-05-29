@@ -55,12 +55,13 @@ export default function Chat ({ savedConnection, setSavedConnection }) {
   
         _connection.on('ReceiveLatestMessages', (_roles, _messages) => {
                 debugger;
-                var arr =  [...messages, { _roles, _messages }];
-                for (let i = 0; i < role.length; i++) {
-                    var role = _roles[i]
-                    var message = _messages[i]
-                    setMessages(messages => [...messages, { role, message }]) 
+                for (let i = 0; i < _roles.length; i++) {
+                    console.log(_roles[i]);
+                    console.log(_messages[i])
+                    setMessages(messages => [...messages, { role: _roles[i], message: _messages[i] }])
+                    console.log(`---------${messages}`) 
                 }
+                // setMessages(arr);
                 console.log(messages);
                 debugger
         })
@@ -78,16 +79,12 @@ export default function Chat ({ savedConnection, setSavedConnection }) {
             await _connection.start()
         
         setConnection(_connection);
-        // connection = _connection;
         setSavedConnection(_connection);
         console.log(connection)
 
         await _connection.invoke('ConnectTechSupporToClient', { ConnectionId: _connection_id }) //JoinRoom 
-
         
-        debugger;
-
-        await getLatestMessages(_connection);
+        await _connection.invoke('GetLatestMessages', { MemberTypeInt: 1, Text: "sss" })
         debugger;
     } 
 
