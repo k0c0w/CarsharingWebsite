@@ -27,4 +27,9 @@
     <ProjectReference Include="..\Core\Services\Services.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AdminPanelResources" />
+    <Folder Include="MainSiteContent" />
+  </ItemGroup>
 </Project>

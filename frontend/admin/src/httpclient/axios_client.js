@@ -181,7 +181,7 @@ class AxiosWrapper {
     }
 
     logout = async () => {
-        await this.axiosInstanceAuthorize.post("/Account/LogOut");
+        await this.mainSiteAxios.post("/Account/LogOut");
     }
 
     verify_profile = async (id) => {

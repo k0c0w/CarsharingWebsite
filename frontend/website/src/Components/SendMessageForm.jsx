@@ -1,4 +1,4 @@
-import { Form, FormControl, InputGroup } from 'react-bootstrap';
+import { Form, InputGroup } from 'react-bootstrap';
 import { TextField, Button } from '@mui/material';
 import { useState } from 'react';
 
@@ -9,7 +9,6 @@ const SendMessageForm = ({ sendMessage }) => {
     return <Form
         onSubmit={e => {
             e.preventDefault();
-            debugger
             sendMessage(message);
             setMessage('');
         }}>

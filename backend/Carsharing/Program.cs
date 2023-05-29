@@ -15,6 +15,8 @@ using Services.Abstractions.Admin;
 using Services.User;
 using Carsharing.ChatHub;
 using Carsharing.Hubs.ChatEntities;
+using Microsoft.Extensions.FileProviders;
+using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
@@ -132,6 +134,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
 app.UseCors("CORSAllowLocalHost3000");
 app.UseRouting();
@@ -139,9 +143,14 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseStaticFiles();
 
-app.UseRouting();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+    RequestPath = "/admin",
+});
+
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");

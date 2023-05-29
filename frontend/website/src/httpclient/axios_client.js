@@ -6,7 +6,7 @@ class AxiosWrapper {
         const options = {
             baseURL: url,
             timeout: 10000,
-            ssl: true,
+            ssl: false,
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',

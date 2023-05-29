@@ -44,7 +44,6 @@ export default function Login ({setUser, user}) {
       setUser(true);
       const urlParams = new URLSearchParams(location.search);
       const returnUri = urlParams.get('return_uri');
-      debugger;
       if(returnUri)
         navigator(returnUri);
       else
