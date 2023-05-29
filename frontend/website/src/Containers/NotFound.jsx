@@ -1,6 +1,5 @@
 import Container from "../Components/Container";
 import { SectionTitle } from "../Components/Sections";
-import Bold from "../Components/TextTags";
 import DocumentTitle from "../DocumentTitle";
 
 export default function NotFound() {

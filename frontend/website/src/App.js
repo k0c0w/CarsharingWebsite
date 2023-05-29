@@ -19,10 +19,14 @@ import NotFound from './Containers/NotFound';
 function App() {
   const [user, setUser] = useState(null);
 
+  async function checkAuth() {
+    const response = await API.IsUserAuthorized();
+    if(response.successed)
+        setUser("user");
+  }
+
   useEffect(() => {
-    API.IsUserAuthorized().then(r => {
-      setUser("user");
-      });
+      checkAuth();
 
 
     window.addEventListener('scroll', function () {
@@ -35,7 +39,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Header user={user}/>
+      <Header user={user} setUser={setUser}/>
       <Routes>
         <Route path="/">
           <Route index exact path="" element={<Index user={user}/>}/>
@@ -70,9 +74,7 @@ function toggleHeader(header){
 }
 
 function Logout({setUser}) {
-  setUser(null);
-    API
-    .logout();
+
 
 
   return <Navigate to='/'/>

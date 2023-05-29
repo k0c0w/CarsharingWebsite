@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
 import "../../css/common.css";
 import "../../css/header.css";
+import API from "../../httpclient/axios_client";
 
-export default function MobileHeaderContent({user}) {
+export default function MobileHeaderContent({user, setUser}) {
     return (
     <div className="mobile-header-container">
         <div className="flex-container mobile-header-content">
@@ -22,7 +23,8 @@ export default function MobileHeaderContent({user}) {
             <ul className="mobile-menu">
                 <li className="mobile-menu-item" style={{marginBottom:"30px"}}>
                     {!user && <NavLink to="/login" className="header-content-menu-item-link">Войти</NavLink>}
-                    {user && <NavLink style={{color:"red", display: "block"}} to="/logout" >Выйти</NavLink>}
+                    {user && <NavLink style={{color:"red", display: "block"}} onClick={(e) => {
+            e.preventDefault(); API.logout(); setUser(null);}} >Выйти</NavLink>}
                 </li>    
                 <label><li className="mobile-menu-item"><NavLink to="/" >Главная</NavLink></li></label>
                 <li className="mobile-menu-item"><NavLink to="/documents">Документы</NavLink></li>

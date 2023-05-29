@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
 import "../../css/common.css";
+import API from "../../httpclient/axios_client";
 import Container from "../Container";
 
 
-export const DesktopHeaderContent = ({user}) => (
+export const DesktopHeaderContent = ({user, setUser}) => (
 <Container className="">
     <div className="flex-container header-content">
         <div>
@@ -15,7 +16,8 @@ export const DesktopHeaderContent = ({user}) => (
             <li className="header-content-menu-item"><NavLink to="/profile" className="header-content-menu-item-link">Личный кабинет</NavLink></li>
         </ul>
         {!user && <NavLink to="/login" className="header-content-menu-item-link">Войти</NavLink>}
-        {user && <NavLink to="/login" className="header-content-menu-item-link">Выйти</NavLink>}
+        {user && <NavLink className="header-content-menu-item-link" onClick={(e) => {
+            e.preventDefault(); API.logout(); setUser(null);}}>Выйти</NavLink>}
     </div>
 </Container>
 );
