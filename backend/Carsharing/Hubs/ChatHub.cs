@@ -25,13 +25,17 @@ namespace Carsharing.ChatHub
             {
                 _connections.Remove(Context.ConnectionId);
                 userConnection.IsOpen = true;
-                var mess = "Техподдержка вышла.";
-                if (Context.UserIdentifier == userConnection.Room.UserId)
+                if (userConnection.Room is not null)
                 {
-                    userConnection.Room = null!;
-                    mess = "Пользователь вышел. Чат закрыт.";
+                    var mess = "Техподдержка вышла.";
+                    var roomName = userConnection.Room.RoomName;
+                    if (Context.UserIdentifier == userConnection.Room.UserId)
+                    {
+                        userConnection.Room = null!;
+                        mess = "Пользователь вышел. Чат закрыт.";
+                    }
+                    Clients.Group(roomName).SendAsync("ReceiveMessage", _informator, mess);
                 }
-                Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", _informator, mess);
                 //SendUsersConnected(userConnection.Room);
             }
 

@@ -8,6 +8,7 @@ using Carsharing.ViewModels.Admin.User;
 using Contracts;
 using Contracts.Tariff;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using System.Collections;
 using System.IO;
 using System.Security.Cryptography.X509Certificates;
@@ -52,18 +53,22 @@ namespace Carsharing.Helpers.Mappings
 
         private static Contracts.File IFormFileToStream(IFormFile formFile)
         {
-            using Stream stream = new MemoryStream();
+            Contracts.File file;
 
-            formFile.CopyTo(stream);
+            var _stream = formFile.OpenReadStream();
 
+            //_stream.Seek(0, SeekOrigin.Begin);
 
-            var file = new Contracts.File()
+            file = new Contracts.File()
             {
                 Name = formFile.FileName,
-                Content = stream
+                Content = _stream
             };
+
+
             return file;
 
+            _stream.Dispose();
         }
     }
 }

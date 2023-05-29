@@ -157,7 +157,10 @@ public class AdminUserController: ControllerBase
     [HttpGet("getOpenChats")]
     public async Task<IActionResult> GetOpenChats()
     {
-        var openConn = _connections.Where(elem => elem.Value.IsOpen)
+        var openConn = _connections.Where(elem => elem.Value.IsOpen).ToList();
+        openConn.RemoveAll(x => x.Value.Room is null);
+
+        var result = openConn
             .Select(elem =>
             {
                 var userId = elem.Value.Room.UserId;
@@ -172,7 +175,7 @@ public class AdminUserController: ControllerBase
                 };
             });
 
-        return new JsonResult(openConn);
+        return new JsonResult(result);
     }
     
     [HttpPost("{id:required}/GrantRole/{role:required}")]

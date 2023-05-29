@@ -29,7 +29,5 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AdminPanelResources" />
-    <Folder Include="MainSiteContent" />
   </ItemGroup>
 </Project>
