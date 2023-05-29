@@ -25,7 +25,13 @@ namespace Carsharing.ChatHub
             {
                 _connections.Remove(Context.ConnectionId);
                 userConnection.IsOpen = true;
-                Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", _informator, $"{Context?.User?.Identity?.Name} has left");
+                var mess = "Техподдержка вышла.";
+                if (Context.UserIdentifier == userConnection.Room.UserId)
+                {
+                    userConnection.Room = null!;
+                    mess = "Пользователь вышел. Чат закрыт.";
+                }
+                Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", _informator, mess);
                 //SendUsersConnected(userConnection.Room);
             }
 
@@ -76,6 +82,11 @@ namespace Carsharing.ChatHub
         {
             if (_connections.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
             {
+                if (userConnection.Room is null)
+                {
+                    _connections.Remove(Context.ConnectionId);
+                    return;
+                }
                 var id = Context.UserIdentifier ?? "undefined";
                 Message mess = new Message(text: message.Text, fromSpeakerId: id, DateTime.Now, (ChatMembers)message.MemberTypeInt);
                 var chat = _connections[Context.ConnectionId];
@@ -83,6 +94,17 @@ namespace Carsharing.ChatHub
 
 
                 await Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", message.MemberTypeInt, message.Text);
+            }
+        }
+
+        public async Task GetLatestMessages(RequestMessage message)
+        {
+            if (_connections.TryGetValue(Context.ConnectionId, out UserConnection userConnection))
+            {
+                var roles = userConnection.Room.Messages.Select(x => (int)x.Member).ToList();
+                var text = userConnection.Room.Messages.Select(x => x.Text).ToList();
+
+                await Clients.Caller.SendAsync("ReceiveLatestMessages", roles, text);
             }
         }
 

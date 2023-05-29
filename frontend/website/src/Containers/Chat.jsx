@@ -68,7 +68,7 @@ const Chat = () => {
       { (connection!=null) &&
       <div className='leave-room'>
         <Button variant='danger' onClick={() => closeConnection()}>
-          Leave Room
+          Закончить диалог
         </Button>
       </div>
       }

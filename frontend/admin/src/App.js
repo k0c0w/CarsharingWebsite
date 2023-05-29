@@ -54,6 +54,8 @@ const _roles = {
 
 function App() {
   const [path, setPath] = useState(window.location.pathname);
+  const [connectionId, setConnectionId] = useState("");
+  const [connection, setConnection] = useState();
   const [theme, colorMode] = useMode();
   const { auth, setAuth } = useAuth();
 
@@ -92,8 +94,8 @@ function App() {
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
-                <Route path="/chat" element={<Chat />} />
-                <Route path='*' element={<Chats />} />
+                <Route path="/chat" element={<Chat savedConnection={connection} setSavedConnection={(e) => setConnection(e)} />} />
+                <Route path='*' element={<Chats savedConnectionId={connectionId} savedConnection={connection} setSavedConnectionId={(e) => setConnectionId(e)} />} />
               </ Route> 
               <Route path='/login' element={<Login />} />
             </Routes>
