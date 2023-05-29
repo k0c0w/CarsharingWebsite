@@ -9,6 +9,7 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import Header from './components/Header';
 import TarrifMngmt from './pages/Tarrifs';
 import UserMngmt from './pages/Users';
+import CarParkMngmt from './pages/CarPark';
 import {PostMngmt} from "./pages/Posts";
 import Login from './pages/Login';
 import API from './httpclient/axios_client';
@@ -16,6 +17,7 @@ import RequireAuth from './components/RequireAuth';
 import Chats from './pages/Chats';
 import Chat from './pages/Chat';
 import useAuth from './hooks/useAuth';
+
 
 const _routes = [
   {
@@ -31,8 +33,8 @@ const _routes = [
     name: "Тарифы"
   },
   {
-    path: 'posts',
-    name: "Новости"
+    path: '/carpark',
+    name: "Автопарк"
   },
   {
     path: '/users',
@@ -94,6 +96,7 @@ function App() {
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
+                <Route path='/carpark' element={<CarParkMngmt/>} />
                 <Route path="/chat" element={<Chat savedConnection={connection} setSavedConnection={(e) => setConnection(e)} />} />
                 <Route path='*' element={<Chats savedConnectionId={connectionId} savedConnection={connection} setSavedConnectionId={(e) => setConnectionId(e)} />} />
               </ Route> 

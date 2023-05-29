@@ -146,6 +146,12 @@ class AxiosWrapper {
         return result;
     }
 
+    // CarPark
+    getCarPark = async () => {
+        const result = await this._get("/car/cars");
+        return result;
+    }
+
 
     // Users
     getUsers = async () => {
