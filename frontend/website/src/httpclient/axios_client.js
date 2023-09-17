@@ -10,72 +10,75 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "https://localhost:7129",
-                "Access-Control-Allow-Origin": "http://localhost:3001",
+                "Access-Control-Allow-Origin": "https://localhost:7129,http://localhost:3001",
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
-        };
+        }
 
         this.axiosInstance = axios.create(options);
-    };
-
-    book = async (model) => {
-        return await this._post('booking/rent', model); 
     }
 
-    tariffs = async (id) => {
+    async book(model) {
+        return await this._post('booking/rent', model);
+    } 
+
+    async tariffs(id) {
         if(id)
             return await this._get(`tariffs/${id}`);
         return await this._get('tariffs');
     }
 
-    car_description = async (modelId) => await this._get(`cars/model/${modelId}`);
+    async car_description (modelId) {
+        return await this._get(`cars/model/${modelId}`);
+    }
 
-    car_prototypes = async (tariffId) => {
+    async car_prototypes (tariffId) {
         return await this._get(`cars/models/${tariffId}`);
     }
 
-    available_cars = async (params) => await this._get('cars/available', params);
+    async available_cars (params) {
+        return await this._get('cars/available', params);
+    }
 
-    documents = async () => {
+    async documents() {
         return await this._get(`/information/documents`);
     }
 
-    news = async () => {
+    async news() {
         return await this._get(`/information/news`);
     }
 
-    login = async (form) => {
+    async login(form) {
         return await this._post(`/account/login/`, this._getModelFromForm(form));
     }
 
-    logout = async () => {
+    async logout() {
         return await this._post(`/account/logout/`);
     }
 
-    register = async (form) => {
+    async register(form) {
         return await this._post('/account/register', this._getModelFromForm(form));
     }
 
-    IsUserAuthorized = async () => {
+    async IsUserAuthorized () {
         return await this._get('/Account/IsAuthorized');
     }
 
-    personalInfo = async ()  => {
+    async personalInfo() {
         return await this._get('/Account/PersonalInfo');
     }
 
-    editPersonalInfo = async (form)  => {
+    async editPersonalInfo(form) {
         return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
     }
 
-    profile = async () => {
+    async profile() {
         return await this._get('/Account');
     }
 
-    tryChangePassword = async (form) => {
+    async tryChangePassword(form) {
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
     }
 

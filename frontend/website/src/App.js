@@ -1,4 +1,5 @@
 import './App.css';
+import React from 'react';
 import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
@@ -12,7 +13,6 @@ import Profile, { ProfileEdit, ProfileChangePassword } from './Containers/Profil
 import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
 import API from './httpclient/axios_client';
-import Chat from './Containers/Chat';
 import NotFound from './Containers/NotFound';
 
 
@@ -73,12 +73,8 @@ function toggleHeader(header){
   }
 }
 
-function Logout({setUser}) {
-
-
-
+function Logout() {
   return <Navigate to='/'/>
-
 }
 
 export default App;

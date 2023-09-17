@@ -1,0 +1,52 @@
+name: Lint 
+
+on: # event list
+pull_request:
+  - main
+  - develop
+branches:
+  - main
+  - develop
+
+env:
+  NODE_VERSION: 16
+
+jobs:
+  mainsite:
+    name: Linting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Linting
+	working-directory: ./frontend/website
+        run: npx eslint /scr
+
+  mainsite:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Code Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Code Linting
+	working-directory: ./frontend/admin
+        run: npx eslint /src
