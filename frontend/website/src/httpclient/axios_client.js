@@ -82,7 +82,6 @@ class AxiosWrapper {
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
     }
 
-
     async _post(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model)
