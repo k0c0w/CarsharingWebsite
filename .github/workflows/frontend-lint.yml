@@ -16,7 +16,7 @@ jobs:
     name: Linting Main
     runs-on: ubuntu-latest
     env: 
-      FOLDER: "frontend/website"
+      FOLDER: frontend/website
 	
     steps:
       - name: Install NodeJS
@@ -42,7 +42,7 @@ jobs:
     name: Linting Admin
     runs-on: ubuntu-latest
     env: 
-      FOLDER: "frontend/admin"
+      FOLDER: frontend/admin
 	
     steps:
       - name: Install NodeJS
