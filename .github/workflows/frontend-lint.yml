@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies
         working-directory: .
         run: |
-          cd {{FOLDER}}  
+          cd ${{FOLDER}}  
           npm ci
       - name: Code Linting
         run: |
@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install Dependencies
         run: |
-          cd {{FOLDER}}  
+          cd ${{FOLDER}}  
           npm ci
       - name: Code Linting
         run: |
