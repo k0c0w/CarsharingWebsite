@@ -33,6 +33,7 @@ jobs:
       - name: Code Linting
         run: |
           cd frontend/website
+          pwd
           npx eslint scr/
   admin:
     name: Linting Admin
