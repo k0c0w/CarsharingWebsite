@@ -33,7 +33,7 @@ jobs:
       - name: Code Linting
         run: |
           cd frontend/website
-          npx eslint /scr
+          npx eslint scr/
   admin:
     name: Linting Admin
     runs-on: ubuntu-latest
@@ -53,4 +53,4 @@ jobs:
       - name: Code Linting
         run: |
           cd frontend/admin
-          npx eslint /scr
+          npx eslint scr/
