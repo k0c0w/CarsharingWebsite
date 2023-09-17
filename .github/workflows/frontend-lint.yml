@@ -1,21 +1,23 @@
 name: Lint 
 
-on: # event list
-pull_request:
-  - main
-  - develop
-branches:
-  - main
-  - develop
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 env:
   NODE_VERSION: 16
 
 jobs:
   mainsite:
-    name: Linting
+    name: Linting Main
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./frontend/website
     steps:
       - name: Install NodeJS
         uses: actions/setup-node@v2
@@ -29,12 +31,15 @@ jobs:
         run: npm ci
 
       - name: Code Linting
-	working-directory: ./frontend/website
-        run: npx eslint /scr
+        run: npx eslint "/scr"
 
-  mainsite:
-    name: Linting
+  admin:
+    name: Linting Admin
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend/admin
+	
     steps:
       - name: Install NodeJS
         uses: actions/setup-node@v2
@@ -48,5 +53,4 @@ jobs:
         run: npm ci
 
       - name: Code Linting
-	working-directory: ./frontend/admin
-        run: npx eslint /src
+        run: npx eslint "/src"
