@@ -144,12 +144,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-    RequestPath = "/admin",
-});
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(
+//         Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+//     RequestPath = "/admin",
+// });
 
 
 app.MapControllers();

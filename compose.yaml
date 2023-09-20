@@ -1,0 +1,16 @@
+services:
+  backend:
+      build: ./backend
+      container_name: backend
+      ports:
+        - '80:80'
+  website:
+      build: ./frontend/website
+      container_name: frontend
+      ports:
+        - '3000:3000'
+  admin:
+      build: ./frontend/admin
+      container_name: admin_dashboard
+      ports:
+        - '3001:3000'

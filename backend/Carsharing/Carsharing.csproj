@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,5 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="AdminPanelResources\" />
   </ItemGroup>
 </Project>
