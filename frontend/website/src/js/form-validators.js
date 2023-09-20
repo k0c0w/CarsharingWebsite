@@ -58,7 +58,7 @@ function checkEmail(email) {
 function checkNameAndSurname(name, surname) {
     const errorMessage = "Не поддерживаемый формат.";
     const empties = /\s+/;
-    const special_symbols = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~0-9]/;
+    const special_symbols = /[`!@#$%^&*()_+\-=[]{};':"\\|,.<>\/?~0-9]/;
     name.value = name.value.replace(empties, ' ');
     surname.value = surname.value.replace(empties, ' ');
     const is_incorrect_name = special_symbols.test(name.value);
