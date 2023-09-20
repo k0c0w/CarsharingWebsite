@@ -1,0 +1,1 @@
+Для запуска компоузника в директории CarsharingWebsite ввести комманду docker compose up
