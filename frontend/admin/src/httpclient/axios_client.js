@@ -12,7 +12,8 @@ class AxiosWrapper {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 "Access-Control-Allow-Origin": "http://localhost:80",
-                "Access-Control-Allow-Origin": "http://localhost:3000",
+                /* Ругается github action
+                "Access-Control-Allow-Origin": "http://localhost:3000",*/
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
