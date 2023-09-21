@@ -48,7 +48,6 @@ public class AdminCarController : ControllerBase
         try
         {
             await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
-            var path = Path.Combine("wwwroot", "models", "image.png");
 
             return Created("models", null);
         }
@@ -99,20 +98,6 @@ public class AdminCarController : ControllerBase
         }
     }
 
-    [HttpDelete("models")]
-    public async Task<IActionResult> DeleteRange([FromBody] IEnumerable<int> modelsId)
-    {
-        try
-        {
-
-            return NoContent();
-        }
-        catch(Exception ex)
-        {
-            return BadRequest();
-        }
-    }
-
     [HttpGet("cars")]
     public async Task<IActionResult> GetAllCars()
     {
@@ -156,7 +141,7 @@ public class AdminCarController : ControllerBase
         }
     }
 
-    private IEnumerable<AdminCarVM> MapToAdminCarVm(IEnumerable<CarDto> cars)
+    private static IEnumerable<AdminCarVM> MapToAdminCarVm(IEnumerable<CarDto> cars)
         => cars.Select(x => new AdminCarVM
         {
             Id = x.Id,
