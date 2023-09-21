@@ -17,7 +17,6 @@ public class AdminUserController: ControllerBase
 {
     private readonly IUserService _userInfoService;
     private readonly RoleManager<UserRole> _roleManager;
-    private readonly IMapper _mapper;
     private readonly IDictionary<string, UserConnection> _connections;
 
     private readonly UserManager<User> _userManager;
@@ -40,8 +39,8 @@ public class AdminUserController: ControllerBase
         var users = await _userInfoService.GetAllInfoAsync();
         return new JsonResult( users.Select(x =>new UserVM
             {
-                Email = x.User.Email,
-                Id = x.UserId,
+                Email = x.User.Email!,
+                Id = x.UserId!,
                 EmailConfirmed = x.User.EmailConfirmed,
                 FirstName = x.User.FirstName,
                 LastName = x.User.LastName,
@@ -65,8 +64,8 @@ public class AdminUserController: ControllerBase
         if (user == null) return NotFound(ServiceError("No such user"));
         return new JsonResult( new UserVM
             {
-                Email = user.User.Email,
-                Id = user.UserId,
+                Email = user.User.Email!,
+                Id = user.UserId!,
                 EmailConfirmed = user.User.EmailConfirmed,
                 FirstName = user.User.FirstName,
                 LastName = user.User.LastName,
@@ -155,7 +154,7 @@ public class AdminUserController: ControllerBase
     }
 
     [HttpGet("getOpenChats")]
-    public async Task<IActionResult> GetOpenChats()
+    public IActionResult GetOpenChats()
     {
         var openConn = _connections.Where(elem => elem.Value.IsOpen).ToList();
         openConn.RemoveAll(x => x.Value.Room is null);
@@ -189,7 +188,7 @@ public class AdminUserController: ControllerBase
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
         
         var userRole = await _userManager.GetRolesAsync(user);
-        if (userRole.Contains(newUserRole.Name))
+        if (userRole.Contains(newUserRole!.Name))
             return Ok();
 
         await _userManager.AddToRoleAsync(user, newUserRole.Name);
@@ -207,7 +206,7 @@ public class AdminUserController: ControllerBase
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
     
         var userRole = await _userManager.GetRolesAsync(user);
-        if (!userRole.Contains(newUserRole.Name))
+        if (!userRole!.Contains(newUserRole!.Name!))
             return NoContent();
         
         await _userManager.RemoveFromRoleAsync(user, newUserRole.Name);
@@ -215,7 +214,7 @@ public class AdminUserController: ControllerBase
         return NoContent();
     }
 
-    private object ServiceError(string message)
+    private static object ServiceError(string message)
     {
         return new { error = new { code = (int)ErrorCode.ServiceError, message = message } };
     }
