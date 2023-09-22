@@ -94,11 +94,12 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddCors(options =>
     {
-        var frontendURL = configuration.GetValue<string>("FrontendHost");
+        var mainFront = configuration["FrontendHost:Main"];
+        var adminFront = configuration["FrontendHost:Admin"];
     
-        options.AddPolicy("CORSAllowLocalHost3000",
+        options.AddPolicy("DevFrontEnds",
             builder =>
-                builder.WithOrigins(frontendURL)
+                builder.WithOrigins(mainFront, adminFront)
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyMethod()
@@ -132,12 +133,12 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevFrontEnds");
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseCors("CORSAllowLocalHost3000");
 app.UseRouting();
 
 app.UseAuthentication();

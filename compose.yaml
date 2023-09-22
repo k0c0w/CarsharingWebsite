@@ -1,16 +1,26 @@
+version: '3'
+
 services:
+  
   backend:
       build: ./backend
       container_name: backend
+      environment:
+        - FrontendHost__Main = ${FRONT__MAIN}
+        - FrontendHost__Admin = ${FRONT__ADMIN}
+        - ASPNETCORE_ENVIRONMENT = ${BACK_ASP_ENV}
       ports:
-        - '80:80'
+        - ${BACK_ASP_PORTS}
+        
   website:
       build: ./frontend/website
       container_name: frontend
+      
       ports:
-        - '3000:3000'
+        - ${FRONT_WEBSITE_PORTS}
+        
   admin:
       build: ./frontend/admin
       container_name: admin_dashboard
       ports:
-        - '3001:3000'
+        - ${FRONT_ADMIN_PORTS}
