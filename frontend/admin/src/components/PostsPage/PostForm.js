@@ -3,8 +3,20 @@ import '../../styles/car-page.css';
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
+import Button from "@mui/material/Button";
 
 
+var handleSubmit = (e) => {
+    var inputs = e.target.parentNode.getElementsByTagName('input')
+    var result = {};
+
+    Array.from(inputs).forEach(element => {
+        var name = element?.name ?? "not exist";
+        result[name] = element?.value ?? "not exist";
+    });
+
+    return (result);
+}
 
 export function PostForm({ postModel, isEdit }) {
     const theme = useTheme();
@@ -50,4 +62,11 @@ export const PostFormTitle = ({title='Добавить объект'}) => {
 export const PostFormSubmit = ({ handler, title='Сделать запрос' }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
+    return (
+        <Button disableFocusRipple className="submit" type="submit"
+                style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
+                onClick={(e) => handler(handleSubmit(e))}>
+            {title}
+        </Button>
+    );
 }

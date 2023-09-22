@@ -1,5 +1,5 @@
 import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ColorModeContext, tokens } from "../theme";
 import InputBase from "@mui/material/InputBase";
