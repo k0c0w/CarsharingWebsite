@@ -61,7 +61,10 @@ function App() {
   const [theme, colorMode] = useMode();
   const { auth, setAuth } = useAuth();
 
-  const authorize = () => API.isAdmin().then(r => {
+  
+
+  useEffect(()=>{
+    const authorize = () => API.isAdmin().then(r => {
       if(r.successed){
         const roles = r?.data?.roles;
         const isAuthorized = true;
@@ -73,10 +76,8 @@ function App() {
         const isAuthorized = false;
         setAuth({ roles, isAuthorized });
       }
-  });
-
-  useEffect(()=>{
-      authorize()
+    });
+    authorize()
   },[])
 
   

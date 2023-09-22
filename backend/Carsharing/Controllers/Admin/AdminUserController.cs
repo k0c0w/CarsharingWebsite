@@ -22,14 +22,13 @@ public class AdminUserController: ControllerBase
     private readonly UserManager<User> _userManager;
     private readonly IBalanceService _balanceService;
 
-    public AdminUserController(IMapper mapper,
+    public AdminUserController(
         IDictionary<string, UserConnection> connections, IBalanceService balanceService, IUserService userInfoService, UserManager<User> userManager, RoleManager<UserRole> roleManager)
     {
         _userInfoService = userInfoService;
         _roleManager = roleManager;
         _userManager = userManager;
         _balanceService = balanceService;
-         _mapper = mapper;
         _connections = connections;
     }
 
