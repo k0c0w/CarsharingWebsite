@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import React, { useEffect, useState,  } from 'react';
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import SideNavBar from './components/SideNavBar';
 import CarsMngmt from './pages/Cars';
 import { useMode, ColorModeContext } from './theme';
@@ -76,7 +75,7 @@ function App() {
   });
 
   useEffect(()=>{
-      authorize()
+      authorize().then()
   },[])
 
   
