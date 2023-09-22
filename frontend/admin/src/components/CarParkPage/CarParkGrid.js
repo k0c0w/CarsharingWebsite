@@ -19,7 +19,7 @@ function CarParkGrid({handleClickInfo, handleSelect, rows}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-    const [selected, setSelected] = useState([]);
+    const [, setSelected] = useState([]);
     
     
     const columns = [

@@ -1,4 +1,4 @@
-﻿import React, { useContext } from 'react';
+﻿import React from 'react';
 import '../../styles/car-page.css';
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';

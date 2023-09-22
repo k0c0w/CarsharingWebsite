@@ -12,7 +12,7 @@ import { tokens } from '../../theme';
 export function PostGrid({handleClickInfo, handleSelect, rows=[]}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    const [selected, setSelected] = useState([]);
+    const [, setSelected] = useState([]);
 
     const columns = [
         {
