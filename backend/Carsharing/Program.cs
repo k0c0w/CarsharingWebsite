@@ -129,6 +129,22 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+try
+{
+    await using var scope =  app.Services.CreateAsyncScope();
+    var sp = scope.ServiceProvider;
+
+    await using var db = sp.GetRequiredService<CarsharingContext>();
+
+    await db.Database.MigrateAsync();
+}
+catch (Exception e)
+{
+    app.Logger.LogError(e, "Error while migrating the database");
+    Environment.Exit(-1);
+}
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -145,12 +161,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-    RequestPath = "/admin",
-});
+
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(
+//         Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+//     RequestPath = "/admin",
+// });
 
 
 app.MapControllers();
