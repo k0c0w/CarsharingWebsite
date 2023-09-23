@@ -31,8 +31,8 @@ services:
       image: postgres:latest
       environment:
         POSTGRES_DB: Carsharing
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: P@ssw0rd
+        POSTGRES_USER: ${DB_USER}
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
         PGDATA: "/var/lib/postgresql/data/pgdata"
       volumes:
         - ../2. Init Database:/docker-entrypoint-initdb.d
