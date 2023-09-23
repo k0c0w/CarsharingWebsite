@@ -15,10 +15,10 @@ COPY ["Infrastructure/Persistence/Persistence.csproj", "Infrastructure/Persisten
 RUN dotnet restore "Carsharing/Carsharing.csproj"
 COPY . .
 WORKDIR "/src/Carsharing"
-RUN dotnet build "Carsharing.csproj" -c ${ASPNETCORE_ENVIRONMENT} -o /app/build
+RUN dotnet build "Carsharing.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Carsharing.csproj" -c ${ASPNETCORE_ENVIRONMENT} -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "Carsharing.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app

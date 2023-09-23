@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 
 services:
   
@@ -8,7 +8,8 @@ services:
       environment:
         - FrontendHost__Main = ${FRONT__MAIN}
         - FrontendHost__Admin = ${FRONT__ADMIN}
-        - ASPNETCORE_ENVIRONMENT = ${BACK_ASP_ENV}
+        - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
+        
       ports:
         - ${BACK_ASP_PORTS}
         
