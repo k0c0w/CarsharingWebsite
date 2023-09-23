@@ -10,7 +10,6 @@ import Button from '@mui/material/Button';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
-import { type } from '@testing-library/user-event/dist/type';
 
 
 
@@ -20,7 +19,7 @@ function CarParkGrid({handleClickInfo, handleSelect, rows}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-    const [selected, setSelected] = useState([]);
+    const [, setSelected] = useState([]);
     
     
     const columns = [
@@ -62,7 +61,7 @@ function CarParkGrid({handleClickInfo, handleSelect, rows}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={(e)=>handleClickInfo(params.row)}
+                            onClick={()=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
@@ -77,7 +76,7 @@ function CarParkGrid({handleClickInfo, handleSelect, rows}) {
         var result = []
         listId.forEach(id => {
             rows.forEach( row => {
-                if (row.id == id) {
+                if (row.id === id) {
                     result.push(row);
                 }
             })

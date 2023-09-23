@@ -94,11 +94,12 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddCors(options =>
     {
-        var frontendURL = configuration.GetValue<string>("FrontendHost");
+        var mainFront = configuration["FrontendHost:Main"]!;
+        var adminFront = configuration["FrontendHost:Admin"]!;
     
-        options.AddPolicy("CORSAllowLocalHost3000",
+        options.AddPolicy("DevFrontEnds",
             builder =>
-                builder.WithOrigins(frontendURL)
+                builder.WithOrigins(mainFront, adminFront)
                     .AllowAnyHeader()
                     .AllowCredentials()
                     .AllowAnyMethod()
@@ -128,28 +129,45 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+try
+{
+    await using var scope =  app.Services.CreateAsyncScope();
+    var sp = scope.ServiceProvider;
+
+    await using var db = sp.GetRequiredService<CarsharingContext>();
+
+    await db.Database.MigrateAsync();
+}
+catch (Exception e)
+{
+    app.Logger.LogError(e, "Error while migrating the database");
+    Environment.Exit(-1);
+}
+
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("DevFrontEnds");
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseCors("CORSAllowLocalHost3000");
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-    RequestPath = "/admin",
-});
+
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(
+//         Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
+//     RequestPath = "/admin",
+// });
 
 
 app.MapControllers();

@@ -35,7 +35,7 @@ public class AdminPostController: ControllerBase
             await _postService.DeletePostAsync(id);
             return NoContent();
         }
-        catch (Exception e)
+        catch
         {
             return BadRequest();
         }
@@ -53,7 +53,7 @@ public class AdminPostController: ControllerBase
             });
             return NoContent();
         }
-        catch (Exception e)
+        catch
         {
             return BadRequest();
         }
@@ -70,7 +70,8 @@ public class AdminPostController: ControllerBase
            Body = x.Body,
            CreatedAt = 
                new DateTime(x.CreatedAt.Year,x.CreatedAt.Month,x.CreatedAt.Day,
-                   x.CreatedAt.Hour,x.CreatedAt.Minute,x.CreatedAt.Second)
+                   x.CreatedAt.Hour,x.CreatedAt.Minute,x.CreatedAt.Second,
+                   DateTimeKind.Utc)
         }));
     }
     
@@ -81,7 +82,7 @@ public class AdminPostController: ControllerBase
         {
             return new JsonResult(await _postService.GetPostByIdAsync(id));
         }
-        catch (Exception e)
+        catch
         {
             return BadRequest();
         }

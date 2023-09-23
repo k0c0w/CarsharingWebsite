@@ -19,7 +19,7 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-    const [selected, setSelected] = useState([]);
+    const [, setSelected] = useState([]);
     
     
     const columns = [
@@ -59,7 +59,7 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={(e)=>handleClickInfo(params.row)}
+                            onClick={()=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>

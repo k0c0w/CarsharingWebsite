@@ -1,7 +1,7 @@
-import React, { useEffect,useState } from "react";
+import React from "react";
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
-import API from "../../httpclient/axios_client";
+//import API from "../../httpclient/axios_client";
 
 
 export function CarParkViewInfo({ carPark }) {

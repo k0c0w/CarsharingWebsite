@@ -102,7 +102,7 @@ export function CarForm({carModel}) {
             </div>
         </>
     )
-};
+}
 
 export const CarFormTitle = ({ title = 'Добавить объект' }) => {
     const theme = useTheme();

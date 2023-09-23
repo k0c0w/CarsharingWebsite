@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import React,{ useEffect, useRef } from 'react';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../../theme';
 
@@ -13,7 +13,7 @@ const MessageContainer = ({ messages }) => {
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
-            debugger
+            //debugger
             const { scrollHeight, clientHeight } = messageRef.current;
             messageRef.current.scrollTo({ left: 0, top: scrollHeight - clientHeight, behavior: 'smooth' });
         }
