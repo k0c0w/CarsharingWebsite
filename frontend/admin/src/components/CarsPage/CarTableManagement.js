@@ -10,7 +10,7 @@ import CarsGrid from './CarsGrid';
 import { Popup } from '../Popup';
 import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
 import { CarViewInfo, CarViewInfoTitle } from './CarViewInfo';
-import { getElementsByTagNames } from '../../functions/getElementsByTags';
+//import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
 
 
@@ -25,15 +25,15 @@ function CarTable({ refreshRows, carsData }) {
     const color = tokens(theme.palette.mode);
 
 
-    function send() {
-        const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-        const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-
-        var body = JSON.stringify(obj);
-        console.log(body);
-        var result = API.getCars(body);
-        console.log(result);
-    }
+    // function send() {
+    //     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
+    //     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
+    //
+    //     var body = JSON.stringify(obj);
+    //     console.log(body);
+    //     var result = API.getCars(body);
+    //     console.log(result);
+    // }
 
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);

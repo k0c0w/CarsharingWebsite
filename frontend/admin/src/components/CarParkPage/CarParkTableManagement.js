@@ -7,11 +7,11 @@ import '../../styles/car-page.css';
 import '../../styles/popup.css'
 import { tokens } from '../../theme';
 import CarParkGrid from './CarParkGrid';
-import { Popup } from '../Popup';
+//import { Popup } from '../Popup';
 //import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
-import { CarParkViewInfo, CarParkViewInfoTitle } from './CarParkViewInfo';
-import { getElementsByTagNames } from '../../functions/getElementsByTags';
-import API from '../../httpclient/axios_client';
+// import { CarParkViewInfo, CarParkViewInfoTitle } from './CarParkViewInfo';
+// import { getElementsByTagNames } from '../../functions/getElementsByTags';
+// import API from '../../httpclient/axios_client';
 
 
 
@@ -25,20 +25,20 @@ function CarParkTable({ refreshRows, carParkData }) {
     const color = tokens(theme.palette.mode);
 
 
-    function send() {
-        const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-        const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-
-        var body = JSON.stringify(obj);
-        console.log(body);
-        var result = API.getCars(body);
-        console.log(result);
-    }
+    // function send() {
+    //     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
+    //     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
+    //
+    //     var body = JSON.stringify(obj);
+    //     console.log(body);
+    //     var result = API.getCars(body);
+    //     console.log(result);
+    // }
 
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);
     // Закрытие popup'a
-    const [display, setD] = useState('none');
+    const [/*display*/, setD] = useState('none');
     // Модель формы для popup'а
     // const [popupInput, setPopup] = useState(
     //     {
@@ -51,12 +51,12 @@ function CarParkTable({ refreshRows, carParkData }) {
     // );
 
     //открывают попап с нужным действием
-    var handleClickInfo = (model) => {
-        const popup = {
-            title: <CarParkViewInfoTitle></CarParkViewInfoTitle>,
-            close: () => setD('none'),
-            inputsModel: <CarParkViewInfo carPark={model}></CarParkViewInfo>
-        };
+    var handleClickInfo = (/*model*/) => {
+        // const popup = {
+        //     title: <CarParkViewInfoTitle></CarParkViewInfoTitle>,
+        //     close: () => setD('none'),
+        //     inputsModel: <CarParkViewInfo carPark={model}></CarParkViewInfo>
+        // };
         //setPopup(popup);
         setD('block');
     }
@@ -87,7 +87,7 @@ function CarParkTable({ refreshRows, carParkData }) {
 
     return (
         <>
-            {/* <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows}/> */}
+            <TableAddRefreshButtons /*addHandler = {handleClickAdd}*/ refreshHandler={refreshRows}/>
 
             <CarParkGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={carParkData}/>
 

@@ -11,7 +11,7 @@ namespace Carsharing.Controllers;
 
 [ApiController]
 [Route("api/admin/tariff")]
-//todo: [Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class AdminTariffController : ControllerBase
 {
     private readonly IAdminTariffService _service;
@@ -40,7 +40,7 @@ public class AdminTariffController : ControllerBase
             {
                 Name = vm.Name,
                 Description = vm.Description,
-                MaxMileage = vm?.MaxMillage,
+                MaxMileage = vm.MaxMillage,
                 PriceInRubles = vm.Price,
             });
         }

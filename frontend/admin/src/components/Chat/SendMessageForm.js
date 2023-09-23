@@ -1,12 +1,12 @@
 import { TextField, Button } from '@mui/material';
-import { useState } from 'react';
-import { useTheme } from '@emotion/react';
-import { tokens } from '../../theme';
-import { styleTextField } from '../../styleComponents';
+import React, { useState } from 'react';
+//import { useTheme } from '@emotion/react';
+// import { tokens } from '../../theme';
+// import { styleTextField } from '../../styleComponents';
 
 const SendMessageForm = ({ sendMessage }) => {
-    const theme = useTheme();
-    const color = tokens(theme.palette.mode);
+    //const theme = useTheme();
+    //const color = tokens(theme.palette.mode);
     const [message, setMessage] = useState('');
 
     return <form

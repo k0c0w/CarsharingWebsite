@@ -1,6 +1,6 @@
 import '../styles/side-navbar.css'
 import React from 'react';
-import {  Link, Navigate } from 'react-router-dom';
+import {  Link } from 'react-router-dom';
 
 function SideNavBar({isAuthorized, routes, handlePath, path }) {
     

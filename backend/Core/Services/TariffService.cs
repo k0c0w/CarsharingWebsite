@@ -120,7 +120,7 @@ public class TariffService : IAdminTariffService
             Name = tariff.Name,
             MaxMileage = tariff.MaxMileage,
             PriceInRubles = tariff.Price,
-            Image = $"tariffs/{tariff.Name}.png"
+            Image = $"/tariffs/{tariff.Name}.png"
         };
     }
     

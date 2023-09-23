@@ -10,20 +10,20 @@ import { PostGrid } from './PostGrid';
 import { Popup } from '../Popup';
 import { PostForm,PostFormTitle,PostFormSubmit } from './PostForm';
 import { PostViewInfo,PostViewInfoTitle } from './PostViewInfo';
-import { getElementsByTagNames } from '../../functions/getElementsByTags';
+//import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
-import { TableAddRefreshButtons } from '../TableCommon';
+//import { TableAddRefreshButtons } from '../TableCommon';
 
 
-async function send() {
-    const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-    const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
+// async function send() {
+//     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
+//     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
+//
+//     var body = JSON.stringify(obj);
+//     var result = API.getCars(body);
+// }
 
-    var body = JSON.stringify(obj);
-    var result = API.getCars(body);
-}
-
-export function PostTable({ postData, refreshRows, onDelete }) {
+export function PostTable({ postData, /*refreshRows,*/ onDelete }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
@@ -64,18 +64,18 @@ export function PostTable({ postData, refreshRows, onDelete }) {
         else alert("Ошибка удаления.");
     }
 
-    const handleClickAdd = () => {
-        const popup = {
-            title: <PostViewInfoTitle title='Добавить'></PostViewInfoTitle>,
-            close: () => setD('none'),
-            axiosRequest: (data) => API.createPost(data),
-            submit: <PostFormSubmit handler={send}></PostFormSubmit>,
-            inputsModel: <PostForm></PostForm>,
-        };
-        setPopup(popup);
-        console.log(selected[0]);
-        setD('block');
-    }
+    // const handleClickAdd = () => {
+    //     const popup = {
+    //         title: <PostViewInfoTitle title='Добавить'></PostViewInfoTitle>,
+    //         close: () => setD('none'),
+    //         axiosRequest: (data) => API.createPost(data),
+    //         submit: <PostFormSubmit handler={send}></PostFormSubmit>,
+    //         inputsModel: <PostForm></PostForm>,
+    //     };
+    //     setPopup(popup);
+    //     console.log(selected[0]);
+    //     setD('block');
+    // }
     const handleClickEdit = () => {
         const popup = {
             title: <PostFormTitle title='Изменить'></PostFormTitle>,
@@ -91,7 +91,7 @@ export function PostTable({ postData, refreshRows, onDelete }) {
     return (
         <>
             
-            <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>
+             {/*<TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>*/}
             <PostGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={postData}></PostGrid>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
