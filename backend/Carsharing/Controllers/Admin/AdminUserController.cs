@@ -166,8 +166,8 @@ public class AdminUserController: ControllerBase
 
                 return new OpenChatsVM()
                 {
-                    FirstName = user!.FirstName,
-                    LastName = user!.LastName,
+                    FirstName = user!.FirstName!,
+                    LastName = user!.LastName!,
                     UserId = userId,
                     ConnectionId = elem.Key
                 };

@@ -14,11 +14,11 @@ public class FileProvider : IFileProvider
         if (!Directory.Exists(folder))
             Directory.CreateDirectory(folder);
 
-        var filePath = Path.Combine(folder, file.Name);
+        var filePath = Path.Combine(folder, file!.Name!);
         if (File.Exists(filePath))
-            throw new InvalidOperationException($"File '{file.Name}' already exists!");
+            throw new InvalidOperationException($"File '{file!.Name!}' already exists!");
         await using var fs = File.Create(filePath);
-        await file.Content.CopyToAsync(fs);
+        await file!.Content!.CopyToAsync(fs);
     }
     
     public void Delete(string fileFolder, string filename) 

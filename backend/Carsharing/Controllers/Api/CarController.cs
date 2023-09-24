@@ -74,8 +74,8 @@ public class CarController : ControllerBase
         return new JsonResult(cars.Select(x => new CarVM
         {
             Id = x.CarId,
-            ParkingLatitude = x.Location.Latitude,
-            ParkingLongitude = x.Location.Longitude,
+            ParkingLatitude = x.Location!.Latitude,
+            ParkingLongitude = x.Location!.Longitude,
             LicensePlate = x.Plate
         }));
     }
