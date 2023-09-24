@@ -57,8 +57,6 @@ namespace Carsharing.Helpers.Mappings
 
             var _stream = formFile.OpenReadStream();
 
-            //_stream.Seek(0, SeekOrigin.Begin);
-
             file = new Contracts.File()
             {
                 Name = formFile.FileName,
@@ -67,8 +65,6 @@ namespace Carsharing.Helpers.Mappings
 
 
             return file;
-
-            _stream.Dispose();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Carsharing.Helpers.Attributes;
 [AttributeUsage(AttributeTargets.Property)]
 public class FieldsAreNotEqualAttribute : ValidationAttribute
 {
-    public string OtherProperty { get; set; }
+    public string OtherProperty { get; set; } = string.Empty;
     
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
