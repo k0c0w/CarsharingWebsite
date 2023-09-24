@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import Button from '@mui/material/Button';
 import '../../styles/car-page.css';
 import { tokens } from '../../theme';
@@ -6,7 +6,7 @@ import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
 import { useState } from 'react';
 import API from '../../httpclient/axios_client';
-import { Box, Select } from '@mui/material';
+import { Box } from '@mui/material';
 
 
 
@@ -52,7 +52,7 @@ export function UserForm({user}) {
             </div>
         </>
     )
-};
+}
 
 async function onMoneyButtonClick(id, selectRef, moneyRef, setMoneySent, setError, saveCallback){
     if(moneyRef && selectRef){
@@ -66,7 +66,6 @@ async function onMoneyButtonClick(id, selectRef, moneyRef, setMoneySent, setErro
         const select = selectRef.current.value;
         if(select == "add"){
             const response = await API.giveMoney(id, money);
-            debugger;
             if(response.successed){
                 saveCallback();
                 setError({});
@@ -121,8 +120,6 @@ export function EditUserForm ({user, saveCallback}){
     const [editSent, setEditSent] = useState(false);
     const [error, setError] = useState({})
     const [balance, setBalance] = useState(parseFloat(user.personal_info.account_balance))
-
-    const StyledTextField = styleTextField(color.primary[100]);
 
     function changeBalance() {
         if(selectRef?.current.value == "add" && moneyRef?.current)

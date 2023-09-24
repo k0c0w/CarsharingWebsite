@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CarParkTable from '../components/CarParkPage/CarParkTableManagement';
-
 import '../styles/car-page.css';
 import API from '../httpclient/axios_client';
 import { TableSearchField } from '../components/TableCommon';
-
 
 const attrs = [
     {
@@ -43,8 +41,6 @@ const attrs = [
         labelHelper: 'Id модели'
     }
 ];
-
-const carParkEndpoint = "carpark";
 
 function CarParkMngmt() {
     const [carParkData, setCarParkData] = useState([]);

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CarTable from '../components/CarsPage/CarTableManagement';
-
 import '../styles/car-page.css';
 import API from '../httpclient/axios_client';
 import { TableSearchField } from '../components/TableCommon';
-
 
 const attrs = [
     {
@@ -24,8 +22,6 @@ const attrs = [
     }
 ];
 
-const carsEndpoint = "carmodel";
-
 function CarsMngmt() {
     const [carsData, setCarsData] = useState([]);
     
@@ -40,7 +36,6 @@ function CarsMngmt() {
     useEffect(()=>{ 
         loadData()
     }, []);
-
 
     return (
         <>

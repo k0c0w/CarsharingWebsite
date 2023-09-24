@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@emotion/react';
 import { Box } from '@mui/system';
 import { Button } from '@mui/material';
-
 import '../../styles/car-page.css';
 import '../../styles/popup.css'
-import { ColorModeContext, tokens } from '../../theme';
+import { tokens } from '../../theme';
 import TarrifsGrid from './TarrifsGrid';
 import { Popup } from '../Popup';
 import { TarrifForm, TarrifFormTitle, TarrifFormSubmit } from './TarrifForm';
@@ -20,7 +19,7 @@ async function send() {
     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
 
     var body = JSON.stringify(obj);
-    var result = API.getCars(body);
+    API.getCars(body);
 }
 
 function TarrifTable({ tariffsData, refreshRows, onUpdate, onDelete }) {
