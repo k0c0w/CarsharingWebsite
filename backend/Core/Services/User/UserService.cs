@@ -17,6 +17,12 @@ public partial class UserService : IUserService
     [GeneratedRegex(@"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$")]
     private static partial Regex GetNameRegexGenerated();
 
+    [GeneratedRegex(@"\d{6}")]
+    private static partial Regex GetPassportRegexGenerated();
+
+    [GeneratedRegex(@"\d{4}")]
+    private static partial Regex GetPassportTypeRegexGenerated();
+
     private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly CarsharingContext _context;
 
@@ -112,7 +118,7 @@ public partial class UserService : IUserService
         try
         {
             var user = await GetUserWithInfoAsync(userId);
-            if(! await CheckUserEmail(user,editUserDto!.Email!)) {throw new AlreadyExistsException("Почта уже зарегестрирова");}
+            if(! await CheckUserEmail(user,editUserDto!.Email!)) {throw new AlreadyExistsException();}
             CheckLastName(user,editUserDto.LastName!);
             CheckName(user,editUserDto.FirstName!);
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
@@ -141,7 +147,7 @@ public partial class UserService : IUserService
         return user;
     }
 
-    private void CheckName(Domain.Entities.User user,string val)
+    private static void CheckName(Domain.Entities.User user, string val)
     {
         if(!string.IsNullOrEmpty(val) && GetNameRegexGenerated().IsMatch(val))
         {
@@ -149,9 +155,9 @@ public partial class UserService : IUserService
         }
     }
 
-    private void CheckLastName(Domain.Entities.User user,string val)
+    private static void CheckLastName(Domain.Entities.User user, string val)
     {
-        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
+        if(!string.IsNullOrEmpty(val) && GetNameRegexGenerated().IsMatch(val))
         {
             user.LastName = val;
         }
@@ -178,7 +184,7 @@ public partial class UserService : IUserService
 
     private static void CheckUserPassport(UserInfo user, string val)
     {
-        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{6}"))
+        if (!string.IsNullOrEmpty(val) && GetPassportRegexGenerated().IsMatch(val))
         {
             user.Passport = val;
         }
@@ -186,7 +192,7 @@ public partial class UserService : IUserService
 
     private static void CheckUserPassportType(UserInfo user, string val)
     {
-        if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{4}"))
+        if (!string.IsNullOrEmpty(val) && GetPassportRegexGenerated().IsMatch(val))
         {
             user.PassportType = val;
         }
