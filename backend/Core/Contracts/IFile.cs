@@ -2,7 +2,7 @@ namespace Contracts;
 
 public interface IFile
 {
-    string Name { get; }
+    string? Name { get; }
     
-    Stream Content { get; }
+    Stream? Content { get; }
 }
