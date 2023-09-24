@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Carsharing.Helpers.CustomValidators;
 
 [AttributeUsage(AttributeTargets.Field|AttributeTargets.Property)]
-public class ImageValidator : ValidationAttribute
+public class ImageValidatorAttribute : ValidationAttribute
 {
     private readonly long _maxLength;
 
-    public ImageValidator(long maxFileLength) => _maxLength = maxFileLength;
+    public ImageValidatorAttribute(long maxFileLength) => _maxLength = maxFileLength;
     
     
     public override bool IsValid(object? value)
@@ -15,7 +15,7 @@ public class ImageValidator : ValidationAttribute
         var file = value as IFormFile;
         if (file == null)
             throw new ArgumentException("Property or field must be IFormFile", paramName: nameof(value));
-        //if (file.ContentType != "image/x-png")
+
         if (!file.ContentType.StartsWith("image/"))
         {
             ErrorMessage = "Ожидался 'Content-type: image/x-png'";

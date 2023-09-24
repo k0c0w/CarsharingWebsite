@@ -1,14 +1,10 @@
-﻿using AutoMapper;
-using Carsharing.Forms;
+﻿using Carsharing.Forms;
 using Domain.Entities;
-using Domain;
 using Carsharing.ViewModels.Admin.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
 namespace Carsharing.Controllers.Admin
@@ -76,7 +72,7 @@ namespace Carsharing.Controllers.Admin
             return new JsonResult(new LoginAdminVM() { Roles = roles });
         }
 
-        private object GetLoginError() => new { error = new ErrorsVM { Code = (int)ErrorCode.ServiceError, Messages = new[] { "Неверная почта или пароль." } } };
+        private static object GetLoginError() => new { error = new ErrorsVM { Code = (int)ErrorCode.ServiceError, Messages = new[] { "Неверная почта или пароль." } } };
 
     }
 }

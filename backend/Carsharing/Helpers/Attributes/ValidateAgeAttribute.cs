@@ -9,8 +9,8 @@ public sealed class ValidateAgeAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        var birthDate = (DateTime)value;
-        return birthDate.AddYears(AgeThreshold) > DateTime.Today
+        var birthDate = (DateTime?)value;
+        return birthDate?.AddYears(AgeThreshold) > DateTime.Today
             ? new ValidationResult(ErrorMessage)
             : ValidationResult.Success;
     }
