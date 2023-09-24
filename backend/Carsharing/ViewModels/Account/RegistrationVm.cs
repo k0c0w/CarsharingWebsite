@@ -13,13 +13,13 @@ public class RegistrationVm : LoginVM
     [MaxLength(64, ErrorMessage = "К сожалению, имя может иметь не более 64 символов.")]
     [RegExCheck($"^[^{invalidSymbols}]*$", ErrorMessage = "К сожалению, имя сожержит недопустимые символы.")]
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     [Required(ErrorMessage = "Пожалуйста, укажите Вашу фамилию.")]
     [MaxLength(64, ErrorMessage = "К сожалению, фамилия может иметь не более 64 символов.")]
     [RegExCheck($"^[^{invalidSymbols}]*$", ErrorMessage = "К сожалению, фамилия сожержит недопустимые символы.")]
     [JsonPropertyName("surname")]
-    public string Surname { get; set; }
+    public string? Surname { get; set; }
 
     
     [Required(ErrorMessage = "Пожалуйста, укажите Вашу дату рождения.")]
@@ -30,7 +30,7 @@ public class RegistrationVm : LoginVM
     [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
     [Compare("AcceptMustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
     [JsonPropertyName("accept")]
-    public string Accept { get; set; }
+    public string? Accept { get; set; }
 
     [ValidateNever] public string AcceptMustBe => "on";
 }

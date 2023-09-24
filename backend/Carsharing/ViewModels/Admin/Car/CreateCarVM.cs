@@ -5,7 +5,7 @@ namespace Carsharing.ViewModels.Admin.Car;
 public record CreateCarVM
 {
     [JsonPropertyName("license_plate")]
-    public string LicensePlate { get; init; }
+    public string? LicensePlate { get; init; }
 
     [JsonPropertyName("latitude")]
     public decimal ParkingLatitude { get; init; }

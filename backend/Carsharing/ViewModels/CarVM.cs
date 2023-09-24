@@ -10,7 +10,7 @@ public record CarVM
 
     [JsonPropertyName("license_plate")]
     [JsonPropertyOrder(2)]
-    public string LicensePlate { get; set; }
+    public string? LicensePlate { get; set; }
 
     [JsonPropertyName("latitude")]
     [JsonPropertyOrder(3)]
