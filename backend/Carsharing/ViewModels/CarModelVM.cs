@@ -10,15 +10,15 @@ public record CarModelVM
     
     [JsonPropertyName("brand")]
     [JsonPropertyOrder(2)]
-    public string Brand { get; set; }
+    public string? Brand { get; set; }
     
     [JsonPropertyName("model")]
     [JsonPropertyOrder(3)]
-    public string Model { get; set; }
+    public string? Model { get; set; }
 
     [JsonPropertyName("description")]
     [JsonPropertyOrder(4)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
     
     [JsonPropertyName("tariff_id")]
     [JsonPropertyOrder(6)]
@@ -26,5 +26,5 @@ public record CarModelVM
     
     [JsonPropertyName("image_url")]
     [JsonPropertyOrder(5)]
-    public string Url { get; set; }
+    public string? Url { get; set; }
 }

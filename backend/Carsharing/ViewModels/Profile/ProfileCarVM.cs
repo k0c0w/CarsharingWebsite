@@ -5,13 +5,13 @@ namespace Carsharing.ViewModels.Profile;
 public record ProfileCarVM
 {
     [JsonPropertyName("image_url")]
-    public string ImageUrl { get; init; }
+    public string? ImageUrl { get; init; }
     
     [JsonPropertyName("model")]
-    public string Name { get; init; }
+    public string? Name { get; init; }
     
     [JsonPropertyName("license_plate")]
-    public string LicensePlate { get; init; }
+    public string? LicensePlate { get; init; }
     
     [JsonPropertyName("is_opened")]
     public bool IsOpened { get; init; }

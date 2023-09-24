@@ -6,9 +6,9 @@ public record ProfileInfoVM
 {
     [JsonPropertyName("user_info")]
     [JsonPropertyOrder(1)]
-    public UserInfoVM UserInfo { get; init; }
+    public UserInfoVM? UserInfo { get; init; }
 
     [JsonPropertyName("booked_cars")]
     [JsonPropertyOrder(2)]
-    public IEnumerable<ProfileCarVM> BookedCars { get; init; }
+    public IEnumerable<ProfileCarVM>? BookedCars { get; init; }
 }

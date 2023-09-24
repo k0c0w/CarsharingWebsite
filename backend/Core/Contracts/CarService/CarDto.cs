@@ -4,7 +4,7 @@ public record CarDto
 {
     public int Id { get; set; }
 
-    public string LicensePlate { get; set; }
+    public string? LicensePlate { get; set; }
 
     public bool HasToBeNonActive { get; set; }
 

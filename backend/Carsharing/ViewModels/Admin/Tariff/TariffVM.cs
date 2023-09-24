@@ -10,11 +10,11 @@ public class TariffVM
     
     [JsonPropertyName("name")]
     [JsonPropertyOrder(1)]
-    public string Name { get; init; }
+    public string? Name { get; init; }
     
     [JsonPropertyName("description")]
     [JsonPropertyOrder(2)]
-    public string Description { get; init; }
+    public string? Description { get; init; }
     
     [JsonPropertyName("is_active")]
     [JsonPropertyOrder(3)]

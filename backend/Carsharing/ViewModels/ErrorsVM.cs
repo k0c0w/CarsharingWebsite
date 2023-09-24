@@ -11,5 +11,5 @@ public class ErrorsVM
     
     [JsonPropertyName("messages")]
     [JsonPropertyOrder(2)]
-    public IEnumerable<string> Messages { get; set; }
+    public IEnumerable<string>? Messages { get; set; }
 }
