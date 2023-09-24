@@ -23,18 +23,18 @@ public partial class TariffService : IAdminTariffService
         _ctx = context;
     }
 
-    public async Task CreateAsync(CreateTariffDto info)
+    public async Task CreateAsync(CreateTariffDto create)
     {
-        ThrowIfInvalid(info);
+        ThrowIfInvalid(create);
         try
         {
             await _ctx.Tariffs.AddAsync(new Tariff()
             {
-                Name = info.Name!,
-                Description = info.Description!,
-                Price = info.PriceInRubles,
+                Name = create.Name!,
+                Description = create!.Description!,
+                Price = create!.PriceInRubles,
                 IsActive = true,
-                MaxMileage = info?.MaxMileage,
+                MaxMileage = create!.MaxMileage,
             });
             await _ctx.SaveChangesAsync();
         }
@@ -103,7 +103,7 @@ public partial class TariffService : IAdminTariffService
             throw new ArgumentException($"{nameof(tariffDto.MaxMileage)} <= 0");
         if (tariffDto.PriceInRubles <= 0)
             throw new ArgumentException("Invalid price");
-        if (string.IsNullOrEmpty(tariffDto.Description)) throw new ArgumentNullException(nameof(tariffDto.Description));
+        if (string.IsNullOrEmpty(tariffDto.Description)) throw new ArgumentException(nameof(tariffDto.Description));
         if (TariffGeneratedRegex().IsMatch(tariffDto.Description))
             throw new ArgumentException($"{nameof(tariffDto.Description)} must contain letters");
     }

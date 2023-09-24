@@ -253,11 +253,8 @@ public class CarService : IAdminCarService
     private async Task UpdateModelImage(CarModel old, IFile file)
     {
         var folder = Path.Combine("wwwroot", "models");
-        try
-        {
-            _fileProvider.Delete(folder, old.ImageName);
-        }
-        catch(DirectoryNotFoundException) {}
+
+        _fileProvider.Delete(folder, old.ImageName);
 
         await _fileProvider.SaveAsync(folder, new  File {Content = file.Content, Name = old.ImageName});
     }
