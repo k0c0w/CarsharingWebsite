@@ -1,20 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-
 import { tokens } from '../../theme';
-import API from '../../httpclient/axios_client';
-
-
-
-
 
 function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-    const [selected, setSelected] = useState([]);
-    
     const columns = [
         {
             field: 'id',

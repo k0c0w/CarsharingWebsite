@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '@emotion/react';
-import { tokens } from '../theme';
 import UserTable from '../components/UsersPage/UserTableManagement';
 import API from '../httpclient/axios_client'
 import { TableSearchField } from '../components/TableCommon';
-
 
 const attrs = [
     {
@@ -29,15 +27,9 @@ const attrs = [
     }
 ];
 
-
-
-
 function UserMngmt() {
     const theme = useTheme();
-    const color = tokens(theme.palette.mode);
     // Аттрибут для поиска 
-
-    
     const [usersData, setUsersData] = useState([]);
     
     var loadData = async () => {

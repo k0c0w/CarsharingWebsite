@@ -23,25 +23,25 @@ class AxiosWrapper {
 
         options.baseURL = 'https://localhost:7129/api/'
         this.mainSiteAxios = axios.create(options);
-    };
+    }
     
     //Posts
-    getPosts = async () => {
+    async getPosts () {
         const result = await this._get("/post/posts");
         return result;
     }
 
-    getPostById = async (id) => {
+    async getPostById(id) {
         const result = await this._get("/post/posts"+id);
         return result;
     }
 
-    deletePost = async (id) => {
+    async deletePost(id) {
         const result = await this._delete(`/post/delete/${id}`);
         return result;
     }
 
-    updatePost = async (body) => {
+    async updatePost(body) {
         let result = {};
         const _body = {};
         _body.title = body.title;
@@ -58,34 +58,33 @@ class AxiosWrapper {
         return result;
     }
 
-    createPost = async (body) => {
+    async createPost(body) {
         const result = await this._post("/post/create", body);
         return result
     }
-    
 
     // Tariffs
-    getTariffs = async () => {
+    async getTariffs() {
         const result = await this._get("/tariff/all");
         return result;
     }
 
-    getTariffById = async (id) => {
+    async getTariffById(id) {
         const result = await this._get("/tariff/"+id);
         return result;
     }
 
-    deleteTariff = async (id) => {
+    async deleteTariff(id) {
         const result = await this._delete(`/tariff/delete/${id}`); 
         return result;
     }
 
-    changeTraiffState = async(id, state) => {
+    async changeTraiffState(id, state) {
         const response = await this._put(`/tariff/setstate/${id}`, state)
         return response
     }
 
-    updateTariff = async (body) => {
+    async updateTariff(body) {
         let result = {};
         const _body = {};
         _body.price = body.price;
@@ -103,12 +102,12 @@ class AxiosWrapper {
         return result;
     }
 
-    createTariff = async (body) => {
+    async createTariff(body) {
         const result = await this._post("/tariff/create", body);
         return result
     }
 
-    createUser = async (body) => {
+    async createUser(body) {
         const result = {successed: false};
         await  this.mainSiteAxios.post("/account/register", body)
 
@@ -127,10 +126,8 @@ class AxiosWrapper {
             })
         return result;
     }
-
-
-    // Car models
-    createCarModel = async (body) => {
+    
+    async createCarModel(body) {
         const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -141,72 +138,71 @@ class AxiosWrapper {
         return result
     }
 
-    getCars = async () => {
+    async getCars() {
         const result = await this._get("/car/models");
         return result;
     }
 
     // CarPark
-    getCarPark = async () => {
+    async getCarPark() {
         const result = await this._get("/car/cars");
         return result;
     }
 
-
     // Users
-    getUsers = async () => {
+    async getUsers() {
         const result = await this._get("/user/all");
         return result;
     }
 
-    grantRole = async (id, role) => {
+    async grantRole(id, role) {
         const result = await this._post(`/user/${id}/GrantRole/${role}`)
         return result;
     }
 
-    revokeRole = async (id, role) => {
+    async revokeRole(id, role) {
         const result = await this._delete(`/user/${id}/RevokeRole/${role}`)
         return result;
     }    
 
     // Auth
-    login = async (body) => {
+    async login(body) {
         const result = await this._post("/auth/login", body);
 
         return result
     }
 
-    become = async () => {
+    async become() {
         const result = await this._get("/auth/become");
 
         return result
     }
 
-    isAdmin = async () => {
+    async isAdmin() {
         return await this._get('/auth/isAdmin');
     }
 
-    logout = async () => {
+    async logout() {
         await this.mainSiteAxios.post("/Account/LogOut");
     }
 
-    verify_profile = async (id) => {
+    async verify_profile(id) {
         return await this._put(`/User/verify/${id}`)
     }
 
-    giveMoney = async (id, value) => {
+    async giveMoney(id, value) {
         return await this._post(`/User/${id}/BalanceIncrease`, value);
     }
 
-    subtractMoney = async (id, value) => {
+    async subtractMoney(id, value) {
         return await this._post(`/User/${id}/BalanceDecrease`, value);
     }
 
-    editUser = async (id, model) => {
+    async editUser(id, model) {
         return await this._put(`/User/Edit/${id}`, JSON.stringify(model));
     }
 
-    getUserInfo = async (id) => {
+    async getUserInfo(id) {
         return await this._get(`/User/${id}`);
     }
 
@@ -230,13 +226,11 @@ class AxiosWrapper {
         return result;
     }
 
-
     // Chat 
-    getOpenChats = async () => {
-        var result = await this._get("/user/getOpenChats");
+    async getOpenChats() {
+        const result = await this._get("/user/getOpenChats");
         return result;
     } 
-
 
     async _put(endpoint, model) {
         const result = {successed: false};
@@ -294,8 +288,6 @@ class AxiosWrapper {
         return response;
     }
 
-
-
     _getModelFromForm(form) {
         return Array.from(form.elements)
             .filter((element) => element.name)
@@ -316,7 +308,6 @@ class AxiosWrapper {
     }
 
     _renameKeys(obj, keys) {
-        
         for (let key in keys){
             for (let elem in obj) {
                 console.log(elem)
@@ -328,8 +319,5 @@ class AxiosWrapper {
     }
 }
 
-
 const API = new AxiosWrapper();
 export default API;
-
-
