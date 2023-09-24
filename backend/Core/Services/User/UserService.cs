@@ -55,12 +55,12 @@ public partial class UserService : IUserService
             .Select(x => x.Car)
             .Select(x => new CarShortcutDto
             {
-                Brand = x.CarModel!.Brand,
-                Model = x.CarModel.Model,
-                Id = x.Id,
-                IsOpened = x.IsOpened,
-                LicensePlate = x.LicensePlate,
-                Image = $"/models/{x.CarModel.ImageName}"
+                Brand = x!.CarModel!.Brand,
+                Model = x!.CarModel.Model,
+                Id = x!.Id,
+                IsOpened = x!.IsOpened,
+                LicensePlate = x!.LicensePlate,
+                Image = $"/models/{x!.CarModel.ImageName}"
             })
             .ToArray();
 
@@ -112,7 +112,7 @@ public partial class UserService : IUserService
         try
         {
             var user = await GetUserWithInfoAsync(userId);
-            if(! await CheckUserEmail(user,editUserDto!.Email!)) {throw new Exception("Почта уже зарегестрирова");}
+            if(! await CheckUserEmail(user,editUserDto!.Email!)) {throw new AlreadyExistsException("Почта уже зарегестрирова");}
             CheckLastName(user,editUserDto.LastName!);
             CheckName(user,editUserDto.FirstName!);
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
