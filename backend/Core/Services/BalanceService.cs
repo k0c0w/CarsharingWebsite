@@ -14,7 +14,7 @@ public class BalanceService : IBalanceService
     
     public async Task<string> IncreaseBalance(string userId, decimal val)
     {
-        var user =  _context.UserInfos.FirstOrDefault(x => x.UserId == userId);
+        var user =  _context.UserInfos.First(x => x.UserId == userId);
         user.Balance += val;
         user.Verified = false;
         _context.UserInfos.Update(user);
@@ -24,11 +24,11 @@ public class BalanceService : IBalanceService
 
     public async Task<string> DecreaseBalance(string userId, decimal val)
     {
-        var user =  _context.UserInfos.FirstOrDefault(x => x.UserId == userId);
+        var user =  _context.UserInfos.First(x => x.UserId == userId);
 
         if (user!.Balance < val)
         {
-            throw new Exception("Недостаточный баланс");
+            throw new InvalidOperationException("Недостаточный баланс");
         }
 
         user.Balance -= val;

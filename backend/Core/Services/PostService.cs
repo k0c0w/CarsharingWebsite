@@ -1,6 +1,7 @@
 ﻿using Contracts.NewsService;
 using Domain;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
 
@@ -19,9 +20,9 @@ public class PostService: IAdminPostService
     {
         var post = new Post()
         {
-            Body = postDto.Body,
+            Body = postDto.Body!,
             CreatedAt = DateTime.Now,
-            Title = postDto.Title,
+            Title = postDto.Title!,
             Id = postDto.Id
         };
 
@@ -54,13 +55,14 @@ public class PostService: IAdminPostService
     
     public async Task<IEnumerable<PostDto>> GetAllPostsAsync()
     {
-        return _carsharingContext.News.Select(x => new PostDto()
+        return await _carsharingContext.News.Select(x => new PostDto()
         {
             Body = x.Body,
             Title = x.Title,
             Id = x.Id,
             CreatedAt = x.CreatedAt
-        });
+        })
+        .ToListAsync();
     }
 
     public async Task<PostDto> GetPostByIdAsync(int id)

@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Domain.Entities;
 
-
 namespace Entities.EntityConfigurations
 {
     internal class UserInfoConfiguration : IEntityTypeConfiguration<UserInfo>
@@ -10,7 +9,6 @@ namespace Entities.EntityConfigurations
         public void Configure(EntityTypeBuilder<UserInfo> builder)
         {
             builder.Property(x => x.Verified).HasDefaultValue(false);
-            //builder.Property(x => x.UserId);
         }
     }
 }

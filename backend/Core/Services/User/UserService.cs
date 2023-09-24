@@ -12,8 +12,11 @@ using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Services.User;
 
-public class UserService : IUserService
+public partial class UserService : IUserService
 {
+    [GeneratedRegex(@"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$")]
+    private static partial Regex GetNameRegexGenerated();
+
     private readonly UserManager<Domain.Entities.User> _userManager;
     private readonly CarsharingContext _context;
 
@@ -23,12 +26,12 @@ public class UserService : IUserService
         _userManager = manager;
     }
 
-    public async Task<UserInfo?> GetUserInfoByIdAsync(string id)
+    public async Task<UserInfo> GetUserInfoByIdAsync(string id)
     {
         return await _context.UserInfos
             .AsNoTracking()
             .Include(u => u.User)
-            .FirstOrDefaultAsync(x => x.UserId == id);
+            .FirstAsync(x => x.UserId == id);
     }
 
     public async Task<UserInfoDto> GetPersonalInfoAsync(string userId)
@@ -43,8 +46,8 @@ public class UserService : IUserService
         var userSubscriptions = await _context.Subscriptions
             .Where(x => x.IsActive)
             .Where(x => x.UserId == userId)
-            .Include( x=> x.Car)
-                .ThenInclude(x=> x.CarModel)
+            .Include( x=> x.Car!)
+                .ThenInclude(x => x.CarModel)
             .ToListAsync();
         var bookedCars = userSubscriptions
             .Where(x => !x.IsExpired)   
@@ -52,7 +55,7 @@ public class UserService : IUserService
             .Select(x => x.Car)
             .Select(x => new CarShortcutDto
             {
-                Brand = x.CarModel.Brand,
+                Brand = x.CarModel!.Brand,
                 Model = x.CarModel.Model,
                 Id = x.Id,
                 IsOpened = x.IsOpened,
@@ -82,13 +85,12 @@ public class UserService : IUserService
         {
             var user = (await GetUserWithInfoAsync(userId)).UserInfo;
             user.Verified = true;
-            //todo: убрать когда будет подтверждение по почте
             user.User.EmailConfirmed = true;
             _context.UserInfos.Update(user);
             await _context.SaveChangesAsync();
             return true;
         }
-        catch (Exception e)
+        catch
         {
             return false;
         }
@@ -110,17 +112,17 @@ public class UserService : IUserService
         try
         {
             var user = await GetUserWithInfoAsync(userId);
-            if(! await CheckUserEmail(user,editUserDto.Email)) {throw new Exception("Почта уже зарегестрирова");}
-            CheckLastName(user,editUserDto.LastName);
-            CheckName(user,editUserDto.FirstName);
+            if(! await CheckUserEmail(user,editUserDto!.Email!)) {throw new Exception("Почта уже зарегестрирова");}
+            CheckLastName(user,editUserDto.LastName!);
+            CheckName(user,editUserDto.FirstName!);
             CheckUserBirthday(user.UserInfo,editUserDto.BirthDay);
-            CheckUserPassport(user.UserInfo,editUserDto.Passport);
-            CheckUserPassportType(user.UserInfo,editUserDto.PassportType);
+            CheckUserPassport(user.UserInfo,editUserDto!.Passport!);
+            CheckUserPassportType(user.UserInfo,editUserDto!.PassportType!);
             user.UserInfo.Verified = false;
             await _context.SaveChangesAsync();
             return true;
         }
-        catch (Exception e)
+        catch
         {
             return false;
         }
@@ -133,21 +135,20 @@ public class UserService : IUserService
         if (user == null) throw new ObjectNotFoundException(nameof(User));
         if (user.UserInfo == null)
         {
-            //todo: call logger here since active user must have userinfo
             throw new InvalidOperationException();
         }
 
         return user;
     }
-    
+
     private void CheckName(Domain.Entities.User user,string val)
     {
-        if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
+        if(!string.IsNullOrEmpty(val) && GetNameRegexGenerated().IsMatch(val))
         {
             user.FirstName = val;
         }
-                 
     }
+
     private void CheckLastName(Domain.Entities.User user,string val)
     {
         if(!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"^[^$&+,:;=?@#|<>. -^*)(%!\""/№_}\[\]{{~]*$"))
@@ -156,6 +157,7 @@ public class UserService : IUserService
         }
                  
     }
+
     private async Task<bool> CheckUserEmail(Domain.Entities.User user, string val)
     {
         var existeduser = await  _userManager.FindByEmailAsync(val);
@@ -165,55 +167,32 @@ public class UserService : IUserService
         user.EmailConfirmed = false;
         return true;
     }
-    private async Task<bool> CheckUserPhoneNum(Domain.Entities.User user, string val)
-    {
-        if (Regex.IsMatch(val, @"\d{10}$"))
-        {
-            var users = await GetAllInfoAsync();
-            users = users.Select(x => x).Where(x => x.User.Id != user.Id).ToList();
-            foreach (var el in users)
-            {
-                if (el.User.PhoneNumber == val)
-                {
-                    return false;
-                }
-            }
-            user.PhoneNumber = val;
-            user.PhoneNumberConfirmed = false;
-            return true;
-        }
-        return false;
-    }
-    private void CheckUserBirthday(UserInfo user, DateTime val)
+
+    private static void CheckUserBirthday(UserInfo user, DateTime val)
     {
         if (DateTime.Now > val.Date)
         {
             user.BirthDay = val;
         }
     }
-    private void CheckUserPassport(UserInfo user, string val)
+
+    private static void CheckUserPassport(UserInfo user, string val)
     {
         if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{6}"))
         {
             user.Passport = val;
         }
     }
-    private void CheckUserPassportType(UserInfo user, string val)
+
+    private static void CheckUserPassportType(UserInfo user, string val)
     {
         if (!string.IsNullOrEmpty(val) && Regex.IsMatch(val, @"\d{4}"))
         {
             user.PassportType = val;
         }
     }
-    private void CheckUserDriverLicense(UserInfo user, int? val)
-    {
-        if (val is > 0 and <= 999999999 )
-        {
-            user.DriverLicense = val;
-        }
-    }
     
-    private UserInfoDto Map(Domain.Entities.User user)
+    private static UserInfoDto Map(Domain.Entities.User user)
     {
         var info = user.UserInfo;
         return new UserInfoDto

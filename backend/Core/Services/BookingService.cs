@@ -24,15 +24,18 @@ public class BookingService : IBookingService
         if (rentCarInfo.Start > rentCarInfo.End || rentCarInfo.Days == 0) throw new ArgumentException("Wrong date bounds");
         var carSupportsTariff = await _ctx.Cars
             .Include(x => x.CarModel)
-            .ThenInclude(x => x!.Tariff!)
+            .ThenInclude(x => x!.Tariff)
             .Where(x => x.Id == rentCarInfo.CarId)
             .FirstOrDefaultAsync();
         if (carSupportsTariff == null)
             throw new ObjectNotFoundException(
                 $"car({rentCarInfo.CarId}) is not associated with tariff({rentCarInfo.TariffId})");
-        var tariff = carSupportsTariff!.CarModel!.Tariff!;
-        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo!.PotentialRenterUserId!);
-        var total = tariff.Price * rentCarInfo.Days;
+        var tariff = carSupportsTariff.CarModel!.Tariff!;
+        if (rentCarInfo!.PotentialRenterUserId == null)
+            throw new ObjectNotFoundException("");
+
+        var userInfo = await GetConfirmedUserInfoAsync(rentCarInfo!.PotentialRenterUserId);
+        var total = tariff!.Price * rentCarInfo.Days;
         if (userInfo.Balance < total) throw new InvalidOperationException("Not enough money to book car");
         await AssignCarToUserAsync(userInfo, rentCarInfo, tariff.Price);
     }

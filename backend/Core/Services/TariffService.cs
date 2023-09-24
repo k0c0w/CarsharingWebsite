@@ -9,10 +9,13 @@ using Services.Exceptions;
 
 namespace Services;
 
-public class TariffService : IAdminTariffService
+public partial class TariffService : IAdminTariffService
 {
     private readonly CarsharingContext _ctx;
     private readonly IMapper _mapper;
+
+    [GeneratedRegex(@"^(\d*\s*\d*)*$")]
+    private static partial Regex TariffGeneratedRegex();
 
     public TariffService(CarsharingContext context, IMapper mapper)
     {
@@ -27,8 +30,8 @@ public class TariffService : IAdminTariffService
         {
             await _ctx.Tariffs.AddAsync(new Tariff()
             {
-                Name = info.Name,
-                Description = info.Description,
+                Name = info.Name!,
+                Description = info.Description!,
                 Price = info.PriceInRubles,
                 IsActive = true,
                 MaxMileage = info?.MaxMileage,
@@ -49,8 +52,8 @@ public class TariffService : IAdminTariffService
 
         var sameTariff = await _ctx.Tariffs.FirstOrDefaultAsync(x => x.Name == update.Name && x.TariffId != id);
         if (sameTariff != null) throw new AlreadyExistsException();
-        tariff.Description = update.Description;
-        tariff.Name = update.Name;
+        tariff.Description = update.Description!;
+        tariff.Name = update.Name!;
         tariff.Price = update.PriceInRubles;
         tariff.MaxMileage = update.MaxMileage;
 
@@ -81,8 +84,8 @@ public class TariffService : IAdminTariffService
             Id = x.TariffId,
             Description = x.Description,
             Name = x.Name,
-            MaxMileage = x?.MaxMileage,
-            PriceInRubles = x.Price,
+            MaxMileage = x!.MaxMileage,
+            PriceInRubles = x!.Price,
             IsActive = x.IsActive
         });
     }
@@ -94,24 +97,24 @@ public class TariffService : IAdminTariffService
         return _mapper.Map<AdminTariffDto>(tariff);
     }
 
-    private void ThrowIfInvalid(CreateTariffDto tariffDto)
+    private static void ThrowIfInvalid(CreateTariffDto tariffDto)
     {
-        if (tariffDto?.MaxMileage <= 0)
+        if (tariffDto.MaxMileage <= 0)
             throw new ArgumentException($"{nameof(tariffDto.MaxMileage)} <= 0");
         if (tariffDto.PriceInRubles <= 0)
             throw new ArgumentException("Invalid price");
         if (string.IsNullOrEmpty(tariffDto.Description)) throw new ArgumentNullException(nameof(tariffDto.Description));
-        if (Regex.IsMatch(tariffDto.Description, @"^(\d*\s*\d*)*$"))
+        if (TariffGeneratedRegex().IsMatch(tariffDto.Description))
             throw new ArgumentException($"{nameof(tariffDto.Description)} must contain letters");
     }
 
     public async Task<IEnumerable<TariffDto>> GetAllActiveAsync()
     {
         var tariffs = await _ctx.Tariffs.Where(x => x.IsActive).ToListAsync();
-        return tariffs.Select(x => MapToTariffDto(x));
+        return tariffs.Select(MapToTariffDto);
     }
 
-    private TariffDto MapToTariffDto(Tariff tariff)
+    private static TariffDto MapToTariffDto(Tariff tariff)
     {
         return new TariffDto
         {

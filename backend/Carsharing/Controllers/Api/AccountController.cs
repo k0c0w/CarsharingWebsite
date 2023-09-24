@@ -96,14 +96,14 @@ public class AccountController : ControllerBase
     {
         try
         {
-            var getTokenResult = await GoogleAPI.GetTokenAsync(code,
+            var getTokenResult = await GoogleApi.GetTokenAsync(code,
                 _configuration["Authorization:Google:AppId"] ?? "",
                 _configuration["Authorization:Google:AppSecret"] ?? "",
                 _configuration["Authorization:Google:ReturnUri"]!
                 );
             if (getTokenResult is null)
                 return BadRequest(GetGoogleError());
-            var getUserResult = await GoogleAPI.GetUserAsync(tokenId: getTokenResult.id_token, accessToken: getTokenResult.access_token);
+            var getUserResult = await GoogleApi.GetUserAsync(tokenId: getTokenResult.id_token, accessToken: getTokenResult.access_token);
 
             if (getUserResult is null)
                 return BadRequest(GetGoogleError());

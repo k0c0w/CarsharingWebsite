@@ -3,7 +3,6 @@ using Contracts;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
@@ -40,8 +39,7 @@ public class CarService : IAdminCarService
         try
         {
             var requestedCar = await _ctx.Cars.FindAsync(id);
-            //if (requestedCar.HasToBeNonActive) throw new InvalidOperationException("Booked by administrator");
-            if (requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+            if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
             requestedCar.IsTaken = true;
             await _ctx.SaveChangesAsync();
             return true;
@@ -59,7 +57,7 @@ public class CarService : IAdminCarService
         try
         {
             var requestedCar = await _ctx.Cars.FindAsync(id);
-            if (requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+            if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
             requestedCar.HasToBeNonActive = true;
             await _ctx.SaveChangesAsync();
             return true;
@@ -152,16 +150,16 @@ public class CarService : IAdminCarService
     {
         var model = new CarModel
         {
-            Brand = create.Brand,
-            Description = create.Description,
-            Model = create.Model,
+            Brand = create.Brand!,
+            Description = create.Description!,
+            Model = create.Model!,
             TariffId = create.TariffId,
         };
 
         await _ctx.CarModels.AddAsync(model);
         await _ctx.SaveChangesAsync();
 
-        var photo = create.ModelPhoto with { Name = model.ImageName };
+        var photo = create.ModelPhoto! with { Name = model.ImageName };
         await _fileProvider.SaveAsync(Path.Combine("wwwroot", "models"), photo);
     }
 
@@ -218,15 +216,6 @@ public class CarService : IAdminCarService
     {
         var models = await _ctx.CarModels.ToListAsync();
         return _mapper.Map<IEnumerable<CarModelDto>>(models);
-        //return models.Select(x => new CarModelDto
-        //{
-        //    Id = x.Id,
-        //    Brand = x.Brand,
-        //    Model = x.Model,
-        //    Description = x.Description,
-        //    TariffId = x.TariffId,
-        //    ImageUrl = x.ImageName
-        //});
     }
 
     public async Task<IEnumerable<CarDto>> GetAllCarsAsync()
@@ -278,15 +267,15 @@ public class CarService : IAdminCarService
     public async Task<string> OpenCar(int carId)
     {
         var car = await _ctx.Cars.FindAsync(carId);
-        car.IsOpened = true;
-        _ctx.SaveChangesAsync();
+        car!.IsOpened = true;
+        await _ctx.SaveChangesAsync();
         return "success";
     }
     public async Task<string> CloseCar(int carId)
     {
         var car = await _ctx.Cars.FindAsync(carId);
-        car.IsOpened = false;
-        _ctx.SaveChangesAsync();
+        car!.IsOpened = false;
+        await _ctx.SaveChangesAsync();
         return "success";
     }
 }
