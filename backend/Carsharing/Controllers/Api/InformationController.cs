@@ -12,7 +12,6 @@ public class InformationController : ControllerBase
     public InformationController(CarsharingContext context) => _context = context;
     private readonly CarsharingContext _context;
     
-    //todo: инкапсулировать в сервис
     [HttpGet("[action]")]
     public async Task<IActionResult> Documents()
     {

@@ -86,10 +86,10 @@ public class AdminUserController: ControllerBase
         if (string.IsNullOrEmpty(id)) return NotFound(ServiceError("No such user"));
         var result = await _userInfoService.EditUser(id, new EditUserDto()
         {
-            Email = edit.email,
-            FirstName = edit.name,
-            BirthDay = edit.birthdate,
-            LastName = edit.surname
+            Email = edit.Email,
+            FirstName = edit.Name,
+            BirthDay = edit.Birthdate,
+            LastName = edit.Surname
         });
         if (result)
             return NoContent();
@@ -166,8 +166,8 @@ public class AdminUserController: ControllerBase
 
                 return new OpenChatsVM()
                 {
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
+                    FirstName = user!.FirstName,
+                    LastName = user!.LastName,
                     UserId = userId,
                     ConnectionId = elem.Key
                 };
@@ -187,10 +187,11 @@ public class AdminUserController: ControllerBase
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
         
         var userRole = await _userManager.GetRolesAsync(user);
-        if (userRole.Contains(newUserRole!.Name))
+        
+        if (userRole.Contains(newUserRole!.Name!))
             return Ok();
 
-        await _userManager.AddToRoleAsync(user, newUserRole.Name);
+        await _userManager.AddToRoleAsync(user, newUserRole.Name!);
 
         return Ok();
     }
@@ -208,7 +209,7 @@ public class AdminUserController: ControllerBase
         if (!userRole!.Contains(newUserRole!.Name!))
             return NoContent();
         
-        await _userManager.RemoveFromRoleAsync(user, newUserRole.Name);
+        await _userManager.RemoveFromRoleAsync(user, newUserRole!.Name!);
 
         return NoContent();
     }

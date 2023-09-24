@@ -6,7 +6,5 @@ namespace Carsharing.Hubs.ChatEntities
     {
         public string Text { get; set; } = string.Empty;
         public int MemberTypeInt { get; set; }
-        //[AllowNull]
-        //public string? SessionId { get; set; }
     }
 }

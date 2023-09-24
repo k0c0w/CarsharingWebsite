@@ -71,7 +71,6 @@ public class AccountController : ControllerBase
         return Created("/", null);
     }
     
-    //todo: csrf secure token
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginVM vm)
     {
@@ -83,7 +82,7 @@ public class AccountController : ControllerBase
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
 
-        var userInfo = await _carsharingContext.UserInfos.FirstOrDefaultAsync(x => x.UserId == user.Id);
+        var userInfo = await _carsharingContext.UserInfos.FirstAsync(x => x.UserId == user.Id);
         var principal = await GetClaimsPrincipal(userInfo, user);
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
@@ -95,13 +94,12 @@ public class AccountController : ControllerBase
     [Route("google-external-auth-callback")]
     public async Task<IActionResult> GoogleExternalLoginCallback([FromQuery] string code, [FromQuery] string scope)
     {
-        object locker = new object();
         try
         {
             var getTokenResult = await GoogleAPI.GetTokenAsync(code,
                 _configuration["Authorization:Google:AppId"] ?? "",
                 _configuration["Authorization:Google:AppSecret"] ?? "",
-                _configuration["Authorization:Google:ReturnUri"]
+                _configuration["Authorization:Google:ReturnUri"]!
                 );
             if (getTokenResult is null)
                 return BadRequest(GetGoogleError());
@@ -109,14 +107,12 @@ public class AccountController : ControllerBase
 
             if (getUserResult is null)
                 return BadRequest(GetGoogleError());
-
+                
             var user = _mapper.Map<User>(getUserResult);
-            UserInfo userInfo = null;
+            UserInfo userInfo = default;
             
             if (await _userManager.FindByEmailAsync(user.Email) is null)
             {
-                ///TODO: выделить создание юзера и юзеринфо в сервис и сделать lock
-                
                 var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
@@ -137,17 +133,12 @@ public class AccountController : ControllerBase
             
             if (userInfo is null)
             {
-                try
-                {
-                    userInfo = await _carsharingContext.UserInfos.SingleAsync(entity => entity.UserId == user.Id);
-                }
-                catch { }
+                userInfo = await _carsharingContext.UserInfos.SingleAsync(entity => entity.UserId == user.Id);
             }
             List<Claim> claims = new List<Claim>()
             {
-            //new Claim(ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""), 1992-04-19 11:25:07.53 + 04
-            new Claim(ClaimTypes.DateOfBirth, "1992-04-19 11:25:07.53+04"),
-            new Claim("Passport", userInfo?.Passport?.ToString() ?? "passport")
+                new Claim(ClaimTypes.DateOfBirth, "1992-04-19 11:25:07.53+04"),
+                new Claim("Passport", userInfo?.Passport?.ToString() ?? "passport")
             };
 
             var pr = await _signInManager.CreateUserPrincipalAsync(user);
@@ -170,8 +161,6 @@ public class AccountController : ControllerBase
     {
         await _signInManager.SignOutAsync();
     }
-
-
 
     [HttpGet("IsAuthorized")]
     [Authorize]

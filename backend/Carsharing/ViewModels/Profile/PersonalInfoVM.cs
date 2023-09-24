@@ -5,16 +5,16 @@ namespace Carsharing.ViewModels.Profile;
 public record PersonalInfoVM
 {
     [JsonPropertyName("email")]
-    public string Email { get; init; }
+    public string? Email { get; init; }
     
     [JsonPropertyName("name")]
-    public string FirstName { get; init; }
+    public string? FirstName { get; init; }
     
     [JsonPropertyName("surname")]
-    public string Surname { get; init; }
+    public string? Surname { get; init; }
     
     [JsonPropertyName("phone")]
-    public string Phone { get; init; }
+    public string? Phone { get; init; }
     
     [JsonPropertyName("passport")]
     public string? Passport { get; init; }

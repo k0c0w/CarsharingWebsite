@@ -1,6 +1,6 @@
 ﻿namespace Carsharing.Hubs.ChatEntities
 {
-    public class ConnectTechSupporDTO
+    public class ConnectTechSupporDto
     {
         public string ConnectionId { get; set; } = String.Empty;
     }

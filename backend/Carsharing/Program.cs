@@ -15,13 +15,10 @@ using Services.Abstractions.Admin;
 using Services.User;
 using Carsharing.ChatHub;
 using Carsharing.Hubs.ChatEntities;
-using Microsoft.Extensions.FileProviders;
 using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
-// DbContext
 builder.Services.AddDbContext<CarsharingContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -35,12 +32,10 @@ builder.Services.AddIdentity<User, UserRole>(options =>
     .AddEntityFrameworkStores<CarsharingContext>()
     .AddDefaultTokenProviders();
 
-// Auth
 builder.Services
  .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
  .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
  {
-     //options.Cookie.Name = CookieAuthenticationDefaults.AuthenticationScheme;
      options.Events.OnRedirectToLogin = context =>
      {
          context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -55,20 +50,9 @@ builder.Services
      };
  });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("CanBuy",
-        options =>
-        {
-            options.RequireAuthenticatedUser()
-                .AddAuthenticationSchemes(CookieAuthenticationDefaults.AuthenticationScheme)
-                .RequireAuthenticatedUser()
-                .AddRequirements(new CanBuyRequirement(23));
-        });
-});
+builder.Services.AddAuthorization();
 
 
-builder.Services.AddSingleton<IAuthorizationHandler, ApplicationRequirementsHandler>();
 builder.Services.AddScoped<IAdminCarService, CarService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
@@ -116,7 +100,7 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
     {
         var modelState = actionContext.ModelState;
         var json = modelState.Keys
-            .ToDictionary(x => x, x => modelState[x].Errors.Select(x => x.ErrorMessage));
+            .ToDictionary(x => x, x => modelState[x]!.Errors.Select(x => x.ErrorMessage));
         
         return new BadRequestObjectResult(new
             { error = new { code = ErrorCode.ViewModelError, errors = json} });
@@ -159,16 +143,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-
-// app.UseStaticFiles(new StaticFileOptions
-// {
-//     FileProvider = new PhysicalFileProvider(
-//         Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-//     RequestPath = "/admin",
-// });
-
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");

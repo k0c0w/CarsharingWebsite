@@ -121,11 +121,11 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.OpenCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        var result = await _carService.OpenCar(info.CurrentlyBookedCars.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
         return new JsonResult(new
         {
-            result = "Car now is open"
+            result
         });
     }
     
@@ -133,11 +133,11 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.CloseCar(info.CurrentlyBookedCars.Select(x => x).Where(x => x.LicensePlate == licensePlate).First().Id);
+        var result = await _carService.CloseCar(info.CurrentlyBookedCars.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
         return new JsonResult(new
         {
-            result = "Car now is close"
+            result
         });
     }
 }
