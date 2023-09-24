@@ -144,16 +144,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-    RequestPath = "/admin",
-});
-
-
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
 app.MapFallbackToFile("index.html");

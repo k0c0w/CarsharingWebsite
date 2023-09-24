@@ -187,6 +187,7 @@ public class AdminUserController: ControllerBase
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
         
         var userRole = await _userManager.GetRolesAsync(user);
+        
         if (userRole.Contains(newUserRole!.Name!))
             return Ok();
 
