@@ -17,7 +17,6 @@ using Carsharing.Hubs.ChatEntities;
 using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
-var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<CarsharingContext>(options =>
 {
