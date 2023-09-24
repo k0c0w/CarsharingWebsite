@@ -1,5 +1,4 @@
 ﻿using Contracts;
-
 using Services.Abstractions;
 using File = System.IO.File;
 
@@ -7,7 +6,7 @@ namespace Carsharing.Services;
 
 public class FileProvider : IFileProvider
 {
-    private string CurrentDirectory => Directory.GetCurrentDirectory();
+    private static readonly string CurrentDirectory = Directory.GetCurrentDirectory();
 
     public async Task SaveAsync(string folder, IFile file)
     {
