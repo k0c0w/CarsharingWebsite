@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from "react";
+import React from "react";
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 
@@ -6,8 +6,6 @@ import { useTheme } from '@emotion/react';
 export function UserViewInfo({ userModel }) {
     const theme = useTheme();
     const style = { display: 'flex', flexDirection: 'column', flexWrap: 'wrap', justifyContent: 'center', color: tokens(theme.palette.mode).grey[100] }
-
-    
 
     return (
         <>
@@ -38,10 +36,10 @@ export function UserViewInfo({ userModel }) {
         </>
     )
 }
+
 export function UserViewInfoTitle({title="Информация"}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
 
     return (
         <h3 style={{ color: color.grey[100] }}>{title}</h3>

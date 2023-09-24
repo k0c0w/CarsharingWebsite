@@ -7,7 +7,7 @@ public record ExpandedCarModelVM : CarModelVM
 {
     [JsonPropertyName("tariff_name")]
     [JsonPropertyOrder(7)]
-    public string TariffName { get; init; }
+    public string? TariffName { get; init; }
     
     [JsonPropertyName("price")]
     [JsonPropertyOrder(8)]

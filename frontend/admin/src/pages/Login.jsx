@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import InputBase from '@mui/material/InputBase';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
-import { useRef } from 'react';
 import { Button } from '@mui/material';
 import { styleTextField } from '../styleComponents';
 import API from '../httpclient/axios_client';

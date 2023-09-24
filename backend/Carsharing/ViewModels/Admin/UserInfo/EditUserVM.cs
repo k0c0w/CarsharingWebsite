@@ -9,22 +9,22 @@ public record EditUserVM
 
     [JsonPropertyName("surname")]
     [Required(ErrorMessage = "Поле обязательно")]
-    public string surname { get; set; } 
+    public string? Surname { get; set; } 
 
     
     [JsonPropertyName("name")]
     [Required(ErrorMessage = "Поле обязательно")]
-    public string name { get; set; }
+    public string? Name { get; set; }
 
     
     [EmailAddress(ErrorMessage ="В почте должен содержаться спецсимвол @")]
     [JsonPropertyName("email")]
     [Required(ErrorMessage = "Поле обязательно")]
-    public string email { get; set; }
+    public string? Email { get; set; }
     
 
     [ValidateAge(AgeThreshold = 18, ErrorMessage = "Вам должно быть не менее 18 лет.")]
     [JsonPropertyName("birthdate")]
     [Required(ErrorMessage = "Поле обязательно")]
-    public DateTime birthdate { get; set; }
+    public DateTime Birthdate { get; set; }
 }

@@ -1,5 +1,4 @@
 using Carsharing;
-using Carsharing.Authorization;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -143,16 +142,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-
-
-// app.UseStaticFiles(new StaticFileOptions
-// {
-//     FileProvider = new PhysicalFileProvider(
-//         Path.Combine(builder.Environment.ContentRootPath, "AdminPanelResources")),
-//     RequestPath = "/admin",
-// });
-
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");

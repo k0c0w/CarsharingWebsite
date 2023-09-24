@@ -20,10 +20,10 @@ public class Subscription
     
     public int? CarId { get; set; }
 
-    public virtual Car Car { get; set; }
+    public virtual Car? Car { get; set; }
     
     [ForeignKey("User")]
-    public string UserId { get; set; }
+    public string? UserId { get; set; }
 
-    public virtual User User { get; set; }
+    public virtual User? User { get; set; }
 }

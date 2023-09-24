@@ -19,7 +19,7 @@ public class CarsharingContext : IdentityDbContext<User>
 
     public virtual DbSet<UserInfo> UserInfos { get; set; }
 
-    public virtual DbSet<UserRole> UserRoles { get; set; }
+    public new virtual DbSet<UserRole> UserRoles { get; set; }
 
     public override DbSet<User> Users { get; set; }
 
@@ -32,23 +32,23 @@ public class CarsharingContext : IdentityDbContext<User>
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
     
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
-        SetDefaultValues(modelBuilder);
-        SetUniqueFields(modelBuilder);
+        base.OnModelCreating(builder);
+        SetDefaultValues(builder);
+        SetUniqueFields(builder);
 
-        modelBuilder.Entity<Tariff>()
+        builder.Entity<Tariff>()
             .ToTable(t =>
                 t.HasCheckConstraint($"CK_{nameof(Tariff)}_{nameof(Tariff.Price)}",
                     $"\"{nameof(Tariff.Price)}\" > 0"));
 
-        modelBuilder.ApplyConfiguration(new UserConfiguration());
-        modelBuilder.ApplyConfiguration(new UserInfoConfiguration());
+        builder.ApplyConfiguration(new UserConfiguration());
+        builder.ApplyConfiguration(new UserInfoConfiguration());
 
-        modelBuilder.Entity<CarModel>().Ignore(x => x.ImageName);
+        builder.Entity<CarModel>().Ignore(x => x.ImageName);
 
-        List<UserRole> roles = new List<UserRole>()
+        var roles = new List<UserRole>()
         {
             new UserRole()
             {
@@ -70,16 +70,16 @@ public class CarsharingContext : IdentityDbContext<User>
             }
         };
 
-        modelBuilder.Entity<UserRole>().HasData(roles);
+        builder.Entity<UserRole>().HasData(roles);
     }
 
-    private void SetUniqueFields(ModelBuilder modelBuilder)
+    private static void SetUniqueFields(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Document>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
         modelBuilder.Entity<Tariff>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
     }
     
-    private void SetDefaultValues(ModelBuilder modelBuilder)
+    private static void SetDefaultValues(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Car>().Property(x => x.IsOpened).HasDefaultValue(false);
         modelBuilder.Entity<Car>().Property(x => x.IsTaken).HasDefaultValue(false);

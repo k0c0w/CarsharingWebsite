@@ -2,7 +2,7 @@ namespace Contracts;
 
 public class CreateCarDto
 {
-    public string LicensePlate { get; set; }
+    public string? LicensePlate { get; set; }
     
     public decimal ParkingLatitude { get; set; }
     

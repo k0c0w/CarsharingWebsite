@@ -34,23 +34,6 @@ namespace Entities.Migrations
                 name: "FirstName",
                 table: "AspNetUsers");
         }
-
-
-        //protected override void Up(MigrationBuilder migrationBuilder)
-        //{
-        //    migrationBuilder.AddColumn<string>(
-        //        name: "LastName",
-        //        table: "AspNetUsers",
-        //        type: "varchar(256)",
-        //        nullable: false);
-        //}
-
-        ///// <inheritdoc />
-        //protected override void Down(MigrationBuilder migrationBuilder)
-        //{
-        //    migrationBuilder.DropColumn(
-        //        name: "LastName",
-        //        table: "AspNetUsers");
-        //}
+        
     }
 }

@@ -1,5 +1,5 @@
 export function getElementsByTagNames(list,obj) {
-	if (!obj) var obj = document;
+	if (!obj) obj = document;
 	var tagNames = list.split(',');
 	var resultArray = new Array();
 	for (var i=0;i<tagNames.length;i++) {
