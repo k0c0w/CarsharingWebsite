@@ -98,7 +98,7 @@ public class CarService : IAdminCarService
             Model = model.Model,
             ImageUrl = CarModelDto.GenerateImageUrl(model.ImageName),
             TariffId = model.TariffId,
-            Price = model.Tariff.Price,
+            Price = model!.Tariff!.Price,
             Restrictions = model.Tariff.MaxMileage,
             TariffName = model.Tariff.Name
         };
@@ -109,7 +109,7 @@ public class CarService : IAdminCarService
         if (searchParams.Radius <= 0) 
             throw new ArgumentException($"{nameof(searchParams.Radius)} must be >0");
         var carModel = await _ctx.CarModels.Include(x => x.Tariff)
-            .Where(x => x.Tariff.IsActive)
+            .Where(x => x.Tariff!.IsActive)
             .FirstOrDefaultAsync(x => x.Id == searchParams.CarModelId);
         if (carModel == null) throw new ObjectNotFoundException(nameof(CarModel));
         

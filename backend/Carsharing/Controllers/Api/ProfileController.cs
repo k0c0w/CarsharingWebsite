@@ -32,11 +32,11 @@ public class ProfileController : ControllerBase
         {
             UserInfo = new UserInfoVM
             {
-                Balance = info.PersonalInfo.Balance,
+                Balance = info!.PersonalInfo!.Balance,
                 Email = info.PersonalInfo.Email,
                 FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
             },
-            BookedCars = info.CurrentlyBookedCars.Select(x => new ProfileCarVM
+            BookedCars = info!.CurrentlyBookedCars!.Select(x => new ProfileCarVM
             {
                 Name = x.Model,
                 IsOpened = x.IsOpened,
@@ -49,7 +49,7 @@ public class ProfileController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
     {
-        var info = await _userService.ChangePassword(User.GetId(), change.OldPassword, change.Password);
+        var info = await _userService.ChangePassword(User.GetId(), change!.OldPassword!, change!.Password!);
         if (info.Success) return NoContent();
 
         return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
@@ -82,7 +82,7 @@ public class ProfileController : ControllerBase
             Email = userVm.Email,
             PhoneNumber = userVm.PhoneNumber,
             Passport = userVm.Passport?.Substring(4),
-            PassportType = userVm.Passport?.Substring(0, 4),
+            PassportType = userVm.Passport?.Substring(4),
             DriverLicense = userVm.DriverLicense
         });
         if (result)
@@ -121,7 +121,7 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.OpenCar(info.CurrentlyBookedCars.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        var result = await _carService.OpenCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
         return new JsonResult(new
         {
@@ -133,7 +133,7 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.CloseCar(info.CurrentlyBookedCars.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        var result = await _carService.CloseCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
         return new JsonResult(new
         {

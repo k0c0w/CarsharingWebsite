@@ -6,9 +6,8 @@ namespace Carsharing.Helpers.Attributes;
 public sealed class DateEndAttribute : ValidationAttribute
 {
     public string DateStartProperty { get; set; } = string.Empty;
-    
-    
-    protected override ValidationResult? IsValid(object value, ValidationContext validationContext)
+
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         return ValidationResult.Success;
     }
