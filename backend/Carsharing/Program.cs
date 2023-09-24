@@ -1,5 +1,4 @@
 using Carsharing;
-using Carsharing.Authorization;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -18,6 +17,7 @@ using Carsharing.Hubs.ChatEntities;
 using IFileProvider = Services.Abstractions.IFileProvider;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 builder.Services.AddDbContext<CarsharingContext>(options =>
 {

@@ -10,7 +10,6 @@ namespace Entities.EntityConfigurations
         public void Configure(EntityTypeBuilder<UserInfo> builder)
         {
             builder.Property(x => x.Verified).HasDefaultValue(false);
-            //builder.HasKey(x => x.UserInfoId);
             //builder.Property(x => x.UserId);
         }
     }

@@ -2,7 +2,7 @@ namespace Contracts;
 
 public record ExtendedCarModelDto : CarModelDto
 {
-    public string TariffName { get; init; }
+    public string? TariffName { get; init; }
     
     public decimal Price { get; init; }
     

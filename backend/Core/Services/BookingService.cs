@@ -9,8 +9,8 @@ namespace Services;
 
 public class BookingService : IBookingService
 {
-    private ICarService _carService;
-    private CarsharingContext _ctx;
+    private readonly ICarService _carService;
+    private readonly CarsharingContext _ctx;
     
     public BookingService(ICarService carService, CarsharingContext context)
     {
@@ -42,7 +42,7 @@ public class BookingService : IBookingService
         var isAssigned = await _carService.SetCarIsTakenAsync(details.CarId);
         if(!isAssigned) throw new CarAlreadyBookedException();
         userInfo.Balance -= withdrawal;
-        //todo: сейчас аренда машины доступна только с текущего дня, без планирования
+        // сейчас аренда машины доступна только с текущего дня, без планирования
         var sub = new Subscription
         {
             StartDate = details.Start, 
@@ -65,7 +65,7 @@ public class BookingService : IBookingService
     private async Task<UserInfo> GetConfirmedUserInfoAsync(string userId)
     {
         var user = await _ctx.Users.Include(x => x.UserInfo).FirstOrDefaultAsync( x=> x.Id== userId);
-        var userInfo = user.UserInfo;
+        var userInfo = user!.UserInfo;
         if (userInfo == null) throw new ObjectNotFoundException($"No such User with id:{userId}");
         if (!userInfo.Verified) throw new InvalidOperationException("Profile is not confirmed");
         return userInfo;
