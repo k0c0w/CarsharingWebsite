@@ -50,7 +50,7 @@ public class AccountController : ControllerBase
         if (client != null)
             return BadRequest(new {error=new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}}});
 
-        var user = new User { Email = vm.Email, LastName = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}"};
+        var user = new User { Email = vm.Email, LastName = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now:MMddyyyyHHssmm}"};
         var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
 
         if (!resultUserCreate.Succeeded)
@@ -92,7 +92,7 @@ public class AccountController : ControllerBase
     [HttpGet]
     [AllowAnonymous]
     [Route("google-external-auth-callback")]
-    public async Task<IActionResult> GoogleExternalLoginCallback([FromQuery] string code, [FromQuery] string scope)
+    public async Task<IActionResult> GoogleExternalLoginCallback([FromQuery] string code)
     {
         try
         {
@@ -109,14 +109,14 @@ public class AccountController : ControllerBase
                 return BadRequest(GetGoogleError());
                 
             var user = _mapper.Map<User>(getUserResult);
-            UserInfo userInfo = default;
+            UserInfo? userInfo = default;
             
-            if (await _userManager.FindByEmailAsync(user.Email) is null)
+            if (await _userManager.FindByEmailAsync(user!.Email!) is null)
             {
                 var _userInfo = _mapper.Map<UserInfo>(getUserResult);
                 var userInfoDb = await _carsharingContext.UserInfos.AddAsync(_userInfo);
                 user.UserInfo = userInfoDb.Entity;
-                user.UserName = $"{DateTime.Now.ToString("MMddyyyyHHssmm")}";
+                user.UserName = $"{DateTime.Now:MMddyyyyHHssmm}";
                 
 
                 var createUserResult = await _userManager.CreateAsync(user);
@@ -131,11 +131,9 @@ public class AccountController : ControllerBase
                 await _carsharingContext.SaveChangesAsync();
             }
             
-            if (userInfo is null)
-            {
-                userInfo = await _carsharingContext.UserInfos.SingleAsync(entity => entity.UserId == user.Id);
-            }
-            List<Claim> claims = new List<Claim>()
+            userInfo ??= await _carsharingContext.UserInfos.SingleAsync(entity => entity.UserId == user.Id);
+
+            List<Claim> claims = new()
             {
                 new Claim(ClaimTypes.DateOfBirth, "1992-04-19 11:25:07.53+04"),
                 new Claim("Passport", userInfo?.Passport?.ToString() ?? "passport")
@@ -166,9 +164,9 @@ public class AccountController : ControllerBase
     [Authorize]
     public IActionResult UserIsAuthorized() => Ok();
     
-    private object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
+    private static object GetLoginError() => new { error = new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Неверная почта или пароль."} } };
 
-    private object GetGoogleError() => new
+    private static object GetGoogleError() => new
     {
         error = new ErrorsVM
         {
@@ -179,7 +177,7 @@ public class AccountController : ControllerBase
 
     private async Task<ClaimsPrincipal> GetClaimsPrincipal(UserInfo userInfo, User user)
     {
-        List<Claim> claims = new List<Claim>
+        List<Claim> claims = new()
         {
             new (ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
             new ("Passport", userInfo?.Passport ?? "")

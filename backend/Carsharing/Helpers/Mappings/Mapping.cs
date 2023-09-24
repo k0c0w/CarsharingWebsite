@@ -35,7 +35,7 @@ namespace Carsharing.Helpers.Mappings
 
             //Services
             CreateMap<CreateCarModelVM, CreateCarModelDto>()
-                .ForMember(dest => dest.ModelPhoto, opt => opt.MapFrom(src => IFormFileToStream(src.Image)));
+                .ForMember(dest => dest.ModelPhoto, opt => opt.MapFrom(src => IFormFileToStream(src!.Image!)));
 
             CreateMap<CarModelDto, CarModel>()
                 .ForMember(dest => dest.ImageName, opt => opt.MapFrom(src => "models/" + src.ImageUrl))
