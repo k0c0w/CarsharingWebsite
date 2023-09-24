@@ -1,5 +1,4 @@
 using Carsharing;
-using Carsharing.Authorization;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;

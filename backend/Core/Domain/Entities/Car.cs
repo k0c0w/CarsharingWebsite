@@ -10,7 +10,7 @@ public class Car
     public int Id { get; set; }
 
     [MaxLength(9)]
-    public string LicensePlate { get; set; }
+    public string? LicensePlate { get; set; }
 
     [ConcurrencyCheck]
     public bool HasToBeNonActive { get; set; }
@@ -27,5 +27,5 @@ public class Car
     [ForeignKey(nameof(CarModelId))]
     public int CarModelId { get; set; }
 
-    public virtual CarModel CarModel { get; set; }
+    public virtual CarModel? CarModel { get; set; }
 }

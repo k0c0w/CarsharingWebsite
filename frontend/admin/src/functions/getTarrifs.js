@@ -1,13 +1,12 @@
-export var getTarrifs = async () => {
-    let settings = require('../appsettings.json');
-    var result = null;
-    fetch(`http://${settings.appUrl}/api/tariff/tariffs`, {
+import settings from '../appsettings.json';
+
+export const getTarrifs = async () => {
+    return await fetch(`http://${settings.appUrl}/api/tariff/tariffs`, {
         method: "get",
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
         }
     })
-        .then((response) => { result = response.json() })
-    return await result;
+    .then((response) => response.json());
 }

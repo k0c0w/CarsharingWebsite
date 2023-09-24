@@ -10,21 +10,18 @@ export default function Chats ({ savedConnectionId, setSavedConnectionId, savedC
 
     async function getChats () {
         var _chats = await API.getOpenChats();
-        debugger
-        setChats(_chats.data)
+        setChats(_chats.data);
     }
 
     useEffect(() => {
         if (savedConnection === undefined){
             getChats();
-            debugger
         }
         else {
-            debugger
             return navigate(`chat?connection_id=${savedConnectionId}`)
-        }
-        
+        } 
     }, [])
+
     return (
         <div className="chats">
             {chats.map((item, index) => ( 

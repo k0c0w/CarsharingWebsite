@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -10,7 +10,6 @@ function getRoleFromSelect(id){
     const select = document.getElementById(`${id}_select`);
     return select.value;
 }
-
 
 async function revokeRole(id){
     const response = await API.grantRole(id, getRoleFromSelect(id));
@@ -27,18 +26,13 @@ async function grantRole(id) {
     } else {alert("Роль выдана")}
 }
 
-
 function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
     const { auth } = useAuth();
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 
-    var isAdmin = () => auth?.roles?.find(role => role == "Admin");
+    const isAdmin = () => auth?.roles?.find(role => role == "Admin");
 
-    
-
-    const [selected, setSelected] = useState([]);
-    
     const columns = [
         {
             field: 'id',
@@ -70,7 +64,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
-                            onClick={(e)=>handleClickInfo(params.row)}
+                            onClick={()=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>                             
@@ -126,7 +120,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                         {!is_verified && <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "orange", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={(e)=>handleVerify(params.row.id, false)}
+                            onClick={()=>handleVerify(params.row.id, false)}
                             >
                             Verify info
                         </Button>}
@@ -146,7 +140,6 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                 }
             })
         })
-        setSelected(result);
         handleSelect(result);
     }
     return (

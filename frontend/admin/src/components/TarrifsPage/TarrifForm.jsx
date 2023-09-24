@@ -1,15 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import '../../styles/car-page.css';
-import { ColorModeContext, tokens } from '../../theme';
+import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
-
-
 
 export function TarrifForm({ carModel: tarrifModel, isEdit }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
     const StyledTextField = styleTextField(color.primary[100]);
 
     return (
@@ -72,7 +69,6 @@ export const TarrifFormTitle = ({title='Добавить объект'}) => {
     return (<h3 style={{ color: color.grey[100] }}>{title}</h3 >);
 }
 
-export const TarrifFormSubmit = ({ handler, title='Сделать запрос' }) => {
+export const TarrifFormSubmit = () => {
     const theme = useTheme();
-    const color = tokens(theme.palette.mode);
 }

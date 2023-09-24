@@ -5,7 +5,6 @@ using Domain.Entities;
 
 namespace Services.Abstractions;
 
-//todo: rename to IUserService
 public interface IUserService
 {
     Task<bool> EditUser(string userId, EditUserDto editUserDto);

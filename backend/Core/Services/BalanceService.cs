@@ -26,7 +26,7 @@ public class BalanceService : IBalanceService
     {
         var user =  _context.UserInfos.FirstOrDefault(x => x.UserId == userId);
 
-        if (user.Balance < val)
+        if (user!.Balance < val)
         {
             throw new Exception("Недостаточный баланс");
         }

@@ -10,15 +10,7 @@ import UserGrid from './UserGrid';
 import { Popup } from '../Popup';
 import { UserForm, UserFormTitle, UserFormSubmit, EditUserForm } from './UserForm';
 import { UserViewInfo } from './UserViewInfo';
-import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
-
-
-
-
-
-// A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
-
 
 function UserTable({ refreshRows, usersData, onVerified, onEdit }) {
     const theme = useTheme();
