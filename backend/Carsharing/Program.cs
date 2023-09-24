@@ -77,6 +77,7 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddCors(options =>
     {
+        var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
     

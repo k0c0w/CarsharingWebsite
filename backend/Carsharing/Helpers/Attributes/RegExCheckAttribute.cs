@@ -9,7 +9,7 @@ namespace Carsharing.Helpers.Attributes
         private readonly Regex _regex;
         public RegExCheckAttribute(string epression)
         {
-            _regex = new Regex(epression);
+            _regex = new Regex(epression, RegexOptions.None, TimeSpan.FromSeconds(30));
         }
         public RegExCheckAttribute(Regex regex)
         {

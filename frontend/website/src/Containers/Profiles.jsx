@@ -14,25 +14,6 @@ import { getVMErrors } from "../js/common_functions";
 
 const gap = { columnGap: "100px"};
 
-
-async function fetchData(api, setData, navigator, location) {
-    const response = await api();
-
-        if(response?.successed){
-            console.log(response.data)
-            setData(response.data);
-    }
-    else if(response?.status){
-        if(response.status === 401){
-            navigator(`/login?return_uri=${location}`);
-        }
-        else
-            alert('Ошибка сервера! Повторите попытку позже.');
-    }
-    else
-        alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
-}
-
 function handleResponse(response, onSuccess, on401, setErrors) {
     if(response?.successed){
         onSuccess();
@@ -69,7 +50,6 @@ export function ProfileChangePassword () {
         event.preventDefault();
         if(isValidPasswordChange(formRef.current) && !requestSent) 
         {
-            
             if(formRef) {
                setRequestSent(true); 
                const response = await API.tryChangePassword(formRef.current);
@@ -113,8 +93,21 @@ export function ProfileEdit () {
     const [errors, setErrors] = useState({});
     const [requestSent, setRequestSent] = useState(false);
 
-    useEffect(() => {
-        fetchData(API.personalInfo, setPersonalInfo, navigator, location.pathname);
+    useEffect(async () => {
+        const response = await API.personalInfo();
+        if(response?.successed){
+            console.log(response.data)
+            setPersonalInfo(response.data);
+        }
+        else if(response?.status){
+            if(response.status === 401){
+                navigator(`/login?return_uri=${location.pathname}`);
+            }
+            else
+                alert('Ошибка сервера! Повторите попытку позже.');
+            }
+        else
+            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
     },[]);
 
     async function handleSend(event) {
@@ -150,7 +143,6 @@ export function ProfileEdit () {
     </Section>
     </>;
 }
-
 
 function openButtonPressed(event){
     const classList = event.target.classList;
@@ -200,8 +192,21 @@ export default function Profile() {
     const navigator = useNavigate();
     const location = useLocation();
 
-    useEffect(() => {
-        fetchData(API.profile, setProfileInfo, navigator, location.pathname);
+    useEffect(async () => {
+        const response = await API.profile();
+        if(response?.successed){
+            console.log(response.data)
+            setProfileInfo(response.data);
+        }
+        else if(response?.status){
+            if(response.status === 401){
+                navigator(`/login?return_uri=${location.pathname}`);
+            }
+            else
+                alert('Ошибка сервера! Повторите попытку позже.');
+            }
+        else
+            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
     }, []);
 
     return <>
