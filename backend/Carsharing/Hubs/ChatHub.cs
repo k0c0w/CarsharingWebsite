@@ -1,109 +1,186 @@
-﻿using Carsharing.Hubs.ChatEntities;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Carsharing.ChatHub
 {
-    [Authorize]
+    //toread Сопопставление пользователей SignalR с подключениями
+
+    public class ChatMessage
+    {
+        public string Text { get; set; }
+        
+        public ChatUser Author { get; set; }
+
+        public DateTime Time { get; set; }
+    }
+
+    public class Room
+    {
+        public List<ChatUser> Users { get; set; }
+
+        public List<ChatMessage> Messages { get; set; }
+
+        public string InitializerUserId { get; set; }
+    }
+
+    public class ChatUser
+    {
+
+        public bool IsAnonymous { get; }
+
+        public string UserId { get; }
+        public ChatUser(string userId, bool isAnonymous)
+        {
+            UserId = userId;
+            IsAnonymous = isAnonymous;
+        }
+
+        public List<string> UserConnections { get;} = new List<string>();
+
+        public void AddConnection(string connection)
+        {
+            UserConnections.Add(connection);
+        }
+
+        public void RemoveConnection(string connection)
+        {
+            UserConnections.Remove(connection);
+        }
+    }
+
+    // ДЛЯ АДМИНОВ
+    /*
+     *  1. Отправить инфу о существующих комнатах
+     *  2. Подписать конекшн на обновления комнат 
+     *      (если админ какимто конекшном оказался в комнате - отправлять ему уведомления о сообщениях юзера в чатах, 
+     *      если другой админ зашел в комнату то менять статус комнаты на в работе если это был сам админ то должно прийти уведомление в моей работе,
+     *      если комнату покинули все админы прислать уведомление свободен)
+     *      
+     *      
+     *  
+     */
+
+    // ДЛЯ ЮЗЕРОВ
+    /*
+     *  1. Если еще нет комнаты - создать комнату с юзером, иницировать уведомление о созданной комнате для апдейтов админа
+     *  2. Если юзер авторизован и имеет конекшн - назначить ему существущую комнату (анонимные сессии всегда уникальные комнаты)
+     *  
+     */
     public class ChatHub : Hub
     {
-        private readonly string _informator;
-        private readonly IDictionary<string, UserConnection> _connections;
-        public ChatHub(IDictionary<string, UserConnection> connections)
+        // to map user and their connections
+        // for anonymous users we will use their session token (notice that it can be hacked)
+        public Dictionary<string, Room> Rooms = new Dictionary<string, Room>();
+
+        public Dictionary<string, ChatUser> ConnectedUsers = new Dictionary<string, ChatUser>();
+        public HashSet<ChatUser> admins = new HashSet<ChatUser>();
+
+
+
+        public async Task SendMessageAsync(ChatMessage message)
         {
-            _informator = "information";
-            _connections = connections;
+            var userId = Context.UserIdentifier ?? $"a_{Context.UserIdentifier}";
+
+            var room = Rooms[userId];
+
+            //todo: saveMessage in db
+            // map message from dto to model, validate model
+            room.Messages.Add(message);
+
+            await Clients.Clients(room.Users.SelectMany(x => x.UserConnections).ToList()).SendAsync("RecieveMessage", message);
         }
 
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+
+        public override Task OnConnectedAsync()
         {
-            if (_connections.TryGetValue(Context.ConnectionId, out var userConnection))
+            var connectedUserId = Context.UserIdentifier;
+            if (connectedUserId == null)
             {
-                _connections.Remove(Context.ConnectionId);
-                userConnection.IsOpen = true;
-                if (userConnection.Room is not null)
-                {
-                    var mess = "Техподдержка вышла.";
-                    var roomName = userConnection.Room.RoomName;
-                    if (Context.UserIdentifier == userConnection.Room.UserId)
-                    {
-                        userConnection.Room = null!;
-                        mess = "Пользователь вышел. Чат закрыт.";
-                    }
-                    Clients.Group(roomName).SendAsync("ReceiveMessage", _informator, mess);
-                }
+                AnonymousPipeline();
             }
 
-            return base.OnDisconnectedAsync(exception);
+            AuthorizedPipeline();
+
+            return base.OnConnectedAsync();
         }
 
-        public async Task CreateChatRoom(UserConnection userConnection)
+
+        private async Task AnonymousPipeline()
         {
-            var id = Context.UserIdentifier ?? "undefined";
-            var roomName = $"{id}_{DateTime.Now}";
+            var userId = $"a_{GetConnectionId()}";
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            Room room = new Room()
+            var user = new ChatUser(userId, true);
+
+            ConnectedUsers.Add(userId, user);
+            var room = new Room()
             {
-                RoomName = roomName,
-                UserId = id,
-            };
-            UserConnection chatConnections = new UserConnection()
-            {
-                Room = room
+                Messages = new List<ChatMessage>(),
+                Users = new List<ChatUser>() { user }
             };
 
-            _connections[Context.ConnectionId] = chatConnections;
 
-            await Clients.Group(roomName).SendAsync("ReceiveMessage", _informator,
-                $"Диалог открыт. Техподдержка с Вами скоро свяжется.");
+            Rooms.Add(userId, room);
+
+            //Notify about room
+            await Clients.Clients(admins.SelectMany(x => x.UserConnections).ToList()).SendAsync("NewRoomCreated");
         }
 
-        public async Task ConnectTechSupporToClient(ConnectTechSupporDto dto)
+        private async void AuthorizedPipeline(UserConnection connection)
         {
-            var userConnection = _connections[dto.ConnectionId];
-            if (userConnection == null)
+            // if user is admin
+            if(false)
+            {
+                if (ConnectedUsers.ContainsKey(userId))
+                {
+                    var existingAdmin = ConnectedUsers[userId];
+                    existingAdmin.AddConnection(connection);
+                }
+                else
+                {
+                    var newAdmin = new ChatUser(Context.UserIdentifier, true);
+                    admins.Add(Context.UserIdentifier, newAdmin);
+                    ConnectedUsers.Add(Context.UserIdentifier, newAdmin);
+                }
+                // no message about room
                 return;
+            }
 
-            _connections[Context.ConnectionId] = userConnection;
+            var userId = Context.UserIdentifier;
 
-            await Groups.AddToGroupAsync(Context.ConnectionId, userConnection.Room.RoomName);
-            userConnection.IsOpen = false;
-            userConnection.Room.TechSupportId = Context.UserIdentifier ?? "undefined";
 
-            await Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", _informator,
-                $"Техподдержа подключилась к чату.");
-        }
-
-        public async Task SendMessage(RequestMessage message)
-        {
-            if (_connections.TryGetValue(Context.ConnectionId, out var userConnection))
+            if (ConnectedUsers.ContainsKey(userId))
             {
-                if (userConnection.Room is null)
-                {
-                    _connections.Remove(Context.ConnectionId);
-                    return;
-                }
-                var id = Context.UserIdentifier ?? "undefined";
-                Message mess = new Message(text: message.Text, fromSpeakerId: id, DateTime.Now, (ChatMembers)message.MemberTypeInt);
-                var chat = _connections[Context.ConnectionId];
-                chat.Room.Messages.Add(mess);
-
-
-                await Clients.Group(userConnection.Room.RoomName).SendAsync("ReceiveMessage", message.MemberTypeInt, message.Text);
+                var existingUser = ConnectedUsers[userId];
+                existingUser.AddConnection(connection);
+            }
+            else
+            {
+                var newUser = new ChatUser(Context.UserIdentifier, false);
+                ConnectedUsers.Add(Context.UserIdentifier, newUser);
+                Rooms.Add(Context.UserIdentifier, new Room() { InitializerUserId = Context.UserIdentifier, Users = new List<ChatUser> { newUser }, Messages = new List<ChatMessage>() });
+                await Clients.Clients(admins.SelectMany(x => x.UserConnections).ToList()).SendAsync("NewRoomCreated");
             }
         }
 
-        public async Task GetLatestMessages(RequestMessage message)
+        public async Task SendMessage(Message message)
         {
-            if (_connections.TryGetValue(Context.ConnectionId, out var userConnection))
-            {
-                var roles = userConnection.Room.Messages.Select(x => (int)x.Member).ToList();
-                var text = userConnection.Room.Messages.Select(x => x.Text).ToList();
-
-                await Clients.Caller.SendAsync("ReceiveLatestMessages", roles, text);
-            }
+            await Clients.All.SendAsync("recieveMesaage", message);
         }
+
+        private string GetConnectionId() => Context.ConnectionId;
+
+    }
+
+    public class Message
+    {
+        public Guid Id { get; set; }
+
+        public string Text { get; set; }
+
+        public DateTime SentTime { get; set; }
+
+        public virtual User Author { get; set; }
     }
 }
