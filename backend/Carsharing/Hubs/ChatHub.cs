@@ -79,12 +79,6 @@ namespace Carsharing.ChatHub
      *  
      */
 
-    // ДЛЯ ЮЗЕРОВ
-    /*
-     *  1. Если еще нет комнаты - создать комнату с юзером, иницировать уведомление о созданной комнате для апдейтов админа
-     *  2. Если юзер авторизован и имеет конекшн - назначить ему существущую комнату (анонимные сессии всегда уникальные комнаты)
-     *  
-     */
     public class ChatHub : Hub
     {
         private const string ADMIN_GROUP = "managers";
@@ -118,6 +112,57 @@ namespace Carsharing.ChatHub
             await Clients.Clients(room.Users.SelectMany(x => x.UserConnections).ToList()).SendAsync("RecieveMessage", message);
         }
 
+        [Authorize(Roles = nameof(Role.Admin))]
+        public async Task JoinRoomAsync(string roomId)
+        {
+            //
+
+            var managerId = Context.UserIdentifier!;
+
+
+            if (!Rooms.ContainsKey(roomId) || !ConnectedUsers.ContainsKey(managerId))
+            {
+                return;
+            }
+
+
+            var room = Rooms[managerId];
+            var managareUser = ConnectedUsers[managerId];
+
+            // cannot enter room twice
+            if (room.Users.Contains(managareUser))
+                return;
+
+            await AddChatUserToGroupAsync(managareUser, roomId).ConfigureAwait(false);
+            room.Users.Add(managareUser);
+
+
+            // todo: event admin entered the room
+        }
+
+        [Authorize(Roles = nameof(Role.Admin))]
+        public async Task LeaveRoomAsync(string roomId)
+        {
+            var managerId = Context.UserIdentifier!;
+
+            if (!Rooms.ContainsKey(roomId) || !ConnectedUsers.ContainsKey(managerId))
+            {
+                return;
+            }
+
+            var room = Rooms[managerId];
+            var managareUser = ConnectedUsers[managerId];
+
+            // cannot enter room twice
+            if (room.Users.Contains(managareUser))
+                return;
+
+            await AddChatUserToGroupAsync(managareUser, roomId).ConfigureAwait(false);
+            room.Users.Add(managareUser);
+
+
+            // todo: event admin left the room
+        }
 
         public override async Task OnConnectedAsync()
         {
@@ -246,13 +291,6 @@ namespace Carsharing.ChatHub
                 return false;
 
             return await _userManager.IsInRoleAsync(currentUser, Role.Manager.ToString()).ConfigureAwait(false);
-        }
-
-        
-
-        public async Task SendMessage(Message message)
-        {
-            await Clients.All.SendAsync("recieveMesaage", message);
         }
     }
 
