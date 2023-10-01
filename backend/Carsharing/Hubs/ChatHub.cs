@@ -13,11 +13,15 @@ namespace Carsharing.ChatHub
 
     public class ChatMessage
     {
-        public string Text { get; set; }
-        
-        public ChatUser Author { get; set; }
+        public string Text { get; set; } = string.Empty;
+
+        public string AuthorName { get; set; } = string.Empty;
+
+        public bool IsFromManager { get; set; }
 
         public DateTime Time { get; set; }
+
+        public string RoomId { get; set; }
     }
 
     public class Room
@@ -32,6 +36,7 @@ namespace Carsharing.ChatHub
 
     public class ChatUser
     {
+        public bool IsManager { get; set; }
 
         public bool IsAnonymous { get; }
 
@@ -78,7 +83,6 @@ namespace Carsharing.ChatHub
      *      
      *  
      */
-
     public class ChatHub : Hub
     {
         private const string ADMIN_GROUP = "managers";
@@ -88,10 +92,10 @@ namespace Carsharing.ChatHub
 
         // to map user and their connections
         // for anonymous users we will use their session token (notice that it can be hacked)
-        public Dictionary<string, Room> Rooms = new Dictionary<string, Room>();
+        public static Dictionary<string, Room> Rooms = new Dictionary<string, Room>();
 
-        public Dictionary<string, ChatUser> ConnectedUsers = new Dictionary<string, ChatUser>();
-        public HashSet<ChatUser> admins = new HashSet<ChatUser>();
+        public static Dictionary<string, ChatUser> ConnectedUsers = new Dictionary<string, ChatUser>();
+        public static HashSet<ChatUser> admins = new HashSet<ChatUser>();
 
 
         public ChatHub(UserManager<User> userManager)
@@ -99,20 +103,28 @@ namespace Carsharing.ChatHub
             _userManager = userManager;
         }
 
+        [HubMethodName("SendMessage")]
         public async Task SendMessageAsync(ChatMessage message)
         {
-            var userId = Context.UserIdentifier ?? $"a_{Context.UserIdentifier}";
+            var roomId = message.RoomId;
 
-            var room = Rooms[userId];
+            if (!Rooms.ContainsKey(roomId))
+                return;
+
+            var room = Rooms[roomId];
+
+            if (!room.Users.SelectMany(x => x.UserConnections).Contains(Context.ConnectionId))
+                return;
 
             //todo: saveMessage in db
             // map message from dto to model, validate model
             room.Messages.Add(message);
 
-            await Clients.Clients(room.Users.SelectMany(x => x.UserConnections).ToList()).SendAsync("RecieveMessage", message);
+            await Clients.Group(roomId).SendAsync("RecieveMessage", message).ConfigureAwait(false);
         }
 
         [Authorize(Roles = nameof(Role.Admin))]
+        [HubMethodName("JoinRoom")]
         public async Task JoinRoomAsync(string roomId)
         {
             //
@@ -265,6 +277,7 @@ namespace Carsharing.ChatHub
 
             if (isAuthenticated.HasValue && isAuthenticated.Value && await HasManagerRoleAsync(GetUserId()))
             {
+                newUser.IsManager = true;
                 await AddConnectionToGroupAsync(connectionId, ADMIN_GROUP);
                 newUser.AddGroup(ADMIN_GROUP);
             }
@@ -275,11 +288,18 @@ namespace Carsharing.ChatHub
         }
 
         private ConfiguredTaskAwaitable AddConnectionToGroupAsync(string connectionId, string groupName)
-            => Groups.AddToGroupAsync(connectionId, ADMIN_GROUP).ConfigureAwait(false);
+            => Groups.AddToGroupAsync(connectionId, groupName).ConfigureAwait(false);
 
-        private string GetUserId() => Context.UserIdentifier ?? $"anonymous_{Context.UserIdentifier}";
+        private string GetUserId() => Context.UserIdentifier ?? $"anonymous_{Guid.NewGuid()}";
 
-        private Task NotifyAboutRoomCreationAsync(string roomId) => SendToAdminsAsync("NewRoomCreated", roomId);
+        private Task NotifyAboutRoomCreationAsync(string roomId)
+        {
+            return SendToAdminsAsync("NewRoomCreated", roomId)
+            .ContinueWith((task) => SendRoomIdToConectionAsync(Context.ConnectionId, roomId));
+        }
+
+        private Task SendRoomIdToConectionAsync(string connectionId, string roomId)
+            => Clients.Clients(connectionId).SendAsync("RecieveRoomId", roomId);
 
         private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message) 
             => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message); 
@@ -292,16 +312,5 @@ namespace Carsharing.ChatHub
 
             return await _userManager.IsInRoleAsync(currentUser, Role.Manager.ToString()).ConfigureAwait(false);
         }
-    }
-
-    public class Message
-    {
-        public Guid Id { get; set; }
-
-        public string Text { get; set; }
-
-        public DateTime SentTime { get; set; }
-
-        public virtual User Author { get; set; }
     }
 }
