@@ -49,8 +49,6 @@ builder.Services
      };
  });
 
-builder.Services.AddAuthorization();
-
 
 builder.Services.AddScoped<IAdminCarService, CarService>();
 builder.Services.AddScoped<ICarService, CarService>();
@@ -80,15 +78,22 @@ if (builder.Environment.IsDevelopment())
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
-    
+
         options.AddPolicy("DevFrontEnds",
             builder =>
                 builder.WithOrigins(mainFront, adminFront)
                     .AllowAnyHeader()
-                    .AllowCredentials()
                     .AllowAnyMethod()
-                    .SetIsOriginAllowed(hostName => true)
+                    .AllowCredentials()
+                    .SetIsOriginAllowed(origin => true)
         );
+    });
+
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
     });
 }
 
@@ -129,6 +134,10 @@ catch (Exception e)
 }
 
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -136,17 +145,11 @@ if (app.Environment.IsDevelopment())
     app.UseCors("DevFrontEnds");
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
-app.MapHub<ChatHub>("/chatHub");
 app.MapFallbackToFile("index.html");
 
 app.Run();

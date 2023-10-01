@@ -63,10 +63,8 @@ public class AccountController : ControllerBase
         var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
-        
-        var principal = await GetClaimsPrincipal(userInfo, user);
+        await _userManager.AddToRoleAsync(user, Role.User.ToString());
         await _signInManager.SignInAsync(user, false);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         
         return Created("/", null);
     }
@@ -81,10 +79,6 @@ public class AccountController : ControllerBase
         var resultSignIn = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
-
-        var userInfo = await _carsharingContext.UserInfos.FirstAsync(x => x.UserId == user.Id);
-        var principal = await GetClaimsPrincipal(userInfo, user);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         return Ok();
     }
