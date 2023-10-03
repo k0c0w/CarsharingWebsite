@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Services.Abstractions.Repositories;
 
-namespace Services.Abstractions.Repositories
+public interface IRepository<TId, TModel>
 {
-    public interface IRepository<TId, TModel>
-    {
-        Task<TModel> GetByIdAsync(TId id);
+    Task<TModel?> GetByIdAsync(TId id);
 
-        Task AddAsync(TModel model);
+    Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool>? predicate = null);
 
-        Task RemoveByIdAsync(TId id);
+    Task AddAsync(TModel model);
 
-        Task UpdateAsync(TModel model);
-    }
+    Task RemoveByIdAsync(TId id);
+
+    Task UpdateAsync(TModel model);
 }

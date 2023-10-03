@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.SignalRModels;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
 namespace Carsharing.ChatHub;
@@ -28,21 +29,21 @@ public class ChatHub : Hub
 {
     private const string ADMIN_GROUP = "managers";
 
-    private readonly UserManager<User> _userManager;
     private readonly IBus _publisher;
+    private readonly UserManager<User> _userManager;
 
     // to map user and their connections
     // for anonymous users we will use their session token (notice that it can be hacked)
-    public static Dictionary<string, ChatRoom> Rooms = new Dictionary<string, ChatRoom>();
+    private static readonly ConcurrentDictionary<string, ChatRoom> Rooms = new ConcurrentDictionary<string, ChatRoom>();
 
-    public static Dictionary<string, ChatUser> ConnectedUsers = new Dictionary<string, ChatUser>();
-    public static HashSet<ChatUser> admins = new HashSet<ChatUser>();
+    private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new ConcurrentDictionary<string, ChatUser>();
 
 
-    public ChatHub(UserManager<User> userManager, IBus bus)
+
+    public ChatHub(IBus bus, UserManager<User> userManager)
     {
-        _userManager = userManager;
         _publisher = bus;
+        _userManager = userManager;
     }
 
     [HubMethodName("SendMessage")]
@@ -50,10 +51,8 @@ public class ChatHub : Hub
     {
         var roomId = message.RoomId;
 
-        if (!Rooms.ContainsKey(roomId))
+        if (!Rooms.TryGetValue(roomId, out var room))
             return;
-
-        var room = Rooms[roomId];
 
         if (!room.Users.SelectMany(x => x.UserConnections).Contains(Context.ConnectionId))
             return;
@@ -87,17 +86,15 @@ public class ChatHub : Hub
             return;
         }
 
-
-        var room = Rooms[managerId];
-        var managareUser = ConnectedUsers[managerId];
-
-        // cannot enter room twice
-        if (room.Users.Contains(managareUser))
+        if (!(Rooms.TryGetValue(roomId, out var room) && ConnectedUsers.TryGetValue(managerId, out var managerUser)))
             return;
 
-        await AddChatUserToGroupAsync(managareUser, roomId).ConfigureAwait(false);
-        room.Users.Add(managareUser);
+        // cannot enter room twice
+        if (room.Users.Contains(managerUser))
+            return;
 
+        await AddChatUserToGroupAsync(managerUser, roomId).ConfigureAwait(false);
+        room.Users.Add(managerUser);
 
         // todo: event admin entered the room
     }
@@ -114,14 +111,14 @@ public class ChatHub : Hub
         }
 
         var room = Rooms[managerId];
-        var managareUser = ConnectedUsers[managerId];
+        var managerUser = ConnectedUsers[managerId];
 
         // cannot enter room twice
-        if (room.Users.Contains(managareUser))
+        if (!room.Users.Contains(managerUser))
             return;
 
-        await AddChatUserToGroupAsync(managareUser, roomId).ConfigureAwait(false);
-        room.Users.Add(managareUser);
+        await AddChatUserToGroupAsync(managerUser, roomId).ConfigureAwait(false);
+        room.Users.Add(managerUser);
 
 
         // todo: event admin left the room
@@ -146,9 +143,8 @@ public class ChatHub : Hub
         bool isAuthenticated = IsAuthenticatedUser();
 
         // if user has already connected with other session, he must be saved in connections and connection must be assigned to user groups
-        if (isAuthenticated && ConnectedUsers.ContainsKey(userId))
+        if (isAuthenticated && ConnectedUsers.TryGetValue(userId, out var chatUser))
         {
-            var chatUser = ConnectedUsers[userId];
             chatUser.AddConnection(connectionId);
 
             // assign all user`s groups to new connection
@@ -171,11 +167,14 @@ public class ChatHub : Hub
         var newChatUser = await CreateNewChatUserAsync().ConfigureAwait(false);
 
         // if user is manger, we dont need to create room for him
-        if (isUserAuthenticated && await HasManagerRoleAsync(Context.UserIdentifier!).ConfigureAwait(false))
+        if (isUserAuthenticated && IsCurrentUserManager())
             return;
 
         //Create room and assign it to user (anonymous or authorized customers)
         var roomId = await CreateNewRoomForUserAsync(newChatUser).ConfigureAwait(false);
+
+        if (roomId == null)
+            return;
 
         //Notify managers about room creation
         await NotifyAboutRoomCreationAsync(roomId).ConfigureAwait(false);
@@ -201,7 +200,7 @@ public class ChatHub : Hub
     /// </summary>
     /// <param name="user"></param>
     /// <returns>Created room id</returns>
-    private async Task<string> CreateNewRoomForUserAsync(ChatUser user)
+    private async Task<string?> CreateNewRoomForUserAsync(ChatUser user)
     {
         var roomId = user.UserId;
 
@@ -211,7 +210,8 @@ public class ChatHub : Hub
             Users = new List<ChatUser>() { user }
         };
 
-        Rooms.Add(roomId, room);
+        if (!Rooms.TryAdd(roomId, room))
+            return null!;
 
         // assign room to chatUser
         await AddChatUserToGroupAsync(user, roomId).ConfigureAwait(false);
@@ -224,17 +224,21 @@ public class ChatHub : Hub
         var isAuthenticated = Context.User?.Identity?.IsAuthenticated;
         var connectionId = Context.ConnectionId;
 
-        ChatUser newUser = new ChatUser(GetUserId(), isAuthenticated ?? false);
+        string name = string.Empty;
+        if (isAuthenticated.HasValue && isAuthenticated.Value)
+            name = (await _userManager.FindByIdAsync(GetUserId()).ConfigureAwait(false))!.FirstName!;
+
+        ChatUser newUser = new ChatUser(GetUserId(), isAuthenticated ?? false, name);
+
         newUser.AddConnection(connectionId);
 
-        if (isAuthenticated.HasValue && isAuthenticated.Value && await HasManagerRoleAsync(GetUserId()))
+        if (isAuthenticated.HasValue && isAuthenticated.Value && IsCurrentUserManager())
         {
-            newUser.IsManager = true;
             await AddConnectionToGroupAsync(connectionId, ADMIN_GROUP);
             newUser.AddGroup(ADMIN_GROUP);
         }
 
-        ConnectedUsers.Add(newUser.UserId, newUser);
+        ConnectedUsers.TryAdd(newUser.UserId, newUser);
 
         return newUser;
     }
@@ -256,12 +260,8 @@ public class ChatHub : Hub
     private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message) 
         => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message); 
 
-    private async Task<bool> HasManagerRoleAsync(string userId)
+    private bool IsCurrentUserManager()
     {
-        var currentUser = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
-        if (currentUser == null)
-            return false;
-
-        return await _userManager.IsInRoleAsync(currentUser, Role.Manager.ToString()).ConfigureAwait(false);
+        return Context.User != null && Context.User.IsInRole(Role.Manager.ToString());
     }
 }

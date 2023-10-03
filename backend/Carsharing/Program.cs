@@ -26,6 +26,13 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
         x => x.MigrationsAssembly("Domain"));
 });
 
+builder.Services.AddDbContext<CarsharingContext>(options =>
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("ChatDatabase"),
+        x => x.MigrationsAssembly("Migrations"));
+});
+
+
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
     options.User.AllowedUserNameCharacters = "user0123456789";
@@ -116,7 +123,6 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(options => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!));
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<ChatMessageConsumer>();

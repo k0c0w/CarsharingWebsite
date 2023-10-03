@@ -1,5 +1,4 @@
-﻿using Domain;
-using MassTransit;
+﻿using MassTransit;
 using Persistence.Chat;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.DomainModels;
@@ -18,9 +17,6 @@ namespace Carsharing.Consumers
 
         public async Task Consume(ConsumeContext<ChatMessageDto> context)
         {
-
-            //todo: map chat message to message
-
             var messageDto = context.Message;
 
             var message = new Message()
