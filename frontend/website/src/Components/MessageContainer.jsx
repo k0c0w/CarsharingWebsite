@@ -2,12 +2,9 @@ import { useEffect, useRef } from 'react';
 
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
-
-    const isFromClient = (message) => { return message.role == "0" }
-    const isFromTechSupport = (message) => message.role == "1"
-    const isInformation = (message) => message.role == "information"
-
-    var m1 = isFromClient(messages[0])
+    debugger;
+    const isFromClient = (message) => message.isFromManager === false; 
+    const isFromTechSupport = (message) => message.isFromManager === true;
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -17,25 +14,20 @@ const MessageContainer = ({ messages }) => {
     }, [messages]);
 
     return <div ref={messageRef} className='message-container' >
-        {messages.map((m, index) => (
-            <>
-                { isFromClient(m) &&
-                    <div key={index} className='user-message' style={{marginTop:"25px"}}>
-                        <div className='message bg-primary'>{m.message}</div>
-                    </div>
-                }
-                { isFromTechSupport(m) &&
-                    <div key={index} className='other-message' style={{marginTop:"25px"}}>
-                        <div className='message bg-primary'>{m.message}</div>
-                    </div>
-                }
-                { isInformation(m) &&
-                    <div key={index} className='info-message' style={{marginTop:"25px"}}>
-                        <div className='info-message-text bg-primary'>{m.message}</div>
-                    </div>
-                }
-            </>
-        )
+        {messages.map((m, i) => (
+                <div key={i}>
+                    { isFromClient(m) &&
+                        <div className='user-message' style={{marginTop:"25px"}}>
+                            <div className='message bg-primary'>{m.text}</div>
+                        </div>
+                    }
+                    { isFromTechSupport(m) &&
+                        <div className='other-message' style={{marginTop:"25px"}}>
+                            <div className='message bg-primary'>{m.text}</div>
+                        </div>
+                    }
+                </div>
+            )
         )}
     </div>
 }

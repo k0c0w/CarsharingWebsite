@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'http://localhost:80/api') {
+    constructor(url = 'https://localhost:7129/api') {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -10,8 +10,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "http://localhost:80,http://localhost:3001",
-                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,

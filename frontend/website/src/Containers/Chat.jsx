@@ -9,9 +9,8 @@ import { useEffect, useState } from 'react'
 const Chat = () => {
   const [connection, setConnection] = useState()
   const [messages, setMessages] = useState([])
-  const [receivedMessages, setRecMessages] = useState([]);
   const [users, setUsers] = useState([])
-
+  const [connectedRoomId, setConnectedRoomId] = useState();
 
   useEffect(() => {
     return () => {
@@ -19,37 +18,42 @@ const Chat = () => {
     };
   }, [])
 
-
   const joinRoom = async () => {
     try {
       const connection = new HubConnectionBuilder()
         .withUrl('https://localhost:7129/chat')
         .configureLogging(LogLevel.Information)
-        .build()
+        .build();
 
-      connection.on('ReceiveMessage', (role, message) => {
-        setMessages(messages => [...messages, { role, message }]) 
-      })
+      connection.on('RecieveMessage', (message) =>
+        setMessages(messages => [...messages, message]));
 
+      connection.on('RecieveRoomId', (roomId) =>{
+        setConnectedRoomId(roomId);
+      });
 
       connection.onclose(e => {
-        setConnection()
-        setMessages([])
-        setUsers([])
-      })
+        setConnection();
+        setMessages([]);
+        setUsers([]);
+      });
 
-      await connection.start()
-      await connection.invoke('CreateChatRoom', {  }) //JoinRoom 
-      setConnection(connection)
+      await connection.start();
+      setConnection(connection);
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 
-  const sendMessage = async message => {
+  const sendMessage = async (message) => {
     try {
-      var role = 0
-      await connection.invoke('SendMessage', { MemberTypeInt: role, Text: message })
+      const messageModel = {
+        Text: message,
+        Time: new Date().toJSON(),
+        RoomId: connectedRoomId,
+      };
+
+      await connection.invoke('SendMessage', messageModel);
     } catch (e) {
       console.log(e)
     }

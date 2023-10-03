@@ -2,7 +2,8 @@ using Carsharing;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using MassTransit;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain;
@@ -13,8 +14,9 @@ using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.User;
 using Carsharing.ChatHub;
-using Carsharing.Hubs.ChatEntities;
 using IFileProvider = Services.Abstractions.IFileProvider;
+using StackExchange.Redis;
+using Carsharing.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,8 +70,6 @@ builder.Services.AddSignalR();
 
 builder.Services.AddTariffService();
 
-builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
-
 
 if (builder.Environment.IsDevelopment())
 {
@@ -115,6 +115,17 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(options => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("RedisConnection")!));
+builder.Services.AddMassTransit(options =>
+{
+    options.AddConsumer<ChatMessageConsumer>();
+    // todo: move to rabbitmq
+    options.UsingInMemory((context, configuration) =>
+    {
+        configuration.ConfigureEndpoints(context);
+    });
+});
 
 var app = builder.Build();
 
