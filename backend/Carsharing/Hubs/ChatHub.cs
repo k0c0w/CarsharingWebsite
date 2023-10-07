@@ -76,10 +76,7 @@ public class ChatHub : Hub
     [HubMethodName("JoinRoom")]
     public async Task JoinRoomAsync(string roomId)
     {
-        //
-
         var managerId = Context.UserIdentifier!;
-
 
         if (!Rooms.ContainsKey(roomId) || !ConnectedUsers.ContainsKey(managerId))
         {
@@ -136,6 +133,38 @@ public class ChatHub : Hub
         await base.OnConnectedAsync().ConfigureAwait(false);
     }
 
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        //todo: удаление комнатыесли юзер отключился
+        var disconnectedUserId = Context.UserIdentifier;
+        if (disconnectedUserId != null)
+        {
+            ConnectedUsers.TryGetValue(disconnectedUserId, out var user);
+            if (user != null)
+            {
+                if (user.UserConnections.Count > 1)
+                {
+                    user.RemoveConnection(disconnectedUserId);
+                    return Task.CompletedTask;
+                }
+                ConnectedUsers.TryRemove(disconnectedUserId, out user);
+                if (!IsCurrentUserManager())
+                    Rooms.TryRemove("", out var room);
+            }
+            if (user != null && user.UserConnections.Count != 0)
+            {
+                user.RemoveConnection(Context.ConnectionId);
+            }
+
+             
+
+        }
+        // не понятно как удалить админа из комнаты
+        //
+
+        return base.OnDisconnectedAsync(exception);
+    }
+
     private async Task ExecuteAuthorizedPipelineAsync()
     {
         var connectionId = Context.ConnectionId;
@@ -150,6 +179,13 @@ public class ChatHub : Hub
             // assign all user`s groups to new connection
             foreach(var group in chatUser.UserGroups)
                 await Groups.AddToGroupAsync(connectionId, group).ConfigureAwait(false);
+
+            if (IsCurrentUserManager())
+            {
+                var connections = ConnectedUsers[userId].UserConnections;
+                await Clients.Clients(Context.ConnectionId).SendAsync("OnlineRooms", Rooms
+                .Select(x => new {RoomId=x.Key, Name=x.Value.Users.First(y => y.UserId == x.Key).Name}));
+            }
 
             return;
         }

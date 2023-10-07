@@ -28,7 +28,7 @@ namespace Carsharing.Consumers
             };
 
             await _ctx.AddAsync(message).ConfigureAwait(false);
-            await _ctx.SaveChangesAsync().ConfigureAwait(false);
+            //await _ctx.SaveChangesAsync().ConfigureAwait(false);
         }
     }
 }

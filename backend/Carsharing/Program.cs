@@ -17,6 +17,7 @@ using Carsharing.ChatHub;
 using IFileProvider = Services.Abstractions.IFileProvider;
 using StackExchange.Redis;
 using Carsharing.Consumers;
+using Persistence.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,7 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
         x => x.MigrationsAssembly("Domain"));
 });
 
-builder.Services.AddDbContext<CarsharingContext>(options =>
+builder.Services.AddDbContext<ChatContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("ChatDatabase"),
         x => x.MigrationsAssembly("Migrations"));
