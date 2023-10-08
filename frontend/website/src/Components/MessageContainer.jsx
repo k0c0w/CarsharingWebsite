@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import {useEffect, useRef} from 'react';
+import '../css/popup-chat.css';
 
+// eslint-disable-next-line react/prop-types
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
-    debugger;
     const isFromClient = (message) => !message.isFromManager;
     const isFromTechSupport = (message) => message.isFromManager;
 
@@ -14,20 +15,21 @@ const MessageContainer = ({ messages }) => {
     }, [messages]);
 
     return <div ref={messageRef} className='message-container' >
-        {messages.map((m, i) => (
-                <div key={i}>
+        {/* eslint-disable-next-line react/prop-types */}
+        {messages?.map((m, i) => (
+            <>
                     { isFromClient(m) &&
-                        <div className='user-message' style={{marginTop:"25px"}}>
-                            <div className='message bg-primary'>{m.text}</div>
+                        <div className='message-sent' style={{marginTop:"0px"}} id={i}>
+                            <div className='message'>{m.text}</div>
                         </div>
                     }
                     { isFromTechSupport(m) &&
-                        <div className='other-message' style={{marginTop:"25px"}}>
-                            <div className='message bg-primary'>{m.text}</div>
+                        <div className='message-rcvd' style={{marginTop:"0px"}} id={i}>
+                            <div className='message'>{m.text}</div>
                             <div>{m.authorName}</div>
                         </div>
                     }
-                </div>
+            </>
             )
         )}
     </div>
