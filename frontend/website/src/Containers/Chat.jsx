@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react'
 const Chat = () => {
   const [connection, setConnection] = useState()
   const [messages, setMessages] = useState([])
-  const [users, setUsers] = useState([])
   const [connectedRoomId, setConnectedRoomId] = useState();
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const Chat = () => {
       connection.onclose(e => {
         setConnection();
         setMessages([]);
-        setUsers([]);
       });
 
       await connection.start();

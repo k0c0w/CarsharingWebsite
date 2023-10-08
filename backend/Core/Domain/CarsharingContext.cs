@@ -31,6 +31,8 @@ public class CarsharingContext : IdentityDbContext<User>
     
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
+    public virtual DbSet<Message> Messages { get; set; }
+
     
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -69,6 +71,23 @@ public class CarsharingContext : IdentityDbContext<User>
                 NormalizedName = Role.Admin.ToString().ToUpper(),
             }
         };
+
+        builder.Entity<User>(b =>
+        {
+            b.HasMany(e => e.UserRoles)
+                .WithOne(e => e.User)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+        });
+
+        builder.Entity<UserRole>(b =>
+        {
+            // Each Role can have many entries in the UserRole join table
+            b.HasMany(e => e.UserRoles)
+                .WithOne(e => e.Role)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+        });
 
         builder.Entity<UserRole>().HasData(roles);
     }

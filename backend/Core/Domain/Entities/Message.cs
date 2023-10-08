@@ -1,4 +1,4 @@
-﻿namespace Persistence.Chat.ChatEntites.DomainModels;
+﻿namespace Domain.Entities;
 
 public class Message
 {

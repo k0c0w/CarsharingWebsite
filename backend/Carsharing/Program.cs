@@ -27,13 +27,6 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
         x => x.MigrationsAssembly("Domain"));
 });
 
-builder.Services.AddDbContext<ChatContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ChatDatabase"),
-        x => x.MigrationsAssembly("Migrations"));
-});
-
-
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
     options.User.AllowedUserNameCharacters = "user0123456789";

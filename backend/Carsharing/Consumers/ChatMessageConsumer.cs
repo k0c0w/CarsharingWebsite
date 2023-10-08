@@ -1,19 +1,17 @@
 ﻿using MassTransit;
-using Persistence.Chat;
 using Persistence.Chat.ChatEntites.Dtos;
-using Persistence.Chat.ChatEntites.DomainModels;
+using Domain;
+using Domain.Entities;
 
 namespace Carsharing.Consumers
 {
     public class ChatMessageConsumer : IConsumer<ChatMessageDto>
     {
-        private readonly ChatContext _ctx;
-            // todo: messageContext
-        public ChatMessageConsumer(ChatContext context) 
+        private readonly CarsharingContext _ctx;
+        public ChatMessageConsumer(CarsharingContext context) 
         {
             _ctx = context;
         }
-
 
         public async Task Consume(ConsumeContext<ChatMessageDto> context)
         {
@@ -21,14 +19,14 @@ namespace Carsharing.Consumers
 
             var message = new Message()
             {
-                AuthorId = messageDto.RoomInitializerId,
+                AuthorId = messageDto.AuthorId,
                 Text = messageDto.Text,
                 Time = messageDto.Time,
-                TopicAuthorId = messageDto.AuthorId
+                TopicAuthorId = messageDto.RoomInitializerId
             };
 
-            await _ctx.AddAsync(message).ConfigureAwait(false);
-            //await _ctx.SaveChangesAsync().ConfigureAwait(false);
+            await _ctx.Messages.AddAsync(message).ConfigureAwait(false);
+            _ctx.SaveChanges();
         }
     }
 }
