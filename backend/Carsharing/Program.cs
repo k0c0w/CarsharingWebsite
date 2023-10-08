@@ -18,6 +18,7 @@ using IFileProvider = Services.Abstractions.IFileProvider;
 using StackExchange.Redis;
 using Carsharing.Consumers;
 using Persistence.Chat;
+using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -118,7 +119,8 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSingleton<ChatRepository>();
+builder.Services.AddSingleton<IChatRoomRepository, ChatRepository>();
+builder.Services.AddSingleton<IChatUserRepository, ChatRepository>();
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<ChatMessageConsumer>();

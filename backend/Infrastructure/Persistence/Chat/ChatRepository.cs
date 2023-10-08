@@ -1,17 +1,15 @@
 ﻿using Persistence.Chat.ChatEntites.SignalRModels;
 using System.Collections.Concurrent;
 
-
 namespace Persistence.Chat;
 
 public class ChatRepository : IChatUserRepository, IChatRoomRepository
 {
     // to map user and their connections
     // for anonymous users we will use their session token (notice that it can be hacked)
-    private static readonly ConcurrentDictionary<string, ChatRoom> Rooms = new ConcurrentDictionary<string, ChatRoom>();
+    private static readonly ConcurrentDictionary<string, ChatRoom> Rooms = new();
 
-    private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new ConcurrentDictionary<string, ChatUser>();
-
+    private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new();
 
 
     public bool TryGetUser(string chatUserId, out ChatUser? chatUser)
@@ -47,5 +45,10 @@ public class ChatRepository : IChatUserRepository, IChatRoomRepository
     public bool ContainsUserById(string userId)
     {
         return ConnectedUsers.ContainsKey(userId);
+    }
+
+    public IEnumerable<ChatRoom> GetAll()
+    { 
+        return Rooms.Values.ToArray();
     }
 }

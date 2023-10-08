@@ -9,4 +9,6 @@ public interface IChatRoomRepository
     public bool TryRemoveRoom(string roomId, out ChatRoom? chatRoom);
 
     public bool TryAddRoom(string roomId, ChatRoom chatRoom);
+
+    public IEnumerable<ChatRoom> GetAll();
 }
