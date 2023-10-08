@@ -16,9 +16,10 @@ export default function Chats () {
 
     const [errorMessage, setErrorMessage] = useState();
 
-    const onJoinRoomResultRecieved = (update) => {
+    const onJoinRoomResultRecieved = async (update) => {
         if (update.success){
-          //todo: recieve message history
+          const history = await API.getChatHistory(update.roomId);
+          setActiveRoomMessages(history);
           const room = onlineRooms.find(elem => elem.roomId === update.roomId);
           setActiveRoom(room);
         }
@@ -37,8 +38,15 @@ export default function Chats () {
       }
     }
     useEffect(() => {
+      async function retriveRooms() {
+        const rooms = await API.getOnlineRooms();
+        const mappedRooms = rooms.map(room => { 
+          return { roomId: room.roomId, roomName: room.roomName, pending: room.processingManagersCount === 0}});
+        setOnlineRooms([...onlineRooms, ...mappedRooms]);
+      }
+      retriveRooms();
+    }, []);
 
-    }, [onlineRooms]);
     useEffect( () => {
       const startConnection = async () => {
           try {
@@ -68,6 +76,13 @@ export default function Chats () {
                 if (elemIndex > -1) {
                   setOnlineRooms(onlineRooms.splice(elemIndex, 1));
                 }
+
+                if (activeRoom && activeRoom.roomId === update.roomId){
+                  setErrorMessage("Комната была закрыта");
+                  setActiveRoomMessages([]);
+                  setActiveRoom();
+                }
+
                 break;
               // Manager joined
               case 3:

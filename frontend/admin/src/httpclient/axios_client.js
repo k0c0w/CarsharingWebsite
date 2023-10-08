@@ -25,6 +25,20 @@ class AxiosWrapper {
         this.mainSiteAxios = axios.create(options);
     }
     
+    async getChatHistory(userId) {
+        const history = await this.mainSiteAxios.get(`/chat/${userId}/history`);
+        if (history.data)
+            return history.data.sort(function (a, b) {
+                return a.time.localeCompare(b.time);
+            });
+        return [];
+    }
+
+    async getOnlineRooms() {
+        const result =  await this.mainSiteAxios.get("/chat/rooms");
+        return result.data;
+    }
+
     //Posts
     async getPosts () {
         const result = await this._get("/post/posts");
