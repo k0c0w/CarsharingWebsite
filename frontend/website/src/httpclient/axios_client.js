@@ -19,6 +19,15 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
     }
 
+    async getChatHistory(userId) {
+        const history = await this.axiosInstance.get(`/chat/${userId}/history`);
+        if (history.data)
+            return history.data.sort(function (a, b) {
+                return a.time.localeCompare(b.time);
+            });
+        return [];
+    }
+
     async book(model) {
         return await this._post('booking/rent', model);
     } 

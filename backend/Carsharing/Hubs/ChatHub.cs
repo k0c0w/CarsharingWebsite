@@ -192,6 +192,7 @@ public class ChatHub : Hub
             else
             {
                 await AddConnectionToGroupAsync(connectionId, GetUserId());
+                await SendRoomIdToConectionAsync(connectionId, GetUserId());
             }
 
             return;

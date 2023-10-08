@@ -21,5 +21,5 @@ public class User : IdentityUser
     [InverseProperty("User")]
     public virtual ICollection<Subscription>? Subscriptions { get; }
 
-    public virtual ICollection<UserUserRole> UserRoles { get; set; } = new List<UserUserRole>();
+    public virtual ICollection<UserUserRole> UserRoles { get; set; }
 }

@@ -3,19 +3,19 @@ import  MessageContainer  from '../Components/MessageContainer'
 import { Button } from '@mui/material';
 import "../css/chat.css";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
-import { useEffect, useState } from 'react'
-
+import { useState } from 'react'
+import API from '../httpclient/axios_client';
 
 const Chat = () => {
   const [connection, setConnection] = useState()
   const [messages, setMessages] = useState([])
   const [connectedRoomId, setConnectedRoomId] = useState();
 
-  useEffect(() => {
-    return () => {
-      closeConnection();  
-    };
-  }, [])
+  async function onRecieveRoomId(roomId) {
+    const history = await API.getChatHistory(roomId);
+    setMessages(history);
+    setConnectedRoomId(roomId);
+  }
 
   const joinRoom = async () => {
     try {
@@ -24,12 +24,9 @@ const Chat = () => {
         .configureLogging(LogLevel.Information)
         .build();
 
-      connection.on('RecieveMessage', (message) =>
-        setMessages(messages => [...messages, message]));
-
-      connection.on('RecieveRoomId', (roomId) =>{
-        setConnectedRoomId(roomId);
-      });
+      connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
+        
+      connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
 
       connection.onclose(e => {
         setConnection();
@@ -57,27 +54,10 @@ const Chat = () => {
     }
   }
 
-  const closeConnection = async () => {
-    try {
-      await connection.stop()
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   return (
     <div className='app'>
-      { (connection!=null) &&
-      <div className='leave-room'>
-        <Button variant='danger' onClick={() => closeConnection()}>
-          Закончить диалог
-        </Button>
-      </div>
-      }
-
-
       <div className='chat'>
-        { (connection!=null) && <>
+        { connection!=null && <>
         <MessageContainer messages={messages} />
         <SendMessageForm sendMessage={sendMessage} />
         </> }
