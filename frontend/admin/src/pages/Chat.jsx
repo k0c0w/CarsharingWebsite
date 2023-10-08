@@ -6,17 +6,12 @@ import MessageContainer from "../components/Chat/MessageContainer";
 import SendMessageForm from "../components/Chat/SendMessageForm";
 
 
-export default function Chat ({roomId, sendMessage, messages, leaveRoom, setActiveRoomId}) {
-
-    const leave = () => {
-      setActiveRoomId("");
-      leaveRoom(roomId);
-    }
+export default function Chat ({sendMessage, messages, leaveRoom}) {
 
     return (
       <div className='app'>
         <div className='leave-room'>
-          <Button variant='danger' onClick={() => leave()}>
+          <Button variant='danger' onClick={leaveRoom}>
             Leave Room
           </Button>
         </div>

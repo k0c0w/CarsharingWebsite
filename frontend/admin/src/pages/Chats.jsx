@@ -1,57 +1,121 @@
 import { useEffect, useState } from "react";
 import API from "../httpclient/axios_client"
 import '../styles/chats-container.css';
-import { useNavigate } from "react-router-dom";
 import RoomList from "../components/Chat/RoomList";
 import Chat from "./Chat";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 
 export default function Chats () {
-    const [chats, setChats] = useState([]);
-    const [messages, setMessages] = useState([])
-    const [activeRoomId, setActiveRoomId] = useState();
     const [connection, setConnection] = useState();
 
-    
-    
-      useEffect( () => {
-        const startConnection = async () => {
-            try {
-            const localConnection = new HubConnectionBuilder()
-             .withUrl('https://localhost:7129/chat')
-              .configureLogging(LogLevel.Information)
-             .build();
-        
-             localConnection.on('RecieveMessage', (message) =>
-                setMessages(messages => [...messages, message]));
-        
-                localConnection.on('NewRoomCreated', roomInfo => setChats([...chats, roomInfo]));
-        
-                localConnection.on('OnlineRooms', (roomList) => {
-                  setChats(roomList);
-            });
-        
-            localConnection.onclose(e => {
-                setConnection();
-                setMessages([]);
-                setUsers([]);
-            });
-        
-            await localConnection.start();
-                setConnection(localConnection);
-            } catch (e) {
-            console.log(e);
-            }
+    const [onlineRooms, setOnlineRooms] = useState([]);
+    const [activeRoom, setActiveRoom] = useState();
+
+    const [activeRoomMessages, setActiveRoomMessages] = useState([])
+
+    const [errorMessage, setErrorMessage] = useState();
+
+    const onJoinRoomResultRecieved = (update) => {
+        if (update.success){
+          //todo: recieve message history
+          const room = onlineRooms.find(elem => elem.roomId === update.roomId);
+          setActiveRoom(room);
         }
-        startConnection()
-      }, []
-      );
+        else{
+          setErrorMessage("Не возможно присоедениться к комнате");
+        }
+    }
+
+    const onLeaveRoomResultRecieved = (update) => {
+      if (update.success){
+        setActiveRoom();
+        setActiveRoomMessages([]);
+      }
+      else{
+        setErrorMessage("Не возможно поикнуть комнату");
+      }
+    }
+    useEffect(() => {
+
+    }, [onlineRooms]);
+    useEffect( () => {
+      const startConnection = async () => {
+          try {
+          const localConnection = new HubConnectionBuilder()
+           .withUrl('https://localhost:7129/chat')
+            .configureLogging(LogLevel.Information)
+           .build();
+      
+           localConnection.on('RecieveMessage', (message) => {
+              setActiveRoomMessages(messages => [...messages, message])
+              //todo: should trigger only on message
+            });
+      
+          localConnection.on('JoinRoomResult', update => onJoinRoomResultRecieved(update));
+          localConnection.on('LeaveRoomResult', update => onLeaveRoomResultRecieved(update));
+          localConnection.on('ChatRoomUpdate', update => {
+            console.debug(update);
+            switch(update.event) {
+              // Created
+              case 1:
+                const newRooms = [{roomName: update.roomName, roomId: update.roomId, pending: true}, ...onlineRooms];
+                setOnlineRooms(newRooms);
+                break;
+              // Deleted
+              case 2:
+                const elemIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                if (elemIndex > -1) {
+                  setOnlineRooms(onlineRooms.splice(elemIndex, 1));
+                }
+                break;
+              // Manager joined
+              case 3:
+                const joinedRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                if (joinedRoomIndex > -1) {
+                  const oldRoom = onlineRooms[joinedRoomIndex];
+                  oldRoom.pending = false;
+                  onlineRooms[joinedRoomIndex] = oldRoom;
+                  setOnlineRooms(onlineRooms);
+                }
+                break;
+
+              // manager left
+              case 4:
+                const leftRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                if (joinedRoomIndex > -1) {
+                  const oldRoom = onlineRooms[leftRoomIndex];
+                  oldRoom.pending = true;
+                  onlineRooms[leftRoomIndex] = oldRoom;
+                  setOnlineRooms(onlineRooms);
+                }
+                break;
+              default:
+                console.log(update);
+                break;
+            }
+          });
+            
+          localConnection.onclose(e => {
+              setConnection();
+              setActiveRoomMessages([]);
+              setActiveRoom();
+          });
+      
+          await localConnection.start();
+              setConnection(localConnection);
+          } catch (e) {
+          console.log(e);
+          }
+      }
+      startConnection()
+      // todo: causes multiple reconnections but without it onlinerooms are not rendered
+    }, [onlineRooms]
+    );
 
 
     const joinRoom = async (roomId) => {
         try {
-                setActiveRoomId(roomId);
                 await connection.invoke('JoinRoom', roomId);
             } catch (e) {
             console.log(e)
@@ -60,7 +124,6 @@ export default function Chats () {
 
     const leaveRoom = async (roomId) => {
         try {
-                setActiveRoomId(roomId);
                 await connection.invoke('LeaveRoom', roomId);
             } catch (e) {
             console.log(e)
@@ -72,7 +135,7 @@ export default function Chats () {
           const messageModel = {
             Text: message,
             Time: new Date().toJSON(),
-            RoomId: activeRoomId,
+            RoomId: activeRoom.roomId,
           };
     
           await connection.invoke('SendMessage', messageModel);
@@ -81,18 +144,11 @@ export default function Chats () {
         }
       }
 
-    const closeConnection = async () => {
-      try {
-        await connection.stop()
-      } catch (e) {
-        console.log(e)
-      }
-    }
-
     return (
         <>
-            {!activeRoomId && <RoomList  roomInfos={chats} joinRoom = {(id) => {debugger; setActiveRoomId(id); joinRoom(id);}} a/>}
-            {activeRoomId && <Chat roomId={activeRoomId} leaveRoom = {leaveRoom} messages = {messages} sendMessage = {sendMessage} setActiveRoomId = {setActiveRoomId}/>}
+            {!activeRoom && <RoomList  onlineRooms={onlineRooms} joinRoom = {joinRoom}/>}
+            {errorMessage && <div style='color:"red"'>{errorMessage}</div>}
+            {activeRoom && <Chat leaveRoom = {() => leaveRoom(activeRoom.roomId)} messages = {activeRoomMessages} sendMessage = {sendMessage}/>}
         </>
     )
 }

@@ -34,7 +34,7 @@ public class ChatHub : Hub
     {
         var roomId = message.RoomId;
 
-        if (!Rooms.TryGetValue(roomId, out var room))
+        if (!(Rooms.TryGetValue(roomId, out var room) && ConnectedUsers.TryGetValue(GetUserId(), out var chatUser)))
             return;
 
         var connectionId = Context.ConnectionId;
@@ -42,12 +42,14 @@ public class ChatHub : Hub
         if (!(room.Client.UserConnections.Contains(connectionId) || IsCurrentUserManager()))
             return;
 
+        message.IsFromManager = IsCurrentUserManager();
         message.Time = DateTime.UtcNow;
+        message.AuthorName = chatUser!.Name;
         //todo: saveMessage in db (should call backgroundservice here)
         if (IsAuthenticatedUser())
             await _publisher.Publish(new ChatMessageDto()
             {
-                AuthorId = Context.UserIdentifier!,
+                AuthorId = chatUser!.UserId,
                 RoomInitializerId = roomId,
                 Text = message.Text,
                 Time = message.Time,
@@ -88,7 +90,6 @@ public class ChatHub : Hub
                 Event = RoomUpdateEvent.ManagerJoined,
 
             }).ConfigureAwait(false);
-
         }
     }
 

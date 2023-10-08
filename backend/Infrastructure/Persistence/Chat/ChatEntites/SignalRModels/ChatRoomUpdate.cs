@@ -11,8 +11,8 @@ public record ChatRoomUpdate
 
 public enum RoomUpdateEvent
 {
-    Created,
-    Deleted,
-    ManagerJoined,
-    ManagerLeft,
+    Created = 1,
+    Deleted = 2,
+    ManagerJoined = 3,
+    ManagerLeft = 4,
 }

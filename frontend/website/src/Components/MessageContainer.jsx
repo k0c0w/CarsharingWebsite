@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react';
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
     debugger;
-    const isFromClient = (message) => message.isFromManager === false; 
-    const isFromTechSupport = (message) => message.isFromManager === true;
+    const isFromClient = (message) => !message.isFromManager;
+    const isFromTechSupport = (message) => message.isFromManager;
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -24,6 +24,7 @@ const MessageContainer = ({ messages }) => {
                     { isFromTechSupport(m) &&
                         <div className='other-message' style={{marginTop:"25px"}}>
                             <div className='message bg-primary'>{m.text}</div>
+                            <div>{m.authorName}</div>
                         </div>
                     }
                 </div>
