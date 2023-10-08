@@ -1,14 +1,12 @@
 ﻿using Persistence.Chat.ChatEntites.SignalRModels;
-using Services.Abstractions.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Persistence
+namespace Persistence;
+
+public interface IChatRoomRepository
 {
-    public interface IChatRoomRepository : IRepository<string, ChatRoom>
-    {
-    }
+    public bool TryGetRoom(string roomId, out ChatRoom? chatRoom);
+
+    public bool TryRemoveRoom(string roomId, out ChatRoom? chatRoom);
+
+    public bool TryAddRoom(string roomId, ChatRoom chatRoom);
 }

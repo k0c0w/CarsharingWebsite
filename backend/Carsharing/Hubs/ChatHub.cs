@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.SignalRModels;
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using Persistence;
 
 namespace Carsharing.ChatHub;
 
@@ -16,17 +16,15 @@ public class ChatHub : Hub
 
     private readonly IBus _publisher;
     private readonly UserManager<User> _userManager;
+    private readonly IChatUserRepository _chatUserRepository;
+    private readonly IChatRoomRepository _chatRoomRepository;
 
-    // to map user and their connections
-    // for anonymous users we will use their session token (notice that it can be hacked)
-    private static readonly ConcurrentDictionary<string, ChatRoom> Rooms = new ConcurrentDictionary<string, ChatRoom>();
-
-    private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new ConcurrentDictionary<string, ChatUser>();
-
-    public ChatHub(IBus bus, UserManager<User> userManager)
+    public ChatHub(IBus bus, UserManager<User> userManager, IChatUserRepository userRepository, IChatRoomRepository roomRepository)
     {
         _publisher = bus;
         _userManager = userManager;
+        _chatUserRepository = userRepository;
+        _chatRoomRepository = roomRepository;
     }
 
     [HubMethodName("SendMessage")]
@@ -34,12 +32,12 @@ public class ChatHub : Hub
     {
         var roomId = message.RoomId;
 
-        if (!(Rooms.TryGetValue(roomId, out var room) && ConnectedUsers.TryGetValue(GetUserId(), out var chatUser)))
+        if (!(_chatRoomRepository.TryGetRoom(roomId, out var room) && _chatUserRepository.TryGetUser(GetUserId(), out var chatUser)))
             return;
 
         var connectionId = Context.ConnectionId;
         // it is better to check if admin has connected
-        if (!(room.Client.UserConnections.Contains(connectionId) || IsCurrentUserManager()))
+        if (!(room!.Client.UserConnections.Contains(connectionId) || IsCurrentUserManager()))
             return;
 
         message.IsFromManager = IsCurrentUserManager();
@@ -67,7 +65,7 @@ public class ChatHub : Hub
         var managerId = Context.UserIdentifier!;
         var connectionId = Context.ConnectionId;
 
-        if (!(ConnectedUsers.ContainsKey(managerId) && Rooms.TryGetValue(roomId, out var room)))
+        if (!(_chatUserRepository.ContainsUserById(managerId) && _chatRoomRepository.TryGetRoom(roomId, out var room)))
         {
             await Clients.Client(connectionId).SendAsync(nameof(JoinRoomResult), new JoinRoomResult() { RoomId = roomId }).ConfigureAwait(false);
             return;
@@ -100,7 +98,7 @@ public class ChatHub : Hub
         var managerId = Context.UserIdentifier!;
         var connectionId = Context.ConnectionId;
 
-        if (!(ConnectedUsers.ContainsKey(managerId) && Rooms.TryGetValue(roomId, out var room)))
+        if (!(_chatUserRepository.ContainsUserById(managerId) && _chatRoomRepository.TryGetRoom(roomId, out var room)))
         {
             await Clients.Client(connectionId).SendAsync(nameof(LeaveRoomResult), new LeaveRoomResult () { RoomId = roomId }).ConfigureAwait(false);
             return;
@@ -142,24 +140,24 @@ public class ChatHub : Hub
         var actualUserId = Context.UserIdentifier;
         if (actualUserId == null)
         {
-            var room = Rooms[disconnectedUserId]!;
-            await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
-            ConnectedUsers.TryRemove(disconnectedUserId, out _);
+            _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
+            await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+            _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
         }
         else
         {
-            if (ConnectedUsers.TryGetValue(disconnectedUserId, out var user) && Rooms.TryGetValue(actualUserId, out var room))
+            if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(actualUserId, out var room))
             {
                 var connectionId = Context.ConnectionId;
-                user.RemoveConnection(connectionId);
+                user!.RemoveConnection(connectionId);
 
                 if (user.ConnectionsCount == 0)
                 {
-                    foreach(var managerId in room.ProcessingManagersIds)
+                    foreach(var managerId in room!.ProcessingManagersIds)
                     {
-                        if (ConnectedUsers.TryGetValue(managerId, out var chatManager))
+                        if (_chatUserRepository.TryGetUser(managerId, out var chatManager))
                         {
-                            foreach (var managerConnectionId in chatManager.UserConnections)
+                            foreach (var managerConnectionId in chatManager!.UserConnections)
                             {
                                 await Groups.RemoveFromGroupAsync(managerConnectionId, room.RoomId).ConfigureAwait(false);
                             }
@@ -167,7 +165,7 @@ public class ChatHub : Hub
                         }
                     }
 
-                    ConnectedUsers.TryRemove(actualUserId, out _);
+                    _chatUserRepository.TryRemoveUser(actualUserId, out _);
                     await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
                 }
             }
@@ -183,9 +181,9 @@ public class ChatHub : Hub
         bool isAuthenticated = IsAuthenticatedUser();
 
         // if user has already connected with other session, he must be saved in connections and connection must be assigned to user groups
-        if (isAuthenticated && ConnectedUsers.TryGetValue(userId!, out var chatUser))
+        if (isAuthenticated && _chatUserRepository.TryGetUser(userId!, out var chatUser))
         {
-            chatUser.AddConnection(connectionId);
+            chatUser!.AddConnection(connectionId);
 
             if (IsCurrentUserManager())
             {
@@ -246,7 +244,7 @@ public class ChatHub : Hub
     {
         var room = new ChatRoom(user);
         var roomId = room.RoomId;
-        if (!Rooms.TryAdd(roomId, room))
+        if (!_chatRoomRepository.TryAddRoom(roomId, room))
             return null!;
 
         // assign room to chatUser
@@ -263,7 +261,7 @@ public class ChatHub : Hub
         if (isUserAuthenticated)
             name = (await _userManager.FindByIdAsync(GetUserId()).ConfigureAwait(false))!.FirstName!;
 
-        ChatUser newUser = new ChatUser(GetUserId(), name);
+        ChatUser newUser = new(GetUserId(), name);
 
         newUser.AddConnection(connectionId);
 
@@ -272,7 +270,7 @@ public class ChatHub : Hub
             await AddConnectionToGroupAsync(connectionId, ADMIN_GROUP);
         }
 
-        ConnectedUsers.TryAdd(newUser.UserId, newUser);
+        _chatUserRepository.TryAddUser(newUser.UserId, newUser);
 
         return newUser;
     }

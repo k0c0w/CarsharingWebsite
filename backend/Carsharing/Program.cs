@@ -53,6 +53,7 @@ builder.Services
  });
 
 
+
 builder.Services.AddScoped<IAdminCarService, CarService>();
 builder.Services.AddScoped<ICarService, CarService>();
 builder.Services.AddScoped<IFileProvider, FileProvider>();
@@ -117,6 +118,7 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSingleton<ChatRepository>();
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<ChatMessageConsumer>();
