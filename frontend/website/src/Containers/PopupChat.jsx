@@ -1,23 +1,68 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import '../css/popup-chat.css';
 import SendMessageForm from '../Components/SendMessageForm';
 import MessageContainer from "../Components/MessageContainer";
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+import API from '../httpclient/axios_client';
+
 
 export default function PopupChat () {
-    const [messages, setMessages] = useState([]);
     const [hiding, setHideFlag] = useState(false);
 
-    const sendMessage = (message) => {
-        var elem = {
-            text: message,
-            isFromManager: true
-        }
-        setMessages([...messages, elem]);
-    }
-
-    var switchHidingFlag = () => {
+    const switchHidingFlag = () => {
         setHideFlag(!hiding);
     }
+
+    const [connection, setConnection] = useState()
+    const [messages, setMessages] = useState([])
+    const [connectedRoomId, setConnectedRoomId] = useState();
+
+    async function onRecieveRoomId(roomId) {
+      const history = await API.getChatHistory(roomId);
+      setMessages(history);
+      setConnectedRoomId(roomId);
+    }
+
+    const joinRoom = async () => {
+      try {
+        const connection = new HubConnectionBuilder()
+          .withUrl('https://localhost:7129/chat')
+          .configureLogging(LogLevel.Information)
+          .build();
+
+        connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
+
+        connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
+
+        connection.onclose(e => {
+          setConnection();
+          setMessages([]);
+        });
+
+        await connection.start();
+        setConnection(connection);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    const sendMessage = async (message) => {
+      try {
+        const messageModel = {
+          Text: message,
+          Time: new Date().toJSON(),
+          RoomId: connectedRoomId,
+        };
+
+        await connection.invoke('SendMessage', messageModel);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    useEffect(() => {
+        joinRoom();
+    }, []);
 
     return (
         <div className='popup-chat' style={{ height:`${hiding?"30px":"60vh"}` }}>

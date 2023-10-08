@@ -20,12 +20,17 @@ class AxiosWrapper {
     }
 
     async getChatHistory(userId) {
-        const history = await this.axiosInstance.get(`/chat/${userId}/history`);
-        if (history.data)
-            return history.data.sort(function (a, b) {
-                return a.time.localeCompare(b.time);
-            });
-        return [];
+        try{
+            const history = await this.axiosInstance.get(`/chat/${userId}/history`);
+            if (history.data)
+                return history.data.sort(function (a, b) {
+                    return a.time.localeCompare(b.time);
+                });
+            return [];
+        }
+        catch{
+            return [];
+        }
     }
 
     async book(model) {

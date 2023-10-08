@@ -35,7 +35,7 @@ public class ChatController : ControllerBase
 
         var history = await _chatContext.Messages
         .AsNoTracking()
-        .Where(m => m.TopicAuthorId == userId)
+        .Where(m => m.TopicAuthorId == userId)  
         .Join(
             _chatContext.Users,
             m => m.AuthorId,

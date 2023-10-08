@@ -1,13 +1,13 @@
 import React from "react";
 import Section, {SectionTitle} from "../Sections";
 import Container from "../Container";
-import Chat from "../../Containers/Chat";
+import Bold from "../TextTags";
 
 export const IndexChat = React.forwardRef( (props, ref) => (
     <Section ref={ref} style={{backgroundColor:"#DEF0F0"}}>
         <Container>
             <SectionTitle style={{justifyContent:"center"}}>Остались вопросы?</SectionTitle>
-            <Chat/>
+            <Bold>Задайте их в наешм онлайн чате!</Bold>
         </Container>
     </Section>
 ));

@@ -23,11 +23,13 @@ const MessageContainer = ({ messages }) => {
                             <div className='message'>{m.text}</div>
                         </div>
                     }
-                    { isFromTechSupport(m) &&
+                    { isFromTechSupport(m) && <>
                         <div className='message-rcvd' style={{marginTop:"0px"}} id={i}>
                             <div className='message'>{m.text}</div>
-                            <div>{m.authorName}</div>
+                            
                         </div>
+                        <div className='author'>{m.authorName}</div>
+                        </>
                     }
             </>
             )
