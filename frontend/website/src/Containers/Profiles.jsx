@@ -93,21 +93,25 @@ export function ProfileEdit () {
     const [errors, setErrors] = useState({});
     const [requestSent, setRequestSent] = useState(false);
 
-    useEffect(async () => {
-        const response = await API.personalInfo();
-        if(response?.successed){
-            console.log(response.data)
-            setPersonalInfo(response.data);
-        }
-        else if(response?.status){
-            if(response.status === 401){
-                navigator(`/login?return_uri=${location.pathname}`);
+    useEffect(() => {
+        async function doThings() {
+            const response = await API.personalInfo();
+            if(response?.successed){
+                console.log(response.data)
+                setPersonalInfo(response.data);
             }
+            else if(response?.status){
+                if(response.status === 401){
+                    navigator(`/login?return_uri=${location.pathname}`);
+                }
+                else
+                    alert('Ошибка сервера! Повторите попытку позже.');
+                }
             else
-                alert('Ошибка сервера! Повторите попытку позже.');
-            }
-        else
-            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+                alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+        }
+
+        doThings();
     },[]);
 
     async function handleSend(event) {
@@ -192,21 +196,25 @@ export default function Profile() {
     const navigator = useNavigate();
     const location = useLocation();
 
-    useEffect(async () => {
-        const response = await API.profile();
-        if(response?.successed){
-            console.log(response.data)
-            setProfileInfo(response.data);
-        }
-        else if(response?.status){
-            if(response.status === 401){
-                navigator(`/login?return_uri=${location.pathname}`);
+    useEffect(() => {
+        async function doThings() {
+            const response = await API.profile();
+            if(response?.successed){
+                console.log(response.data)
+                setProfileInfo(response.data);
             }
+            else if(response?.status){
+                if(response.status === 401){
+                    navigator(`/login?return_uri=${location.pathname}`);
+                }
+                else
+                    alert('Ошибка сервера! Повторите попытку позже.');
+                }
             else
-                alert('Ошибка сервера! Повторите попытку позже.');
-            }
-        else
-            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+                alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+        }
+
+        doThings();
     }, []);
 
     return <>

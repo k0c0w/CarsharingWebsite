@@ -14,6 +14,7 @@ import FixHeader from './Components/FixHeader';
 import CarRent from './Containers/CarRent';
 import API from './httpclient/axios_client';
 import NotFound from './Containers/NotFound';
+import PopupChat from './Containers/PopupChat';
 
 
 function App() {
@@ -61,6 +62,7 @@ function App() {
         <Route path="*" element={<NotFound/>}/>
         </Route>
       </Routes>
+      <PopupChat/>
     </BrowserRouter>
   );
 }

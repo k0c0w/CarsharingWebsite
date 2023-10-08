@@ -1,13 +1,11 @@
-import { useEffect, useRef } from 'react';
+import {useEffect, useRef} from 'react';
+import '../css/popup-chat.css';
 
+// eslint-disable-next-line react/prop-types
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
-
-    const isFromClient = (message) => { return message.role == "0" }
-    const isFromTechSupport = (message) => message.role == "1"
-    const isInformation = (message) => message.role == "information"
-
-    var m1 = isFromClient(messages[0])
+    const isFromClient = (message) => !message.isFromManager;
+    const isFromTechSupport = (message) => message.isFromManager;
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -17,25 +15,24 @@ const MessageContainer = ({ messages }) => {
     }, [messages]);
 
     return <div ref={messageRef} className='message-container' >
-        {messages.map((m, index) => (
+        {/* eslint-disable-next-line react/prop-types */}
+        {messages?.map((m, i) => (
             <>
-                { isFromClient(m) &&
-                    <div key={index} className='user-message' style={{marginTop:"25px"}}>
-                        <div className='message bg-primary'>{m.message}</div>
-                    </div>
-                }
-                { isFromTechSupport(m) &&
-                    <div key={index} className='other-message' style={{marginTop:"25px"}}>
-                        <div className='message bg-primary'>{m.message}</div>
-                    </div>
-                }
-                { isInformation(m) &&
-                    <div key={index} className='info-message' style={{marginTop:"25px"}}>
-                        <div className='info-message-text bg-primary'>{m.message}</div>
-                    </div>
-                }
+                    { isFromClient(m) &&
+                        <div className='message-sent' style={{marginTop:"0px"}} id={i}>
+                            <div className='message'>{m.text}</div>
+                        </div>
+                    }
+                    { isFromTechSupport(m) && <>
+                        <div className='message-rcvd' style={{marginTop:"0px"}} id={i}>
+                            <div className='message'>{m.text}</div>
+                            
+                        </div>
+                        <div className='author'>{m.authorName}</div>
+                        </>
+                    }
             </>
-        )
+            )
         )}
     </div>
 }

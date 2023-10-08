@@ -53,8 +53,8 @@ namespace Carsharing.Controllers.Admin
             if (user == null) 
                 return NotFound();
 
-            await _userManager.AddToRoleAsync(user, "admin");
-            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "admin"));
+            await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Role.Admin.ToString()));
 
 
             await _signInManager.SignInAsync(user, false);

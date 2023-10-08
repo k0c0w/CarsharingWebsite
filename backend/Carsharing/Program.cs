@@ -2,7 +2,7 @@ using Carsharing;
 using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain;
@@ -13,8 +13,11 @@ using Services.Abstractions;
 using Services.Abstractions.Admin;
 using Services.User;
 using Carsharing.ChatHub;
-using Carsharing.Hubs.ChatEntities;
 using IFileProvider = Services.Abstractions.IFileProvider;
+using StackExchange.Redis;
+using Carsharing.Consumers;
+using Persistence.Chat;
+using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,8 +52,6 @@ builder.Services
      };
  });
 
-builder.Services.AddAuthorization();
-
 
 builder.Services.AddScoped<IAdminCarService, CarService>();
 builder.Services.AddScoped<ICarService, CarService>();
@@ -70,8 +71,6 @@ builder.Services.AddSignalR();
 
 builder.Services.AddTariffService();
 
-builder.Services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
-
 
 if (builder.Environment.IsDevelopment())
 {
@@ -80,15 +79,22 @@ if (builder.Environment.IsDevelopment())
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
-    
+
         options.AddPolicy("DevFrontEnds",
             builder =>
                 builder.WithOrigins(mainFront, adminFront)
                     .AllowAnyHeader()
-                    .AllowCredentials()
                     .AllowAnyMethod()
-                    .SetIsOriginAllowed(hostName => true)
+                    .AllowCredentials()
+                    .SetIsOriginAllowed(origin => true)
         );
+    });
+
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
     });
 }
 
@@ -111,6 +117,17 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSingleton<IChatRoomRepository, ChatRepository>();
+builder.Services.AddSingleton<IChatUserRepository, ChatRepository>();
+builder.Services.AddMassTransit(options =>
+{
+    options.AddConsumer<ChatMessageConsumer>();
+    options.UsingInMemory((context, configuration) =>
+    {
+        configuration.ConfigureEndpoints(context);
+    });
+});
+
 var app = builder.Build();
 
 try
@@ -129,17 +146,16 @@ catch (Exception e)
 }
 
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseCors("DevFrontEnds");
 }
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
