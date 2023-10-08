@@ -36,11 +36,12 @@ public class ChatHub : Hub
             return;
 
         var connectionId = Context.ConnectionId;
+        var isCurrentUserManager = IsCurrentUserManager();
         // it is better to check if admin has connected
-        if (!(room!.Client.UserConnections.Contains(connectionId) || IsCurrentUserManager()))
+        if (!(room!.Client.UserConnections.Contains(connectionId) || isCurrentUserManager))
             return;
 
-        message.IsFromManager = IsCurrentUserManager();
+        message.IsFromManager = isCurrentUserManager;
         message.Time = DateTime.UtcNow;
         message.AuthorName = chatUser!.Name;
         //todo: saveMessage in db (should call backgroundservice here)
@@ -51,6 +52,7 @@ public class ChatHub : Hub
                 RoomInitializerId = roomId,
                 Text = message.Text,
                 Time = message.Time,
+                IsAuthorManager = isCurrentUserManager,
             })
             .ConfigureAwait(false);
 

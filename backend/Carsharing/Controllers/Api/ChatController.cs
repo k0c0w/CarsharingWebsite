@@ -46,6 +46,7 @@ public class ChatController : ControllerBase
                 m.Id,
                 m.Text,
                 m.Time,
+                m.IsFromManager,
                 u.FirstName,
                 UserId = u.Id,
             }
@@ -56,24 +57,11 @@ public class ChatController : ControllerBase
         .ToArrayAsync()
         .ConfigureAwait(false);
 
-        if (!history.Any())
-            return new JsonResult(Array.Empty<object>());
-
-        var actingUsers = history.Select(x => x.UserId).Distinct().ToArray();
-
-        var actingUsersHaveManagerRights = await _chatContext.Users
-                    .Include(x => x.UserRoles)
-                    .ThenInclude(x => x.Role)
-                    .Where(x => actingUsers.Contains(x.Id))
-                    .ToDictionaryAsync(x => x.Id, x => x.UserRoles)
-                    .ConfigureAwait(false);
-
-        var upperRoleName = Role.Manager.ToString().ToUpper();
         return new JsonResult(history
             .Select(x => new ChatMessageVM()
             {
                 AuthorName = x.FirstName!,
-                IsFromManager = actingUsersHaveManagerRights[x.UserId].Select(x => x.Role.Name).Contains(upperRoleName),
+                IsFromManager = x.IsFromManager,
                 MessageId = x.UserId,
                 Text = x.Text,
                 Time = x.Time,
