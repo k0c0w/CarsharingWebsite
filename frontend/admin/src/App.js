@@ -14,7 +14,6 @@ import Login from './pages/Login';
 import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
 import Chats from './pages/Chats';
-import Chat from './pages/Chat';
 import useAuth from './hooks/useAuth';
 
 
