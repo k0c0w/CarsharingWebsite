@@ -8,14 +8,16 @@ public class ChatUser
 
     public string Name { get; }
 
-    public ChatUser(string userId, bool isAnonymous, string userName)
+    public List<string> UserConnections { get; } = new List<string>();
+
+    public int ConnectionsCount => UserConnections.Count;
+
+    public ChatUser(string userId, string? userName)
     {
         UserId = userId;
-        IsAnonymous = isAnonymous;
-        Name = userName;
+        IsAnonymous = userName == null;
+        Name = userName ?? "anonymous";
     }
-
-    public List<string> UserConnections { get; } = new List<string>();
 
     public void AddConnection(string connection)
     {
@@ -25,17 +27,5 @@ public class ChatUser
     public void RemoveConnection(string connection)
     {
         UserConnections.Remove(connection);
-    }
-
-    public List<string> UserGroups { get; } = new List<string>();
-
-    public void AddGroup(string group)
-    {
-        UserGroups.Add(group);
-    }
-
-    public void RemoveGroup(string group)
-    {
-        UserGroups.Remove(group);
     }
 }

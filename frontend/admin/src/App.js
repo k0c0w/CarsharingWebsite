@@ -20,7 +20,7 @@ import useAuth from './hooks/useAuth';
 
 const _routes = [
   {
-    path: '/',
+    path: '/chat',
     name: "Чаты"
   },
   {
@@ -55,12 +55,8 @@ const _roles = {
 
 function App() {
   const [path, setPath] = useState(window.location.pathname);
-  const [connectionId, setConnectionId] = useState("");
-  const [connection, setConnection] = useState();
   const [theme, colorMode] = useMode();
   const { auth, setAuth } = useAuth();
-
-  
 
   useEffect(()=>{
     const authorize = () => API.isAdmin().then(r => {
@@ -97,8 +93,7 @@ function App() {
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
                 <Route path='/carpark' element={<CarParkMngmt/>} />
-                <Route path="/chat" element={<Chat savedConnection={connection} setSavedConnection={(e) => setConnection(e)} />} />
-                <Route path='*' element={<Chats savedConnectionId={connectionId} savedConnection={connection} setSavedConnectionId={(e) => setConnectionId(e)} />} />
+                <Route path='/chat' element={<Chats />} />
               </ Route> 
               <Route path='/login' element={<Login />} />
             </Routes>

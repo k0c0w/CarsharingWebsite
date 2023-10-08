@@ -3,7 +3,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'http://localhost:80/api/admin') {
+    constructor(url = 'https://localhost:7129/api/admin') {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -11,7 +11,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:80",
+                "Access-Control-Allow-Origin": "http://localhost:3000",
                 // "Access-Control-Allow-Origin": "http://localhost:3000",
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
@@ -25,6 +25,20 @@ class AxiosWrapper {
         this.mainSiteAxios = axios.create(options);
     }
     
+    async getChatHistory(userId) {
+        const history = await this.mainSiteAxios.get(`/chat/${userId}/history`);
+        if (history.data)
+            return history.data.sort(function (a, b) {
+                return a.time.localeCompare(b.time);
+            });
+        return [];
+    }
+
+    async getOnlineRooms() {
+        const result =  await this.mainSiteAxios.get("/chat/rooms");
+        return result.data;
+    }
+
     //Posts
     async getPosts () {
         const result = await this._get("/post/posts");

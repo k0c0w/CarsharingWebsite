@@ -17,6 +17,8 @@ using Carsharing.ChatHub;
 using IFileProvider = Services.Abstractions.IFileProvider;
 using StackExchange.Redis;
 using Carsharing.Consumers;
+using Persistence.Chat;
+using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,13 +27,6 @@ builder.Services.AddDbContext<CarsharingContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("Domain"));
 });
-
-builder.Services.AddDbContext<CarsharingContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("ChatDatabase"),
-        x => x.MigrationsAssembly("Migrations"));
-});
-
 
 builder.Services.AddIdentity<User, UserRole>(options =>
 {
@@ -57,6 +52,7 @@ builder.Services
          return Task.CompletedTask;
      };
  });
+
 
 
 builder.Services.AddScoped<IAdminCarService, CarService>();
@@ -123,6 +119,8 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddSingleton<IChatRoomRepository, ChatRepository>();
+builder.Services.AddSingleton<IChatUserRepository, ChatRepository>();
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<ChatMessageConsumer>();

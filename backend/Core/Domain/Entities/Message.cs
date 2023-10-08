@@ -1,4 +1,4 @@
-﻿namespace Persistence.Chat.ChatEntites.DomainModels;
+﻿namespace Domain.Entities;
 
 public class Message
 {
@@ -11,4 +11,6 @@ public class Message
     public string AuthorId { get; set; } = string.Empty;
 
     public string TopicAuthorId { get; set; } = string.Empty;
+
+    public bool IsFromManager { get; set; }
 }

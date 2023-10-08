@@ -2,11 +2,13 @@
 
 public record ChatMessageDto
 {
-    public string Text { get; set; } = string.Empty;
+    public string Text { get; init; } = string.Empty;
 
-    public string AuthorId { get; set; } = string.Empty;
+    public string AuthorId { get; init; } = string.Empty;
 
-    public DateTime Time { get; set; }
+    public bool IsAuthorManager { get; init; }
 
-    public string RoomInitializerId { get; set; } = string.Empty;
+    public DateTime Time { get; init; }
+
+    public string RoomInitializerId { get; init; } = string.Empty;
 }

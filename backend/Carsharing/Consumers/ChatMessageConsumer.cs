@@ -1,34 +1,32 @@
 ﻿using MassTransit;
-using Persistence.Chat;
 using Persistence.Chat.ChatEntites.Dtos;
-using Persistence.Chat.ChatEntites.DomainModels;
+using Domain;
+using Domain.Entities;
 
-namespace Carsharing.Consumers
+namespace Carsharing.Consumers;
+
+public class ChatMessageConsumer : IConsumer<ChatMessageDto>
 {
-    public class ChatMessageConsumer : IConsumer<ChatMessageDto>
+    private readonly CarsharingContext _ctx;
+    public ChatMessageConsumer(CarsharingContext context) 
     {
-        private readonly ChatContext _ctx;
-            // todo: messageContext
-        public ChatMessageConsumer(ChatContext context) 
+        _ctx = context;
+    }
+
+    public async Task Consume(ConsumeContext<ChatMessageDto> context)
+    {
+        var messageDto = context.Message;
+
+        var message = new Message()
         {
-            _ctx = context;
-        }
+            AuthorId = messageDto.AuthorId,
+            Text = messageDto.Text,
+            Time = messageDto.Time,
+            TopicAuthorId = messageDto.RoomInitializerId,
+            IsFromManager = messageDto.IsAuthorManager,
+        };
 
-
-        public async Task Consume(ConsumeContext<ChatMessageDto> context)
-        {
-            var messageDto = context.Message;
-
-            var message = new Message()
-            {
-                AuthorId = messageDto.RoomInitializerId,
-                Text = messageDto.Text,
-                Time = messageDto.Time,
-                TopicAuthorId = messageDto.AuthorId
-            };
-
-            await _ctx.AddAsync(message).ConfigureAwait(false);
-            await _ctx.SaveChangesAsync().ConfigureAwait(false);
-        }
+        await _ctx.Messages.AddAsync(message).ConfigureAwait(false);
+        _ctx.SaveChanges();
     }
 }
