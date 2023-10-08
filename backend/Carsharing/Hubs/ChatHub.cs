@@ -143,6 +143,7 @@ public class ChatHub : Hub
             _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
             await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
             _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
+            _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
         }
         else
         {
@@ -166,6 +167,7 @@ public class ChatHub : Hub
                     }
 
                     _chatUserRepository.TryRemoveUser(actualUserId, out _);
+                    _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
                     await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
                 }
             }
