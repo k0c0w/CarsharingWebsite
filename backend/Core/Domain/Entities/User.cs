@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 using Entities.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Entities;
 
@@ -21,5 +20,5 @@ public class User : IdentityUser
     [InverseProperty("User")]
     public virtual ICollection<Subscription>? Subscriptions { get; }
 
-    public virtual ICollection<UserUserRole> UserRoles { get; set; }
+    public virtual ICollection<UserUserRole> UserRoles { get; set; } = new List<UserUserRole>();
 }

@@ -1,6 +1,6 @@
 ﻿using Domain;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Chat.ChatEntites.DomainModels;
 
 namespace Migrations.Chat
 {

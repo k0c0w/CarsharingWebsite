@@ -44,7 +44,6 @@ public class ChatHub : Hub
         message.IsFromManager = isCurrentUserManager;
         message.Time = DateTime.UtcNow;
         message.AuthorName = chatUser!.Name;
-        //todo: saveMessage in db (should call backgroundservice here)
         if (IsAuthenticatedUser())
             await _publisher.Publish(new ChatMessageDto()
             {
@@ -63,7 +62,6 @@ public class ChatHub : Hub
     [HubMethodName("JoinRoom")]
     public async Task JoinRoomAsync(string roomId)
     {
-        // todo: semaphore slim
         var managerId = Context.UserIdentifier!;
         var connectionId = Context.ConnectionId;
 
@@ -141,42 +139,44 @@ public class ChatHub : Hub
         var disconnectedUserId = GetUserId();
         var actualUserId = Context.UserIdentifier;
         if (actualUserId == null)
-        {
-            _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
-            await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
-            _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
-            _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-        }
+            await ExecuteUnauthorizeDisconnectAsync(disconnectedUserId).ConfigureAwait(false);
         else
-        {
-            if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(actualUserId, out var room))
-            {
-                var connectionId = Context.ConnectionId;
-                user!.RemoveConnection(connectionId);
-
-                if (user.ConnectionsCount == 0)
-                {
-                    foreach(var managerId in room!.ProcessingManagersIds)
-                    {
-                        if (_chatUserRepository.TryGetUser(managerId, out var chatManager))
-                        {
-                            foreach (var managerConnectionId in chatManager!.UserConnections)
-                            {
-                                await Groups.RemoveFromGroupAsync(managerConnectionId, room.RoomId).ConfigureAwait(false);
-                            }
-                            // todo: create list<Task> and wait
-                        }
-                    }
-
-                    _chatUserRepository.TryRemoveUser(actualUserId, out _);
-                    _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-                    await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
-                }
-            }
-        }
+            await ExecuteAuthorizedDisconnectAsync(disconnectedUserId, actualUserId).ConfigureAwait(false);
 
         await base.OnDisconnectedAsync(exception).ConfigureAwait(false);
     }
+
+    private async Task ExecuteUnauthorizeDisconnectAsync(string disconnectedUserId)
+    {
+        _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
+        await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+        _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
+        _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
+    }
+
+    private async Task ExecuteAuthorizedDisconnectAsync(string disconnectedUserId, string actualUserId)
+    {
+        if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(actualUserId, out var room))
+        {
+            var connectionId = Context.ConnectionId;
+            user!.RemoveConnection(connectionId);
+
+            if (user.ConnectionsCount == 0)
+            {
+                foreach (var managerId in room!.ProcessingManagersIds)
+                {
+                    if (_chatUserRepository.TryGetUser(managerId, out var chatManager))
+                        foreach (var managerConnectionId in chatManager!.UserConnections)
+                            await Groups.RemoveFromGroupAsync(managerConnectionId, room.RoomId).ConfigureAwait(false);
+                }
+
+                _chatUserRepository.TryRemoveUser(actualUserId, out _);
+                _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
+                await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+            }
+        }
+    }
+
 
     private async Task ExecuteAuthorizedPipelineAsync()
     {
@@ -225,19 +225,6 @@ public class ChatHub : Hub
 
         //Notify managers about room creation
         await NotifyAboutRoomCreationAsync(room.RoomId, room.Client.Name).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Assignes group to all chat user connections and saves new group in chat user context
-    /// </summary>
-    /// <param name="chatUser">Existing chat user</param>
-    /// <param name="group">Group to add</param>
-    private async Task AddChatUserToGroupAsync(ChatUser chatUser, string group)
-    {
-        foreach (var connection in chatUser.UserConnections)
-        {
-            await AddConnectionToGroupAsync(connection, group);
-        }
     }
 
     /// <summary>

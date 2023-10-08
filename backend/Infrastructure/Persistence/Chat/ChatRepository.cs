@@ -12,9 +12,9 @@ public class ChatRepository : IChatUserRepository, IChatRoomRepository
     private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new();
 
 
-    public bool TryGetUser(string chatUserId, out ChatUser? chatUser)
+    public bool TryGetUser(string userId, out ChatUser? chatUser)
     {
-        return ConnectedUsers.TryGetValue(chatUserId, out chatUser);
+        return ConnectedUsers.TryGetValue(userId, out chatUser);
     }
 
     public bool TryGetRoom(string roomId, out ChatRoom? chatRoom)

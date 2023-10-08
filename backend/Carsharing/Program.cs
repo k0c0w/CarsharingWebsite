@@ -3,7 +3,6 @@ using Carsharing.Helpers;
 using Carsharing.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MassTransit;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Domain;
@@ -52,7 +51,6 @@ builder.Services
          return Task.CompletedTask;
      };
  });
-
 
 
 builder.Services.AddScoped<IAdminCarService, CarService>();
@@ -124,7 +122,6 @@ builder.Services.AddSingleton<IChatUserRepository, ChatRepository>();
 builder.Services.AddMassTransit(options =>
 {
     options.AddConsumer<ChatMessageConsumer>();
-    // todo: move to rabbitmq
     options.UsingInMemory((context, configuration) =>
     {
         configuration.ConfigureEndpoints(context);

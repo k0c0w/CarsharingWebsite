@@ -168,17 +168,4 @@ public class AccountController : ControllerBase
             Messages = new[] { "Не получилось получить доступ к сервису Google" }
         }
     };
-
-    private async Task<ClaimsPrincipal> GetClaimsPrincipal(UserInfo userInfo, User user)
-    {
-        List<Claim> claims = new()
-        {
-            new (ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
-            new ("Passport", userInfo?.Passport ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-        return pr;
-    }
 }
