@@ -1,80 +1,40 @@
 using Carsharing;
-using Carsharing.Helpers;
-using Carsharing.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using MassTransit;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Domain;
-using Domain.Entities;
-using Microsoft.AspNetCore.Mvc;
-using Services;
-using Services.Abstractions;
-using Services.Abstractions.Admin;
-using Services.User;
 using Carsharing.ChatHub;
-using IFileProvider = Services.Abstractions.IFileProvider;
-using StackExchange.Redis;
-using Carsharing.Consumers;
-using Persistence.Chat;
-using Persistence;
+using Carsharing.Helpers;
+using Carsharing.Helpers.Extensions.ServiceRegistration;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Domain;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
 
-builder.Services.AddDbContext<CarsharingContext>(options =>
+services.AddDatabase(builder.Configuration)
+        .AddIdentityAuthorization()
+        .AddControllers();
+
+services.AddAutoMapper(typeof(Program).Assembly)
+        .RegisterSwagger();
+
+services.RegisterChat()
+        .RegisterBuisnessLogicServices();
+
+services.Configure<ApiBehaviorOptions>(o =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        x => x.MigrationsAssembly("Domain"));
+    o.InvalidModelStateResponseFactory = actionContext =>
+    {
+        var modelState = actionContext.ModelState;
+        var json = modelState.Keys
+            .ToDictionary(x => x, x => modelState[x]!.Errors.Select(x => x.ErrorMessage));
+
+        return new BadRequestObjectResult(new
+        { error = new { code = ErrorCode.ViewModelError, errors = json } });
+    };
 });
-
-builder.Services.AddIdentity<User, UserRole>(options =>
-{
-    options.User.AllowedUserNameCharacters = "user0123456789";
-})
-    .AddEntityFrameworkStores<CarsharingContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services
- .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
- .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
- {
-     options.Events.OnRedirectToLogin = context =>
-     {
-         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-         return Task.CompletedTask;
-     };
-     options.LoginPath = "/Login";
-
-     options.Events.OnRedirectToAccessDenied = context =>
-     {
-         context.Response.StatusCode = StatusCodes.Status403Forbidden;
-         return Task.CompletedTask;
-     };
- });
-
-
-builder.Services.AddScoped<IAdminCarService, CarService>();
-builder.Services.AddScoped<ICarService, CarService>();
-builder.Services.AddScoped<IFileProvider, FileProvider>();
-builder.Services.AddScoped<IBookingService, BookingService>();
-builder.Services.AddScoped<IAdminPostService, PostService>();
-builder.Services.AddScoped<IPostService, PostService>();
-builder.Services.AddScoped<IAdminTariffService, TariffService>();
-builder.Services.AddScoped<ITariffService, TariffService>();
-builder.Services.AddScoped<IBalanceService, BalanceService>();
-
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddAutoMapper(typeof(Program).Assembly);
-
-builder.Services.AddSignalR();
-
-builder.Services.AddTariffService();
-
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddCors(options =>
+    services.AddCors(options =>
     {
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
@@ -90,7 +50,7 @@ if (builder.Environment.IsDevelopment())
         );
     });
 
-    builder.Services.ConfigureApplicationCookie(options =>
+    services.ConfigureApplicationCookie(options =>
     {
         options.Cookie.SameSite = SameSiteMode.None;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -98,70 +58,44 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-builder.Services.AddControllers();
-
-builder.Services.Configure<ApiBehaviorOptions>(o =>
-{
-    o.InvalidModelStateResponseFactory = actionContext =>
-    {
-        var modelState = actionContext.ModelState;
-        var json = modelState.Keys
-            .ToDictionary(x => x, x => modelState[x]!.Errors.Select(x => x.ErrorMessage));
-        
-        return new BadRequestObjectResult(new
-            { error = new { code = ErrorCode.ViewModelError, errors = json} });
-    };
-});
-
-
-builder.Services.AddSwaggerGen();
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSingleton<IChatRoomRepository, ChatRepository>();
-builder.Services.AddSingleton<IChatUserRepository, ChatRepository>();
-builder.Services.AddMassTransit(options =>
-{
-    options.AddConsumer<ChatMessageConsumer>();
-    options.UsingInMemory((context, configuration) =>
-    {
-        configuration.ConfigureEndpoints(context);
-    });
-});
-
 var app = builder.Build();
+await TryMigrateDatabase(app);
 
-try
-{
-    await using var scope =  app.Services.CreateAsyncScope();
-    var sp = scope.ServiceProvider;
-
-    await using var db = sp.GetRequiredService<CarsharingContext>();
-
-    await db.Database.MigrateAsync();
-}
-catch (Exception e)
-{
-    app.Logger.LogError(e, "Error while migrating the database");
-    Environment.Exit(-1);
-}
-
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-app.UseRouting();
+app.UseHttpsRedirection()
+   .UseStaticFiles()
+   .UseRouting();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseCors("DevFrontEnds");
+    app.UseSwagger()
+       .UseSwaggerUI()
+       .UseCors("DevFrontEnds");
 }
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseAuthentication()
+   .UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
-app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+async Task TryMigrateDatabase(WebApplication app)
+{
+    try
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var sp = scope.ServiceProvider;
+
+        await using var db = sp.GetRequiredService<CarsharingContext>();
+
+        await db.Database.MigrateAsync();
+    }
+    catch (Exception e)
+    {
+        app.Logger.LogError(e, "Error while migrating the database");
+        Environment.Exit(-1);
+    }
+
+}
