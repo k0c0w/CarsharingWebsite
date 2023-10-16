@@ -70,5 +70,5 @@ export const TarrifFormTitle = ({title='Добавить объект'}) => {
 }
 
 export const TarrifFormSubmit = () => {
-    const theme = useTheme();
+    /*const theme = useTheme();*/
 }

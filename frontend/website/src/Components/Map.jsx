@@ -1,11 +1,13 @@
-import { YMaps, Map as YMap, Placemark, ZoomControl, GeolocationControl} from '@pbe/react-yandex-maps'
-import { useState } from 'react';
+import { YMaps, Map as YMap, Placemark, ZoomControl} from '@pbe/react-yandex-maps'
 
+
+/*
 const defaultPreset = {preset: 'islands#blueAutoIcon'};
 const selectedPreset = {preset: 'islands#redAutoIcon'};
+*/
 
 export default function MyMap({className, geo, cars, chooseCarFunc}) {
-    const [prev, setPrev] = useState(null);
+   /* const [prev, setPrev] = useState(null);*/
     const mapState = { center: [geo.latitude, geo.longitude], zoom:18};
 
     function handleClick(event) {

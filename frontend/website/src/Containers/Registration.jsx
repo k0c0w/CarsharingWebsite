@@ -63,7 +63,7 @@ export function Registration  ()  {
             </Form>
         </Container>
     </Section>);
-};
+}
 
 const RegistrationLeftInputs = ({errors}) => {
 

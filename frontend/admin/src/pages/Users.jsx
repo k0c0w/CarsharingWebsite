@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '@emotion/react';
 import UserTable from '../components/UsersPage/UserTableManagement';
 import API from '../httpclient/axios_client'
 import { TableSearchField } from '../components/TableCommon';
@@ -28,7 +27,7 @@ const attrs = [
 ];
 
 function UserMngmt() {
-    const theme = useTheme();
+    /*const theme = useTheme();*/
     // Аттрибут для поиска 
     const [usersData, setUsersData] = useState([]);
     

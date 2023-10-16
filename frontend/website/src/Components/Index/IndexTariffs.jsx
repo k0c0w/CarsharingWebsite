@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Section, { SectionTitle } from "../Sections";
 import Container from "../Container";
 import "../../css/rectangle-link.css";
@@ -25,11 +25,12 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
             {props.tariffs.length == 0 && <Bold>Нет доступных тарифов</Bold>}
             <ul className="tariff-list">
               {props.tariffs.map((tariff, i) => 
-              <li className="rectangle-container-item" color-type={i % 3 + 1} key={i}>
+              <li className="rectangle-container-item" /*color-type={i % 3 + 1}*/ key={i}>
                 <TarrifHolder to={`/tariffs/${tariff.id}`} name={tariff.name}/></li>)}
             </ul>
         </div>
       </Container>
   </Section>
 ));
+IndexTariffs.displayName = "Tariffs"
 export default IndexTariffs;
