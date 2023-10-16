@@ -3,7 +3,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'https://localhost:7129/api/admin') {
+    constructor(url = 'https://localhost:81/api/admin') {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -21,7 +21,7 @@ class AxiosWrapper {
 
         this.axiosInstance = axios.create(options);
 
-        options.baseURL = 'https://localhost:7129/api/'
+        options.baseURL = 'https://localhost:81/api/'
         this.mainSiteAxios = axios.create(options);
     }
     

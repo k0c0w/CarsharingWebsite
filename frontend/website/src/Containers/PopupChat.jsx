@@ -26,7 +26,7 @@ export default function PopupChat () {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl('https://localhost:7129/chat')
+          .withUrl('https://localhost:81/chat')
           .configureLogging(LogLevel.Information)
           .build();
 

@@ -51,7 +51,7 @@ export default function Chats () {
       const startConnection = async () => {
           try {
           const localConnection = new HubConnectionBuilder()
-           .withUrl('https://localhost:7129/chat')
+           .withUrl('https://localhost:81/chat')
             .configureLogging(LogLevel.Information)
            .build();
       
