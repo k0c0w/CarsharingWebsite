@@ -11,7 +11,7 @@ services:
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
         - ASPNETCORE_URLS=${ASPNETCORE_URLS}
         - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
-        - ConnectionStrings=${DEFAULT_CONNECTION}
+        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
         - Authorization__Google__AppId = ${GOOGLE_APP_ID}
         - Authorization__Google__AppSecret = ${GOOGLE_APP_SECRET}
       depends_on:
