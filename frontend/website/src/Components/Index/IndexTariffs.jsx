@@ -25,7 +25,7 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
             {props.tariffs.length == 0 && <Bold>Нет доступных тарифов</Bold>}
             <ul className="tariff-list">
               {props.tariffs.map((tariff, i) => 
-              <li className="rectangle-container-item" /*color-type={i % 3 + 1}*/ key={i}>
+              <li className="rectangle-container-item" color-type={i % 3 + 1} key={i}>
                 <TarrifHolder to={`/tariffs/${tariff.id}`} name={tariff.name}/></li>)}
             </ul>
         </div>
