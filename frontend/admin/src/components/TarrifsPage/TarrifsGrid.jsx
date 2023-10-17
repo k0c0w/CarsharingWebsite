@@ -20,19 +20,16 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
             flex: 1,
             align:'left',
             type:'string',
-            // cellClassName: 'name-column-cell'
         },
         {
             field: 'price',
             headerName: 'Price',
             flex: 1,
-            // cellClassName: 'number-column-cell'
         },
         {
             field: 'max_millage',
             headerName: 'Max millage',
             flex: 1,
-            // cellClassName: 'number-column-cell'
         },
         {
             field: 'func',
@@ -50,7 +47,7 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickInfo(params.row)} //e.target.parentNode.parentNode.parentNode.childNodes
+                            onClick={()=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
@@ -94,7 +91,6 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
     
     //  ----- Оптимизировать -----  //
     const _handleSelect = async (listId) => {
-        // const rows = await API.getTariff();
         const result = []
         listId.forEach(id => {
             rows.forEach( row => {
@@ -103,7 +99,6 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                 }
             })
         })
-        /*setSelected(result);*/
 
         handleSelect(result);
     }

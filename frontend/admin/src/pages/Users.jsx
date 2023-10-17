@@ -27,7 +27,6 @@ const attrs = [
 ];
 
 function UserMngmt() {
-    /*const theme = useTheme();*/
     // Аттрибут для поиска 
     const [usersData, setUsersData] = useState([]);
     

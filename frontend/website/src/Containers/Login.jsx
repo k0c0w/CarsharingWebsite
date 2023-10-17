@@ -11,7 +11,7 @@ import GoogleSignIn from '../Components/SignInButtons'
 import "../css/form.css";
 
 
-export default function Login ({setUser/*, user*/}) {
+export default function Login ({setUser}) {
   const [errors, setErrors] = useState({})
   const [formSummary, setFormSummary] = useState();
   const [requestSent, setRequestSent] = useState(false);

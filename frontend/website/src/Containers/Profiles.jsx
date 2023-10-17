@@ -159,8 +159,8 @@ const CarList = ({cars}) => (
     <>
         <Bold>Мои машины:</Bold>
         <ul className="profile-carlist-list">
-            {cars?.map(car => 
-            <li key="">
+            {cars?.map((car, i) => 
+            <li key={i}>
                 <Figure figureName="rented-car" className="border-solid">
                     <img className="rented-car-image" src={car.image_url}/>
                     <div className="rented-car-info">

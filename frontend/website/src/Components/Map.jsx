@@ -1,11 +1,5 @@
 import { YMaps, Map as YMap, Placemark, ZoomControl} from '@pbe/react-yandex-maps'
 
-
-/*
-const defaultPreset = {preset: 'islands#blueAutoIcon'};
-const selectedPreset = {preset: 'islands#redAutoIcon'};
-*/
-
 export default function MyMap({className, geo, cars, chooseCarFunc}) {
    /* const [prev, setPrev] = useState(null);*/
     const mapState = { center: [geo.latitude, geo.longitude], zoom:18};
@@ -24,7 +18,6 @@ export default function MyMap({className, geo, cars, chooseCarFunc}) {
                     </Placemark>
                 })}
                 <ZoomControl options={{ float: "left" }} />
-                {/*<GeolocationControl  options={{ float: "left" }} />*/}
             </YMap>
         </YMaps>
     </div>

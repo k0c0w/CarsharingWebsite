@@ -66,10 +66,6 @@ function Carousel({data}) {
         </div>);
 }
 
-
-
-
-
 const News = (props) => (
     <Section id="news" className="news-screen greeting-background news-background news-mobile">
         <Container>
@@ -89,7 +85,7 @@ const Document = ({documentInfo}) => (
     </a>
 );
 
-export function Documents (/*props*/) {
+export function Documents () {
     const [documentLinks, setDocumentLinks] = useState([]);
     const [news, setNews] = useState([]);
     useState(() => { 
