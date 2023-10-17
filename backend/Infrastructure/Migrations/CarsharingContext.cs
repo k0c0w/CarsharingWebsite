@@ -4,7 +4,7 @@ using Entities.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 
-namespace Domain;
+namespace Migrations.CarsharingApp;
 
 public class CarsharingContext : IdentityDbContext<User>
 {

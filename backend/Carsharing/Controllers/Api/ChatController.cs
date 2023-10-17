@@ -4,6 +4,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Migrations.Chat;
 using Persistence;
 
 namespace Carsharing.Controllers.Api;
@@ -12,10 +13,10 @@ namespace Carsharing.Controllers.Api;
 [ApiController]
 public class ChatController : ControllerBase
 {
-    private readonly CarsharingContext _chatContext;
+    private readonly ChatContext _chatContext;
     private readonly IChatRoomRepository _chatRoomRepository;
 
-    public ChatController(CarsharingContext chatContext, IChatRoomRepository chatRoomRepository)
+    public ChatController(ChatContext chatContext, IChatRoomRepository chatRoomRepository)
     {
         _chatContext = chatContext;
         _chatRoomRepository = chatRoomRepository;

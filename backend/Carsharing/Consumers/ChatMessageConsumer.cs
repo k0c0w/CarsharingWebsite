@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using Persistence.Chat.ChatEntites.Dtos;
-using Domain;
 using Domain.Entities;
+using Migrations.CarsharingApp;
 
 namespace Carsharing.Consumers;
 

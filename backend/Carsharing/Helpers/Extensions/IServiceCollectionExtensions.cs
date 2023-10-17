@@ -3,6 +3,9 @@ using Domain;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Migrations.Chat;
+using Microsoft.Extensions.Options;
+using Migrations.CarsharingApp;
 
 namespace Carsharing;
 
@@ -14,6 +17,11 @@ public static class IServiceCollectionExtensions
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
                 x => x.MigrationsAssembly("Domain"));
+        });
+
+        services.AddDbContext<ChatContext>(options => {
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+                x => x.MigrationsAssembly("Migrations"));
         });
 
         return services;
