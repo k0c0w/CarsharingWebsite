@@ -13,8 +13,9 @@
     },
     "plugins": ["react", "react-hooks"],
     "rules": {
-	"react/react-in-jsx-scope": "off",
+	    "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
-        "react-hooks/exhaustive-deps": "off"
+      "react-hooks/exhaustive-deps": "off",
+      "react/no-unknown-property": [2, { ignore: ['figure', 'color-type'] }]
     }
 }  
