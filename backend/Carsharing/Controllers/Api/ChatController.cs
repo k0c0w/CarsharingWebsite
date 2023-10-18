@@ -1,11 +1,9 @@
 ﻿using Carsharing.ViewModels;
-using Domain;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Migrations.Chat;
 using Persistence;
+using Persistence.Chat;
 
 namespace Carsharing.Controllers.Api;
 
@@ -13,12 +11,12 @@ namespace Carsharing.Controllers.Api;
 [ApiController]
 public class ChatController : ControllerBase
 {
-    private readonly ChatContext _chatContext;
+    private readonly IMessageRepository _messageUoW;
     private readonly IChatRoomRepository _chatRoomRepository;
 
-    public ChatController(ChatContext chatContext, IChatRoomRepository chatRoomRepository)
+    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository chatRoomRepository)
     {
-        _chatContext = chatContext;
+        _messageUoW = messageUnitOfWork;
         _chatRoomRepository = chatRoomRepository;
     }
 
@@ -34,36 +32,14 @@ public class ChatController : ControllerBase
         if (string.IsNullOrEmpty(userId))
             return new NotFoundResult();
 
-        var history = await _chatContext.Messages
-        .AsNoTracking()
-        .Where(m => m.TopicAuthorId == userId)  
-        .Join(
-            _chatContext.Users,
-            m => m.AuthorId,
-            u => u.Id,
-            (m, u) =>
-            new
-            {
-                m.Id,
-                m.Text,
-                m.Time,
-                m.IsFromManager,
-                u.FirstName,
-                UserId = u.Id,
-            }
-        )
-        .Skip(offset)
-        .Take(limit)
-        .OrderByDescending(x => x.Time)
-        .ToArrayAsync()
-        .ConfigureAwait(false);
+        var history = await _messageUoW.GetMessagesAssosiatedWithUserAsync(userId, offset, limit).ConfigureAwait(false);
 
         return new JsonResult(history
             .Select(x => new ChatMessageVM()
             {
-                AuthorName = x.FirstName!,
+                AuthorName = x.AuthorName!,
                 IsFromManager = x.IsFromManager,
-                MessageId = x.UserId,
+                MessageId = x.MessageId!,
                 Text = x.Text,
                 Time = x.Time,
             })
