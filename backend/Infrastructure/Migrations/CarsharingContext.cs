@@ -19,8 +19,6 @@ public class CarsharingContext : IdentityDbContext<User>
 
     public virtual DbSet<UserInfo> UserInfos { get; set; }
 
-    public new virtual DbSet<UserRole> UserRoles { get; set; }
-
     public override DbSet<User> Users { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
@@ -31,9 +29,6 @@ public class CarsharingContext : IdentityDbContext<User>
     
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
-    public virtual DbSet<Message> Messages { get; set; }
-
-    
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

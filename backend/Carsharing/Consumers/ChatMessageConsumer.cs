@@ -2,13 +2,14 @@
 using Persistence.Chat.ChatEntites.Dtos;
 using Domain.Entities;
 using Migrations.CarsharingApp;
+using Migrations.Chat;
 
 namespace Carsharing.Consumers;
 
 public class ChatMessageConsumer : IConsumer<ChatMessageDto>
 {
-    private readonly CarsharingContext _ctx;
-    public ChatMessageConsumer(CarsharingContext context) 
+    private readonly ChatContext _ctx;
+    public ChatMessageConsumer(ChatContext context) 
     {
         _ctx = context;
     }
