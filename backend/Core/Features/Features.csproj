@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="CarManagment\" />
+    <Folder Include="UserProfile\" />
+    <Folder Include="Tariffs\" />
+    <Folder Include="Posts\" />
+    <Folder Include="CarBooking\" />
+  </ItemGroup>
+
+</Project>
