@@ -14,6 +14,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Services.Abstractions\Services.Abstractions.csproj" />
-    <ProjectReference Include="..\Migrations\Migrations.csproj" />
   </ItemGroup>
 </Project>

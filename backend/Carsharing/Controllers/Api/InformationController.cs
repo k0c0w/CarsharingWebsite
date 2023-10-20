@@ -2,7 +2,6 @@ using System.Globalization;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Migrations.CarsharingApp;
 
 namespace Carsharing.Controllers;
 

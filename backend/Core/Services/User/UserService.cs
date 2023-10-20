@@ -6,7 +6,6 @@ using Domain;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Migrations.CarsharingApp;
 using Services.Abstractions;
 using Services.Exceptions;
 using EditUserDto = Contracts.UserInfo.EditUserDto;

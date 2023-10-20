@@ -5,7 +5,6 @@ using Carsharing.Helpers.Extensions.ServiceRegistration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Domain;
-using Migrations.CarsharingApp;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

@@ -1,18 +1,16 @@
 ﻿using Domain;
 using Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Migrations.Chat;
-
-public class ChatContext : IdentityDbContext<User>
+namespace Migrations.Chat
 {
-    public DbSet<Message> Messages { get; set; }
-
-    public override DbSet<User> Users { get; set; }
-
-    public ChatContext(DbContextOptions<ChatContext> options) : base(options)
+    public class ChatContext : DbContext
     {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        public DbSet<Message> Messages { get; set; }
+
+        public ChatContext(DbContextOptions<CarsharingContext> options) : base(options)
+        {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        }
     }
 }
