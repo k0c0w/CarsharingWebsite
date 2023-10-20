@@ -2,12 +2,18 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
-using Microsoft.EntityFrameworkCore;
+using Carsharing.Helpers.Options;
 using Microsoft.AspNetCore.Mvc;
-using Domain;
+using Domain.Common;
+using MassTransit;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
+var config = builder.Configuration;
+
+services.Configure<RabbitMqOption>(builder.Configuration.GetSection(RabbitMqOption.RabbitMq));
+services.AddSingleton(sp => sp.GetRequiredService<IOptions<RabbitMqOption>>().Value);
 
 services.AddDatabase(builder.Configuration)
         .AddIdentityAuthorization()
@@ -18,6 +24,22 @@ services.AddAutoMapper(typeof(Program).Assembly)
 
 services.RegisterChat()
         .RegisterBuisnessLogicServices();
+
+services.AddMassTransit(busConfig =>
+{
+    busConfig.SetKebabCaseEndpointNameFormatter();
+    busConfig.AddConsumer<ChatMessageConsumer>();
+    busConfig.UsingRabbitMq((context, cfg) =>
+    {
+        RabbitMqOption options = context.GetRequiredService<RabbitMqOption>(); // Пытался через option вытащить данные, но не получается
+        cfg.ConfigureEndpoints(context);
+        cfg.Host(new Uri(config["RabbitMq:Host"]!), c => {
+            c.Username(config["RabbitMq:Username"]!);
+            c.Password(config["RabbitMq:Password"]!);
+        });
+    });
+});
+services.AddTransient<IMessageProducer, MessageProducer>();
 
 services.Configure<ApiBehaviorOptions>(o =>
 {
@@ -58,8 +80,9 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
+
 var app = builder.Build();
-await TryMigrateDatabase(app);
 
 app.UseHttpsRedirection()
    .UseStaticFiles()
@@ -79,23 +102,3 @@ app.MapControllers();
 app.MapHub<ChatHub>("/chat");
 
 app.Run();
-
-
-async Task TryMigrateDatabase(WebApplication app)
-{
-    try
-    {
-        await using var scope = app.Services.CreateAsyncScope();
-        var sp = scope.ServiceProvider;
-
-        await using var db = sp.GetRequiredService<CarsharingContext>();
-
-        await db.Database.MigrateAsync();
-    }
-    catch (Exception e)
-    {
-        app.Logger.LogError(e, "Error while migrating the database");
-        Environment.Exit(-1);
-    }
-
-}

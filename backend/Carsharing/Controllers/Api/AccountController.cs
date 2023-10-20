@@ -12,6 +12,8 @@ using Carsharing.ViewModels;
 using Domain.Entities;
 using Domain;
 using Carsharing.Helpers;
+using Domain.Common;
+using Persistence.Chat.ChatEntites.Dtos;
 
 
 namespace Carsharing.Controllers;
@@ -26,17 +28,19 @@ public class AccountController : ControllerBase
     private readonly CarsharingContext _carsharingContext;
     private readonly IConfiguration _configuration;
     private readonly IMapper _mapper;
+    private readonly IMessageProducer _messageProducer;
 
     public AccountController(
         CarsharingContext carsharingContext,
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration
-    )
+        IConfiguration configuration,
+        IMessageProducer messageProducer)
     {
         _mapper = mapper;
         _configuration = configuration;
+        _messageProducer = messageProducer;
         _userManager = userManager;
         _signInManager = signInManager;
         _carsharingContext = carsharingContext;
@@ -168,4 +172,17 @@ public class AccountController : ControllerBase
             Messages = new[] { "Не получилось получить доступ к сервису Google" }
         }
     };
+    
+    [HttpGet("CheckBroker")]
+    [Authorize]
+    public async Task<IActionResult> Check()
+    {
+        await _messageProducer.SendMessage(
+            new ChatMessageDto()
+            { 
+                Text = "Looool!!!",
+                AuthorId = ""
+            });
+        return Ok();
+    }
 }

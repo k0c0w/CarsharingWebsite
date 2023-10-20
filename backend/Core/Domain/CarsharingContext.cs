@@ -106,4 +106,12 @@ public class CarsharingContext : IdentityDbContext<User>
         modelBuilder.Entity<Subscription>().Property(x => x.IsActive).HasDefaultValue(false);
         modelBuilder.Entity<Tariff>().Property(x => x.IsActive).HasDefaultValue(false);
     }
+    
+    protected override async void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (optionsBuilder.IsConfigured)
+            return;
+
+        await Database.MigrateAsync();
+    }    
 }

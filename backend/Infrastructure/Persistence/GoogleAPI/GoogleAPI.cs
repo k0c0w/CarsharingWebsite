@@ -1,6 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿// using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Carsharing.Persistence.GoogleAPI
 {
@@ -31,7 +32,7 @@ namespace Carsharing.Persistence.GoogleAPI
                 response.EnsureSuccessStatusCode(); // Вроде бы необязательно
 
                 string responseText = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<GetTokenResult>(responseText);
+                return JsonSerializer.Deserialize<GetTokenResult>(responseText); // JsonConvert.DeserializeObject 
             }
         }
 
@@ -52,7 +53,7 @@ namespace Carsharing.Persistence.GoogleAPI
                 response.EnsureSuccessStatusCode(); // Вроде бы необязательно
 
                 var responseText = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<GetUserResult>(responseText);
+                return JsonSerializer.Deserialize<GetUserResult>(responseText);
             }
         }
     }
