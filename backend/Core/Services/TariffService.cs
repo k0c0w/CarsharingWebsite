@@ -4,6 +4,7 @@ using Contracts.Tariff;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Migrations.CarsharingApp;
 using Services.Abstractions.Admin;
 using Services.Exceptions;
 

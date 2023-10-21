@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Domain.Common;
 using MassTransit;
 using Microsoft.Extensions.Options;
+using Migrations.CarsharingApp;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -31,7 +32,7 @@ services.AddMassTransit(busConfig =>
     busConfig.AddConsumer<ChatMessageConsumer>();
     busConfig.UsingRabbitMq((context, cfg) =>
     {
-        RabbitMqOption options = context.GetRequiredService<RabbitMqOption>(); // Пытался через option вытащить данные, но не получается
+        RabbitMqOption options = context.GetRequiredService<RabbitMqOption>(); // ??????? ????? option ???????? ??????, ?? ?? ??????????
         cfg.ConfigureEndpoints(context);
         cfg.Host(new Uri(config["RabbitMq:Host"]!), c => {
             c.Username(config["RabbitMq:Username"]!);

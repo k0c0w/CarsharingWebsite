@@ -1,8 +1,9 @@
 using Domain.Entities;
-using Domain;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Migrations.Chat;
+using Migrations.CarsharingApp;
 
 namespace Carsharing;
 
@@ -10,11 +11,15 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        var migrationAssemblyName = typeof(CarsharingContext).Assembly.ToString();
+
         services.AddDbContext<CarsharingContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                x => x.MigrationsAssembly("Domain"));
+                x => x.MigrationsAssembly(migrationAssemblyName));
         });
+
+        services.AddDbContext<ChatContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
         return services;
     }
