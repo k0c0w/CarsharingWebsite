@@ -17,11 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Abstractions", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "Core\Shared\Shared.csproj", "{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Core\Shared\Shared.csproj", "{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Features", "Core\Features\Features.csproj", "{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Features.Admin", "Core\Features.Admin\Features.Admin.csproj", "{C2E75B78-F8DA-4EA3-AC7C-859612AC5C1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Features", "Core\Features\Features.csproj", "{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,10 +63,6 @@ Global
 		{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2E75B78-F8DA-4EA3-AC7C-859612AC5C1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2E75B78-F8DA-4EA3-AC7C-859612AC5C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2E75B78-F8DA-4EA3-AC7C-859612AC5C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2E75B78-F8DA-4EA3-AC7C-859612AC5C1E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

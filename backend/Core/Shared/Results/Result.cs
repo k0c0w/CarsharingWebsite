@@ -25,6 +25,8 @@ public abstract record Result
     public static bool operator true(Result result) => result.IsSuccess;
 
     public static bool operator false(Result result) => !result.IsSuccess;
+
+    public static bool operator !(Result result) => !result.IsSuccess;
 }
 
 public abstract record Result<TModel> : Result

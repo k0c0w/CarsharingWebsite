@@ -8,10 +8,16 @@
 
   <ItemGroup>
     <Folder Include="CarManagment\" />
+    <Folder Include="Tariffs\Commands\" />
     <Folder Include="UserProfile\" />
-    <Folder Include="Tariffs\" />
     <Folder Include="Posts\" />
     <Folder Include="CarBooking\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
 </Project>
