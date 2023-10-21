@@ -38,8 +38,8 @@ services.AddMassTransit(busConfig =>
             c.Password(config["RabbitMq:Password"]!);
         });
     });
-});
-services.AddTransient<IMessageProducer, MessageProducer>();
+})
+    .AddTransient<IMessageProducer, MessageProducer>();
 
 services.Configure<ApiBehaviorOptions>(o =>
 {
@@ -79,8 +79,6 @@ if (builder.Environment.IsDevelopment())
         options.Cookie.HttpOnly = true;
     });
 }
-
-builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
 var app = builder.Build();
 

@@ -27,6 +27,6 @@ public class ChatMessageConsumer : IConsumer<ChatMessageDto>
         };
 
         await _ctx.Messages.AddAsync(message).ConfigureAwait(false);
-        await _ctx.SaveChangesAsync();
+        _ctx.SaveChangesAsync();
     }
 }

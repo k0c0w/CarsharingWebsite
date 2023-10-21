@@ -2,5 +2,5 @@
 
 public interface IMessageProducer
 {
-    Task SendMessage<T>(T message, CancellationToken cancellationToken = default) where T: class; 
+    Task SendMessageAsync<T>(T message, CancellationToken cancellationToken = default) where T: class; 
 }

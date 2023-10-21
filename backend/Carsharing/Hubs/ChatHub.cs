@@ -46,7 +46,7 @@ public class ChatHub : Hub<IChatClient>
         message.Time = DateTime.UtcNow;
         message.AuthorName = chatUser!.Name;
         if (IsAuthenticatedUser())
-            await _publisher.SendMessage(new ChatMessageDto()
+            await _publisher.SendMessageAsync(new ChatMessageDto()
             {
                 AuthorId = chatUser!.UserId,
                 RoomInitializerId = roomId,
