@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Migrations.CarsharingApp;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -12,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Entities.Migrations
 {
     [DbContext(typeof(CarsharingContext))]
-    [Migration("20230503195036_Initial")]
-    partial class Initial
+    [Migration("20230514130809_ChangedCarGeoType")]
+    partial class ChangedCarGeoType
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,11 +60,11 @@ namespace Entities.Migrations
                         .HasMaxLength(9)
                         .HasColumnType("character varying(9)");
 
-                    b.Property<double>("ParkingLatitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("ParkingLatitude")
+                        .HasColumnType("numeric");
 
-                    b.Property<double>("ParkingLongitude")
-                        .HasColumnType("double precision");
+                    b.Property<decimal>("ParkingLongitude")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
@@ -165,17 +166,15 @@ namespace Entities.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("SubscriptionId");
 
                     b.HasIndex("CarId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Subscriptions");
                 });
@@ -501,7 +500,9 @@ namespace Entities.Migrations
 
                     b.HasOne("Domain.Entities.User", "User")
                         .WithMany("Subscriptions")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Car");
 
