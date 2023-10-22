@@ -8,7 +8,7 @@ namespace Carsharing.ChatHub;
 
 public class MessageProducer : IMessageProducer
 {
-    private IPublishEndpoint _publishEndpoint;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public MessageProducer(IPublishEndpoint publishEndpoint)
     {

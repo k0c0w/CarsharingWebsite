@@ -294,8 +294,8 @@ public class ChatHub : Hub<IChatClient>
     private Task SendRoomIdToConnectionAsync(string connectionId, string roomId)
         => Clients.Clients(connectionId).SendAsync("RecieveRoomId", roomId);
 
-    private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message) 
-        => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message); 
+    private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message)
+        => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message!); 
 
     private bool IsCurrentUserManager()
     {
