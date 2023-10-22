@@ -1,11 +1,11 @@
-﻿using Domain.Repository;
-using Migrations.Chat;
+﻿using Migrations.Chat;
+using Persistence.Chat;
 using Persistence.RepositoryImplementation;
 
 
 namespace Persistence.UnitOfWork;
 
-internal class ChatUnitOfWork : IMessageUnitOfWork
+public class ChatUnitOfWork : IMessageUnitOfWork
 {
     private readonly ChatContext _ctx;
 

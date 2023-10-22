@@ -1,9 +1,11 @@
-﻿using MassTransit;
+﻿using Domain;
+using Domain.Entities;
+using MassTransit;
 using Persistence.Chat.ChatEntites.Dtos;
 using Domain.Entities;
 using Persistence.Chat;
 
-namespace Carsharing.Consumers;
+namespace Carsharing.ChatHub;
 
 public class ChatMessageConsumer : IConsumer<ChatMessageDto>
 {
@@ -27,6 +29,6 @@ public class ChatMessageConsumer : IConsumer<ChatMessageDto>
         };
 
         await _messageUoW.MessageRepository.AddAsync(message).ConfigureAwait(false);
-        _messageUoW.SaveChanges();
+        await _messageUoW.SaveChangesAsync().ConfigureAwait(false);
     }
 }

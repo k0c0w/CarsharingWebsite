@@ -2,23 +2,25 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Domain;
+using MassTransit;
 using Migrations.CarsharingApp;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services.AddDatabase(builder.Configuration)
-        .AddIdentityAuthorization()
+        .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+
+services.AddIdentityAuthorization()
         .AddControllers();
 
-services.AddAutoMapper(typeof(Program).Assembly)
-        .RegisterSwagger();
+services.AddAutoMapper(typeof(Program).Assembly);
 
 services.RegisterChat()
-        .RegisterBuisnessLogicServices();
+        .RegisterBuisnessLogicServices()
+        .RegisterSwagger();
 
 services.Configure<ApiBehaviorOptions>(o =>
 {
@@ -60,7 +62,7 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
-await TryMigrateDatabase(app);
+var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
 app.UseHttpsRedirection()
    .UseStaticFiles()
@@ -79,10 +81,13 @@ app.UseAuthentication()
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
 
+
+await migrateDatabaseTask;
 app.Run();
 
 
-async Task TryMigrateDatabase(WebApplication app)
+
+async Task TryMigrateDatabaseAsync(WebApplication app)
 {
     try
     {

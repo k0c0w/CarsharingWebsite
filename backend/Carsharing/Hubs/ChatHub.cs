@@ -6,22 +6,23 @@ using Microsoft.AspNetCore.SignalR;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.SignalRModels;
 using System.Runtime.CompilerServices;
+using Domain.Common;
 using Persistence;
 
 namespace Carsharing.ChatHub;
 
-public class ChatHub : Hub
+public class ChatHub : Hub<IChatClient>
 {
     private const string ADMIN_GROUP = "managers";
 
-    private readonly IBus _publisher;
+    private readonly IMessageProducer _publisher;
     private readonly UserManager<User> _userManager;
     private readonly IChatUserRepository _chatUserRepository;
     private readonly IChatRoomRepository _chatRoomRepository;
 
-    public ChatHub(IBus bus, UserManager<User> userManager, IChatUserRepository userRepository, IChatRoomRepository roomRepository)
+    public ChatHub(IMessageProducer publisher, UserManager<User> userManager, IChatUserRepository userRepository, IChatRoomRepository roomRepository)
     {
-        _publisher = bus;
+        _publisher = publisher;
         _userManager = userManager;
         _chatUserRepository = userRepository;
         _chatRoomRepository = roomRepository;
@@ -45,7 +46,7 @@ public class ChatHub : Hub
         message.Time = DateTime.UtcNow;
         message.AuthorName = chatUser!.Name;
         if (IsAuthenticatedUser())
-            await _publisher.Publish(new ChatMessageDto()
+            await _publisher.SendMessageAsync(new ChatMessageDto()
             {
                 AuthorId = chatUser!.UserId,
                 RoomInitializerId = roomId,
@@ -55,7 +56,7 @@ public class ChatHub : Hub
             })
             .ConfigureAwait(false);
 
-        await Clients.Group(roomId).SendAsync("RecieveMessage", message).ConfigureAwait(false);
+        await Clients.Group(roomId).RecieveMessage(message).ConfigureAwait(false);
     }
 
     [Authorize(Roles = nameof(Role.Manager))]
@@ -67,7 +68,7 @@ public class ChatHub : Hub
 
         if (!(_chatUserRepository.ContainsUserById(managerId) && _chatRoomRepository.TryGetRoom(roomId, out var room)))
         {
-            await Clients.Client(connectionId).SendAsync(nameof(JoinRoomResult), new JoinRoomResult() { RoomId = roomId }).ConfigureAwait(false);
+            await Clients.Client(connectionId).JoinRoomResult(new JoinRoomResult() { RoomId = roomId }).ConfigureAwait(false);
             return;
         }
 
@@ -78,11 +79,11 @@ public class ChatHub : Hub
         }
 
         await AddConnectionToGroupAsync(connectionId, roomId);
-        await Clients.Client(connectionId).SendAsync(nameof(JoinRoomResult), new JoinRoomResult() { RoomId = roomId, Success = true }).ConfigureAwait(false);
+        await Clients.Client(connectionId).JoinRoomResult(new JoinRoomResult() { RoomId = roomId, Success = true }).ConfigureAwait(false);
 
         if (roomWasEmpty)
         {
-            await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate()
+            await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate()
             {
                 RoomId = roomId,
                 Event = RoomUpdateEvent.ManagerJoined,
@@ -100,13 +101,13 @@ public class ChatHub : Hub
 
         if (!(_chatUserRepository.ContainsUserById(managerId) && _chatRoomRepository.TryGetRoom(roomId, out var room)))
         {
-            await Clients.Client(connectionId).SendAsync(nameof(LeaveRoomResult), new LeaveRoomResult () { RoomId = roomId }).ConfigureAwait(false);
+            await Clients.Client(connectionId).LeaveRoomResult(new LeaveRoomResult () { RoomId = roomId }).ConfigureAwait(false);
             return;
         }
 
         if (!room!.ProcessingManagersIds.Contains(managerId))
         {
-            await Clients.Client(connectionId).SendAsync(nameof(LeaveRoomResult), new LeaveRoomResult() { RoomId = roomId }).ConfigureAwait(false);
+            await Clients.Client(connectionId).LeaveRoomResult (new LeaveRoomResult() { RoomId = roomId }).ConfigureAwait(false);
             return;
         }
 
@@ -114,11 +115,11 @@ public class ChatHub : Hub
 
         if (room.ProcessingManagersCount == 0)
         {
-            await Clients.Group(roomId).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = roomId, Event = RoomUpdateEvent.ManagerLeft }).ConfigureAwait(false);
+            await Clients.Group(roomId).ChatRoomUpdate (new ChatRoomUpdate() { RoomId = roomId, Event = RoomUpdateEvent.ManagerLeft }).ConfigureAwait(false);
         }
 
         await Groups.RemoveFromGroupAsync(connectionId, roomId)
-            .ContinueWith((previousTask) => Clients.Client(connectionId).SendAsync(nameof(LeaveRoomResult), new LeaveRoomResult() { RoomId = roomId, Success = true }))
+            .ContinueWith((previousTask) => Clients.Client(connectionId).LeaveRoomResult(new LeaveRoomResult() { RoomId = roomId, Success = true }))
             .ConfigureAwait(false);
     }
 
@@ -149,7 +150,7 @@ public class ChatHub : Hub
     private async Task ExecuteUnauthorizeDisconnectAsync(string disconnectedUserId)
     {
         _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
-        await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+        await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
         _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
         _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
     }
@@ -172,7 +173,7 @@ public class ChatHub : Hub
 
                 _chatUserRepository.TryRemoveUser(actualUserId, out _);
                 _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-                await Clients.Group(ADMIN_GROUP).SendAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+                await Clients.Group(ADMIN_GROUP).ChatRoomUpdate( new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
             }
         }
     }
@@ -196,7 +197,7 @@ public class ChatHub : Hub
             else
             {
                 await AddConnectionToGroupAsync(connectionId, GetUserId());
-                await SendRoomIdToConectionAsync(connectionId, GetUserId());
+                await SendRoomIdToConnectionAsync(connectionId, GetUserId());
             }
 
             return;
@@ -281,7 +282,7 @@ public class ChatHub : Hub
     private Task NotifyAboutRoomCreationAsync(string roomId, string userFirstName)
     {
         return SendToAdminsAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = roomId, RoomName = userFirstName, Event = RoomUpdateEvent.Created})
-        .ContinueWith((task) => SendRoomIdToConectionAsync(Context.ConnectionId, roomId));
+        .ContinueWith((task) => SendRoomIdToConnectionAsync(Context.ConnectionId, roomId));
     }
 
     /// <summary>
@@ -290,11 +291,11 @@ public class ChatHub : Hub
     /// <param name="connectionId"></param>
     /// <param name="roomId"></param>
     /// <returns></returns>
-    private Task SendRoomIdToConectionAsync(string connectionId, string roomId)
+    private Task SendRoomIdToConnectionAsync(string connectionId, string roomId)
         => Clients.Clients(connectionId).SendAsync("RecieveRoomId", roomId);
 
-    private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message) 
-        => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message); 
+    private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message)
+        => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message!); 
 
     private bool IsCurrentUserManager()
     {
