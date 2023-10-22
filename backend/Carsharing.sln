@@ -15,14 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Core\Contracts
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Abstractions", "Core\Services.Abstractions\Services.Abstractions.csproj", "{2FD5E266-883B-41C3-BD92-2FB0655BF54C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C4CB562E-5ECB-4B9E-92EB-7128A2CFB9A8}"
-	ProjectSection(SolutionItems) = preProject
-		docker-compose.yml = docker-compose.yml
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatConsumers", "ChatConsumers\ChatConsumers.csproj", "{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatConsumers", "ChatConsumers\ChatConsumers.csproj", "{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -4,6 +4,8 @@ using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
+using Migrations.CarsharingApp;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -60,6 +62,7 @@ if (builder.Environment.IsDevelopment())
 }
 
 var app = builder.Build();
+var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
 app.UseHttpsRedirection()
    .UseStaticFiles()
@@ -78,4 +81,27 @@ app.UseAuthentication()
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
 
+
+await migrateDatabaseTask;
 app.Run();
+
+
+
+async Task TryMigrateDatabaseAsync(WebApplication app)
+{
+    try
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var sp = scope.ServiceProvider;
+
+        await using var db = sp.GetRequiredService<CarsharingContext>();
+
+        await db.Database.MigrateAsync();
+    }
+    catch (Exception e)
+    {
+        app.Logger.LogError(e, "Error while migrating the database");
+        Environment.Exit(-1);
+    }
+
+}
