@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:  
-  ChatHistorySaver:
+  chat_history_saver:
       build: 
         context: ./backend
         dockerfile: ChatConsumersDockerfile 
@@ -12,6 +12,8 @@ services:
         - RabbitMqConfig__Password=P@ssw0rd
         - RabbitMqConfig__Hostname=RabbitMq
         - RabbitMqConfig__Port=5672
+      depends_on:
+       - rabbitmq
         
   backend:
       build: 
@@ -24,8 +26,10 @@ services:
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
         - Authorization__Google__AppId = ${GOOGLE_APP_ID}
         - Authorization__Google__AppSecret = ${GOOGLE_APP_SECRET}
+        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       depends_on:
-       - db    
+       - db 
+       - rabbitmq   
       ports:
         - ${BACK_ASP_PORTS}
         
@@ -51,7 +55,6 @@ services:
         PGDATA: "/var/lib/postgresql/data/pgdata"
       volumes:
         - ../2. Init Database:/docker-entrypoint-initdb.d
-        - habrdb-data:/var/lib/postgresql/data
       ports:
         - ${DB_PORTS}
         
@@ -63,15 +66,3 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "chatConsumer"
       RABBITMQ_DEFAULT_PASS: "P@ssw0rd"
-    
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:7.2
-    environment:
-      PGADMIN_EMAIL: "goust334@gmail.com"
-      PGADMIN_PASSWORD: "P@ssw0rd"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    ports:
-      - ${PGADMIN_PORTS}
