@@ -24,9 +24,11 @@ services:
         - FrontendHost__Main = ${FRONT__MAIN}
         - FrontendHost__Admin = ${FRONT__ADMIN}
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
+        - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+        - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
         - Authorization__Google__AppId = ${GOOGLE_APP_ID}
         - Authorization__Google__AppSecret = ${GOOGLE_APP_SECRET}
-        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
         - RabbitMqConfig__Username=chatConsumer
         - RabbitMqConfig__Password=Passw0rd
         - RabbitMqConfig__Hostname=rabbitmq
@@ -36,6 +38,10 @@ services:
        - rabbitmq   
       ports:
         - ${BACK_ASP_PORTS}
+        - ${BACK_ASP_PORTS2}
+      volumes:
+        - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+        - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/
         
   website:
       build: ./frontend/website

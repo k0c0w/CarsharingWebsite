@@ -42,6 +42,7 @@ if (builder.Environment.IsDevelopment())
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
+        Console.WriteLine(configuration["FrontendHost:Admin"]);
 
         options.AddPolicy("DevFrontEnds",
             builder =>
