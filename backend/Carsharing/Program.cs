@@ -2,45 +2,23 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
-using Carsharing.Helpers.Options;
 using Microsoft.AspNetCore.Mvc;
-using Domain.Common;
 using MassTransit;
-using Microsoft.Extensions.Options;
-using Migrations.CarsharingApp;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-var config = builder.Configuration;
-
-services.Configure<RabbitMqOption>(builder.Configuration.GetSection(RabbitMqOption.RabbitMq));
-services.AddSingleton(sp => sp.GetRequiredService<IOptions<RabbitMqOption>>().Value);
 
 services.AddDatabase(builder.Configuration)
-        .AddIdentityAuthorization()
+        .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+
+services.AddIdentityAuthorization()
         .AddControllers();
 
-services.AddAutoMapper(typeof(Program).Assembly)
-        .RegisterSwagger();
+services.AddAutoMapper(typeof(Program).Assembly);
 
 services.RegisterChat()
-        .RegisterBuisnessLogicServices();
-
-services.AddMassTransit(busConfig =>
-{
-    busConfig.SetKebabCaseEndpointNameFormatter();
-    busConfig.AddConsumer<ChatMessageConsumer>();
-    busConfig.UsingRabbitMq((context, cfg) =>
-    {
-        RabbitMqOption options = context.GetRequiredService<RabbitMqOption>(); // ??????? ????? option ???????? ??????, ?? ?? ??????????
-        cfg.ConfigureEndpoints(context);
-        cfg.Host(new Uri(config["RabbitMq:Host"]!), c => {
-            c.Username(config["RabbitMq:Username"]!);
-            c.Password(config["RabbitMq:Password"]!);
-        });
-    });
-})
-    .AddTransient<IMessageProducer, MessageProducer>();
+        .RegisterBuisnessLogicServices()
+        .RegisterSwagger();
 
 services.Configure<ApiBehaviorOptions>(o =>
 {

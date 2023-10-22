@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Migrations.Chat;
 using Migrations.CarsharingApp;
+using MassTransit;
+using Carsharing.Helpers.Options;
 
 namespace Carsharing;
 
@@ -20,6 +22,23 @@ public static class IServiceCollectionExtensions
         });
 
         services.AddDbContext<ChatContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+
+        return services;
+    }
+
+    public static IServiceCollection AddMassTransitWithRabbitMQProvider(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(config =>
+        {
+            config.UsingRabbitMq((ctx, cfg) =>
+            {
+                cfg.Host(configuration
+                        .GetSection(RabbitMqConfig.SectionName)
+                        .Get<RabbitMqConfig>()!
+                        .FullHostname);
+                cfg.ConfigureEndpoints(ctx);
+            });
+        });
 
         return services;
     }

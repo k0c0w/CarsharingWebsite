@@ -1,9 +1,22 @@
 version: '3.9'
 
-services:
-  
+services:  
+  ChatHistorySaver:
+      build: 
+        context: ./backend
+        dockerfile: ChatConsumersDockerfile 
+      container_name: chatConsumer
+      environment:
+        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+        - RabbitMqConfig__Username=chatConsumer
+        - RabbitMqConfig__Password=P@ssw0rd
+        - RabbitMqConfig__Hostname=RabbitMq
+        - RabbitMqConfig__Port=5672
+        
   backend:
-      build: ./backend
+      build: 
+        context: ./backend
+        dockerfile: CarsharingDockerfile
       container_name: backend
       environment:
         - FrontendHost__Main = ${FRONT__MAIN}
@@ -41,6 +54,15 @@ services:
         - habrdb-data:/var/lib/postgresql/data
       ports:
         - ${DB_PORTS}
+        
+  rabbitmq:
+    container_name: RabbitMq
+    image: rabbitmq:3-alpine
+    ports:
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "chatConsumer"
+      RABBITMQ_DEFAULT_PASS: "P@ssw0rd"
     
   pgadmin:
     container_name: pgadmin_container
@@ -53,7 +75,3 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - ${PGADMIN_PORTS}
-
-volumes:
-  habrdb-data:
-  pgadmin-data:

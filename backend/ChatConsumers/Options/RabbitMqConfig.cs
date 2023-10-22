@@ -1,4 +1,4 @@
-﻿namespace Carsharing.Helpers.Options;
+﻿namespace ChatConsumers.Options;
 
 public class RabbitMqConfig
 {

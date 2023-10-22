@@ -1,5 +1,8 @@
 ﻿using Persistence.Chat;
 using Persistence;
+using MassTransit;
+using Carsharing.ChatHub;
+using Domain.Common;
 
 namespace Carsharing.Helpers.Extensions.ServiceRegistration
 {
@@ -10,6 +13,8 @@ namespace Carsharing.Helpers.Extensions.ServiceRegistration
             services.AddSignalR();
             services.AddSingleton<IChatRoomRepository, ChatRepository>();
             services.AddSingleton<IChatUserRepository, ChatRepository>();
+
+            services.AddTransient<IMessageProducer, MessageProducer>();
 
             return services;
         }
