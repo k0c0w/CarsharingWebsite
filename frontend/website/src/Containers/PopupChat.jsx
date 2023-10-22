@@ -34,7 +34,7 @@ export default function PopupChat () {
 
         connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
 
-        connection.onclose(e => {
+        connection.onclose(() => {
           setConnection();
           setMessages([]);
         });

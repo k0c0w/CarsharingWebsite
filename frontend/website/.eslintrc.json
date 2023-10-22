@@ -13,7 +13,13 @@
     },
     "plugins": ["react", "react-hooks"],
     "rules": {
-	"react/react-in-jsx-scope": "off",
-        "react-hooks/exhaustive-deps": "off"
+	    "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "react-hooks/exhaustive-deps": "off"
+    },
+    "settings": {
+       "react": {
+          "version": "detect"
+          }
     }
 }  

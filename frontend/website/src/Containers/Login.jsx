@@ -3,7 +3,7 @@ import Container from '../Components/Container'
 import React from 'react'
 import Form, { Input } from '../Components/formTools'
 import Bold from '../Components/TextTags'
-import { Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useRef } from 'react'
 import API from '../httpclient/axios_client'
 import { areValidLoginFields } from '../js/form-validators'
@@ -11,7 +11,7 @@ import GoogleSignIn from '../Components/SignInButtons'
 import "../css/form.css";
 
 
-export default function Login ({setUser, user}) {
+export default function Login ({setUser}) {
   const [errors, setErrors] = useState({})
   const [formSummary, setFormSummary] = useState();
   const [requestSent, setRequestSent] = useState(false);
