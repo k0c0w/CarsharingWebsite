@@ -10,7 +10,7 @@ services:
         - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
         - RabbitMqConfig__Username=chatConsumer
         - RabbitMqConfig__Password=P@ssw0rd
-        - RabbitMqConfig__Hostname=RabbitMq
+        - RabbitMqConfig__Hostname=rabbitmq
         - RabbitMqConfig__Port=5672
       depends_on:
        - rabbitmq
@@ -27,6 +27,10 @@ services:
         - Authorization__Google__AppId = ${GOOGLE_APP_ID}
         - Authorization__Google__AppSecret = ${GOOGLE_APP_SECRET}
         - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+        - RabbitMqConfig__Username=chatConsumer
+        - RabbitMqConfig__Password=P@ssw0rd
+        - RabbitMqConfig__Hostname=rabbitmq
+        - RabbitMqConfig__Port=5672
       depends_on:
        - db 
        - rabbitmq   
@@ -59,7 +63,7 @@ services:
         - ${DB_PORTS}
         
   rabbitmq:
-    container_name: RabbitMq
+    container_name: rabbitmq
     image: rabbitmq:3-alpine
     ports:
       - "5672:5672"

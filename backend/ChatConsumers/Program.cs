@@ -15,11 +15,11 @@ builder.Services.AddMassTransit(config =>
 
     config.UsingRabbitMq((ctx, cfg) =>
     {
+        cfg.ConfigureEndpoints(ctx);
         cfg.Host(builder.Configuration
-            .GetSection(RabbitMqConfig.SectionName)
+            .GetSection(nameof(RabbitMqConfig))
             .Get<RabbitMqConfig>()!
             .FullHostname);
-        cfg.ConfigureEndpoints(ctx);
     });
 });
 builder.Services.AddScoped<IMessageUnitOfWork, ChatUnitOfWork>();
