@@ -2,7 +2,10 @@
 WORKDIR /app
 EXPOSE 444
 
+ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
+
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
 WORKDIR /src
 RUN dotnet tool install --global dotnet-ef
 COPY ["ChatConsumers/ChatConsumers.csproj", "ChatConsumers/"]
