@@ -34,7 +34,7 @@ export default function Index({user}) {
         <DocumentTitle>Drive</DocumentTitle>
         <GreetingSection title="Drive" subtitle="Онлайн аренда автомобиля" backgroundImageClass="index-greeting">
             <div className="greeting-buttons">
-                <button className="button" onClick={() => scrollTo({ref:tariffs})}>Аренда</button>
+                <button className="button" onClick={() => scrollTo({ref:tariffs})}>Аренда </button>
                 <button className="button" onClick={() => scrollTo({ref:chat})}>Задать вопрос</button>          
             </div>
         </GreetingSection>

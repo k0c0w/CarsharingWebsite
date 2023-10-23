@@ -26,7 +26,8 @@ services:
   website:
       build: ./frontend/website
       container_name: frontend
-      
+      environment:
+        - REACT_APP_API_URL=${API_URL}
       ports:
         - ${FRONT_WEBSITE_PORTS}
         
