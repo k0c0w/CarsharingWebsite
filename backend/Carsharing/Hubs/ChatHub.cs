@@ -173,11 +173,10 @@ public class ChatHub : Hub<IChatClient>
 
                 _chatUserRepository.TryRemoveUser(actualUserId, out _);
                 _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-                await Clients.Group(ADMIN_GROUP).ChatRoomUpdate( new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+                await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
             }
         }
     }
-
 
     private async Task ExecuteAuthorizedPipelineAsync()
     {
@@ -281,7 +280,7 @@ public class ChatHub : Hub<IChatClient>
     /// <returns></returns>
     private Task NotifyAboutRoomCreationAsync(string roomId, string userFirstName)
     {
-        return SendToAdminsAsync(nameof(ChatRoomUpdate), new ChatRoomUpdate() { RoomId = roomId, RoomName = userFirstName, Event = RoomUpdateEvent.Created})
+        return Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = roomId, RoomName = userFirstName, Event = RoomUpdateEvent.Created})
         .ContinueWith((task) => SendRoomIdToConnectionAsync(Context.ConnectionId, roomId));
     }
 
@@ -292,10 +291,7 @@ public class ChatHub : Hub<IChatClient>
     /// <param name="roomId"></param>
     /// <returns></returns>
     private Task SendRoomIdToConnectionAsync(string connectionId, string roomId)
-        => Clients.Clients(connectionId).SendAsync("RecieveRoomId", roomId);
-
-    private Task SendToAdminsAsync<TMessage>(string hubMethod, TMessage message)
-        => Clients.Group(ADMIN_GROUP).SendAsync(hubMethod, message!); 
+        => Clients.Clients(connectionId).RecieveRoomId(roomId);
 
     private bool IsCurrentUserManager()
     {

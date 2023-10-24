@@ -8,5 +8,5 @@ public interface IChatClient
     Task JoinRoomResult(JoinRoomResult joinRoomResult);
     Task LeaveRoomResult(LeaveRoomResult leaveRoomResult);
     Task ChatRoomUpdate(ChatRoomUpdate chatRoomUpdate);
-    Task SendAsync(string method, object message);
+    Task RecieveRoomId(string roomId);
 }
