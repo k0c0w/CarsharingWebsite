@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'https://localhost:81/api') {
+    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
         const options = {
             baseURL: url,
             timeout: 10000,

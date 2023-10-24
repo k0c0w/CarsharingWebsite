@@ -26,7 +26,7 @@ export default function PopupChat () {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl('https://localhost:81/chat')
+          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL)
           .configureLogging(LogLevel.Information)
           .build();
 
