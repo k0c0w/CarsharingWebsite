@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = process.env.REACT_APP_API_URL) {
+    constructor(url = process.env.REACT_APP_FRONTEND_API_URL) {
         const options = {
             baseURL: url,
             timeout: 10000,

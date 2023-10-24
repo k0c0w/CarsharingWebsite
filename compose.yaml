@@ -27,13 +27,15 @@ services:
       build: ./frontend/website
       container_name: frontend
       environment:
-        - REACT_APP_API_URL=${API_URL}
+        - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
       ports:
         - ${FRONT_WEBSITE_PORTS}
         
   admin:
       build: ./frontend/admin
       container_name: admin_dashboard
+      environment:
+        - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
       ports:
         - ${FRONT_ADMIN_PORTS}
   db:
