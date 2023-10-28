@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Section, { SectionTitle } from "../Sections";
 import Container from "../Container";
 import "../../css/rectangle-link.css";
@@ -32,4 +32,5 @@ export const IndexTariffs =  React.forwardRef((props, ref) => (
       </Container>
   </Section>
 ));
+IndexTariffs.displayName = "Tariffs"
 export default IndexTariffs;

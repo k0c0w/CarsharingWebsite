@@ -13,7 +13,8 @@ using Domain.Entities;
 using Domain;
 using Carsharing.Helpers;
 using Migrations.CarsharingApp;
-
+using Domain.Common;
+using Persistence.Chat.ChatEntites.Dtos;
 namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
@@ -32,8 +33,7 @@ public class AccountController : ControllerBase
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         _mapper = mapper;
         _configuration = configuration;

@@ -1,0 +1,27 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+WORKDIR /app
+EXPOSE 444
+
+ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+WORKDIR /src
+RUN dotnet tool install --global dotnet-ef
+COPY ["ChatConsumers/ChatConsumers.csproj", "ChatConsumers/"]
+COPY ["Infrastructure/Persistence/Persistence.csproj", "Infrastructure/Persistence/"]
+COPY ["Infrastructure/Migrations/Migrations.csproj", "Infrastructure/Migrations/"]
+RUN dotnet restore "ChatConsumers/ChatConsumers.csproj"
+COPY . .
+WORKDIR "/src/ChatConsumers"
+RUN dotnet build "ChatConsumers.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "ChatConsumers.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "ChatConsumers.dll"]
+
+

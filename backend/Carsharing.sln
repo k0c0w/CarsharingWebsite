@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Abstractions", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatConsumers", "ChatConsumers\ChatConsumers.csproj", "{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Core\Shared\Shared.csproj", "{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Features", "Core\Features\Features.csproj", "{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}"
@@ -55,6 +57,10 @@ Global
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B2DC6F3-C42E-4A77-A8EE-32BECD2E1C05}.Release|Any CPU.ActiveCfg = Release|Any CPU

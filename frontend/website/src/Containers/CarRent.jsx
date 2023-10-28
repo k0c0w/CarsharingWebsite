@@ -45,7 +45,7 @@ export default function CarRent() {
     const [geo, setGeo] = useState({latitude: 55.793987, longitude: 49.120208}) 
     const [carList, setCarList] = useState([]);
     const [block, setBlock] = useState(false);
-    const [startDate, setStartDate] = useState(new Date());
+    const [startDate] = useState(new Date());
     const [endDate, setEndDate] = useState(null);
     const [chose, setChose] = useState(null);
     const navigate = useNavigate();

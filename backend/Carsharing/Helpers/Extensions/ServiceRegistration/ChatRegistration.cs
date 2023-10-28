@@ -1,27 +1,20 @@
 ﻿using Persistence.Chat;
 using Persistence;
-using MassTransit;
-using Carsharing.Consumers;
+using Carsharing.ChatHub;
+using Domain.Common;
 
-namespace Carsharing.Helpers.Extensions.ServiceRegistration
+namespace Carsharing.Helpers.Extensions.ServiceRegistration;
+
+public static class ChatRegistration
 {
-    public static class ChatRegistration
+    public static IServiceCollection RegisterChat(this IServiceCollection services)
     {
-        public static IServiceCollection RegisterChat(this IServiceCollection services)
-        {
-            services.AddSignalR();
-            services.AddSingleton<IChatRoomRepository, ChatRepository>();
-            services.AddSingleton<IChatUserRepository, ChatRepository>();
-            services.AddMassTransit(options =>
-            {
-                options.AddConsumer<ChatMessageConsumer>();
-                options.UsingInMemory((context, configuration) =>
-                {
-                    configuration.ConfigureEndpoints(context);
-                });
-            });
+        services.AddSignalR();
+        services.AddSingleton<IChatRoomRepository, ChatRepository>();
+        services.AddSingleton<IChatUserRepository, ChatRepository>();
 
-            return services;
-        }
+        services.AddTransient<IMessageProducer, MessageProducer>();
+
+        return services;
     }
 }
