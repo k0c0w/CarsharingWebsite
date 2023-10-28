@@ -6,14 +6,14 @@ services:
       build: ./backend
       container_name: backend
       environment:
-        - FrontendHost__Main = ${FRONT__MAIN}
-        - FrontendHost__Admin = ${FRONT__ADMIN}
+        - FrontendHost__Main =${FRONT_MAIN}
+        - FrontendHost__Admin =${FRONT_ADMIN}
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
         - ASPNETCORE_URLS=${ASPNETCORE_URLS}
         - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
         - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-        - Authorization__Google__AppId = ${GOOGLE_APP_ID}
-        - Authorization__Google__AppSecret = ${GOOGLE_APP_SECRET}
+        - Authorization__Google__AppId =${GOOGLE_APP_ID}
+        - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
       depends_on:
        - db    
       ports:
@@ -29,6 +29,7 @@ services:
       environment:
         - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
         - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
+        - REACT_LOCAL_HOST=${FRONT_MAIN}
       ports:
         - ${FRONT_WEBSITE_PORTS}
         
@@ -37,6 +38,10 @@ services:
       container_name: admin_dashboard
       environment:
         - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
+        - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+        - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
+        - REACT_LOCAL_HOST=${FRONT_ADMIN}
+
       ports:
         - ${FRONT_ADMIN_PORTS}
   db:

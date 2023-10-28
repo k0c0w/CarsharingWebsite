@@ -1,7 +1,5 @@
 import axios from "axios"
 
-
-
 class AxiosWrapper {
     constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
@@ -11,7 +9,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Origin": process.env.REACT_LOCAL_HOST,
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
@@ -66,7 +64,7 @@ class AxiosWrapper {
             return result;
         }
         console.log(_body,body)
-        result = await this._put("post/edit/"+body.id, _body);
+        result = await this._put("/post/edit/"+body.id, _body);
 
         return result;
     }
