@@ -2,7 +2,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
-    constructor(url = 'https://localhost:81/api') {
+    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -10,7 +10,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Origin": process.env.REACT_LOCAL_HOST,
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
