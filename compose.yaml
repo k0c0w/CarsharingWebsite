@@ -1,9 +1,26 @@
 version: '3.9'
 
-services:
-  
+services:  
+  chat_history_saver:
+      build: 
+        context: ./backend
+        dockerfile: ChatConsumersDockerfile 
+      container_name: chatConsumer
+      environment:
+        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+        - RabbitMqConfig__Username=chatConsumer
+        - RabbitMqConfig__Password=Passw0rd
+        - RabbitMqConfig__Hostname=rabbitmq
+        - RabbitMqConfig__Port=5672
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+        - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      depends_on:
+       - rabbitmq
+        
   backend:
-      build: ./backend
+      build: 
+        context: ./backend
+        dockerfile: CarsharingDockerfile
       container_name: backend
       environment:
         - FrontendHost__Main =${FRONT_MAIN}
@@ -11,25 +28,30 @@ services:
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
         - ASPNETCORE_URLS=${ASPNETCORE_URLS}
         - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+        - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
         - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
         - Authorization__Google__AppId =${GOOGLE_APP_ID}
         - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
+        - RabbitMqConfig__Username=chatConsumer
+        - RabbitMqConfig__Password=Passw0rd
+        - RabbitMqConfig__Hostname=rabbitmq
+        - RabbitMqConfig__Port=5672
       depends_on:
-       - db    
+       - db 
+       - rabbitmq   
       ports:
         - ${BACK_ASP_PORTS}
         - ${BACK_ASP_PORTS2}
-      volumes:
-        - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
-        - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/
         
   website:
       build: ./frontend/website
       container_name: frontend
       environment:
-        - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
-        - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-        - REACT_LOCAL_HOST=${FRONT_MAIN}
+       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
+       - REACT_LOCAL_HOST=${FRONT_MAIN}
+      
       ports:
         - ${FRONT_WEBSITE_PORTS}
         
@@ -54,22 +76,14 @@ services:
         PGDATA: "/var/lib/postgresql/data/pgdata"
       volumes:
         - ../2. Init Database:/docker-entrypoint-initdb.d
-        - habrdb-data:/var/lib/postgresql/data
       ports:
         - ${DB_PORTS}
-    
-  pgadmin:
-    container_name: pgadmin_container
-    image: dpage/pgadmin4:7.2
-    environment:
-      PGADMIN_EMAIL: "goust334@gmail.com"
-      PGADMIN_PASSWORD: "P@ssw0rd"
-      PGADMIN_CONFIG_SERVER_MODE: "False"
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+        
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-alpine
     ports:
-      - ${PGADMIN_PORTS}
-
-volumes:
-  habrdb-data:
-  pgadmin-data:
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "chatConsumer"
+      RABBITMQ_DEFAULT_PASS: "Passw0rd"

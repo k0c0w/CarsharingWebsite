@@ -67,51 +67,60 @@ export default function Chats () {
             switch(update.event) {
               // Created
               case 1:
-                const newRooms = [{roomName: update.roomName, roomId: update.roomId, pending: true}, ...onlineRooms];
-                setOnlineRooms(newRooms);
-                break;
+              {
+                  const newRooms = [{roomName: update.roomName, roomId: update.roomId, pending: true}, ...onlineRooms];
+                  setOnlineRooms(newRooms);
+                  break;
+              }
               // Deleted
               case 2:
-                const elemIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
-                if (elemIndex > -1) {
-                  setOnlineRooms(onlineRooms.splice(elemIndex, 1));
-                }
+              {
+                  const elemIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                  if (elemIndex > -1) {
+                      setOnlineRooms(onlineRooms.splice(elemIndex, 1));
+                  }
 
-                if (activeRoom && activeRoom.roomId === update.roomId){
-                  setErrorMessage("Комната была закрыта");
-                  setActiveRoomMessages([]);
-                  setActiveRoom();
-                }
+                  if (activeRoom && activeRoom.roomId === update.roomId){
+                      setErrorMessage("Комната была закрыта");
+                      setActiveRoomMessages([]);
+                      setActiveRoom();
+                  }
 
-                break;
+                  break;
+              }
               // Manager joined
-              case 3:
-                const joinedRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
-                if (joinedRoomIndex > -1) {
-                  const oldRoom = onlineRooms[joinedRoomIndex];
-                  oldRoom.pending = false;
-                  onlineRooms[joinedRoomIndex] = oldRoom;
-                  setOnlineRooms(onlineRooms);
-                }
-                break;
+              case 3: {
+                  const joinedRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                  if (joinedRoomIndex > -1) {
+                      const oldRoom = onlineRooms[joinedRoomIndex];
+                      oldRoom.pending = false;
+                      onlineRooms[joinedRoomIndex] = oldRoom;
+                      setOnlineRooms(onlineRooms);
+                  }
+                  break;
+              }
 
               // manager left
-              case 4:
-                const leftRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
-                if (joinedRoomIndex > -1) {
-                  const oldRoom = onlineRooms[leftRoomIndex];
-                  oldRoom.pending = true;
-                  onlineRooms[leftRoomIndex] = oldRoom;
-                  setOnlineRooms(onlineRooms);
-                }
-                break;
-              default:
-                console.log(update);
-                break;
+              case 4: {
+                  const joinedRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                  const leftRoomIndex = onlineRooms.map(room => room.roomId).indexOf(update.roomId);
+                  if (joinedRoomIndex > -1) {
+                      const oldRoom = onlineRooms[leftRoomIndex];
+                      oldRoom.pending = true;
+                      onlineRooms[leftRoomIndex] = oldRoom;
+                      setOnlineRooms(onlineRooms);
+                  }
+                  break;
+              }
+              default: {
+                  console.log(update);
+                  break;
+              }
+              
             }
           });
             
-          localConnection.onclose(e => {
+          localConnection.onclose(() => {
               setConnection();
               setActiveRoomMessages([]);
               setActiveRoom();

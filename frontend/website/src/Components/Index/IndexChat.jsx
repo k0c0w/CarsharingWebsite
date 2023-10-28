@@ -3,7 +3,7 @@ import Section, {SectionTitle} from "../Sections";
 import Container from "../Container";
 import Bold from "../TextTags";
 
-export const IndexChat = React.forwardRef( (props, ref) => (
+const IndexChat = React.forwardRef( (props, ref) => (
     <Section ref={ref} style={{backgroundColor:"#DEF0F0"}}>
         <Container>
             <SectionTitle style={{justifyContent:"center"}}>Остались вопросы?</SectionTitle>
@@ -11,4 +11,5 @@ export const IndexChat = React.forwardRef( (props, ref) => (
         </Container>
     </Section>
 ));
+IndexChat.displayName="Chat"
 export default IndexChat;

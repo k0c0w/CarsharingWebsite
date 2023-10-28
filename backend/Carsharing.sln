@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Core\Contracts
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Abstractions", "Core\Services.Abstractions\Services.Abstractions.csproj", "{2FD5E266-883B-41C3-BD92-2FB0655BF54C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrations", "Infrastructure\Migrations\Migrations.csproj", "{0062E1EB-66AC-4975-ADFF-3C72E154AB82}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatConsumers", "ChatConsumers\ChatConsumers.csproj", "{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0062E1EB-66AC-4975-ADFF-3C72E154AB82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA82CAA-26AB-47C3-B404-E0FCDE23579F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

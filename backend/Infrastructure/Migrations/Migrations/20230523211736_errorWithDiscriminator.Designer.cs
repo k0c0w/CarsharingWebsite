@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Migrations.CarsharingApp;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -12,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Entities.Migrations
 {
     [DbContext(typeof(CarsharingContext))]
-    [Migration("20230523202511_addSeedWithRoles")]
-    partial class addSeedWithRoles
+    [Migration("20230523211736_errorWithDiscriminator")]
+    partial class errorWithDiscriminator
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -323,7 +324,7 @@ namespace Entities.Migrations
                     b.ToTable("UserInfos");
                 });
 
-            modelBuilder.Entity("Domain.Entities.UserRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -332,8 +333,9 @@ namespace Entities.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -351,25 +353,9 @@ namespace Entities.Migrations
 
                     b.ToTable("AspNetRoles", (string)null);
 
-                    b.HasData(
-                        new
-                        {
-                            Id = "-1",
-                            Name = "Manager",
-                            NormalizedName = "MANAGER"
-                        },
-                        new
-                        {
-                            Id = "-2",
-                            Name = "User",
-                            NormalizedName = "USER"
-                        },
-                        new
-                        {
-                            Id = "-3",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityRole");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -478,6 +464,36 @@ namespace Entities.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.UserRole", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityRole");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasDiscriminator().HasValue("UserRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "-1",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        },
+                        new
+                        {
+                            Id = "-2",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        },
+                        new
+                        {
+                            Id = "-3",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
+                });
+
             modelBuilder.Entity("Domain.Entities.Car", b =>
                 {
                     b.HasOne("Domain.Entities.CarModel", "CarModel")
@@ -530,7 +546,7 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -557,7 +573,7 @@ namespace Entities.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Domain.Entities.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

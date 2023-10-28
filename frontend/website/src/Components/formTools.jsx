@@ -11,6 +11,8 @@ export const Input = React.forwardRef((props, ref) => (
     </div>
 ));
 
+Input.displayName = "Input"
+
 export const Form = React.forwardRef((props, ref) => {
     const className = `flex-container ${props.className? props.className : ''}`;
     return (
@@ -19,6 +21,7 @@ export const Form = React.forwardRef((props, ref) => {
     </form>)
 });
 
+Form.displayName = "Form"
 
 
 export const MyFormProfileInput = (props) => {

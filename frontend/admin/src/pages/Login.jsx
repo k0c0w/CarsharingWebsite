@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../theme';
 import { Button } from '@mui/material';
