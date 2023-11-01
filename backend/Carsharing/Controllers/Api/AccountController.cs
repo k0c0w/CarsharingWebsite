@@ -12,8 +12,9 @@ using Carsharing.ViewModels;
 using Domain.Entities;
 using Domain;
 using Carsharing.Helpers;
-
-
+using Migrations.CarsharingApp;
+using Domain.Common;
+using Persistence.Chat.ChatEntites.Dtos;
 namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
@@ -32,8 +33,7 @@ public class AccountController : ControllerBase
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         _mapper = mapper;
         _configuration = configuration;
@@ -63,10 +63,8 @@ public class AccountController : ControllerBase
         var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
-        
-        var principal = await GetClaimsPrincipal(userInfo, user);
+        await _userManager.AddToRoleAsync(user, Role.User.ToString());
         await _signInManager.SignInAsync(user, false);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         
         return Created("/", null);
     }
@@ -81,10 +79,6 @@ public class AccountController : ControllerBase
         var resultSignIn = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
-
-        var userInfo = await _carsharingContext.UserInfos.FirstAsync(x => x.UserId == user.Id);
-        var principal = await GetClaimsPrincipal(userInfo, user);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
         return Ok();
     }
@@ -174,17 +168,4 @@ public class AccountController : ControllerBase
             Messages = new[] { "Не получилось получить доступ к сервису Google" }
         }
     };
-
-    private async Task<ClaimsPrincipal> GetClaimsPrincipal(UserInfo userInfo, User user)
-    {
-        List<Claim> claims = new()
-        {
-            new (ClaimTypes.DateOfBirth, userInfo?.BirthDay.ToString() ?? ""),
-            new ("Passport", userInfo?.Passport ?? "")
-        };
-
-        var pr = await _signInManager.CreateUserPrincipalAsync(user);
-        pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-        return pr;
-    }
 }

@@ -72,7 +72,7 @@ export function ProfileChangePassword () {
             </Form>
         </Section>
     </>
-};
+}
 
 const LeftProfileEdit = ({personalInfo, errors}) => (<>
     <Input inputErrorMessage={errors['email']} required id="email" name="email" placeholder="Почта" value={personalInfo.email} type="email"/>
@@ -93,21 +93,25 @@ export function ProfileEdit () {
     const [errors, setErrors] = useState({});
     const [requestSent, setRequestSent] = useState(false);
 
-    useEffect(async () => {
-        const response = await API.personalInfo();
-        if(response?.successed){
-            console.log(response.data)
-            setPersonalInfo(response.data);
-        }
-        else if(response?.status){
-            if(response.status === 401){
-                navigator(`/login?return_uri=${location.pathname}`);
+    useEffect(() => {
+        async function doThings() {
+            const response = await API.personalInfo();
+            if(response?.successed){
+                console.log(response.data)
+                setPersonalInfo(response.data);
             }
+            else if(response?.status){
+                if(response.status === 401){
+                    navigator(`/login?return_uri=${location.pathname}`);
+                }
+                else
+                    alert('Ошибка сервера! Повторите попытку позже.');
+                }
             else
-                alert('Ошибка сервера! Повторите попытку позже.');
-            }
-        else
-            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+                alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+        }
+
+        doThings();
     },[]);
 
     async function handleSend(event) {
@@ -155,8 +159,8 @@ const CarList = ({cars}) => (
     <>
         <Bold>Мои машины:</Bold>
         <ul className="profile-carlist-list">
-            {cars?.map(car => 
-            <li>
+            {cars?.map((car, i) => 
+            <li key={i}>
                 <Figure figureName="rented-car" className="border-solid">
                     <img className="rented-car-image" src={car.image_url}/>
                     <div className="rented-car-info">
@@ -192,21 +196,25 @@ export default function Profile() {
     const navigator = useNavigate();
     const location = useLocation();
 
-    useEffect(async () => {
-        const response = await API.profile();
-        if(response?.successed){
-            console.log(response.data)
-            setProfileInfo(response.data);
-        }
-        else if(response?.status){
-            if(response.status === 401){
-                navigator(`/login?return_uri=${location.pathname}`);
+    useEffect(() => {
+        async function doThings() {
+            const response = await API.profile();
+            if(response?.successed){
+                console.log(response.data)
+                setProfileInfo(response.data);
             }
+            else if(response?.status){
+                if(response.status === 401){
+                    navigator(`/login?return_uri=${location.pathname}`);
+                }
+                else
+                    alert('Ошибка сервера! Повторите попытку позже.');
+                }
             else
-                alert('Ошибка сервера! Повторите попытку позже.');
-            }
-        else
-            alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+                alert('Произошла ошибка. Проверьте Ваше интернет соединение.');
+        }
+
+        doThings();
     }, []);
 
     return <>

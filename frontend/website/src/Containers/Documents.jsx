@@ -66,10 +66,6 @@ function Carousel({data}) {
         </div>);
 }
 
-
-
-
-
 const News = (props) => (
     <Section id="news" className="news-screen greeting-background news-background news-mobile">
         <Container>
@@ -81,7 +77,7 @@ const News = (props) => (
 )
 
 const Document = ({documentInfo}) => (
-    <a href={documentInfo.url} target="_blank" className="flex-container rectangle-container-item_link">
+    <a href={documentInfo.url} target="_blank" rel="noreferrer" className="flex-container rectangle-container-item_link">
         <div className="flex-container" style={{overflow:"hidden"}}>
             <h3 className="rectangle-container-item_head">{documentInfo.documentName}</h3>
         </div>
@@ -89,7 +85,7 @@ const Document = ({documentInfo}) => (
     </a>
 );
 
-export function Documents (props) {
+export function Documents () {
     const [documentLinks, setDocumentLinks] = useState([]);
     const [news, setNews] = useState([]);
     useState(() => { 

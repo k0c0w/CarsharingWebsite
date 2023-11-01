@@ -2,6 +2,7 @@ using Contracts;
 using Domain;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Migrations.CarsharingApp;
 using Services.Abstractions;
 using Services.Exceptions;
 

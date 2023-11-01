@@ -1,0 +1,163 @@
+.popup-chat { 
+    position:fixed; 
+    width: 30vw;
+    height: 60vh; 
+    bottom: 25px;
+    right: 25px;
+    overflow: hidden;
+    border-radius: 20px; 
+    background-color:white;
+    border: 5px solid #dad9d9;
+    transform: translate(0, 0);
+    transition: opacity 800ms;
+    opacity: 1;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+}
+
+.author {
+    font-size: 9px;
+    opacity: 50%;
+    margin-top: -5px;
+    margin-left: 5px;
+}
+
+.popup-chat.closed{
+    pointer-events: none;
+}
+
+.popup-chat-container {
+    flex-direction: column;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+}
+
+  /* Add Animation */
+@-webkit-keyframes animatetop {
+    from {opacity:0} 
+    to {opacity:1}
+}
+
+@keyframes animatetop {
+    from {opacity:0}
+    to {opacity:1}
+}
+
+.popup-chat-container > * {
+    display: flex;
+}
+
+.popup-chat-header {
+    background-color: #dad9d9;
+    flex-grow: 0.5;
+    flex-shrink: 4;
+    min-height: 30px;
+    width: 100%;
+    align-content: center;
+    justify-content: center;
+}
+
+.popup-chat-header > div {
+    margin: -7px;
+    font-size: 36px;
+    cursor: pointer;
+}
+
+.popup-chat-input {
+    border-top: solid 2px #dad9d9;
+    width: 100%;
+}
+
+.popup-chat-input > form {
+    height: 100%;
+    padding-left:7px;
+    width: 100%;
+}
+
+.message {
+    position: relative;
+    padding: 7px 15px;
+    margin-bottom: 2px;
+}
+
+.message-container-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: auto;
+    height: 90%;
+    word-break: break-all;
+}
+
+.message-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    width: 100%;
+    height: inherit;
+    margin: auto;
+}
+
+.message-sent {
+    border-radius: 10px;
+    background: #42a5f5;
+    color: #fff;
+    margin-bottom: 10px;
+    /* moves it to the right */
+    margin-left: auto;
+}
+
+.message-rcvd {
+    border-radius: 10px;
+    background: #46cb9f;
+    color: #fff;
+    margin-bottom: 10px;
+    /* moves it to the right */
+    margin-right: auto;
+}
+
+/* Improve radius for messages group */
+
+.message-sent:first-child,
+.message-rcvd+.message-sent {
+    border-top-right-radius: 0px;
+}
+
+.message-rcvd:first-child,
+.message-sent+.message-rcvd {
+    border-top-left-radius: 0px;
+}
+
+
+/* time */
+
+.message::before {
+    content: attr(data-time);
+    font-size: 0.8rem;
+    position: absolute;
+    bottom: 100%;
+    color: #888;
+    white-space: nowrap;
+    /* Hidden by default */
+    display: none;
+}
+
+.message-sent::before {
+    right: 15px;
+}
+
+.message-rcvd::before {
+    left: 15px;
+}
+
+
+/* Show time only for first message in group */
+
+.message:first-child::before,
+.message-sent+.message-rcvd::before,
+.message-rcvd+.message-sent::before {
+    /* Show only for first message in group */
+  display: block;
+}

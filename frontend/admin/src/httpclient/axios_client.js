@@ -1,9 +1,7 @@
 import axios from "axios"
 
-
-
 class AxiosWrapper {
-    constructor(url = 'http://localhost:80/api/admin') {
+    constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -11,8 +9,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:80",
-                // "Access-Control-Allow-Origin": "http://localhost:3000",
+                "Access-Control-Allow-Origin": process.env.REACT_LOCAL_HOST,
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
@@ -21,10 +18,24 @@ class AxiosWrapper {
 
         this.axiosInstance = axios.create(options);
 
-        options.baseURL = 'https://localhost:7129/api/'
+        options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
         this.mainSiteAxios = axios.create(options);
     }
     
+    async getChatHistory(userId) {
+        const history = await this.mainSiteAxios.get(`/chat/${userId}/history`);
+        if (history.data)
+            return history.data.sort(function (a, b) {
+                return a.time.localeCompare(b.time);
+            });
+        return [];
+    }
+
+    async getOnlineRooms() {
+        const result =  await this.mainSiteAxios.get("/chat/rooms");
+        return result.data;
+    }
+
     //Posts
     async getPosts () {
         const result = await this._get("/post/posts");
@@ -53,7 +64,7 @@ class AxiosWrapper {
             return result;
         }
         console.log(_body,body)
-        result = await this._put("post/edit/"+body.id, _body);
+        result = await this._put("/post/edit/"+body.id, _body);
 
         return result;
     }
@@ -97,7 +108,7 @@ class AxiosWrapper {
             result.status = "404";
             return result;
         }
-        result = await this._put("tariff/edit/"+body.id, _body); 
+        result = await this._put("/tariff/edit/"+body.id, _body); 
 
         return result;
     }

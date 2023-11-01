@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Button from '@mui/material/Button';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -20,19 +20,16 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
             flex: 1,
             align:'left',
             type:'string',
-            // cellClassName: 'name-column-cell'
         },
         {
             field: 'price',
             headerName: 'Price',
             flex: 1,
-            // cellClassName: 'number-column-cell'
         },
         {
             field: 'max_millage',
             headerName: 'Max millage',
             flex: 1,
-            // cellClassName: 'number-column-cell'
         },
         {
             field: 'func',
@@ -50,7 +47,7 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={(e)=>handleClickInfo(params.row)} //e.target.parentNode.parentNode.parentNode.childNodes
+                            onClick={()=>handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
@@ -75,14 +72,14 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                         {is_active && <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={(e)=>handleSwitch(params.row.id, false)}
+                            onClick={()=>handleSwitch(params.row.id, false)}
                             >
                             On
                         </Button>}
                         {!is_active &&<Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
-                            onClick={(e)=>handleSwitch(params.row.id, true)}
+                            onClick={()=>handleSwitch(params.row.id, true)}
                             >
                             Off
                         </Button>}
@@ -94,7 +91,6 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
     
     //  ----- Оптимизировать -----  //
     const _handleSelect = async (listId) => {
-        // const rows = await API.getTariff();
         const result = []
         listId.forEach(id => {
             rows.forEach( row => {
@@ -103,7 +99,6 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                 }
             })
         })
-        setSelected(result);
 
         handleSelect(result);
     }

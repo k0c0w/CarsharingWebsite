@@ -16,7 +16,7 @@ export function TableAddRefreshButtons ({ addHandler, refreshHandler }) {
           color: color.primary[900],
           marginRight: '20px'
         }}
-        onClick={e => addHandler()}
+        onClick={() => addHandler()}
       >
         Добавить
       </Button>
@@ -26,7 +26,7 @@ export function TableAddRefreshButtons ({ addHandler, refreshHandler }) {
           color: color.primary[900],
           marginRight: '20px'
         }}
-        onClick={e => refreshHandler()}
+        onClick={() => refreshHandler()}
       >
         Обновить
       </Button>
