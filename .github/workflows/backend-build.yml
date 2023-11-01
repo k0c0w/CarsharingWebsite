@@ -44,6 +44,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"k0c0w_CarsharingWebsite" /o:"k0c0w" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions=backend/Infrastructure/Migrations/Migrations/*
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"k0c0w_CarsharingWebsite" /o:"k0c0w" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions=Infrastructure/Migrations/Migrations/*
           dotnet build backend/Carsharing/Carsharing.csproj
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
