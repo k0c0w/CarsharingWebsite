@@ -25,86 +25,92 @@ public class CarService : IAdminCarService
         _mapper = mapper;
     }
 
-    public async Task ReleaseCarAsync(int carId)
-    {
-        var car = await _ctx.Cars.FindAsync(carId);
-        if (car != null)
-        {
-            car.IsOpened = false;
-            await _ctx.SaveChangesAsync();
-        }
-    }
+    //
+    // public async Task ReleaseCarAsync(int carId)
+    // {
+    //     var car = await _ctx.Cars.FindAsync(carId);
+    //     if (car != null)
+    //     {
+    //         car.IsOpened = false;
+    //         await _ctx.SaveChangesAsync();
+    //     }
+    // }
 
-    public async Task<bool> SetCarIsTakenAsync(int id)
-    {
-        try
-        {
-            var requestedCar = await _ctx.Cars.FindAsync(id);
-            if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
-            requestedCar.IsTaken = true;
-            await _ctx.SaveChangesAsync();
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            //логировать что машина уже занята?
-        }
+    //
+    // public async Task<bool> SetCarIsTakenAsync(int id)
+    // {
+    //     try
+    //     {
+    //         var requestedCar = await _ctx.Cars.FindAsync(id);
+    //         if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+    //         requestedCar.IsTaken = true;
+    //         await _ctx.SaveChangesAsync();
+    //         return true;
+    //     }
+    //     catch (DbUpdateConcurrencyException)
+    //     {
+    //         //логировать что машина уже занята?
+    //     }
+    //
+    //     return false;
+    // }
 
-        return false;
-    }
+    //
+    // public async Task<bool> SetCarHasToBeNonActiveAsync(int id)
+    // {
+    //     try
+    //     {
+    //         var requestedCar = await _ctx.Cars.FindAsync(id);
+    //         if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
+    //         requestedCar.HasToBeNonActive = true;
+    //         await _ctx.SaveChangesAsync();
+    //         return true;
+    //     }
+    //     catch (DbUpdateConcurrencyException)
+    //     {
+    //         //логировать что машина уже не активна?
+    //     }
+    //
+    //     return false;
+    // }
 
-    public async Task<bool> SetCarHasToBeNonActiveAsync(int id)
-    {
-        try
-        {
-            var requestedCar = await _ctx.Cars.FindAsync(id);
-            if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive) return false;
-            requestedCar.HasToBeNonActive = true;
-            await _ctx.SaveChangesAsync();
-            return true;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            //логировать что машина уже не активна?
-        }
+    //
+    // public async Task<IEnumerable<CarModelDto>> GetModelsByTariffIdAsync(int tariff)
+    // {
+    //     var models = await _ctx.CarModels.Where(x => x.TariffId == tariff).ToListAsync();
+    //     return models.Select(x => new CarModelDto
+    //     {
+    //         Brand = x.Brand,
+    //         Description = x.Description,
+    //         Model = x.Model,
+    //         Id = x.Id,
+    //         TariffId = x.TariffId,
+    //         ImageUrl = CarModelDto.GenerateImageUrl(x.ImageName)
+    //     });
+    // }
+    
+    // 
+    // public async Task<ExtendedCarModelDto> GetModelByIdAsync(int id)
+    // {
+    //     var model = await _ctx.CarModels.Where(x => x.Id == id)
+    //         .Include(x => x.Tariff)
+    //         .FirstOrDefaultAsync();
+    //     if (model == null) throw new ObjectNotFoundException(nameof(CarModel));
+    //     return new ExtendedCarModelDto
+    //     {
+    //         Brand = model.Brand,
+    //         Description = model.Description,
+    //         Id = model.Id,
+    //         Model = model.Model,
+    //         ImageUrl = CarModelDto.GenerateImageUrl(model.ImageName),
+    //         TariffId = model.TariffId,
+    //         Price = model!.Tariff!.Price,
+    //         Restrictions = model.Tariff.MaxMileage,
+    //         TariffName = model.Tariff.Name
+    //     };
+    // }
 
-        return false;
-    }
-
-    public async Task<IEnumerable<CarModelDto>> GetModelsByTariffIdAsync(int tariff)
-    {
-        var models = await _ctx.CarModels.Where(x => x.TariffId == tariff).ToListAsync();
-        return models.Select(x => new CarModelDto
-        {
-            Brand = x.Brand,
-            Description = x.Description,
-            Model = x.Model,
-            Id = x.Id,
-            TariffId = x.TariffId,
-            ImageUrl = CarModelDto.GenerateImageUrl(x.ImageName)
-        });
-    }
-
-    public async Task<ExtendedCarModelDto> GetModelByIdAsync(int id)
-    {
-        var model = await _ctx.CarModels.Where(x => x.Id == id)
-            .Include(x => x.Tariff)
-            .FirstOrDefaultAsync();
-        if (model == null) throw new ObjectNotFoundException(nameof(CarModel));
-        return new ExtendedCarModelDto
-        {
-            Brand = model.Brand,
-            Description = model.Description,
-            Id = model.Id,
-            Model = model.Model,
-            ImageUrl = CarModelDto.GenerateImageUrl(model.ImageName),
-            TariffId = model.TariffId,
-            Price = model!.Tariff!.Price,
-            Restrictions = model.Tariff.MaxMileage,
-            TariffName = model.Tariff.Name
-        };
-    }
-
+    //
     public async Task<IEnumerable<FreeCarDto>> GetAvailableCarsByLocationAsync(SearchCarDto searchParams, int limit=256)
     {
         if (searchParams.Radius <= 0) 
@@ -129,6 +135,7 @@ public class CarService : IAdminCarService
             { CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude), Plate = x.LicensePlate});
     }
 
+    //
     public async Task<IEnumerable<CarDto>> GetAvailableCarsByModelAsync(int modelId)
     {
         var cars = await CarsByModelId(modelId)
@@ -147,6 +154,7 @@ public class CarService : IAdminCarService
         });
     }
 
+    //
     public async Task CreateModelAsync(CreateCarModelDto create)
     {
         var model = new CarModel
@@ -164,6 +172,7 @@ public class CarService : IAdminCarService
         await _fileProvider.SaveAsync(Path.Combine("wwwroot", "models"), photo);
     }
 
+    //
     public async Task CreateCarAsync(CreateCarDto create)
     {
         var car = new Car
@@ -177,6 +186,7 @@ public class CarService : IAdminCarService
         await _ctx.SaveChangesAsync();
     }
 
+    //
     public async Task EditModelAsync(int id, EditCarModelDto update)
     {
         var old = await _ctx.CarModels.FindAsync(id);
@@ -191,6 +201,7 @@ public class CarService : IAdminCarService
         await _ctx.SaveChangesAsync();
     }
 
+    //
     public async Task TryDeleteModelAsync(int id)
     {
         if (await _ctx.Cars.AnyAsync(x => x.CarModelId == id))
@@ -200,6 +211,7 @@ public class CarService : IAdminCarService
         await _ctx.SaveChangesAsync();
     }
 
+    //
     public async Task DeleteCarAsync(int id)
     {
         var car = await _ctx.Cars.FirstAsync(x => x.Id == id);
@@ -213,12 +225,14 @@ public class CarService : IAdminCarService
         await _ctx.SaveChangesAsync();
     }
 
+    //
     public async Task<IEnumerable<CarModelDto>> GetAllModelsAsync()
     {
         var models = await _ctx.CarModels.ToListAsync();
         return _mapper.Map<IEnumerable<CarModelDto>>(models);
     }
 
+    //
     public async Task<IEnumerable<CarDto>> GetAllCarsAsync()
     {
         var cars = await _ctx.Cars.ToListAsync();
@@ -235,6 +249,7 @@ public class CarService : IAdminCarService
         });
     }
 
+    //
     public async Task<IEnumerable<CarDto>> GetCarsByModelAsync(int modelId)
     {
         var cars = await CarsByModelId(modelId).ToListAsync();

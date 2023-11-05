@@ -1,5 +1,8 @@
 using Carsharing.ViewModels;
 using Contracts;
+using Features.CarManagement.Queries.GetModelById;
+using Features.CarManagement.Queries.GetModelsByTariffId;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
 using Services.Exceptions;
@@ -12,16 +15,20 @@ namespace Carsharing.Controllers;
 public class CarController : ControllerBase
 {
     private readonly ICarService _carService;
+    private readonly IMediator _mediator;
 
-    public CarController(ICarService service)
+    public CarController(ICarService service, IMediator mediator)
     {
         _carService = service;
+        _mediator = mediator;
     }
     
     [HttpGet("models/{tariff:int}")]
     public async Task<IActionResult> GetCarModelsByTariff([FromRoute] int tariff)
     {
-        var models = await _carService.GetModelsByTariffIdAsync(tariff);
+        //TODO: Проверить cqrs
+        var models = ( await _mediator.Send(new GetModelsByTariffIdQuery(tariff)) ).Value;
+        // var models = await _carService.GetModelsByTariffIdAsync(tariff);
 
         if (!models.Any()) return NotFound();
         return new JsonResult(models.Select(x => new CarModelVM
@@ -40,7 +47,13 @@ public class CarController : ControllerBase
     {
         try
         {
-            var model = await _carService.GetModelByIdAsync(id);
+            //TODO: Проверить cqrs
+            var result = await _mediator.Send(new GetModelByIdQuery(id));
+            if (!result.IsSuccess) 
+                throw new Exception(result.ErrorMessage);
+
+            var model = result.Value;
+            
             return new JsonResult(new ExpandedCarModelVM
             {
                 Brand = model.Brand,

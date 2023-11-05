@@ -1,6 +1,9 @@
 using Contracts;
 using Domain;
 using Domain.Entities;
+using Features.CarManagement.Commands.ReleaseCar;
+using Features.CarManagement.Commands.SetCarTaken;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
 using Services.Abstractions;
@@ -12,11 +15,13 @@ public class BookingService : IBookingService
 {
     private readonly ICarService _carService;
     private readonly CarsharingContext _ctx;
+    private readonly IMediator _mediator; 
     
-    public BookingService(ICarService carService, CarsharingContext context)
+    public BookingService(ICarService carService, CarsharingContext context, IMediator mediator)
     {
         _carService = carService;
         _ctx = context;
+        _mediator = mediator;
     }
     
 
@@ -43,7 +48,10 @@ public class BookingService : IBookingService
 
     private async Task AssignCarToUserAsync(UserInfo userInfo, RentCarDto details, decimal withdrawal)
     {
-        var isAssigned = await _carService.SetCarIsTakenAsync(details.CarId);
+        //TODO: Проверить cqrs 
+        var isAssigned = await _mediator.Send(new SetCarTakenCommand(details.CarId)); 
+        //var isAssigned = await _carService.SetCarIsTakenAsync(details.CarId);
+        
         if(!isAssigned) throw new CarAlreadyBookedException();
         userInfo.Balance -= withdrawal;
         // сейчас аренда машины доступна только с текущего дня, без планирования
@@ -62,7 +70,9 @@ public class BookingService : IBookingService
         }
         catch
         {
-            await _carService.ReleaseCarAsync(details.CarId);
+            //TODO: Проверить корректность 
+            await _mediator.Send(new ReleaseCarCommand(details.CarId));
+            // await _carService.ReleaseCarAsync(details.CarId);
         }
     }
     

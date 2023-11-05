@@ -19,7 +19,7 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.family_name))
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.email));
 
-            //Отдать BirthDay в User, чтобы не пришлось мапить.
+            //TODO: Отдать BirthDay в User, чтобы не пришлось мапить.
             CreateMap<GetUserResult, UserInfo>()
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.birthday));
 
