@@ -1,7 +1,5 @@
 using Carsharing.ViewModels;
-using Contracts;
-using Features.CarManagement.Queries.GetModelById;
-using Features.CarManagement.Queries.GetModelsByTariffId;
+using Features.CarManagement;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Services.Exceptions;
@@ -25,7 +23,6 @@ public class CarController : ControllerBase
     {
         //TODO: Проверить cqrs
         var models = ( await _mediator.Send(new GetModelsByTariffIdQuery(tariff)) ).Value;
-        // var models = await _carService.GetModelsByTariffIdAsync(tariff);
 
         if (models == null || !models.Any()) return NotFound();
         return new JsonResult(models.Select(x => new CarModelVM

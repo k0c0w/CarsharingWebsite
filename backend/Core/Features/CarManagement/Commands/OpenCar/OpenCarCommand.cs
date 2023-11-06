@@ -1,5 +1,5 @@
 ﻿using Shared.CQRS;
 
-namespace Features.CarManagement.Commands.OpenCar;
+namespace Features.CarManagement;
 
 public record OpenCarCommand(int CarId) : ICommand;

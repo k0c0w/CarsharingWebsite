@@ -1,5 +1,6 @@
 using Contracts;
 using Domain.Entities;
+using Features.CarManagement;
 using Features.CarManagement.Commands.ReleaseCar;
 using Features.CarManagement.Commands.SetCarTaken;
 using MediatR;

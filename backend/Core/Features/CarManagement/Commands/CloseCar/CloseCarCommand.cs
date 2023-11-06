@@ -1,5 +1,5 @@
 ﻿using Shared.CQRS;
 
-namespace Features.CarManagement.Commands.CloseCar;
+namespace Features.CarManagement;
 
 public record CloseCarCommand(int CarId) : ICommand;

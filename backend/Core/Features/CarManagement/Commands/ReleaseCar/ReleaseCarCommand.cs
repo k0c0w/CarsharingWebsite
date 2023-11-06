@@ -1,5 +1,5 @@
 ﻿using Shared.CQRS;
 
-namespace Features.CarManagement.Commands.ReleaseCar;
+namespace Features.CarManagement;
 
 public record ReleaseCarCommand(int CarId) : ICommand;

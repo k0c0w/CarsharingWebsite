@@ -1,5 +1,5 @@
 ﻿using Shared.CQRS;
 
-namespace Features.CarManagement.Commands.SetCarTaken;
+namespace Features.CarManagement;
 
 public sealed record SetCarTakenCommand(int Id) : ICommand;
