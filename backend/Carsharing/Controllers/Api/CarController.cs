@@ -4,7 +4,6 @@ using Features.CarManagement.Queries.GetModelById;
 using Features.CarManagement.Queries.GetModelsByTariffId;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions;
 using Services.Exceptions;
 
 namespace Carsharing.Controllers;
@@ -14,12 +13,10 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class CarController : ControllerBase
 {
-    private readonly ICarService _carService;
     private readonly IMediator _mediator;
 
-    public CarController(ICarService service, IMediator mediator)
+    public CarController(IMediator mediator)
     {
-        _carService = service;
         _mediator = mediator;
     }
     
@@ -30,7 +27,7 @@ public class CarController : ControllerBase
         var models = ( await _mediator.Send(new GetModelsByTariffIdQuery(tariff)) ).Value;
         // var models = await _carService.GetModelsByTariffIdAsync(tariff);
 
-        if (!models.Any()) return NotFound();
+        if (models == null || !models.Any()) return NotFound();
         return new JsonResult(models.Select(x => new CarModelVM
         {
             Id = x.Id,
@@ -76,20 +73,21 @@ public class CarController : ControllerBase
     [HttpGet("available")]
     public async Task<IActionResult> GetFreeCars([FromQuery] FindCarsVM carSearch)
     {
-        var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
-        {
-            Latitude = carSearch.Latitude,
-            Longitude = carSearch.Longitude,
-            Radius = carSearch.Radius,
-            CarModelId = carSearch.CarModelId
-        });
+        throw new NotImplementedException();
+        //var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
+        //{
+        //    Latitude = carSearch.Latitude,
+        //    Longitude = carSearch.Longitude,
+        //    Radius = carSearch.Radius,
+        //    CarModelId = carSearch.CarModelId
+        //});
         
-        return new JsonResult(cars.Select(x => new CarVM
-        {
-            Id = x.CarId,
-            ParkingLatitude = x.Location!.Latitude,
-            ParkingLongitude = x.Location!.Longitude,
-            LicensePlate = x.Plate
-        }));
+        //return new JsonResult(cars.Select(x => new CarVM
+        //{
+        //    Id = x.CarId,
+        //    ParkingLatitude = x.Location!.Latitude,
+        //    ParkingLongitude = x.Location!.Longitude,
+        //    LicensePlate = x.Plate
+        //}));
     }
 }

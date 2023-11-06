@@ -22,17 +22,6 @@ public class GetAllCarsQueryHandler : IQueryHandler<GetAllCarsQuery, IEnumerable
     public async Task<Result<IEnumerable<CarDto>>> Handle(GetAllCarsQuery request, CancellationToken cancellationToken)
     {
         var cars = await _ctx.Cars.ToListAsync(cancellationToken: cancellationToken);
-        // var result = cars.Select(x => new CarDto
-        // {
-        //     Id = x.Id,
-        //     IsOpened = x.IsOpened,
-        //     IsTaken = x.IsTaken,
-        //     LicensePlate = x.LicensePlate,
-        //     ParkingLatitude = x.ParkingLatitude,
-        //     ParkingLongitude = x.ParkingLongitude,
-        //     CarModelId = x.CarModelId,
-        //     HasToBeNonActive = x.HasToBeNonActive
-        // });
 
         var result = _mapper.Map<List<Car>, IEnumerable<CarDto>>(cars);
 

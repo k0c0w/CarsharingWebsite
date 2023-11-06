@@ -44,11 +44,6 @@ public class GetAvailableCarsByLocationQueryHandler : IQueryHandler<GetAvailable
             .ToListAsync(cancellationToken: cancellationToken);
 
         var result = _mapper.Map<List<Car>, IEnumerable<FreeCarDto>>(cars);
-        // var result = cars.Select(x => new FreeCarDto
-        // {
-        //     CarId = x.Id, TariffId = carModel.TariffId, Location = new GeoPoint(x.ParkingLatitude, x.ParkingLongitude),
-        //     Plate = x.LicensePlate
-        // });
         
         return new Ok<IEnumerable<FreeCarDto>>(result);
     }

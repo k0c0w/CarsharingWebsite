@@ -23,15 +23,6 @@ public class GetModelsByTariffIdQueryHandler : IQueryHandler<GetModelsByTariffId
     {
         var models = await _ctx.CarModels.Where(x => x.TariffId == request.TariffId).ToListAsync();
         var result = _mapper.Map<List<CarModel>, IEnumerable<CarModelDto>>(models);
-        // var result = models.Select(x => new CarModelDto
-        // {
-        //     Brand = x.Brand,
-        //     Description = x.Description,
-        //     Model = x.Model,
-        //     Id = x.Id,
-        //     TariffId = x.TariffId,
-        //     ImageUrl = CarModelDto.GenerateImageUrl(x.ImageName)
-        // });
         return new Ok<IEnumerable<CarModelDto>>(result);
     }
 }

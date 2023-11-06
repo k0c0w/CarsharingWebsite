@@ -27,19 +27,6 @@ public class GetModelByIdQueryHandler : IQueryHandler<GetModelByIdQuery, Extende
             .FirstOrDefaultAsync(cancellationToken: cancellationToken);
         if (model == null) 
             return new Error<ExtendedCarModelDto>($"{new ObjectNotFoundException(nameof(CarModel)).Message}");
-
-        // return new ExtendedCarModelDto
-        // {
-        //     Brand = model.Brand,
-        //     Description = model.Description,
-        //     Id = model.Id,
-        //     Model = model.Model,
-        //     ImageUrl = CarModelDto.GenerateImageUrl(model.ImageName),
-        //     TariffId = model.TariffId,
-        //     Price = model!.Tariff!.Price,
-        //     Restrictions = model.Tariff.MaxMileage,
-        //     TariffName = model.Tariff.Name
-        // };
         
         var result = _mapper.Map<ExtendedCarModelDto>(model);
         return new Ok<ExtendedCarModelDto>(result);

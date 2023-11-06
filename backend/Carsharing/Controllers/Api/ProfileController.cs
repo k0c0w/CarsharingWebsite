@@ -16,12 +16,10 @@ public class ProfileController : ControllerBase
     
     private readonly IUserService _userService;
     private readonly IBalanceService _balanceService;
-    private readonly ICarService _carService;
-    public ProfileController(ICarService carService, IBalanceService balanceService, IUserService userService)
+    public ProfileController(IBalanceService balanceService, IUserService userService)
     {
         _userService = userService;
         _balanceService = balanceService;
-        _carService = carService;
     }
     
     [HttpGet]
@@ -121,23 +119,25 @@ public class ProfileController : ControllerBase
     public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.OpenCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        throw new NotImplementedException();
+        //var result = await _carService.OpenCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
-        return new JsonResult(new
-        {
-            result
-        });
+        //return new JsonResult(new
+        //{
+        //    result
+        //});
     }
     
     [HttpGet("close/{licensePlate:required}")]
     public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
     {
         var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.CloseCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        throw new NotImplementedException();
+        //var result = await _carService.CloseCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
         
-        return new JsonResult(new
-        {
-            result
-        });
+        //return new JsonResult(new
+        //{
+        //    result
+        //});
     }
 }

@@ -16,28 +16,27 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class AdminCarController : ControllerBase
 {
-    private readonly IAdminCarService _carService;
     private readonly IMapper _mapper;
 
-    public AdminCarController(IAdminCarService carService, IMapper mapper)
+    public AdminCarController(IMapper mapper)
     {
         _mapper = mapper;
-        _carService = carService;
     }
 
     [HttpGet("models")]
     public async Task<IActionResult> GetCarModels()
     {
-        var models = await _carService.GetAllModelsAsync();
-        return new JsonResult(models.Select(x => new CarModelVM
-        {
-            Id = x.Id,
-            Brand = x.Brand,
-            Description = x.Description,
-            Model = x.Model,
-            TariffId = x.TariffId,
-            Url = x.ImageUrl
-        }));
+        throw new NotImplementedException();
+        //var models = await _carService.GetAllModelsAsync();
+        //return new JsonResult(models.Select(x => new CarModelVM
+        //{
+        //    Id = x.Id,
+        //    Brand = x.Brand,
+        //    Description = x.Description,
+        //    Model = x.Model,
+        //    TariffId = x.TariffId,
+        //    Url = x.ImageUrl
+        //}));
     }
 
 
@@ -47,7 +46,8 @@ public class AdminCarController : ControllerBase
     {
         try
         {
-            await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
+            throw new NotImplementedException();
+            //await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
 
             return Created("models", null);
         }
@@ -75,11 +75,12 @@ public class AdminCarController : ControllerBase
                 Content = edit.Image.OpenReadStream()
             };
 
-        await _carService.EditModelAsync(id, new EditCarModelDto
-        {
-            Description = edit.Description,
-            Image = file
-        });
+        throw new NotImplementedException();
+        //await _carService.EditModelAsync(id, new EditCarModelDto
+        //{
+        //    Description = edit.Description,
+        //    Image = file
+        //});
 
         return NoContent();
     }
@@ -89,7 +90,8 @@ public class AdminCarController : ControllerBase
     {
         try
         {
-            await _carService.TryDeleteModelAsync(id);
+            throw new NotImplementedException();
+            //await _carService.TryDeleteModelAsync(id);
             return NoContent();
         }
         catch
@@ -101,27 +103,30 @@ public class AdminCarController : ControllerBase
     [HttpGet("cars")]
     public async Task<IActionResult> GetAllCars()
     {
-        var cars = await _carService.GetAllCarsAsync();
-        return new JsonResult(MapToAdminCarVm(cars));
+        throw new NotImplementedException();
+        //var cars = await _carService.GetAllCarsAsync();
+        //return new JsonResult(MapToAdminCarVm(cars));
     }
     
     [HttpGet("cars/{modelId:int}")]
     public async Task<IActionResult> GetAllCarsByModel([FromRoute] int modelId)
     {
-        var cars = await _carService.GetCarsByModelAsync(modelId);
-        return new JsonResult(MapToAdminCarVm(cars));
+        throw new NotImplementedException();
+        //var cars = await _carService.GetCarsByModelAsync(modelId);
+        //return new JsonResult(MapToAdminCarVm(cars));
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateCar([FromBody] CreateCarVM create)
     {
-        await _carService.CreateCarAsync(new CreateCarDto
-        {
-            LicensePlate = create.LicensePlate,
-            ParkingLatitude = create.ParkingLatitude,
-            ParkingLongitude = create.ParkingLongitude,
-            CarModelId = create.CarModelId
-        });
+        throw new NotImplementedException();
+        //await _carService.CreateCarAsync(new CreateCarDto
+        //{
+        //    LicensePlate = create.LicensePlate,
+        //    ParkingLatitude = create.ParkingLatitude,
+        //    ParkingLongitude = create.ParkingLongitude,
+        //    CarModelId = create.CarModelId
+        //});
         return Created("cars", null);
     }
     
@@ -132,7 +137,8 @@ public class AdminCarController : ControllerBase
         if (id <= 0) return NotFound();
         try
         {
-            await _carService.DeleteCarAsync(id);
+            throw new NotImplementedException();
+            //await _carService.DeleteCarAsync(id);
             return NoContent();
         }
         catch
