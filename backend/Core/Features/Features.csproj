@@ -10,7 +10,6 @@
     <Folder Include="CarManagment\" />
     <Folder Include="Tariffs\Commands\" />
     <Folder Include="UserProfile\" />
-    <Folder Include="Posts\" />
     <Folder Include="CarBooking\" />
   </ItemGroup>
 
