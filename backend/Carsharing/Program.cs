@@ -2,6 +2,7 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
+using Features.Utils;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
@@ -21,6 +22,8 @@ services.AddAutoMapper(typeof(Program).Assembly);
 services.RegisterChat()
         .RegisterBuisnessLogicServices()
         .RegisterSwagger();
+
+services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
 
 services.Configure<ApiBehaviorOptions>(o =>
 {
