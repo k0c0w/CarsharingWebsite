@@ -42,6 +42,5 @@ public class CarModelProfile : Profile
         
         CreateMap<CreateCarModelDto, CarModel>();
         
-        CreateMap<CreateCarDto, Car>();
     }
 }

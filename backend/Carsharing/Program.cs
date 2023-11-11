@@ -91,7 +91,7 @@ app.Run();
 
 
 
-async Task TryMigrateDatabaseAsync(WebApplication app)
+static async Task TryMigrateDatabaseAsync(WebApplication app)
 {
     try
     {

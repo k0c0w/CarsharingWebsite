@@ -26,9 +26,6 @@ namespace Carsharing.Helpers.Mappings
 
 
             //Services
-            CreateMap<CreateCarModelVM, CreateCarModelDto>()
-                .ForMember(dest => dest.ModelPhoto, opt => opt.MapFrom(src => IFormFileToStream(src!.Image!)));
-
             CreateMap<CarModelDto, CarModel>()
                 .ForMember(dest => dest.ImageName, opt => opt.MapFrom(src => "models/" + src.ImageUrl))
                 .ReverseMap();
@@ -38,23 +35,6 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.Price));
 
             CreateMap<TariffVM, AdminTariffDto>().ReverseMap();
-        }
-
-
-        private static Contracts.File IFormFileToStream(IFormFile formFile)
-        {
-            Contracts.File file;
-
-            var _stream = formFile.OpenReadStream();
-
-            file = new Contracts.File()
-            {
-                Name = formFile.FileName,
-                Content = _stream
-            };
-
-
-            return file;
         }
     }
 }

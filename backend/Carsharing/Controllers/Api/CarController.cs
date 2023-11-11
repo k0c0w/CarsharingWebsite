@@ -1,8 +1,7 @@
-using Carsharing.ViewModels;
+ using Carsharing.ViewModels;
 using Features.CarManagement;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
@@ -21,7 +20,6 @@ public class CarController : ControllerBase
     [HttpGet("models/{tariff:int}")]
     public async Task<IActionResult> GetCarModelsByTariff([FromRoute] int tariff)
     {
-        //TODO: Проверить cqrs
         var models = ( await _mediator.Send(new GetModelsByTariffIdQuery(tariff)) ).Value;
 
         if (models == null || !models.Any()) return NotFound();
@@ -39,52 +37,47 @@ public class CarController : ControllerBase
     [HttpGet("model/{id:int}")]
     public async Task<IActionResult> GetCarModelByTariff([FromRoute] int id)
     {
-        try
-        {
-            //TODO: Проверить cqrs
-            var result = await _mediator.Send(new GetModelByIdQuery(id));
-            if (!result.IsSuccess) 
-                throw new Exception(result.ErrorMessage);
+        var result = await _mediator.Send(new GetModelByIdQuery(id));
+        if (!result) 
+            return BadRequest(result.ErrorMessage);
 
-            var model = result.Value;
-            
-            return new JsonResult(new ExpandedCarModelVM
-            {
-                Brand = model.Brand,
-                Description = model.Description,
-                Model = model.Model,
-                Url = model.ImageUrl,
-                TariffId = model.TariffId,
-                Id = model.Id,
-                Price = model.Price,
-                MaxMilage = model.Restrictions,
-                TariffName = model.TariffName
-            });
-        }
-        catch (ObjectNotFoundException)
+        var model = result.Value;
+        
+        return new JsonResult(new ExpandedCarModelVM
         {
-            return NotFound();
-        }
+            Brand = model!.Brand,
+            Description = model.Description,
+            Model = model.Model,
+            Url = model.ImageUrl,
+            TariffId = model.TariffId,
+            Id = model.Id,
+            Price = model.Price,
+            MaxMilage = model.Restrictions,
+            TariffName = model.TariffName
+        });
     }
     
     [HttpGet("available")]
     public async Task<IActionResult> GetFreeCars([FromQuery] FindCarsVM carSearch)
     {
-        throw new NotImplementedException();
-        //var cars = await _carService.GetAvailableCarsByLocationAsync(new SearchCarDto()
-        //{
-        //    Latitude = carSearch.Latitude,
-        //    Longitude = carSearch.Longitude,
-        //    Radius = carSearch.Radius,
-        //    CarModelId = carSearch.CarModelId
-        //});
-        
-        //return new JsonResult(cars.Select(x => new CarVM
-        //{
-        //    Id = x.CarId,
-        //    ParkingLatitude = x.Location!.Latitude,
-        //    ParkingLongitude = x.Location!.Longitude,
-        //    LicensePlate = x.Plate
-        //}));
+        var carsResult = await _mediator.Send(new GetAvailableCarsByLocationQuery()
+        {
+            Latitude = carSearch.Latitude,
+            Longitude = carSearch.Longitude,
+            Radius = carSearch.Radius,
+            CarModelId = carSearch.CarModelId
+        });
+
+
+        if (!carsResult)
+            return BadRequest();
+
+        return new JsonResult(carsResult.Value!.Select(x => new CarVM
+        {
+            Id = x.CarId,
+            ParkingLatitude = x.Location!.Latitude,
+            ParkingLongitude = x.Location!.Longitude,
+            LicensePlate = x.Plate
+        }));
     }
 }

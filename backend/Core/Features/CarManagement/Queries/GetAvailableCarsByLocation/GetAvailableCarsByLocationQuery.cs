@@ -3,7 +3,15 @@ using Shared.CQRS;
 
 namespace Features.CarManagement;
 
-public record GetAvailableCarsByLocationQuery (
-    SearchCarDto SearchParams,
-    int Limit=256
-    ) : IQuery<IEnumerable<FreeCarDto>>;
+public record GetAvailableCarsByLocationQuery : IQuery<IEnumerable<FreeCarDto>>
+{
+    public int CarModelId { get; init; }
+
+    public decimal Longitude { get; init; }
+
+    public decimal Latitude { get; init; }
+
+    public int Radius { get; init; }
+
+    public int Limit { get; init; } = 256;
+}
