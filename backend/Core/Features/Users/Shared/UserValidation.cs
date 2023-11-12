@@ -25,7 +25,7 @@ public partial class UserValidation
         _context = context;
     }
 
-    internal static void CheckName(Domain.Entities.User user, string val)
+    internal static void CheckName(User user, string val)
     {
         if(!string.IsNullOrEmpty(val) && GetNameRegexGenerated().IsMatch(val))
         {
@@ -33,16 +33,15 @@ public partial class UserValidation
         }
     }
 
-    internal static void CheckLastName(Domain.Entities.User user, string val)
+    internal static void CheckLastName(User user, string val)
     {
         if(!string.IsNullOrEmpty(val) && GetNameRegexGenerated().IsMatch(val))
         {
             user.LastName = val;
         }
-                 
     }
 
-    internal async Task<bool> CheckUserEmail(Domain.Entities.User user, string val)
+    internal async Task<bool> CheckUserEmail(User user, string val)
     {
         var existeduser = await  _userManager.FindByEmailAsync(val);
         if (existeduser != null && existeduser.Id != user.Id) return false;

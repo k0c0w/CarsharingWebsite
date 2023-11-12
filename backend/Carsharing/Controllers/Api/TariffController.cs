@@ -1,6 +1,7 @@
+using Carsharing.Helpers.Extensions.Controllers;
+using Features.Tariffs;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions;
-using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
@@ -8,36 +9,44 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class TariffController : ControllerBase
 {
-    private readonly ITariffService _tariffService;
+    private readonly ISender _mediatr;
 
-    public TariffController(ITariffService service)
+    public TariffController(ISender mediatr)
     {
-        _tariffService = service;
+        _mediatr = mediatr;
     }
 
     [HttpGet]
     public async Task<IActionResult> Tariff()
     {
-        var tariffs = await _tariffService.GetAllActiveAsync();
-        return new JsonResult(tariffs.Select(x => new
-            { id = x.Id, name = x.Name, price = x.PriceInRubles, description = x.Description }));
+        var tariffsResult = await _mediatr.Send(new GetActiveTariffsQuery());
+        if (!tariffsResult)
+            return this.BadRequestWithErrorMessage(tariffsResult.ErrorMessage);
+
+        return new JsonResult(tariffsResult.Value!.Select(x => new
+        { id = x.Id, name = x.Name, price = x.PriceInRubles, description = x.Description }));
     }
 
     [HttpGet("{tariffId:int}")]
     public async Task<IActionResult> GetTariffById([FromRoute] int tariffId)
     {
-        try
-        {
-            var tariff = await _tariffService.GetActiveTariffById(tariffId);
-            return new JsonResult(new
-            {
-                id = tariff.Id, name = tariff.Name, price = tariff.PriceInRubles, description = tariff.Description,
-                image_url=tariff.Image
-            });
-        }
-        catch (ObjectNotFoundException)
-        {
+        if (tariffId <= 0)
             return NotFound();
-        }
+
+        var tariffResult = await _mediatr.Send(new GetActiveTariffsQuery(tariffId));
+
+        if (!tariffResult)
+            return NotFound();
+
+        var tariff = tariffResult.Value!.First();
+
+        return new JsonResult(new
+        {
+            id = tariff.Id,
+            name = tariff.Name,
+            price = tariff.PriceInRubles,
+            description = tariff.Description,
+            image_url = tariff.Image
+        });
     }
 }

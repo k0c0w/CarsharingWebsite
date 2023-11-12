@@ -1,12 +1,9 @@
 ﻿using Carsharing.ViewModels.Admin.Post;
-using Contracts.NewsService;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using Features.Posts;
 using Carsharing.Helpers;
-using Features.Posts.Queries.GetPosts;
 using System.Net;
-using Features.Posts.Queries.GetPostById;
 
 namespace Carsharing.Controllers;
 

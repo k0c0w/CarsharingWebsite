@@ -1,5 +1,4 @@
-﻿using Services.Abstractions.Admin;
-using Services.Abstractions;
+﻿using Services.Abstractions;
 using Services;
 using Carsharing.Services;
 
@@ -13,8 +12,6 @@ public static class BuisnessLogicServicesRegistrationExtension
         services.AddRepositories();
         services.AddUnitsOfWork();
 
-        services.AddScoped<ITariffService, TariffService>();
-        services.AddScoped<IAdminTariffService, TariffService>();
         services.AddScoped<IFileProvider, FileProvider>();
 
         return services;

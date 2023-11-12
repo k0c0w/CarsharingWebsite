@@ -1,9 +1,8 @@
-using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
 using Contracts;
 using Microsoft.AspNetCore.Mvc;
-using Carsharing.Helpers;
+using Carsharing.Helpers.Extensions.Controllers;
 using MediatR;
 using Features.CarManagement;
 using Features.CarManagement.Admin;
@@ -28,7 +27,7 @@ public class AdminCarController : ControllerBase
         var modelsResult = await _mediator.Send(new GetAllModelsQuery());
 
         if (!modelsResult)
-            return BadRequestWithErrorMessage(modelsResult.ErrorMessage);
+            return this.BadRequestWithErrorMessage(modelsResult.ErrorMessage);
 
         return new JsonResult(modelsResult.Value!.Select(x => new CarModelVM
         {
@@ -57,7 +56,7 @@ public class AdminCarController : ControllerBase
         if (modelCreateResult)
             return Created("models", modelCreateResult.Value);
 
-        return new JsonResult(GenerateServiceError(modelCreateResult.ErrorMessage));
+        return new JsonResult(this.GenerateServiceError(modelCreateResult.ErrorMessage));
     }
 
     [HttpPut("model/{id:int}")]
@@ -83,7 +82,7 @@ public class AdminCarController : ControllerBase
         if(editModelResult)
             return NoContent();
 
-        return BadRequestWithErrorMessage(editModelResult.ErrorMessage);
+        return this.BadRequestWithErrorMessage(editModelResult.ErrorMessage);
     }
 
     [HttpDelete("model/{id:int}")]
@@ -91,14 +90,14 @@ public class AdminCarController : ControllerBase
     {
         var deleteResult = await _mediator.Send(new DeleteModelCommand(id));
 
-        return deleteResult ? NoContent() : BadRequestWithErrorMessage(deleteResult.ErrorMessage);
+        return deleteResult ? NoContent() : this.BadRequestWithErrorMessage(deleteResult.ErrorMessage);
     }
 
     [HttpGet("cars")]
     public async Task<IActionResult> GetAllCars()
     {
         var carsResult = await _mediator.Send(new GetAllCarsQuery());
-        return carsResult ? new JsonResult(MapToAdminCarVm(carsResult.Value!)) : BadRequestWithErrorMessage(carsResult.ErrorMessage);
+        return carsResult ? new JsonResult(MapToAdminCarVm(carsResult.Value!)) : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
     }
 
     [HttpGet("cars/{modelId:int}")]
@@ -106,7 +105,7 @@ public class AdminCarController : ControllerBase
     {
         var carsByModelResult = await _mediator.Send(new GetCarsByModelQuery(modelId));
 
-        return carsByModelResult ? new JsonResult(MapToAdminCarVm(carsByModelResult.Value!)) : BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
+        return carsByModelResult ? new JsonResult(MapToAdminCarVm(carsByModelResult.Value!)) : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
     }
 
     [HttpPost("create")]
@@ -123,9 +122,8 @@ public class AdminCarController : ControllerBase
         if (createCarResult)
             return Created("cars", createCarResult.Value);
 
-        return BadRequestWithErrorMessage(createCarResult.ErrorMessage);
+        return this.BadRequestWithErrorMessage(createCarResult.ErrorMessage);
     }
-
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCar([FromRoute] int id)
@@ -134,7 +132,7 @@ public class AdminCarController : ControllerBase
 
         var deleteCarResult = await _mediator.Send(new DeleteCarCommand(id));
 
-        return deleteCarResult ? NoContent() : BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
+        return deleteCarResult ? NoContent() : this.BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
     }
 
     private static IEnumerable<AdminCarVM> MapToAdminCarVm(IEnumerable<CarDto> cars)
@@ -164,8 +162,4 @@ public class AdminCarController : ControllerBase
 
         return file;
     }
-
-    private IActionResult BadRequestWithErrorMessage(string? message) => BadRequest(GenerateServiceError(message));
-
-    private static object GenerateServiceError(string? message) => new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { message } } };
 }

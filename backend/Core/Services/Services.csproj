@@ -11,7 +11,6 @@
       <ProjectReference Include="..\Contracts\Contracts.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Features\Features.csproj" />
-      <ProjectReference Include="..\Services.Abstractions\Services.Abstractions.csproj" />
       <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 

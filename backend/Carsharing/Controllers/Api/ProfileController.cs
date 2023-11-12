@@ -66,13 +66,12 @@ public class ProfileController : ControllerBase
 
         return commandResult.IsSuccess && info?.Success is true
             ? NoContent()
-            : BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+            : BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info!.Errors } });
     }
 
     [HttpGet("[action]")]
     public async Task<IActionResult> PersonalInfo()
     {
-        // var info = await _userService.GetPersonalInfoAsync(User.GetId());
         var queryResult = await _mediator.Send(new GetPersonalInfoQuery(User.GetId()));
         var info = queryResult.Value;
         return queryResult.IsSuccess && info is not null
@@ -92,7 +91,6 @@ public class ProfileController : ControllerBase
     [HttpPut("PersonalInfo/Edit")]
     public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
     {
-        // Почему у нас две vm: EditUserVm и EditUserVM
         var commandResult = await _mediator.Send(new EditUserCommand(User.GetId(),
             _mapper.Map<EditUserVm, EditUserDto>(userVm)));
 
@@ -103,7 +101,7 @@ public class ProfileController : ControllerBase
                 error = new
                 {
                     code = (int)ErrorCode.ServiceError,
-                    message = $"Ошибка сохранения"
+                    message = "Ошибка сохранения"
                 }
             });
     }

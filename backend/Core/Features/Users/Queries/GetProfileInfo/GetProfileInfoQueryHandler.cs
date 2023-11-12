@@ -55,7 +55,7 @@ public class GetProfileInfoQueryHandler : IQueryHandler<GetProfileInfoQuery, Pro
 
         return new Ok<ProfileInfoDto>(new ProfileInfoDto
         {
-            PersonalInfo = _mapper.Map<User, UserInfoDto>(result.Value),
+            PersonalInfo = _mapper.Map<User, UserInfoDto>(result!.Value!),
             CurrentlyBookedCars = bookedCars
         });
     }
