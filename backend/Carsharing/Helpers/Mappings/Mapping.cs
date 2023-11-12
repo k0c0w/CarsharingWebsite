@@ -27,8 +27,7 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.birthday));
 
             //Services
-            //TODO: IsActive не получится замаппить
-            CreateMap<TariffDto, TariffVM>()
+            CreateMap<AdminTariffDto, TariffVM>()
                 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))

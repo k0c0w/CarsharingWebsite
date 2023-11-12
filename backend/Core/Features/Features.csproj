@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Tariffs\Commands\" />
-    <Folder Include="UserProfile\" />
+    <Compile Remove="Tariffs\Commands\**" />
+    <Compile Remove="UserProfile\**" />
+    <EmbeddedResource Remove="Tariffs\Commands\**" />
+    <EmbeddedResource Remove="UserProfile\**" />
+    <None Remove="Tariffs\Commands\**" />
+    <None Remove="UserProfile\**" />
   </ItemGroup>
 
   <ItemGroup>
