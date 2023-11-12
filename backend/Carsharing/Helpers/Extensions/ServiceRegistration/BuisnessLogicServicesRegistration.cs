@@ -18,8 +18,6 @@ public static class BuisnessLogicServicesRegistrationExtension
         services.AddScoped<IAdminTariffService, TariffService>();
         services.AddScoped<IFileProvider, FileProvider>();
         services.AddScoped<IBookingService, BookingService>();
-        services.AddScoped<IAdminPostService, PostService>();
-        services.AddScoped<IPostService, PostService>();
         services.AddScoped<IBalanceService, BalanceService>();
         services.AddScoped<IUserService, UserService>();
 
