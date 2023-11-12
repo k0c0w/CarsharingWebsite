@@ -22,9 +22,6 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
 
     public async Task<Result> Handle(BookCarCommand request, CancellationToken cancellationToken)
     {
-        if (request.RentCarInfo.Start > request.RentCarInfo.End || request.RentCarInfo.Days == 0) 
-            return new Error("Wrong date bounds");
-        
         var carSupportsTariff = await _ctx.Cars
             .Include(x => x.CarModel)
             .ThenInclude(x => x!.Tariff)

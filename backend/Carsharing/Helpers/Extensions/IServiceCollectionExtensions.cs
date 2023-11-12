@@ -6,6 +6,10 @@ using Migrations.Chat;
 using Migrations.CarsharingApp;
 using MassTransit;
 using Carsharing.Helpers.Options;
+using Features.PipelineBehavior;
+using Features.Utils;
+using FluentValidation;
+using MediatR;
 
 namespace Carsharing;
 
@@ -69,6 +73,15 @@ public static class IServiceCollectionExtensions
                  return Task.CompletedTask;
              };
          });
+
+        return services;
+    }
+
+    public static IServiceCollection AddMediatorWithFeatures(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
 
         return services;
     }

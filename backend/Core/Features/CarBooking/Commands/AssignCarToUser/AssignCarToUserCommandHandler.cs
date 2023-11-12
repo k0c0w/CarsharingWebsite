@@ -20,8 +20,7 @@ public class AssignCarToUserCommandHandler : ICommandHandler<AssignCarToUserComm
     }
 
     public async Task<Result> Handle(AssignCarToUserCommand request, CancellationToken cancellationToken)
-    {
-        //TODO: Проверить cqrs 
+    { 
         var isAssigned = await _mediator.Send(new SetCarTakenCommand(request.Details.CarId), cancellationToken); 
         
         if(!isAssigned) 

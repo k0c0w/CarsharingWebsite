@@ -41,7 +41,7 @@ public class AdminTariffController : ControllerBase
     {
         var createTariffResult = await _mediatr.Send(new CreateTariffCommand(vm.Name, vm.Price, vm.Description, vm.MaxMillage));
 
-        if (!createTariffResult)
+        if (!createTariffResult.IsSuccess)
             return this.BadRequestWithErrorMessage(createTariffResult.ErrorMessage);
 
         return Created("/tariffs", null);
@@ -50,9 +50,6 @@ public class AdminTariffController : ControllerBase
     [HttpPut("setstate/{id:int}")]
     public async Task<IActionResult> SwitchTariffState([FromRoute] int id, [FromBody] bool state)
     {
-        if (id < 1)
-            return GetInvalidIdResponse();
-
         var command = state ? new TurnOnTariffCommand(id) : new TurnOnTariffCommand(id);
 
         var switchStateResult = await _mediatr.Send(command);
@@ -66,9 +63,6 @@ public class AdminTariffController : ControllerBase
     [HttpPut("edit/{id:int}")]
     public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffVM edit)
     {
-        if (id < 1)
-            return GetInvalidIdResponse();
-
         var updateResult = await _mediatr.Send(new UpdateTariffCommand(id, edit.Name, edit.Description, edit.Price, edit.MaxMillage));
         
         if (updateResult)
@@ -80,9 +74,6 @@ public class AdminTariffController : ControllerBase
     [HttpDelete("delete/{id:int}")]
     public async Task<IActionResult> DeleteTariff([FromRoute] int id)
     {
-        if (id < 1)
-            return GetInvalidIdResponse();
-
         var deleteResult = await _mediatr.Send(new DeleteTariffCommand(id));
 
         if (deleteResult)
@@ -94,9 +85,6 @@ public class AdminTariffController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTariff([FromRoute] int id)
     {
-        if (id < 1)
-            return NotFound();
-
         var getTariffResult = await _mediatr.Send(new GetTariffsQuery(id));
 
         if (getTariffResult)

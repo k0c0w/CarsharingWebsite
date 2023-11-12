@@ -16,11 +16,6 @@ public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
 
     public async Task<Result> Handle(CreateTariffCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = AreValidParameters(command);
-
-        if (!validationResult)
-            return validationResult;
-
         var newTariff = new Tariff()
         {
             Name = command.Name,
@@ -31,25 +26,7 @@ public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
             IsActive = false,
         };
 
-        try
-        {
-            await _tariffs.AddAsync(newTariff).ConfigureAwait(false);
-            return Result.SuccessResult;
-        }
-        catch (Exception ex)
-        {
-            return new Error(ex.Message);
-        }
-    }
-
-    private Result AreValidParameters(CreateTariffCommand command)
-    {
-        if (string.IsNullOrEmpty(command.Name))
-            return new Error("Tariff name was empty.");
-
-        if (command.Name.Length > 512)
-            return new Error("Tariff name was too long.");
-
-        return Result.SuccessResult; 
+        await _tariffs.AddAsync(newTariff).ConfigureAwait(false);
+        return Result.SuccessResult;
     }
 }

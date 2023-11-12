@@ -13,19 +13,11 @@ public class SetCarHasToBeNonActiveCommandHandler : ICommandHandler<SetCarHasToB
 
     public async Task<Result> Handle(SetCarHasToBeNonActiveCommand request, CancellationToken cancellationToken)
     {
-        try
-        {
-            var requestedCar = await _ctx.Cars.FindAsync(request.Id);
-            if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive)
-                return new Error();
-            requestedCar.HasToBeNonActive = true;
-            await _ctx.SaveChangesAsync();
-            return new Ok();
-        }
-        catch (DbUpdateConcurrencyException exception)
-        {
-            //логировать что машина уже не активна?
-            return new Error(exception.Message);
-        }
+        var requestedCar = await _ctx.Cars.FindAsync(request.Id);
+        if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive)
+            return new Error();
+        requestedCar.HasToBeNonActive = true;
+        await _ctx.SaveChangesAsync();
+        return new Ok();
     }
 }

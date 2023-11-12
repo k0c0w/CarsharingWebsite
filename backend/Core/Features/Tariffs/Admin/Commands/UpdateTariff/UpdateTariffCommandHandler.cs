@@ -16,33 +16,14 @@ public class UpdateTariffCommandHandler : ICommandHandler<UpdateTariffCommand>
 
     public async Task<Result> Handle(UpdateTariffCommand command, CancellationToken cancellationToken)
     {
-        var validateParamsResult = ValidateParams(command);
+        var tariff = await _tariffs.GetByIdAsync(command.TariffId);
 
-        if (!validateParamsResult)
-            return validateParamsResult;
+        if (tariff == null)
+            return new Error("Tariff was not found.");
 
-        try
-        {
-            var tariff = await _tariffs.GetByIdAsync(command.TariffId);
+        UpdateModel(tariff, command);
 
-            if (tariff == null)
-                return new Error("Tariff was not found.");
-
-            UpdateModel(tariff, command);
-
-            await _tariffs.UpdateAsync(tariff).ConfigureAwait(false);
-
-            return Result.SuccessResult;
-        }
-        catch (Exception ex)
-        {
-            return new Error(ex.Message);
-        }
-    }
-
-    private Result ValidateParams(UpdateTariffCommand command)
-    {
-        //todo: validate params
+        await _tariffs.UpdateAsync(tariff).ConfigureAwait(false);
 
         return Result.SuccessResult;
     }

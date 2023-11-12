@@ -17,7 +17,7 @@ public class ReleaseCarCommandHandler: ICommandHandler<ReleaseCarCommand>
         if (car != null)
         {
             car.IsOpened = false;
-            await _ctx.SaveChangesAsync();
+            await _ctx.SaveChangesAsync(cancellationToken);
         }
         
         return Result.SuccessResult; 

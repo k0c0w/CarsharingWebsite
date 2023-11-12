@@ -16,19 +16,14 @@ public class CloseCarCommandHandler : ICommandHandler<CloseCarCommand>
 
     public async Task<Result> Handle(CloseCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
+        var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate,
+            cancellationToken: cancellationToken);
         if (car is null)
             return new Error("Машина не найдена");
-        try
-        {
-            // todo: check if current user is owner
-            car!.IsOpened = false;
-            await _ctx.SaveChangesAsync(cancellationToken);
-            return Result.SuccessResult;
-        }
-        catch (Exception e)
-        {
-            return new Error(e.Message);
-        }
+
+        // todo: check if current user is owner
+        car!.IsOpened = false;
+        await _ctx.SaveChangesAsync(cancellationToken);
+        return Result.SuccessResult;
     }
 }

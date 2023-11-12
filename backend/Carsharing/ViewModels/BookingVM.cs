@@ -8,7 +8,7 @@ public class BookingVM
 {
     [Required(ErrorMessage = "car_id обязательно.")]
     [JsonPropertyName("car_id")]
-    public int CarId { get; set; }
+    public int CarId { get; set;  }
     
     public int TariffId { get; set; }
     

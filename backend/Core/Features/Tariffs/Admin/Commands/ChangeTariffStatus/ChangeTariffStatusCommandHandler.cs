@@ -15,24 +15,14 @@ public class ChangeTariffStatusCommandHandler : ICommandHandler<ChangeTariffStat
 
     public async Task<Result> Handle(ChangeTariffStatusCommand command, CancellationToken cancellationToken)
     {
-        if (command.Tariffd < 1)
-            return new Error($"Wrong tariff id.");
+        var tariff = await _tariffs.GetByIdAsync(command.Tariffd).ConfigureAwait(false);
 
-        try
-        {
-            var tariff = await _tariffs.GetByIdAsync(command.Tariffd).ConfigureAwait(false);
+        if (tariff == null)
+            return new Error("Tariff was not found.");
 
-            if (tariff == null)
-                return new Error("Tariff was not found.");
+        tariff.IsActive = command.TurnOn;
+        await _tariffs.UpdateAsync(tariff).ConfigureAwait(false);
 
-            tariff.IsActive = command.TurnOn;
-            await _tariffs.UpdateAsync(tariff).ConfigureAwait(false);
-
-            return Result.SuccessResult;
-        }
-        catch (Exception ex)
-        {
-            return new Error(ex.Message);
-        }
+        return Result.SuccessResult;
     }
 }

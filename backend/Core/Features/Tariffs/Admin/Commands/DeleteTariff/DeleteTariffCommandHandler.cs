@@ -15,18 +15,7 @@ public class DeleteTariffCommandHandler : ICommandHandler<DeleteTariffCommand>
 
     public async Task<Result> Handle(DeleteTariffCommand command, CancellationToken cancellationToken)
     {
-        if (command.TariffId < 1)
-            return new Error("Wrong tariff id.");
-
-        try
-        {
-            await _tariffs.RemoveByIdAsync(command.TariffId).ConfigureAwait(false);
-
-            return Result.SuccessResult;
-        }
-        catch (Exception ex)
-        {
-            return new Error(ex.Message);
-        }
+        await _tariffs.RemoveByIdAsync(command.TariffId).ConfigureAwait(false);
+        return Result.SuccessResult;
     }
 }

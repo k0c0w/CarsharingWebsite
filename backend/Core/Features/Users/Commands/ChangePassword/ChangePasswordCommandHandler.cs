@@ -27,6 +27,5 @@ public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordComman
         
         var result = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
         return new Ok<PasswordChangeResult>(new PasswordChangeResult(result.Succeeded, result.Errors.Select(x => x.Description)));
-
     }
 }

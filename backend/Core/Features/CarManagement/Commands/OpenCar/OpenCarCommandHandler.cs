@@ -19,15 +19,9 @@ public class OpenCarCommandHandler : ICommandHandler<OpenCarCommand>
         var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
         if (car is null)
             return new Error(new NullReferenceException().Message);
-        try
-        {
-            car.IsOpened = true;
-            await _ctx.SaveChangesAsync(cancellationToken);
-            return Result.SuccessResult;
-        }
-        catch (Exception e)
-        {
-            return new Error(e.Message);
-        }
+
+        car.IsOpened = true;
+        await _ctx.SaveChangesAsync(cancellationToken);
+        return Result.SuccessResult;
     }
 }

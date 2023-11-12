@@ -23,7 +23,7 @@ services.RegisterChat()
         .RegisterBuisnessLogicServices()
         .RegisterSwagger();
 
-services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
+services.AddMediatorWithFeatures();
 
 services.Configure<ApiBehaviorOptions>(o =>
 {
