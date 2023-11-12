@@ -2,7 +2,6 @@
 using Services.Abstractions;
 using Services;
 using Carsharing.Services;
-using Services.User;
 
 namespace Carsharing.Helpers.Extensions.ServiceRegistration;
 
@@ -19,7 +18,6 @@ public static class BuisnessLogicServicesRegistrationExtension
         services.AddScoped<IFileProvider, FileProvider>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IBalanceService, BalanceService>();
-        services.AddScoped<IUserService, UserService>();
 
         return services;
     }
