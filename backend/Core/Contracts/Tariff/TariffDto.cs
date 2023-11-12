@@ -6,9 +6,6 @@ public class TariffDto
     
     public string? Name { get; init; }
     
-    
-    public bool IsActive { get; init; }
-
     public string? Description { get; init; }
     
     public decimal PriceInRubles { get; init; }

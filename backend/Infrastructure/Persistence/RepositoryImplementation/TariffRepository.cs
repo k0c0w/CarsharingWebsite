@@ -1,9 +1,10 @@
 ﻿using Domain.Entities;
+using Entities.Exceptions;
 using Entities.Repository;
 using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
 
-namespace Migrations.Repositories;
+namespace Persistence.RepositoryImplementation;
 
 public class TariffRepository : ITariffRepository
 {
@@ -17,7 +18,6 @@ public class TariffRepository : ITariffRepository
     public async Task<Tariff?> GetByIdAsync(int primaryKey)
     {
         var single = await _ctx.Tariffs.SingleAsync(x => x.TariffId == primaryKey);
-        await _ctx.SaveChangesAsync();
         return single;
     }
 
@@ -28,9 +28,9 @@ public class TariffRepository : ITariffRepository
         if (offset != null)
             messages = messages.Skip(offset.Value);
         if (limit != null)
-            messages = messages.Skip(limit.Value);
+            messages = messages.Take(limit.Value);
 
-        return await messages.ToArrayAsync().ConfigureAwait(false);
+        return await messages.ToArrayAsync();
     }
 
     public async Task<int> AddAsync(Tariff entity)
@@ -51,26 +51,20 @@ public class TariffRepository : ITariffRepository
                 .SetProperty(tariff => tariff.Price, e => entity.Price)
                 .SetProperty(tariff => tariff.IsActive, e => entity.IsActive)
                 .SetProperty(tariff => tariff.MaxMileage, e => entity.MaxMileage));
-        
-        await _ctx.SaveChangesAsync();
     }
 
-    public async Task<Tariff> RemoveByIdAsync(int primaryKey)
+    public async Task RemoveByIdAsync(int primaryKey)
     {
-        var tariff = await _ctx.Tariffs
-            .SingleOrDefaultAsync(e => e.TariffId == primaryKey);
-        
-        if (tariff is null)
-            return new Tariff();
-        
-        _ctx.Tariffs.Remove(tariff);
-        await _ctx.SaveChangesAsync();
-        return tariff;
+        var effectedRows = await _ctx.Tariffs.Where(x => x.TariffId == primaryKey).ExecuteDeleteAsync();
+
+        if (effectedRows == 0)
+            throw new NotFoundException($"Tariff was not found: {primaryKey}", typeof(Tariff));
     }
 
-    public async Task<IQueryable<Tariff>> GetAllActiveAsync()
+    public async Task<IEnumerable<Tariff>> GetAllActiveAsync()
     {
-        var tariffs = _ctx.Tariffs.Where(x => x.IsActive);
+        var tariffs = await _ctx.Tariffs.Where(x => x.IsActive).ToArrayAsync();
+
         return tariffs;
     }
 }

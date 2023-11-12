@@ -78,16 +78,9 @@ public class MessageRepository : IMessageRepository
           .ToArray();
     }
 
-    public async Task<Message> RemoveByIdAsync(Guid primaryKey)
+    public Task RemoveByIdAsync(Guid primaryKey)
     {
-        var modelToRemove = await GetByIdAsync(primaryKey).ConfigureAwait(false);
-
-        if (modelToRemove == null)
-            throw new NotFoundException($"Id: {primaryKey}", typeof(Message));
-
-        _ctx.Messages.Remove(modelToRemove);
-
-        return modelToRemove;
+        throw new NotImplementedException();
     }
 
     public Task UpdateAsync(Message entity)

@@ -3,7 +3,7 @@ using Shared.CQRS;
 
 namespace Features.Tariffs.Admin;
 
-public class GetTariffsQuery : IQuery<IEnumerable<TariffDto>>    
+public class GetTariffsQuery : IQuery<IEnumerable<AdminTariffDto>>    
 {
     public bool IsTariffByIdRequest => TariffId.HasValue;
 

@@ -23,19 +23,19 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
         {
             IEnumerable<Tariff> tariffs;
 
-            if(request.IsTariffByIdRequest)
+            if (request.IsTariffByIdRequest)
             {
                 if (request.TariffId < 1)
                     return _emptyResponse;
 
-                var tariff = await _tariffRepository.GetByIdAsync(request.TariffId!.Value).ConfigureAwait(false);
+                var tariff = await _tariffRepository.GetByIdAsync(request.TariffId!.Value);
                 if (tariff == null || !tariff.IsActive)
                     return _emptyResponse;
 
-                tariffs = new[] { tariff }; 
+                tariffs = new[] { tariff };
             }
             else
-                tariffs = await _tariffRepository.GetAllActiveAsync().ConfigureAwait(false);
+                tariffs = await _tariffRepository.GetAllActiveAsync();
 
             return new Ok<IEnumerable<TariffDto>>(MapTariffs(tariffs));
         }

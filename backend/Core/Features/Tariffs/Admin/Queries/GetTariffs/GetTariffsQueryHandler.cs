@@ -6,9 +6,9 @@ using Shared.Results;
 
 namespace Features.Tariffs.Admin;
 
-public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable<TariffDto>>
+public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable<AdminTariffDto>>
 {
-    private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new Ok<IEnumerable<TariffDto>>(Array.Empty<TariffDto>());
+    private readonly static Ok<IEnumerable<AdminTariffDto>> _emptyResponse = new Ok<IEnumerable<AdminTariffDto>>(Array.Empty<AdminTariffDto>());
 
     private readonly ITariffRepository _tariffRepository;
 
@@ -17,7 +17,7 @@ public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable
         _tariffRepository = tariffRepository;
     }
 
-    public async Task<Result<IEnumerable<TariffDto>>> Handle(GetTariffsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<AdminTariffDto>>> Handle(GetTariffsQuery request, CancellationToken cancellationToken)
     {
         try
         {
@@ -37,24 +37,25 @@ public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable
             else
                 tariffs = await _tariffRepository.GetBatchAsync().ConfigureAwait(false);
 
-            return new Ok<IEnumerable<TariffDto>>(MapTariffs(tariffs));
+            return new Ok<IEnumerable<AdminTariffDto>>(MapTariffs(tariffs));
         }
         catch (Exception ex)
         {
-            return new Error<IEnumerable<TariffDto>>(ex.Message);
+            return new Error<IEnumerable<AdminTariffDto>>(ex.Message);
         }
     }
 
-    private TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
+    private AdminTariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
         => tariffs
-            .Select(tariff => new TariffDto()
+            .Select(tariff => new AdminTariffDto()
             {
                     Id = tariff.TariffId,
                     Description = tariff.Description,
                     Name = tariff.Name,
                     MaxMileage = tariff.MaxMileage,
                     PriceInRubles = tariff.Price,
-                    Image = $"/tariffs/{tariff.Name}.png"
+                    Image = $"/tariffs/{tariff.Name}.png",
+                    IsActive = tariff.IsActive,
             })
             .ToArray();
 }
