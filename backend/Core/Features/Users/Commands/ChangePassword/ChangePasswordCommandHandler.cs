@@ -10,7 +10,7 @@ namespace Features.Users.Commands.ChangePassword;
 
 public class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordCommand, PasswordChangeResult>
 {
-    private readonly UserManager<Domain.Entities.User> _userManager;
+    private readonly UserManager<User> _userManager;
     private readonly CarsharingContext _context;
 
     public ChangePasswordCommandHandler(UserManager<User> userManager, CarsharingContext context)

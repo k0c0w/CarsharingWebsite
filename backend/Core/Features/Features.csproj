@@ -7,16 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CarBooking\**" />
+    <Compile Remove="UserProfile\**" />
+    <EmbeddedResource Remove="CarBooking\**" />
+    <EmbeddedResource Remove="UserProfile\**" />
+    <None Remove="CarBooking\**" />
+    <None Remove="UserProfile\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Tariffs\Commands\" />
-    <Folder Include="UserProfile\" />
-    <Folder Include="CarBooking\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\Migrations\Migrations.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\Services.Abstractions\Services.Abstractions.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
   </ItemGroup>
 
