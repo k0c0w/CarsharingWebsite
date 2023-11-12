@@ -49,7 +49,7 @@ public class GetProfileInfoQueryHandler : IQueryHandler<GetProfileInfoQuery, Pro
                 Id = x!.Id,
                 IsOpened = x!.IsOpened,
                 LicensePlate = x!.LicensePlate,
-                Image = $"/models/{x!.CarModel.ImageName}"
+                ImageUrl = x!.CarModel.ImageUrl
             })
             .ToArray();
 

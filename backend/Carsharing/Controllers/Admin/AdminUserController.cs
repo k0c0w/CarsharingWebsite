@@ -11,7 +11,6 @@ using Features.Users.Queries.GetAllInfo;
 using Features.Users.Queries.GetUserInfoById;
 using Features.Users.Queries.Verify;
 using MediatR;
-using Services.Abstractions;
 using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Carsharing.Controllers;

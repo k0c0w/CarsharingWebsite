@@ -1,10 +1,10 @@
 using AutoMapper;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
-using Carsharing.ViewModels.Admin.UserInfo;
 using Carsharing.ViewModels.Profile;
 using Contracts.UserInfo;
 using Features.Balance.Commands.IncreaseBalance;
+using Features.CarManagement;
 using Features.Users.Commands.ChangePassword;
 using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetPersonalInfo;
@@ -12,7 +12,6 @@ using Features.Users.Queries.GetProfileInfo;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions;
 using UserInfoVM = Carsharing.ViewModels.Profile.UserInfoVM;
 
 namespace Carsharing.Controllers;
@@ -51,7 +50,7 @@ public class ProfileController : ControllerBase
                     Name = x.Model,
                     IsOpened = x.IsOpened,
                     LicensePlate = x.LicensePlate,
-                    ImageUrl = x.Image
+                    ImageUrl = x.ImageUrl
                 })
             })
             : BadRequest(queryResult.ErrorMessage);
@@ -125,28 +124,22 @@ public class ProfileController : ControllerBase
     [HttpGet("open/{licensePlate:required}")]
     public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
     {
-        var queryResult = await _mediator.Send(new GetProfileInfoQuery(User.GetId()));
-        var info = queryResult.Value;
-        throw new NotImplementedException();
-        //var result = await _carService.OpenCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        var openResult = await _mediator.Send(new OpenCarCommand(licensePlate));
 
-        //return new JsonResult(new
-        //{
-        //    result
-        //});
+        if (openResult)
+            return Ok();
+
+        return Forbid();
     }
 
     [HttpGet("close/{licensePlate:required}")]
     public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
     {
-        var queryResult = await _mediator.Send(new GetProfileInfoQuery(User.GetId()));
-        var info = queryResult.Value;
-        throw new NotImplementedException();
-        //var result = await _carService.CloseCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
+        var closeResult = await _mediator.Send(new CloseCarCommand(licensePlate));
 
-        //return new JsonResult(new
-        //{
-        //    result
-        //});
+        if (closeResult)
+            return Ok();
+
+        return Forbid();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Migrations.CarsharingApp;
+﻿using Microsoft.EntityFrameworkCore;
+using Migrations.CarsharingApp;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -15,7 +16,7 @@ public class OpenCarCommandHandler : ICommandHandler<OpenCarCommand>
 
     public async Task<Result> Handle(OpenCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FindAsync(request.CarId);
+        var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
         if (car is null)
             return new Error(new NullReferenceException().Message);
         try

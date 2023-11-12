@@ -10,11 +10,11 @@ namespace Features.Users.Commands.EditUser;
 
 public class EditUserCommandHandler : ICommandHandler<EditUserCommand>
 {
-    private readonly Mediator _mediator;
+    private readonly ISender _mediator;
     private readonly UserValidation _userValidation;
     private readonly CarsharingContext _context;
 
-    public EditUserCommandHandler(Mediator mediator, UserValidation userValidation, CarsharingContext context)
+    public EditUserCommandHandler(ISender mediator, UserValidation userValidation, CarsharingContext context)
     {
         _mediator = mediator;
         _userValidation = userValidation;

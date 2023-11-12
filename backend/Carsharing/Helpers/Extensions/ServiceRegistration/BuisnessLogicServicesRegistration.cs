@@ -1,6 +1,4 @@
-﻿using Services.Abstractions;
-using Services;
-using Carsharing.Services;
+﻿using Features.Users.Shared;
 
 namespace Carsharing.Helpers.Extensions.ServiceRegistration;
 
@@ -12,7 +10,7 @@ public static class BuisnessLogicServicesRegistrationExtension
         services.AddRepositories();
         services.AddUnitsOfWork();
 
-        services.AddScoped<IFileProvider, FileProvider>();
+        services.AddScoped<UserValidation>();
 
         return services;
     }

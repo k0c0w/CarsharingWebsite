@@ -2,4 +2,4 @@
 
 namespace Features.CarManagement;
 
-public record OpenCarCommand(int CarId) : ICommand;
+public record OpenCarCommand(string LicensePlate) : ICommand;

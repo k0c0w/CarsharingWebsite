@@ -1,4 +1,5 @@
-﻿using Migrations.CarsharingApp;
+﻿using Microsoft.EntityFrameworkCore;
+using Migrations.CarsharingApp;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -15,11 +16,12 @@ public class CloseCarCommandHandler : ICommandHandler<CloseCarCommand>
 
     public async Task<Result> Handle(CloseCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FindAsync(request.CarId);
+        var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
         if (car is null)
             return new Error("Машина не найдена");
         try
         {
+            // todo: check if current user is owner
             car!.IsOpened = false;
             await _ctx.SaveChangesAsync(cancellationToken);
             return Result.SuccessResult;
