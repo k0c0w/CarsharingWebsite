@@ -1,20 +1,24 @@
 ﻿using Domain.Entities;
 using Entities.Repository;
+using Microsoft.Extensions.Logging;
 using Shared.CQRS;
 using Shared.Results;
 
 namespace Features.Posts.Commands.CreatePost;
 
-public class CreatePostCommandHandler: ICommandHandler<CreatePostCommand>
+public class CreatePostCommandHandler: ICommandHandler<CreatePostCommand, int>
 {
     private readonly IPostRepository _postRepository;
 
-    public CreatePostCommandHandler(IPostRepository postRepository)
+    private readonly ILogger<Exception> _logger;
+
+    public CreatePostCommandHandler(ILogger<Exception> logger, IPostRepository postRepository)
     {
         _postRepository = postRepository;
+        _logger = logger;
     }
 
-    public async Task<Result> Handle(CreatePostCommand request, CancellationToken cancellationToken)
+    public async Task<Result<int>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
         var post = new Post()
         {
@@ -25,12 +29,14 @@ public class CreatePostCommandHandler: ICommandHandler<CreatePostCommand>
 
         try
         {
-            await _postRepository.AddAsync(post).ConfigureAwait(false);
-            return Result.SuccessResult;
+            var postId = await _postRepository.AddAsync(post).ConfigureAwait(false);
+            return new Ok<int>(postId);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            return new Error(e.Message);
+            _logger.Log(LogLevel.Error, ex.Message, ex);
+
+            return new Error<int>("Could not create post!");
         }
     }
 }

@@ -21,6 +21,7 @@
     <PackageReference Include="MassTransit" Version="8.1.1" />
     <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1" />
+    <PackageReference Include="MediatR" Version="12.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
@@ -35,6 +36,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Core\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Core\Features\Features.csproj" />
     <ProjectReference Include="..\Core\Services.Abstractions\Services.Abstractions.csproj" />
     <ProjectReference Include="..\Core\Services\Services.csproj" />
     <ProjectReference Include="..\Infrastructure\Migrations\Migrations.csproj" />

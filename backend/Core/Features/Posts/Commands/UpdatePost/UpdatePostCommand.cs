@@ -1,6 +1,6 @@
 ﻿using Shared.CQRS;
 
-namespace Features.Posts.Commands.UpdatePost;
+namespace Features.Posts;
 
 public class UpdatePostCommand : ICommand
 {

@@ -1,7 +1,7 @@
 ﻿using Contracts.NewsService;
 using Shared.CQRS;
 
-namespace Features.Posts.Queries.GetPostById;
+namespace Features.Posts;
 
 public class GetPostByIdQuery : IQuery<PostDto>
 {

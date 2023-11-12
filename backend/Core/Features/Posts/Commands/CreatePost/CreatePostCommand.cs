@@ -1,8 +1,8 @@
 ﻿using Shared.CQRS;
 
-namespace Features.Posts.Commands.CreatePost;
+namespace Features.Posts;
 
-public class CreatePostCommand : ICommand
+public class CreatePostCommand : ICommand<int>
 {
     public CreatePostCommand( string title, string body)
     {
@@ -13,5 +13,4 @@ public class CreatePostCommand : ICommand
     public string Title { get; }
 
     public string Body { get;  }
-    
 }

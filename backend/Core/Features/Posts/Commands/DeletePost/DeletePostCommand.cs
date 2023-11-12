@@ -1,6 +1,6 @@
 ﻿using Shared.CQRS;
 
-namespace Features.Posts.Commands.DeletePost;
+namespace Features.Posts;
 
 public class DeletePostCommand : ICommand
 {
