@@ -1,5 +1,7 @@
 using Carsharing.ViewModels;
 using Contracts;
+using Features.CarBooking.Commands.BookCar;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Abstractions;
@@ -10,11 +12,11 @@ namespace Carsharing.Controllers;
 [Route("api/booking")]
 public class BookingController : Controller
 {
-    private readonly IBookingService _service;
-    
-    public BookingController( IBookingService service)
+    private IMediator _madiator;
+
+    public BookingController(IMediator madiator)
     {
-        _service = service;
+        _madiator = madiator;
     }
     
     //Добавил в BookingVm userInfoId, для заполнения Dto и в принципе сделал через UserInfoId
@@ -23,14 +25,15 @@ public class BookingController : Controller
     {
         try
         {
-            await _service.BookCarAsync(new RentCarDto()
+            //TODO: не знаю как это замапить
+            await _madiator.Send(new BookCarCommand(new RentCarDto()
             {
                 PotentialRenterUserId = User.GetId(),
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
                 TariffId = bookingInfo.TariffId,
-            });
+            }));
             return new JsonResult(new
             {
                 result = "Car is successfuly booked"

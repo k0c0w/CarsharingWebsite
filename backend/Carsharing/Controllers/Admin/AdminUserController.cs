@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
+using Features.Balance.Commands.DecreaseBalance;
+using Features.Balance.Commands.IncreaseBalance;
 using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetAllInfo;
 using Features.Users.Queries.GetUserInfoById;
@@ -16,23 +18,21 @@ namespace Carsharing.Controllers;
 
 [ApiController]
 [Route("/api/admin/user")]
-public class AdminUserController: ControllerBase
+public class AdminUserController : ControllerBase
 {
     private readonly RoleManager<UserRole> _roleManager;
 
     private readonly UserManager<User> _userManager;
-    private readonly IBalanceService _balanceService;
     private readonly IMediator _mediator;
     private readonly IMapper _mapper;
 
-    public AdminUserController(
-        IBalanceService balanceService, UserManager<User> userManager, RoleManager<UserRole> roleManager, IMediator mediator, IMapper mapper)
+    public AdminUserController(UserManager<User> userManager, RoleManager<UserRole> roleManager, IMediator mediator,
+        IMapper mapper)
     {
         _roleManager = roleManager;
         _mediator = mediator;
         _mapper = mapper;
         _userManager = userManager;
-        _balanceService = balanceService;
     }
 
     [HttpGet("all")]
@@ -41,8 +41,8 @@ public class AdminUserController: ControllerBase
         var queryResult = await _mediator.Send(new GetAllInfoQuery());
         if (!queryResult.IsSuccess || queryResult.Value is null)
             return BadRequest();
-        
-        return new JsonResult( queryResult.Value.Select(x =>new UserVM
+
+        return new JsonResult(queryResult.Value.Select(x => new UserVM
             {
                 Email = x.User.Email!,
                 Id = x.UserId!,
@@ -60,14 +60,14 @@ public class AdminUserController: ControllerBase
             })
         );
     }
-    
+
     [HttpGet("{id:required}")]
     public async Task<IActionResult> GetUser([FromRoute] string id)
     {
         if (string.IsNullOrEmpty(id)) return BadRequest();
         var result = await _mediator.Send(new GetUserInfoByIdQuery(id));
         var user = result.Value;
-        if (result.IsSuccess is false || user == null) 
+        if (result.IsSuccess is false || user == null)
             return NotFound(ServiceError("No such user"));
 
         var userVm = _mapper.Map<UserInfo, UserVM>(user);
@@ -78,68 +78,62 @@ public class AdminUserController: ControllerBase
     public async Task<IActionResult> EditUser([FromRoute] string id, [FromBody] EditUserVM edit)
     {
         if (string.IsNullOrEmpty(id)) return NotFound(ServiceError("No such user"));
-        
+
         var commandResult = await _mediator.Send(new EditUserCommand(id,
             _mapper.Map<EditUserVM, EditUserDto>(edit)));
-        
+
         return commandResult.IsSuccess
-             ? NoContent()
-             : new JsonResult(ServiceError("Часть информации не сохранена"));
+            ? NoContent()
+            : new JsonResult(ServiceError("Часть информации не сохранена"));
     }
 
     [HttpPut("verify/{id:required}")]
-    public async Task<IActionResult> VerifyUserChanges([FromRoute]string id)
+    public async Task<IActionResult> VerifyUserChanges([FromRoute] string id)
     {
         var result = await _mediator.Send(new VerifyQuery(id));
-        
-        return result.IsSuccess 
-            ? new JsonResult(new { result = "Success"})
+
+        return result.IsSuccess
+            ? new JsonResult(new { result = "Success" })
             : new JsonResult(new { result = "Fail", Message = result.ErrorMessage });
     }
-    
+
     [HttpPost("{id:required}/BalanceIncrease")]
     public async Task<IActionResult> IncreaseBalance([FromRoute] string id, [FromBody] decimal val)
     {
         if (val <= 0) return BadRequest();
-        var result = await _balanceService.IncreaseBalance(id, val);
+        var commandResult = await _mediator.Send(new IncreaseBalanceCommand(id, val));
 
-        if (result == "success")
-        {
-            return new JsonResult(new
+        return commandResult.IsSuccess
+            ? new JsonResult(new
             {
                 result = $"Success, your Balance increased on {val}"
+            })
+            : new JsonResult(new
+            {
+                result = "Не удалось пополнить баланс"
             });
-        }
-
-        return new JsonResult(new
-        {
-            result = "Не удалось пополнить баланс"
-        });
-
     }
 
     [HttpPost("{id:required}/BalanceDecrease")]
     public async Task<IActionResult> DecreaseBalance([FromRoute] string id, [FromBody] decimal val)
     {
         if (val <= 0) return BadRequest();
-        var result = await _balanceService.DecreaseBalance(id, val);
+        var commandResult = await _mediator.Send(new DecreaseBalanceCommand(id, val));
 
-        if (result == "success")
-        {
-            return new JsonResult(new
+
+        return commandResult.IsSuccess
+            ? new JsonResult(new
             {
                 result = $"Success, your Balance increased on {val}"
+            })
+            : new JsonResult(new
+            {
+                result = "Не удалось пополнить баланс"
             });
-        }
-
-        return new JsonResult(new
-        {
-            result = "Не удалось пополнить баланс"
-        });
     }
-    
+
     [HttpPost("{id:required}/GrantRole/{role:required}")]
-    public async Task<IActionResult> GrantRole([FromRoute]string role,[FromRoute]string id)
+    public async Task<IActionResult> GrantRole([FromRoute] string role, [FromRoute] string id)
     {
         //нужно будет добавить ограничения кто кому может менять роль
         var user = await _userManager.FindByIdAsync(id);
@@ -147,9 +141,9 @@ public class AdminUserController: ControllerBase
 
         var newUserRole = await _roleManager.FindByNameAsync(role);
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
-        
+
         var userRole = await _userManager.GetRolesAsync(user);
-        
+
         if (userRole.Contains(newUserRole!.Name!))
             return Ok();
 
@@ -157,20 +151,20 @@ public class AdminUserController: ControllerBase
 
         return Ok();
     }
-    
+
     [HttpDelete("{id:required}/RevokeRole/{role:required}")]
-    public async Task<IActionResult> RevokeRole([FromRoute]string role,[FromRoute]string id)
+    public async Task<IActionResult> RevokeRole([FromRoute] string role, [FromRoute] string id)
     {
         var user = await _userManager.FindByIdAsync(id);
         if (user == null) return NotFound(ServiceError("No such user"));
 
         var newUserRole = await _roleManager.FindByNameAsync(role);
         if (newUserRole == null) return NotFound(ServiceError("No such role"));
-    
+
         var userRole = await _userManager.GetRolesAsync(user);
         if (!userRole!.Contains(newUserRole!.Name!))
             return NoContent();
-        
+
         await _userManager.RemoveFromRoleAsync(user, newUserRole!.Name!);
 
         return NoContent();

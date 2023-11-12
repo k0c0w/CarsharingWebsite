@@ -4,6 +4,7 @@ using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.UserInfo;
 using Carsharing.ViewModels.Profile;
 using Contracts.UserInfo;
+using Features.Balance.Commands.IncreaseBalance;
 using Features.Users.Commands.ChangePassword;
 using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetPersonalInfo;
@@ -21,16 +22,14 @@ namespace Carsharing.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
-    private readonly IBalanceService _balanceService;
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
 
-    public ProfileController(IBalanceService balanceService, IMediator mediator,
+    public ProfileController(IMediator mediator,
         IMapper mapper)
     {
         _mediator = mediator;
         _mapper = mapper;
-        _balanceService = balanceService;
     }
 
     [HttpGet]
@@ -112,18 +111,17 @@ public class ProfileController : ControllerBase
     [HttpGet("increase")]
     public async Task<IActionResult> IncreaseBalance([FromQuery] decimal val)
     {
-        var result = await _balanceService.IncreaseBalance(User.GetId(), val);
+        var commandResult = await _mediator.Send(new IncreaseBalanceCommand(User.GetId(), val));
 
-        if (result == "success")
-            return new JsonResult(new
+        return commandResult.IsSuccess
+            ? new JsonResult(new
             {
                 result = $"Success, your Balance increased on {val}"
+            })
+            : new JsonResult(new
+            {
+                result = "Не удалось пополнить баланс"
             });
-
-        return new JsonResult(new
-        {
-            result = "Не удалось пополнить баланс"
-        });
     }
 
     [HttpGet("open/{licensePlate:required}")]

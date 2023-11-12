@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Tariffs\Commands\" />
     <Folder Include="UserProfile\" />
-    <Folder Include="CarBooking\" />
   </ItemGroup>
 
   <ItemGroup>

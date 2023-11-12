@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin;
@@ -7,6 +8,7 @@ using Contracts;
 using Contracts.Tariff;
 using Contracts.User;
 using Domain.Entities;
+using Features.CarBooking.Commands.BookCar;
 using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Carsharing.Helpers.Mappings
@@ -82,6 +84,13 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.DriverLicense));
+            
+            CreateMap<BookingVM, RentCarDto>() 
+                .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndDate))
+                .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartDate))
+                .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId))
+                .ForMember(dest => dest.TariffId, opt => opt.MapFrom(src => src.TariffId));
+
         }
     }
 }
