@@ -9,7 +9,7 @@ public class GetTariffsQuery : IQuery<IEnumerable<TariffDto>>
 
     public int? TariffId { get; }
 
-    public GetTariffsQuery(int? tariffId)
+    public GetTariffsQuery(int? tariffId = default)
     {
         TariffId = tariffId;
     }
