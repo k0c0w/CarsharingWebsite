@@ -20,7 +20,7 @@ public class DeleteTariffCommandHandler : ICommandHandler<DeleteTariffCommand>
 
         try
         {
-            await _tariffs.RemoveByIdAsync(command.TariffId).ConfigureAwait(false);
+            await _tariffs.RemoveByIdAsync(command.TariffId);
 
             return Result.SuccessResult;
         }

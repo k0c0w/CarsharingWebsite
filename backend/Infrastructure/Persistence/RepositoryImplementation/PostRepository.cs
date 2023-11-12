@@ -53,17 +53,12 @@ public class NotUnitOfWorkPostRepository : IPostRepository
             .ToArrayAsync();
     }
 
-    public async Task<Post> RemoveByIdAsync(int primaryKey)
+    public async Task RemoveByIdAsync(int primaryKey)
     {
-        var postToRemove = await GetByIdAsync(primaryKey);
+        var reflectedRows = await _context.News.Where(x => x.Id == primaryKey).ExecuteDeleteAsync();
 
-        if (postToRemove == null)
+        if (reflectedRows == 0)
             throw new NotFoundException($"Not found by id on deletion: {primaryKey}", typeof(Post));
-
-        _context.News.Remove(postToRemove);
-        await _context.SaveChangesAsync();
-
-        return postToRemove;
     }
 
     public async Task UpdateAsync(Post entity)
