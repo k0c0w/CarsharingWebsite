@@ -1,8 +1,6 @@
-﻿using Domain;
-using Domain.Entities;
+﻿using Domain.Entities;
 using MassTransit;
 using Persistence.Chat.ChatEntites.Dtos;
-using Domain.Entities;
 using Persistence.Chat;
 
 namespace Carsharing.ChatHub;
