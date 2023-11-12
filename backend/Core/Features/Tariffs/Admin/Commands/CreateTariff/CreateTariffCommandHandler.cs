@@ -25,6 +25,7 @@ public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
         {
             Name = command.Name,
             Description = command.Description ?? string.Empty,
+            ImageUrl = "",
             MaxMileage = command.MaxMileage,
             Price = command.PriceInRubles ?? 1000,
             IsActive = false,

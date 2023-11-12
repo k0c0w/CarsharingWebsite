@@ -1,4 +1,5 @@
 ﻿using Entities.Repository;
+using Migrations.Repositories;
 using Persistence.Chat;
 using Persistence.RepositoryImplementation;
 using Persistence.UnitOfWork;

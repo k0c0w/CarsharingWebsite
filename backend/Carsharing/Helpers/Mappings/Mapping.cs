@@ -2,6 +2,7 @@
 using Carsharing.Persistence.GoogleAPI;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin;
+using Carsharing.ViewModels.Admin.Car;
 using Carsharing.ViewModels.Admin.UserInfo;
 using Contracts;
 using Contracts.Tariff;
@@ -26,6 +27,15 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.birthday));
 
             //Services
+            //TODO: IsActive не получится замаппить
+            CreateMap<TariffDto, TariffVM>()
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.MaxMileage, opt => opt.MapFrom(src => src.MaxMileage))
+                .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.PriceInRubles));
+
             CreateMap<CarModelDto, CarModel>()
                 .ReverseMap();
 
@@ -48,6 +58,16 @@ namespace Carsharing.Helpers.Mappings
 
             
             // Controllers
+            CreateMap<CarDto, AdminCarVM>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.IsOpened, opt => opt.MapFrom(src => src.IsOpened))
+                .ForMember(dest => dest.IsTaken, opt => opt.MapFrom(src => src.IsTaken))
+                .ForMember(dest => dest.LicensePlate, opt => opt.MapFrom(src => src.LicensePlate))
+                .ForMember(dest => dest.ParkingLatitude, opt => opt.MapFrom(src => src.ParkingLatitude))
+                .ForMember(dest => dest.ParkingLongitude, opt => opt.MapFrom(src => src.ParkingLongitude))
+                .ForMember(dest => dest.CarModelId, opt => opt.MapFrom(src => src.CarModelId))
+                .ForMember(dest => dest.HasToBeNonActive, opt => opt.MapFrom(src => src.HasToBeNonActive));
+
             CreateMap<UserInfo, UserVM>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.UserId))
@@ -85,6 +105,36 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId))
                 .ForMember(dest => dest.TariffId, opt => opt.MapFrom(src => src.TariffId));
+            
+            // 
+            CreateMap<CarModel, CarModelDto>();
+
+            CreateMap<CarModel, ExtendedCarModelDto>()
+                .ForMember(dest => dest.TariffName,
+                    source => source
+                        .MapFrom(carModel => carModel.Tariff!.Name))
+                .ForMember(dest => dest.Restrictions,
+                    source => source
+                        .MapFrom(carModel => carModel.Tariff!.MaxMileage))
+                .ForMember(dest => dest.Price,
+                    source => source
+                        .MapFrom(carModel => carModel.Tariff!.Price));
+        
+            CreateMap<Car, FreeCarDto>()
+                .ForMember(dest => dest.CarId,
+                    src => src
+                        .MapFrom(car => car.Id))
+                .ForMember(dest => dest.Location,
+                    src => src
+                        .MapFrom(car =>new GeoPoint(car.ParkingLatitude, car.ParkingLongitude)))
+                .ForMember(dest => dest.Plate,
+                    src => src
+                        .MapFrom(car => car.LicensePlate));
+
+            CreateMap<Car, CarDto>();
+        
+            CreateMap<CreateCarModelDto, CarModel>();
+
         }
     }
 }

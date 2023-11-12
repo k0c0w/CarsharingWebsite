@@ -1,3 +1,4 @@
+using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
 using Contracts;
@@ -14,10 +15,12 @@ namespace Carsharing.Controllers;
 public class AdminCarController : ControllerBase
 {
     private readonly ISender _mediator;
+    private readonly IMapper _mapper;
 
-    public AdminCarController(ISender mediator)
+    public AdminCarController(ISender mediator, IMapper mapper)
     {
         _mediator = mediator;
+        _mapper = mapper;
     }
 
     [HttpGet("models")]
@@ -97,7 +100,9 @@ public class AdminCarController : ControllerBase
     public async Task<IActionResult> GetAllCars()
     {
         var carsResult = await _mediator.Send(new GetAllCarsQuery());
-        return carsResult ? new JsonResult(MapToAdminCarVm(carsResult.Value!)) : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
+        return carsResult 
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!)) 
+            : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
     }
 
     [HttpGet("cars/{modelId:int}")]
@@ -105,7 +110,9 @@ public class AdminCarController : ControllerBase
     {
         var carsByModelResult = await _mediator.Send(new GetCarsByModelQuery(modelId));
 
-        return carsByModelResult ? new JsonResult(MapToAdminCarVm(carsByModelResult.Value!)) : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
+        return carsByModelResult 
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!)) 
+            : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
     }
 
     [HttpPost("create")]
@@ -119,7 +126,7 @@ public class AdminCarController : ControllerBase
             ParkingLongitude = create.ParkingLongitude
         });
 
-        if (createCarResult)
+        if (createCarResult.IsSuccess)
             return Created("cars", createCarResult.Value);
 
         return this.BadRequestWithErrorMessage(createCarResult.ErrorMessage);
@@ -134,19 +141,6 @@ public class AdminCarController : ControllerBase
 
         return deleteCarResult ? NoContent() : this.BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
     }
-
-    private static IEnumerable<AdminCarVM> MapToAdminCarVm(IEnumerable<CarDto> cars)
-        => cars.Select(x => new AdminCarVM
-        {
-            Id = x.Id,
-            IsOpened = x.IsOpened,
-            IsTaken = x.IsTaken,
-            LicensePlate = x.LicensePlate,
-            ParkingLatitude = x.ParkingLatitude,
-            ParkingLongitude = x.ParkingLongitude,
-            CarModelId = x.CarModelId,
-            HasToBeNonActive = x.HasToBeNonActive
-        });
 
     private static Contracts.File IFormFileToStream(IFormFile formFile)
     {

@@ -25,15 +25,14 @@ public class BookingController : Controller
     {
         try
         {
-            //TODO: не знаю как это замапить
-            await _madiator.Send(new BookCarCommand(new RentCarDto()
-            {
+           var commandResult = await _madiator.Send(new BookCarCommand(new RentCarDto()
+           {
                 PotentialRenterUserId = User.GetId(),
                 End = bookingInfo.EndDate,
                 Start = bookingInfo.StartDate,
                 CarId = bookingInfo.CarId,
                 TariffId = bookingInfo.TariffId,
-            }));
+           }));
             return new JsonResult(new
             {
                 result = "Car is successfuly booked"
