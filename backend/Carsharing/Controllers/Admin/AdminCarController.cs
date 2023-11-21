@@ -2,13 +2,11 @@ using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
 using Contracts;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using System.IO;
-using Services.Abstractions.Admin;
-using System.Text.Json;
-using Carsharing.Helpers;
+using Carsharing.Helpers.Extensions.Controllers;
+using MediatR;
+using Features.CarManagement;
+using Features.CarManagement.Admin;
 
 namespace Carsharing.Controllers;
 
@@ -16,20 +14,25 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class AdminCarController : ControllerBase
 {
-    private readonly IAdminCarService _carService;
+    private readonly ISender _mediator;
     private readonly IMapper _mapper;
 
-    public AdminCarController(IAdminCarService carService, IMapper mapper)
+    public AdminCarController(ISender mediator, IMapper mapper)
     {
+        _mediator = mediator;
         _mapper = mapper;
-        _carService = carService;
     }
 
     [HttpGet("models")]
     public async Task<IActionResult> GetCarModels()
     {
-        var models = await _carService.GetAllModelsAsync();
-        return new JsonResult(models.Select(x => new CarModelVM
+
+        var modelsResult = await _mediator.Send(new GetAllModelsQuery());
+
+        if (!modelsResult)
+            return this.BadRequestWithErrorMessage(modelsResult.ErrorMessage);
+
+        return new JsonResult(modelsResult.Value!.Select(x => new CarModelVM
         {
             Id = x.Id,
             Brand = x.Brand,
@@ -40,33 +43,30 @@ public class AdminCarController : ControllerBase
         }));
     }
 
-
     [Consumes("multipart/form-data")]
     [HttpPost("model/create")]
     public async Task<IActionResult> CreateCarModel([FromForm] CreateCarModelVM create)
     {
-        try
+        var modelCreateResult = await _mediator.Send(new CreateModelCommand()
         {
-            await _carService.CreateModelAsync(_mapper.Map<CreateCarModelDto>(create));
+            Brand = create.Brand,
+            Description = create.Description,
+            Model = create.Model,
+            TariffId = create.TariffId,
+            ModelPhoto = IFormFileToStream(create!.Image!),
+        });
 
-            return Created("models", null);
-        }
-        catch (ArgumentException)
-        {
-            return new JsonResult(new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { "Фотография не прикреплена!" } } });
-        }
-        catch (ObjectDisposedException)
-        {
-            return new JsonResult(new {error=new {code=(int)ErrorCode.ServiceError, messages=new [] {"Модель создана, но фотография не сохранилась."}}});
-        }
+        if (modelCreateResult)
+            return Created("models", modelCreateResult.Value);
+
+        return new JsonResult(this.GenerateServiceError(modelCreateResult.ErrorMessage));
     }
-
 
     [HttpPut("model/{id:int}")]
     public async Task<IActionResult> UpdateCarModelInfo([FromRoute] int id, [FromBody] EditCarModelVM edit)
     {
         if (id <= 0) return NotFound();
-        
+
         Contracts.File? file = null;
         if (edit.Image != null)
             file = new Contracts.File()
@@ -75,82 +75,85 @@ public class AdminCarController : ControllerBase
                 Content = edit.Image.OpenReadStream()
             };
 
-        await _carService.EditModelAsync(id, new EditCarModelDto
+        var editModelResult = await _mediator.Send(new EditModelCommand()
         {
+            ModelId = id,
             Description = edit.Description,
             Image = file
         });
 
-        return NoContent();
+        if(editModelResult)
+            return NoContent();
+
+        return this.BadRequestWithErrorMessage(editModelResult.ErrorMessage);
     }
 
     [HttpDelete("model/{id:int}")]
-    public async  Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        try
-        {
-            await _carService.TryDeleteModelAsync(id);
-            return NoContent();
-        }
-        catch
-        {
-            return BadRequest();
-        }
+        var deleteResult = await _mediator.Send(new DeleteModelCommand(id));
+
+        return deleteResult ? NoContent() : this.BadRequestWithErrorMessage(deleteResult.ErrorMessage);
     }
 
     [HttpGet("cars")]
     public async Task<IActionResult> GetAllCars()
     {
-        var cars = await _carService.GetAllCarsAsync();
-        return new JsonResult(MapToAdminCarVm(cars));
+        var carsResult = await _mediator.Send(new GetAllCarsQuery());
+        return carsResult 
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!)) 
+            : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
     }
-    
+
     [HttpGet("cars/{modelId:int}")]
     public async Task<IActionResult> GetAllCarsByModel([FromRoute] int modelId)
     {
-        var cars = await _carService.GetCarsByModelAsync(modelId);
-        return new JsonResult(MapToAdminCarVm(cars));
+        var carsByModelResult = await _mediator.Send(new GetCarsByModelQuery(modelId));
+
+        return carsByModelResult 
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!)) 
+            : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateCar([FromBody] CreateCarVM create)
     {
-        await _carService.CreateCarAsync(new CreateCarDto
+        var createCarResult = await _mediator.Send(new CreateCarCommand()
         {
+            CarModelId = create.CarModelId,
             LicensePlate = create.LicensePlate,
             ParkingLatitude = create.ParkingLatitude,
-            ParkingLongitude = create.ParkingLongitude,
-            CarModelId = create.CarModelId
+            ParkingLongitude = create.ParkingLongitude
         });
-        return Created("cars", null);
+
+        if (createCarResult.IsSuccess)
+            return Created("cars", createCarResult.Value);
+
+        return this.BadRequestWithErrorMessage(createCarResult.ErrorMessage);
     }
-    
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCar([FromRoute] int id)
     {
         if (id <= 0) return NotFound();
-        try
-        {
-            await _carService.DeleteCarAsync(id);
-            return NoContent();
-        }
-        catch
-        {
-            return BadRequest();
-        }
+
+        var deleteCarResult = await _mediator.Send(new DeleteCarCommand(id));
+
+        return deleteCarResult ? NoContent() : this.BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
     }
 
-    private static IEnumerable<AdminCarVM> MapToAdminCarVm(IEnumerable<CarDto> cars)
-        => cars.Select(x => new AdminCarVM
+    private static Contracts.File IFormFileToStream(IFormFile formFile)
+    {
+        Contracts.File file;
+
+        var _stream = formFile.OpenReadStream();
+
+        file = new Contracts.File()
         {
-            Id = x.Id,
-            IsOpened = x.IsOpened,
-            IsTaken = x.IsTaken,
-            LicensePlate = x.LicensePlate,
-            ParkingLatitude = x.ParkingLatitude,
-            ParkingLongitude = x.ParkingLongitude,
-            CarModelId = x.CarModelId,
-            HasToBeNonActive = x.HasToBeNonActive
-        });
+            Name = formFile.FileName,
+            Content = _stream
+        };
+
+        return file;
+    }
 }

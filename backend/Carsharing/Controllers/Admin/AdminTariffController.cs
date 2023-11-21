@@ -1,11 +1,12 @@
 using AutoMapper;
+using Carsharing.Helpers;
+using Carsharing.Helpers.Extensions.Controllers;
 using Carsharing.ViewModels.Admin;
-using Carsharing.ViewModels.Admin.Car;
-using Contracts.Tariff;
+using Features.Tariffs.Admin;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions.Admin;
-using Services.Exceptions;
+using System.Net;
 
 namespace Carsharing.Controllers;
 
@@ -14,110 +15,83 @@ namespace Carsharing.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminTariffController : ControllerBase
 {
-    private readonly IAdminTariffService _service;
+    private readonly ISender _mediatr;
     private readonly IMapper _mapper;
 
-    public AdminTariffController(IAdminTariffService service, IMapper mapper)
+    public AdminTariffController(ISender mediatr, IMapper mapper)
     {
-        _service = service;
+        _mediatr = mediatr;
         _mapper = mapper;
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAllTariffs()
     {
-        var tariffs = await _service.GetAllAsync();
-        var tariffsVM = _mapper.Map<IEnumerable<TariffVM>>(tariffs);
+        var tariffsResult = await _mediatr.Send(new GetTariffsQuery());
+
+        if (!tariffsResult)
+            return StatusCode((int)HttpStatusCode.InternalServerError, tariffsResult.ErrorMessage);
+
+        var tariffsVM = _mapper.Map<IEnumerable<TariffVM>>(tariffsResult.Value);
         return new JsonResult(tariffsVM);
     }
 
     [HttpPost("[action]")]
     public async Task<IActionResult> Create([FromBody] CreateTariffVM vm)
     {
-        try
-        {
-            await _service.CreateAsync(new CreateTariffDto()
-            {
-                Name = vm.Name,
-                Description = vm.Description,
-                MaxMileage = vm.MaxMillage,
-                PriceInRubles = vm.Price,
-            });
-        }
-        catch (ArgumentException ex)
-        {
-            return new BadRequestObjectResult(new { errors = new object[] { new { invalid_arguments = ex.Message } } });
-        }
-        catch (AlreadyExistsException)
-        {
-            return BadRequest(new { error = "Such tariff exists" });
-        }
+        var createTariffResult = await _mediatr.Send(new CreateTariffCommand(vm.Name, vm.Price, vm.Description, vm.MaxMillage));
 
-        return new CreatedResult("/tariffs", null);
+        if (!createTariffResult.IsSuccess)
+            return this.BadRequestWithErrorMessage(createTariffResult.ErrorMessage);
+
+        return Created("/tariffs", null);
     }
 
     [HttpPut("setstate/{id:int}")]
     public async Task<IActionResult> SwitchTariffState([FromRoute] int id, [FromBody] bool state)
     {
-        try
-        {
-            if (state)
-                await _service.TurnOnAsync(id);
-            else
-                await _service.TurnOffAsync(id);
-            return NoContent();
-        }
-        catch
-        {
-            return BadRequest();
-        }
+        var command = state ? new TurnOnTariffCommand(id) : new TurnOnTariffCommand(id);
+
+        var switchStateResult = await _mediatr.Send(command);
+
+        if (!switchStateResult)
+            return this.BadRequestWithErrorMessage(switchStateResult.ErrorMessage);
+
+        return NoContent();
     }
 
     [HttpPut("edit/{id:int}")]
     public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffVM edit)
     {
-        try
-        {
-            await _service.EditAsync(id, new CreateTariffDto()
-            {
-                Description = edit.Description,
-                Name = edit.Name,
-                MaxMileage = edit.MaxMillage,
-                PriceInRubles = edit.Price
-            } );
+        var updateResult = await _mediatr.Send(new UpdateTariffCommand(id, edit.Name, edit.Description, edit.Price, edit.MaxMillage));
+        
+        if (updateResult)
             return NoContent();
-        }
-        catch (AlreadyExistsException)
-        { return BadRequest(new { error = "tariff already exists" }); }
-        catch (ArgumentException ex)
-        { return BadRequest(new { error = $"invalid arguments:{ex.Message}" }); }
+
+        return this.BadRequestWithErrorMessage(updateResult.ErrorMessage);
     }
 
     [HttpDelete("delete/{id:int}")]
     public async Task<IActionResult> DeleteTariff([FromRoute] int id)
     {
-        try
-        {
-            await _service.DeleteAsync(id);
+        var deleteResult = await _mediatr.Send(new DeleteTariffCommand(id));
+
+        if (deleteResult)
             return NoContent();
-        }
-        catch(InvalidOperationException ex)
-        {
-            return BadRequest(new {error=ex.Message});
-        }
+
+        return this.BadRequestWithErrorMessage(deleteResult.ErrorMessage);
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetTariff([FromRoute] int id)
     {
-        try
-        {
-            var tariff = await _service.GetTariffByIdAsync(id);
-            return new JsonResult(_mapper.Map<TariffVM>(tariff));
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { error = ex.Message });
-        }
+        var getTariffResult = await _mediatr.Send(new GetTariffsQuery(id));
+
+        if (getTariffResult)
+            return new JsonResult(_mapper.Map<TariffVM>(getTariffResult.Value));
+
+        return this.BadRequestWithErrorMessage(getTariffResult.ErrorMessage);
     }
+
+    private IActionResult GetInvalidIdResponse() => BadRequest(new { error = new { code = (int) ErrorCode.ViewModelError, messages = new[] { "Invalid id value" } } });
 }

@@ -10,5 +10,5 @@ public interface IRepository<TEntity, TPrimaryKey>
 
     Task UpdateAsync(TEntity entity);
 
-    Task<TEntity> RemoveByIdAsync(TPrimaryKey primaryKey);
+    Task RemoveByIdAsync(TPrimaryKey primaryKey);
 }

@@ -1,52 +1,57 @@
 using Carsharing.ViewModels;
 using Contracts;
+using Features.CarBooking.Commands.BookCar;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Services;
-using Services.Abstractions;
 using Services.Exceptions;
 
 namespace Carsharing.Controllers;
 
 [Route("api/booking")]
-public class BookingController : Controller
+[ApiController]
+public class BookingController : ControllerBase
 {
-    private readonly IBookingService _service;
-    
-    public BookingController( IBookingService service)
+    private readonly IMediator _mediator;
+
+    public BookingController(IMediator mediator)
     {
-        _service = service;
+        _mediator = mediator;
     }
-    
+
     //Добавил в BookingVm userInfoId, для заполнения Dto и в принципе сделал через UserInfoId
     [HttpPost("rent")]
     public async Task<IActionResult> BookCar([FromBody] BookingVM bookingInfo)
     {
-        try
+
+        var commandResult = await _mediator.Send(new BookCarCommand(new RentCarDto()
         {
-            await _service.BookCarAsync(new RentCarDto()
-            {
-                PotentialRenterUserId = User.GetId(),
-                End = bookingInfo.EndDate,
-                Start = bookingInfo.StartDate,
-                CarId = bookingInfo.CarId,
-                TariffId = bookingInfo.TariffId,
-            });
-            return new JsonResult(new
+            PotentialRenterUserId = User.GetId(),
+            End = bookingInfo.EndDate,
+            Start = bookingInfo.StartDate,
+            CarId = bookingInfo.CarId,
+            TariffId = bookingInfo.TariffId
+        }));
+        return commandResult
+            ? new JsonResult(new
             {
                 result = "Car is successfuly booked"
+            })
+            : new JsonResult(new
+            {
+                result = commandResult.ErrorMessage
             });
-        }
-        catch (ObjectNotFoundException)
-        {
-            return BadRequest(new { error = "Не возможно забронировать. Некоторые аргументы не действительны." });
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { error = "Не возможно забронировать", type = $"{ex.Message}" });
-        }
-        catch (CarAlreadyBookedException)
-        {
-            return BadRequest(new { error = "Машина уже забронированна." });
-        }
+
+        // catch (ObjectNotFoundException)
+        // {
+        //     return BadRequest(new { error = "Не возможно забронировать. Некоторые аргументы не действительны." });
+        // }
+        // catch (InvalidOperationException ex)
+        // {
+        //     return BadRequest(new { error = "Не возможно забронировать", type = $"{ex.Message}" });
+        // }
+        // catch (CarAlreadyBookedException)
+        // {
+        //     return BadRequest(new { error = "Машина уже забронированна." });
+        // }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Carsharing.Controllers.Admin
 {
@@ -42,6 +43,7 @@ namespace Carsharing.Controllers.Admin
             return new JsonResult(response);
         }
 
+        [AllowAnonymous]
         [HttpGet("become")]
         public async Task<IActionResult> BecomeAdmin ()
         {

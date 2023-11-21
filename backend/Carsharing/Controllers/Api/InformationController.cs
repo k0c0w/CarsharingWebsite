@@ -1,5 +1,6 @@
 using System.Globalization;
-using Domain;
+using Features.Posts;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
@@ -10,9 +11,15 @@ namespace Carsharing.Controllers;
 [Route("api/[controller]")]
 public class InformationController : ControllerBase
 {
-    public InformationController(CarsharingContext context) => _context = context;
     private readonly CarsharingContext _context;
-    
+    private readonly ISender _sender;
+
+    public InformationController(CarsharingContext context, ISender sender)
+    {
+        _context= context;
+        _sender = sender;
+    }
+
     [HttpGet("[action]")]
     public async Task<IActionResult> Documents()
     {
@@ -30,10 +37,18 @@ public class InformationController : ControllerBase
         [FromQuery] bool byDescending = true)
     {
         if (page <= 0 || limit <= 0) return new JsonResult(Array.Empty<object>());
-        IQueryable<Domain.Entities.Post> query = byDescending ?
-            _context.News.OrderByDescending(x => x.CreatedAt) : _context.News;
-        var news = await query.Skip((page - 1) * limit).Take(limit).ToArrayAsync();
-            
-        return new JsonResult(news.Select(x => new { title = x.Title, body = x.Body, created_at = x.CreatedAt.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU")) }));
+
+        var newsQuery = await _sender.Send(new GetPaginatedPostsQuery()
+        {
+            Page = page,
+            Limit = limit,
+            ByDescending = byDescending
+        });
+
+        if (!newsQuery)
+            return BadRequest();
+
+
+        return new JsonResult(newsQuery.Value!.Select(x => new { title = x.Title, body = x.Body, created_at = x.CreatedAt.ToString("D", CultureInfo.CreateSpecificCulture("ru-RU")) }));
     }
 }

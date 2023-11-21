@@ -1,7 +1,9 @@
 ﻿using Carsharing.ViewModels.Admin.Post;
-using Contracts.NewsService;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions.Admin;
+using MediatR;
+using Features.Posts;
+using Carsharing.Helpers;
+using System.Net;
 
 namespace Carsharing.Controllers;
 
@@ -9,60 +11,60 @@ namespace Carsharing.Controllers;
 [ApiController]
 public class AdminPostController: ControllerBase
 {
-    private readonly IAdminPostService _postService;
+    private readonly ISender _mediator;
 
-    public AdminPostController(IAdminPostService postService)
+    public AdminPostController(ISender mediator)
     {
-        _postService = postService;
+        _mediator = mediator;
     }
 
     [HttpPost("create")]
     public async Task<IActionResult> CreatePost([FromBody]CreatePostVM postVm)
     {
-        await _postService.CreatePostAsync(new PostDto
-        {
-            Title = postVm.Title,
-            Body = postVm.Body
-        });
-        return Created("posts", null);
+        var createPostResult = await _mediator.Send(new CreatePostCommand(postVm.Title, postVm.Body));
+
+        if (createPostResult)
+            return Created("posts", createPostResult.Value);
+
+        return BadRequestWithErrorMessage(createPostResult.ErrorMessage);
     }
     
     [HttpDelete("delete/{id:int}")]
     public async Task<IActionResult> DeletePost([FromRoute]int id)
     {
-        try
-        {
-            await _postService.DeletePostAsync(id);
+        if (id <=0 )
+            return BadRequest(new { error = new { code = (int)ErrorCode.ViewModelError, messages = new[] { "Invalid argument value." } } });
+
+        var deletePostResult = await _mediator.Send(new DeletePostCommand(id));
+
+        if (deletePostResult)
             return NoContent();
-        }
-        catch
-        {
-            return BadRequest();
-        }
+
+        return BadRequestWithErrorMessage(deletePostResult.ErrorMessage);
     }
     
     [HttpPut("edit/{id:int}")]
-    public async Task<IActionResult> EditPost([FromRoute]int id,[FromBody]EditPostVM editPostVm)
+    public async Task<IActionResult> EditPost([FromRoute]int id, [FromBody]EditPostVM editPostVm)
     {
-        try
-        {
-            await _postService.EditPostAsync(id,new EditPostDto
-            {
-                Title = editPostVm.Title,
-                Body = editPostVm.Body
-            });
+        if (id <= 0)
+            return BadRequest(new { error = new { code = (int)ErrorCode.ViewModelError, messages = new[] { "Invalid argument value." } } });
+
+        var editPostResult = await _mediator.Send(new UpdatePostCommand(editPostVm.Body, editPostVm.Title, id));
+        if (editPostResult)
             return NoContent();
-        }
-        catch
-        {
-            return BadRequest();
-        }
+
+        return BadRequestWithErrorMessage(editPostResult.ErrorMessage);
     }
     
     [HttpGet("posts")]
     public async Task<IActionResult> GetAllPosts()
     {
-        return new JsonResult((await _postService.GetAllPostsAsync())
+        var postsResult = await _mediator.Send(new GetPostsQuery());
+
+        if (!postsResult)
+            return new StatusCodeResult((int)HttpStatusCode.InternalServerError);
+
+        return new JsonResult(postsResult.Value!
             .Select(x => new PostVM()
         {
            Id = x.Id,
@@ -78,13 +80,18 @@ public class AdminPostController: ControllerBase
     [HttpGet("posts/{id:int}")]
     public async Task<IActionResult> GetPostById([FromRoute]int id)
     {
-        try
-        {
-            return new JsonResult(await _postService.GetPostByIdAsync(id));
-        }
-        catch
-        {
-            return BadRequest();
-        }
+        if (id <= 0)
+            return NotFound();
+
+        var getPostByIdResult = await _mediator.Send(new GetPostByIdQuery(id));
+
+        if (getPostByIdResult)
+            return new JsonResult(getPostByIdResult.Value);
+
+        return NotFound();
     }
+
+    private IActionResult BadRequestWithErrorMessage(string? message) => BadRequest(GenerateServiceError(message));
+
+    private static object GenerateServiceError(string? message) => new { error = new { code = (int)ErrorCode.ServiceError, messages = new[] { message } } };
 }

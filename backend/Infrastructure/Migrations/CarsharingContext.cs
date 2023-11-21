@@ -43,8 +43,6 @@ public class CarsharingContext : IdentityDbContext<User>
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new UserInfoConfiguration());
 
-        builder.Entity<CarModel>().Ignore(x => x.ImageName);
-
         var roles = new List<UserRole>()
         {
             new UserRole()
