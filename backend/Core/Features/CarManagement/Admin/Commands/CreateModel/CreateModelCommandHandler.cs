@@ -28,7 +28,7 @@ public class CreateModelCommandHandler : ICommandHandler<CreateModelCommand, int
             Model = request.Model!,
             Description = request.Description!,
             TariffId = request.TariffId,
-            ImageUrl = $"http://minio_carsharing:7126/api/files/models/{request.Brand}_{request.Model}"
+            ImageUrl = $"http://localhost:7126/api/files/models/{request.Brand}_{request.Model}"
         };
 
         var memorystream = new MemoryStream();
