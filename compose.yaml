@@ -15,8 +15,9 @@ services:
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
         - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
       depends_on:
-       - rabbitmq
-        
+       - rabbitmq  
+      
+  
   backend:
       build: 
         context: ./backend
@@ -62,8 +63,7 @@ services:
         - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
         - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
         - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-        - REACT_LOCAL_HOST=${FRONT_ADMIN}
-
+        - REACT_LOCAL_HOST=${FRONT_ADMIN}        
       ports:
         - ${FRONT_ADMIN_PORTS}
   db:
@@ -83,7 +83,39 @@ services:
     container_name: rabbitmq
     image: rabbitmq:3-alpine
     ports:
+      - "15672:15672"
       - "5672:5672"
     environment:
       RABBITMQ_DEFAULT_USER: "chatConsumer"
       RABBITMQ_DEFAULT_PASS: "Passw0rd"
+
+  minio_carsharing:
+    build: 
+      context: ./backend
+      dockerfile: MinioConsumersDockerfile
+    ports:
+      - "7126:80"
+    container_name: minio_carsharing
+    depends_on:
+      - minioS3
+      - rabbitmq
+    environment:
+      - MinioS3__AccessKey=minioadmin
+      - MinioS3__SecretKey=minioadmin
+      - MinioS3__Timeout=5000
+      - MinioS3__Endpoint=minio:9000
+      - RabbitMqConfig__Username=chatConsumer
+      - RabbitMqConfig__Password=Passw0rd
+      - RabbitMqConfig__Hostname=rabbitmq
+      - RabbitMqConfig__Port=5672
+    
+  minioS3:
+    image: minio/minio
+    container_name: minio    
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: "carsharing"
+      MINIO_ROOT_PASSWORD: "carsharingAdmin"
+    command: server --console-address ":9090" /data/

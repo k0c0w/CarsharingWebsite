@@ -1,5 +1,6 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
+EXPOSE 80
 EXPOSE 444
 
 ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
@@ -7,7 +8,7 @@ ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
 WORKDIR /src
-RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-ef --version 7.0.12
 COPY ["ChatConsumers/ChatConsumers.csproj", "ChatConsumers/"]
 COPY ["Infrastructure/Persistence/Persistence.csproj", "Infrastructure/Persistence/"]
 COPY ["Infrastructure/Migrations/Migrations.csproj", "Infrastructure/Migrations/"]

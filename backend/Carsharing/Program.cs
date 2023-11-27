@@ -2,6 +2,7 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
+using Domain.Common;
 using Features.Utils;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
@@ -22,6 +23,8 @@ services.AddAutoMapper(typeof(Program).Assembly);
 services.RegisterChat()
         .RegisterBuisnessLogicServices()
         .RegisterSwagger();
+
+services.AddTransient<IFileProducer, FileProducer>();
 
 services.AddMediatorWithFeatures();
 
@@ -65,7 +68,7 @@ if (builder.Environment.IsDevelopment())
     });
 }
 
-var app = builder.Build();
+var app = builder.Build(); 
 var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
 app.UseHttpsRedirection()

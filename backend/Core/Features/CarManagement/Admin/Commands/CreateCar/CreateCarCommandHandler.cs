@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Common;
 using Domain.Entities;
 using Migrations.CarsharingApp;
 using Shared.CQRS;
@@ -10,7 +11,7 @@ public class CreateCarCommandHandler : ICommandHandler<CreateCarCommand, int>
 {
     private readonly CarsharingContext _ctx;
 
-    public CreateCarCommandHandler(CarsharingContext ctx)
+    public CreateCarCommandHandler(CarsharingContext ctx, IFileProducer fileProducer)
     {
         _ctx = ctx;
     }

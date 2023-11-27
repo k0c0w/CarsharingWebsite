@@ -147,6 +147,7 @@ public class AdminCarController : ControllerBase
         Contracts.File file;
 
         var _stream = formFile.OpenReadStream();
+        var memoryStream = new MemoryStream();
 
         file = new Contracts.File()
         {
