@@ -1,8 +1,9 @@
 ﻿namespace Contracts;
 
-public record SaveImageDto
+public record SaveCarModelImageDto
 {
-    public string Name { get; set; }
-    public string BucketName = "models";
+    public int CarModelId { get; set; }
     public byte[] Image { get; set; }
+
+    public string ImageName { get; set; }
 }

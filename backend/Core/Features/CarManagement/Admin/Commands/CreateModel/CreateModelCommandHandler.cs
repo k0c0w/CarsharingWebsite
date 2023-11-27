@@ -1,8 +1,6 @@
 ﻿using Contracts;
 using Domain.Common;
 using Domain.Entities;
-using MassTransit;
-using Microsoft.Extensions.Configuration;
 using Migrations.CarsharingApp;
 using Shared.CQRS;
 using Shared.Results;
@@ -28,20 +26,21 @@ public class CreateModelCommandHandler : ICommandHandler<CreateModelCommand, int
             Model = request.Model!,
             Description = request.Description!,
             TariffId = request.TariffId,
-            ImageUrl = $"http://localhost:7126/api/files/models/{request.Brand}_{request.Model}"
+            ImageUrl = "no url"
         };
-
-        var memorystream = new MemoryStream();
-        request.ModelPhoto.Content.CopyTo(memorystream);
-        
-
-        await _fileProducer.SendFileAsync(new SaveImageDto() {
-            Name = $"{request.Brand}_{request.Model}",
-            Image = memorystream.ToArray()
-        });
 
         await _ctx.CarModels.AddAsync(model, cancellationToken);
         await _ctx.SaveChangesAsync(cancellationToken);
+
+        var memorystream = new MemoryStream();
+        request.ModelPhoto.Content.CopyTo(memorystream);
+
+        await _fileProducer.SendFileAsync(new SaveCarModelImageDto()
+        {
+            ImageName = $"{request.Brand}_{request.Model}_{(DateTime.Now - DateTime.UnixEpoch).TotalSeconds}",
+            Image = memorystream.ToArray(),
+            CarModelId = model.Id
+        });
 
         return new Ok<int>(model.Id);
     }

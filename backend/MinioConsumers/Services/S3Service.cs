@@ -35,7 +35,7 @@ public class S3Service : IS3Service
         return await _minioClient.BucketExistsAsync(args);
     }
 
-    public async Task PutFileInBucketAsync(Stream stream, string fileName, string bucketName)
+    public async Task<string> PutFileInBucketAsync(Stream stream, string fileName, string bucketName)
     {
         var args = new PutObjectArgs()
             .WithBucket(bucketName)
@@ -43,8 +43,13 @@ public class S3Service : IS3Service
             .WithObject(fileName)
             .WithContentType("image/x-png")
             .WithObjectSize(stream.Length);
-
         await _minioClient.PutObjectAsync(args);
+
+        var urlRequest = new PresignedGetObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(fileName);
+
+        return await _minioClient.PresignedGetObjectAsync(urlRequest);
     }
 
     public async Task RemoveFileFromBucketAsync(string fileName, string bucketName)

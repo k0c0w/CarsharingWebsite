@@ -50,7 +50,7 @@ public class AdminTariffController : ControllerBase
     [HttpPut("setstate/{id:int}")]
     public async Task<IActionResult> SwitchTariffState([FromRoute] int id, [FromBody] bool state)
     {
-        //var command = state ? new ChangeTariffStatusCommand(id, state);
+        var command = new ChangeTariffStatusCommand(id, state);
 
         var switchStateResult = await _mediatr.Send(command);
 
