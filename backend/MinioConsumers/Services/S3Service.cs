@@ -1,6 +1,7 @@
 ﻿using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
+using MinioConsumer.Services;
 
 namespace MinioConsumers.Services;
 
@@ -13,55 +14,52 @@ public class S3Service : IS3Service
         _minioClient = minioClient;
     }
 
-    public async Task CreateBucketAsync(string bucketName)
+    public Task CreateBucketAsync(string bucketName)
     {
-        var args = new MakeBucketArgs().WithBucket(bucketName);
+        var args = new MakeBucketArgs()
+            .WithBucket(bucketName);
 
-        await _minioClient.MakeBucketAsync(args);
+        return _minioClient.MakeBucketAsync(args);
     }
 
-    public async Task RemoveBucketAsync(string bucketName)
+    public Task RemoveBucketAsync(string bucketName)
     {
-        var args = new RemoveBucketArgs().WithBucket(bucketName);
+        var args = new RemoveBucketArgs()
+            .WithBucket(bucketName);
 
-        await _minioClient.RemoveBucketAsync(args);
+        return _minioClient.RemoveBucketAsync(args);
     }
 
-    public async Task<bool> BucketExsistAsync(string bucketName)
+    public Task<bool> BucketExsistAsync(string bucketName)
     {
         var args = new BucketExistsArgs()
             .WithBucket(bucketName);
 
-        return await _minioClient.BucketExistsAsync(args);
+        return _minioClient.BucketExistsAsync(args);
     }
 
-    public async Task<string> PutFileInBucketAsync(Stream stream, string fileName, string bucketName)
+    public Task PutFileInBucketAsync(S3File file)
     {
         var args = new PutObjectArgs()
-            .WithBucket(bucketName)
-            .WithStreamData(stream)
-            .WithObject(fileName)
-            .WithContentType("image/x-png")
-            .WithObjectSize(stream.Length);
-        await _minioClient.PutObjectAsync(args);
+            .WithBucket(file.BucketName)
+            .WithStreamData(file.ContentStream)
+            .WithObject(file.Name)
+            .WithObjectSize(file.ContentStream.Length)
+            .WithContentType(file.ContentType);
 
-        var urlRequest = new PresignedGetObjectArgs()
-            .WithBucket(bucketName)
-            .WithObject(fileName);
-
-        return await _minioClient.PresignedGetObjectAsync(urlRequest);
+        return _minioClient.PutObjectAsync(args);
     }
 
-    public async Task RemoveFileFromBucketAsync(string fileName, string bucketName)
+    public Task RemoveFileFromBucketAsync(string fileName, string bucketName)
     {
         var args = new RemoveObjectArgs()
             .WithBucket(bucketName)
             .WithObject(fileName);
 
-        await _minioClient.RemoveObjectAsync(args);
+        return _minioClient.RemoveObjectAsync(args);
     }
 
-    public async Task<Stream> GetFileFromBucketAsync(string fileName, string bucketName)
+    public async Task<S3File?> GetFileFromBucketAsync(string bucketName, string fileName)
     {
         var response = new MemoryStream();
         var args = new GetObjectArgs()
@@ -71,18 +69,18 @@ public class S3Service : IS3Service
 
         try
         {
-            await _minioClient.GetObjectAsync(args);
+            var objInfo = await _minioClient.GetObjectAsync(args);
+
+            response.Position = 0;
+            return new S3File(fileName, bucketName, response, objInfo.ContentType);
         }
         catch (ObjectNotFoundException)
         {
-            return null;
+            return default;
         }
         catch (BucketNotFoundException)
         {
-            return null;
+            return default;
         }
-
-        response.Position = 0;
-        return response;
     }
 }
