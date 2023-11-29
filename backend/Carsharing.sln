@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Core\Shared\Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Features", "Core\Features\Features.csproj", "{CCCB79C9-BC89-4FE9-9251-9CBF8D311167}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinioConsumers", "MinioConsumers\MinioConsumers.csproj", "{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinioConsumers", "MinioConsumers\MinioConsumers.csproj", "{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clients", "Infrastructure\Clients\Clients.csproj", "{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
