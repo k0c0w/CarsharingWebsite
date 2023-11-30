@@ -1,10 +1,8 @@
 ﻿using System;
+using System.Net;
 
 namespace Clients.Objects
 {
-    /// <summary>
-    /// Base class for errors
-    /// </summary>
     public abstract class Error
     {
         /// <summary>
@@ -17,10 +15,18 @@ namespace Clients.Objects
         /// </summary>
         public string Message { get; set; }
 
+        protected Error(int? code, string message) 
+        {
+            Code = code;
+            Message = message;
+        }
+    }
+    public abstract class Error<T> : Error
+    {
         /// <summary>
         /// The data which caused the error
         /// </summary>
-        public object? Data { get; set; }
+        public T? Data { get; set; }
 
         /// <summary>
         /// ctor
@@ -28,32 +34,21 @@ namespace Clients.Objects
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        protected Error(int? code, string message, object? data)
+        protected Error(int? code, string message, T? data) : base(code, message)
         {
-            Code = code;
-            Message = message;
             Data = data;
-        }
-
-        /// <summary>
-        /// String representation
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return Code != null ? $"{Code}: {Message} {Data}" : $"{Message} {Data}";
         }
     }
 
     /// <summary>
     /// Cant reach server error
     /// </summary>
-    public class CantConnectError : Error
+    public class CantConnectError : Error<HttpRequestException>
     {
         /// <summary>
         /// ctor
         /// </summary>
-        public CantConnectError() : base(null, "Can't connect to the server", null) { }
+        public CantConnectError() : this("Can't connect to the server", null) { }
 
         /// <summary>
         /// ctor
@@ -61,39 +56,35 @@ namespace Clients.Objects
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        protected CantConnectError(int? code, string message, object? data) : base(code, message, data) { }
+        public CantConnectError(string message, HttpRequestException? data) : base(default, message, data) { }
     }
 
-    /// <summary>
-    /// No api credentials provided while trying to access a private endpoint
-    /// </summary>
-    public class NoApiCredentialsError : Error
+    public class NoApiCredentialsError<T> : Error<T>
     {
         /// <summary>
         /// ctor
         /// </summary>
-        public NoApiCredentialsError() : base(null, "No credentials provided for private endpoint", null) { }
-
+        public NoApiCredentialsError() : this("No credentials were provided") { }
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        protected NoApiCredentialsError(int? code, string message, object? data) : base(code, message, data) { }
+        public NoApiCredentialsError(string message, T? data = default) : base(default, message, data) { }
     }
 
     /// <summary>
     /// Error returned by the server
     /// </summary>
-    public class ServerError : Error
+    public class ServerError<T> : Error<T>
     {
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        public ServerError(string message, object? data = null) : base(null, message, data) { }
+        public ServerError(string message, T? data = default) : this(0, message, data) { }
 
         /// <summary>
         /// ctor
@@ -101,78 +92,20 @@ namespace Clients.Objects
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        public ServerError(int code, string message, object? data = null) : base(code, message, data) { }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        protected ServerError(int? code, string message, object? data) : base(code, message, data) { }
-    }
-
-    /// <summary>
-    /// Web error returned by the server
-    /// </summary>
-    public class WebError : Error
-    {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        public WebError(string message, object? data = null) : base(null, message, data) { }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        public WebError(int code, string message, object? data = null) : base(code, message, data) { }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        protected WebError(int? code, string message, object? data) : base(code, message, data) { }
-    }
-
-    /// <summary>
-    /// Error while deserializing data
-    /// </summary>
-    public class DeserializeError : Error
-    {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="message">The error message</param>
-        /// <param name="data">The data which caused the error</param>
-        public DeserializeError(string message, object? data) : base(null, message, data) { }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        protected DeserializeError(int? code, string message, object? data) : base(code, message, data) { }
+        public ServerError(int? code, string message, T? data = default) : base(code, message, data) { }
     }
 
     /// <summary>
     /// Unknown error
     /// </summary>
-    public class UnknownError : Error
+    public class UnknownError<T> : Error<T>
     {
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="message">Error message</param>
         /// <param name="data">Error data</param>
-        public UnknownError(string message, object? data = null) : base(null, message, data) { }
+        public UnknownError(string message, T? data = default) : this(null, message, data) { }
 
         /// <summary>
         /// ctor
@@ -180,19 +113,19 @@ namespace Clients.Objects
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        protected UnknownError(int? code, string message, object? data) : base(code, message, data) { }
+        public UnknownError(int? code, string message, T? data) : base(code, message, data) { }
     }
 
     /// <summary>
     /// An invalid parameter has been provided
     /// </summary>
-    public class ArgumentError : Error
+    public class ArgumentError<T> : Error<T>
     {
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="message"></param>
-        public ArgumentError(string message) : base(null, "Invalid parameter: " + message, null) { }
+        public ArgumentError(string message) : this(message, default) { }
 
         /// <summary>
         /// ctor
@@ -200,27 +133,6 @@ namespace Clients.Objects
         /// <param name="code"></param>
         /// <param name="message"></param>
         /// <param name="data"></param>
-        protected ArgumentError(int? code, string message, object? data) : base(code, message, data) { }
-    }
-
-
-    /// <summary>
-    /// Invalid operation requested
-    /// </summary>
-    public class InvalidOperationError : Error
-    {
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="message"></param>
-        public InvalidOperationError(string message) : base(null, message, null) { }
-
-        /// <summary>
-        /// ctor
-        /// </summary>
-        /// <param name="code"></param>
-        /// <param name="message"></param>
-        /// <param name="data"></param>
-        protected InvalidOperationError(int? code, string message, object? data) : base(code, message, data) { }
+        public ArgumentError(string message, T? data) : base(default, message, data) { }
     }
 }

@@ -26,7 +26,10 @@ public class UploadAbstractFileController : ControllerBase
         var response = await _sender.Send(new UploadAbstractFileCommand(fileToSave));
 
         if (response.IsSuccess)
-            return Created(response!.Message!, file.FileName);
+            return Created(response!.Message!, new
+            {
+
+            });
 
         return StatusCode((int)response.Code, response);
     }

@@ -9,7 +9,7 @@ builder.Services.AddMinio(configuration =>
 {
     configuration.WithSSL(false);
     configuration.WithTimeout(int.Parse(builder.Configuration["MinioS3:Timeout"]!));
-    configuration.WithEndpoint("http://localhost", 9000);
+    configuration.WithEndpoint(builder.Configuration["MinioS3:Endpoint"]);
     configuration.WithCredentials(
         builder.Configuration["MinioS3:AccessKey"]!,
         builder.Configuration["MinioS3:SecretKey"]!);
