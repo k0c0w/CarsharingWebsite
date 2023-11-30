@@ -10,13 +10,13 @@ namespace Clients.S3ServiceClient
         {
         }
 
-        public async Task<WebCallResult<UploadFileResult>> CreateFileAsync(string bucketName, string fileName, Stream bytes, string contentType)
+        public async Task<WebCallResult<UploadFileResult>> CreateFileAsync(string fileName, Stream bytes, string contentType)
         {
             if (!ValidContentType(contentType))
                 return new WebCallResult<UploadFileResult>(new ArgumentError<UploadFileResult>($"Unsupported Content-Type: {contentType}"));
 
-            var requestPath = $"files/{bucketName}/{fileName}";
-            var request = CreateRequestMessage(HttpMethod.Post, $"files/{bucketName}/{fileName}");
+            var requestPath = $"files/{fileName}";
+            var request = CreateRequestMessage(HttpMethod.Post, $"files/{fileName}");
             request.Content = new StreamContent(bytes);
             request.Headers.Add("Content-Type", contentType);
 
