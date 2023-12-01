@@ -36,7 +36,7 @@ public class UploadAbstractFileCommandHandler : IRequestHandler <UploadAbstractF
 
             await _s3Service.PutFileInBucketAsync(request.File);
 
-            return new HttpResponse(message: $"{Domain}/{s3fFile.BucketName}/{s3fFile.Name}");
+            return new HttpResponse(message: $"{Domain}/files/{s3fFile.BucketName}/{s3fFile.Name}");
         }
         catch(Exception ex)
         {

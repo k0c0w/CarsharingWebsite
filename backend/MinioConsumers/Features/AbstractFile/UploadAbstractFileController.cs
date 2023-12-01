@@ -7,7 +7,7 @@ using MinioConsumer.Services;
 namespace MinioConsumer.Features.UploadAbstractFile;
 
 [Route("files")]
-[Authorize]
+//[Authorize]
 public class UploadAbstractFileController : ControllerBase
 {
     private readonly ISender _sender;
@@ -19,7 +19,7 @@ public class UploadAbstractFileController : ControllerBase
 
 
     [HttpPost("{bucketName}")]
-    public async Task<IActionResult> UploadFileAsync([FromRoute] string bucketName, [FromBody] IFormFile file)
+    public async Task<IActionResult> UploadFileAsync([FromRoute] string bucketName, IFormFile file)
     {
         using var stream = file.OpenReadStream();
         var fileToSave = new S3File(file.FileName, bucketName, stream, file.ContentType);
@@ -28,7 +28,7 @@ public class UploadAbstractFileController : ControllerBase
         if (response.IsSuccess)
             return Created(response!.Message!, new
             {
-
+                Url = response.Message
             });
 
         return StatusCode((int)response.Code, response);

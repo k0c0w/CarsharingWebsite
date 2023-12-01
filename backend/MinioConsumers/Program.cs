@@ -15,22 +15,29 @@ builder.Services.AddMinio(configuration =>
         builder.Configuration["MinioS3:SecretKey"]!);
 });
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 builder.Services.AddScoped<IS3Service, S3Service>();
-
-var app = builder.Build();
-
-
-app.MapGet("files/{bucketName}/{fileName}", async ([FromRoute] string bucketName, [FromRoute] string fileName, [FromServices] IS3Service storageService) =>
+builder.Services.AddMediatR(cfg =>
 {
-    var bucketExists = await storageService.BucketExsistAsync(bucketName);
+    cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
 
-    if (!bucketExists)
-        return Results.NotFound(default);
-
-    var file = await storageService.GetFileFromBucketAsync(fileName, bucketName);
-
-    return file is null ? Results.NotFound(default) : Results.Stream(file.ContentStream, contentType: file.ContentType.ToString());
 });
 
 
+builder.Services.AddControllers();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
 app.Run();
