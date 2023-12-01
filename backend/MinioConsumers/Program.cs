@@ -22,7 +22,6 @@ builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
-
 });
 
 
