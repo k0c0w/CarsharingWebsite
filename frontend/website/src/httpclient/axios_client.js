@@ -2,6 +2,7 @@ import axios from "axios"
 
 
 class AxiosWrapper {
+
     constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
         const options = {
             baseURL: url,
@@ -15,8 +16,9 @@ class AxiosWrapper {
             },
             withCredentials: true,
         }
-
+        this.token = "";
         this.axiosInstance = axios.create(options);
+        this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
     }
 
     async getChatHistory(userId) {
@@ -64,7 +66,10 @@ class AxiosWrapper {
     }
 
     async login(form) {
-        return await this._post(`/account/login/`, this._getModelFromForm(form));
+        let response = await this._post(`/account/login/`, this._getModelFromForm(form));
+        this.token = response?.data?.bearer_token ?? "";
+        this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        return response
     }
 
     async logout() {
@@ -72,7 +77,11 @@ class AxiosWrapper {
     }
 
     async register(form) {
-        return await this._post('/account/register', this._getModelFromForm(form));
+        let response = await this._post('/account/register', this._getModelFromForm(form));
+        this.token = response?.data?.bearer_token;
+        if (this.token !== "")
+            this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        return response;
     }
 
     async IsUserAuthorized () {
@@ -101,6 +110,7 @@ class AxiosWrapper {
             .then(response => {
                 result.status = response.status; 
                 result.successed = true;
+                result.data = response.data;
             })
             .catch(error => {
                 if(error.response){

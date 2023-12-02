@@ -17,7 +17,7 @@ class AxiosWrapper {
         };
 
         this.axiosInstance = axios.create(options);
-
+        this.token = "";
         options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
         this.mainSiteAxios = axios.create(options);
     }
@@ -178,9 +178,11 @@ class AxiosWrapper {
 
     // Auth
     async login(body) {
-        const result = await this._post("/auth/login", body);
-
-        return result
+        let response = await this._post("/auth/login", body);
+        this.token = response?.data?.bearer_token;
+        if (this.token !== "")
+            this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        return response
     }
 
     async become() {

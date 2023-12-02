@@ -1,7 +1,10 @@
-﻿namespace Carsharing.ViewModels.Admin.Auth
+﻿using System.Text.Json.Serialization;
+
+namespace Carsharing.ViewModels.Admin.Auth
 {
-    public class LoginAdminVM
-    {
-        public IEnumerable<string> Roles { get; set; } = null!; 
-    }
+    public record LoginAdminVM
+    (
+        IEnumerable<string> Roles,
+        [property: JsonPropertyName("bearer_token")] string BearerToken
+    );
 }
