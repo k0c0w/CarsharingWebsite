@@ -6,7 +6,9 @@ public class FileInfo
 
     public string BucketName { get; init; }
 
-    public string Name { get; init; }
+    public string ObjectName { get; init; }
+
+    public string OriginalFileName { get; init; }
 
     public string ContentType { get; init; }
 }

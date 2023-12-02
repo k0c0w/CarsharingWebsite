@@ -9,5 +9,5 @@ public abstract record MetadataBase
     public string Schema { get; init; }
 
     // metadata for file group
-    FileInfo LinkedFileInfo { get; init; }
+    FileInfo? LinkedFileInfo { get; init; }
 }
