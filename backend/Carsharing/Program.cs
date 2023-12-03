@@ -33,6 +33,8 @@ services.AddTransient<IFileProducer, FileProducer>();
 
 services.AddMediatorWithFeatures();
 
+services.AddAuthenticationAndAuthorization(builder.Configuration);
+
 services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
@@ -62,13 +64,6 @@ if (builder.Environment.IsDevelopment())
                     .AllowCredentials()
                     .SetIsOriginAllowed(origin => true)
         );
-    });
-
-    services.ConfigureApplicationCookie(options =>
-    {
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.HttpOnly = true;
     });
 }
 

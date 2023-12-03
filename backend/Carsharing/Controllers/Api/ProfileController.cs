@@ -10,6 +10,7 @@ using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetPersonalInfo;
 using Features.Users.Queries.GetProfileInfo;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UserInfoVM = Carsharing.ViewModels.Profile.UserInfoVM;
