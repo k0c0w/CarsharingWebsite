@@ -38,11 +38,12 @@ public static class IServiceCollectionExtensions
             config.AddConsumer<CreateCarModelSaveImageResponseConsumer>();
             config.UsingRabbitMq((ctx, cfg) =>
             {
-                cfg.Host(configuration
+                /*cfg.Host(configuration
                         .GetSection(RabbitMqConfig.SectionName)
                         .Get<RabbitMqConfig>()!
                         .FullHostname);
                 cfg.ConfigureEndpoints(ctx);
+                */
             });
         });
 

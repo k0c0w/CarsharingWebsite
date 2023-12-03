@@ -108,5 +108,6 @@ public class MetadataSaver
     {
         //todo: initilize saving to mongo and main s3 service
         // on complete it should update operation status
+        throw new NotImplementedException();
     }
 }

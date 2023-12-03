@@ -1,7 +1,5 @@
 ﻿using MediatR;
 using MinioConsumers.Services;
-using Shared.CQRS;
-using Shared.Results;
 
 namespace MinioConsumer.Features.UploadAbstractFile;
 
@@ -20,7 +18,6 @@ public class UploadAbstractFileCommandHandler : IRequestHandler <UploadAbstractF
         var request = contextAccessor.HttpContext?.Request;
         if (request is not null)
         {
-            // todo: check if it contains port
             Domain = request.Host.Value;
         }
     }
@@ -30,12 +27,13 @@ public class UploadAbstractFileCommandHandler : IRequestHandler <UploadAbstractF
         try
         {
             var s3fFile = request.File;
+            if (s3fFile.ContentStream is null || s3fFile.Name is null)
+                return new HttpResponse(System.Net.HttpStatusCode.BadRequest, error: "No content recieved.");
 
             if(!await _s3Service.BucketExsistAsync(s3fFile.BucketName))
                 await _s3Service.CreateBucketAsync(s3fFile.BucketName);
 
             await _s3Service.PutFileInBucketAsync(request.File);
-
             return new HttpResponse(message: $"{Domain}/files/{s3fFile.BucketName}/{s3fFile.Name}");
         }
         catch(Exception ex)

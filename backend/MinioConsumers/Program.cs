@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Minio;
 using MinioConsumers.Services;
 
@@ -13,6 +11,7 @@ builder.Services.AddMinio(configuration =>
     configuration.WithCredentials(
         builder.Configuration["MinioS3:AccessKey"]!,
         builder.Configuration["MinioS3:SecretKey"]!);
+    Console.WriteLine(builder.Configuration["MinioS3:AccessKey"]!);
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -24,13 +23,18 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
 });
 
-
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+//todo: delete
+else
 {
     app.UseSwagger();
     app.UseSwaggerUI();

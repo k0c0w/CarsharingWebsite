@@ -14,8 +14,8 @@ public class FileAccessor
 
     }
 
-    public File GetFile()
+    public FileInfo GetFile()
     {
-
+        throw new NotImplementedException();
     }
 }

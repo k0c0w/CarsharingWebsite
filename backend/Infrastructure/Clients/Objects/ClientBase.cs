@@ -18,9 +18,9 @@ namespace Clients.Objects
             BaseUri = baseUri;
         }
 
-        protected HttpRequestMessage CreateRequestMessage(HttpMethod method, string path)
+        protected HttpRequestMessage CreateRequestMessage(HttpMethod method, string path, HttpContent? content = default)
         {
-            return new HttpRequestMessage(method, $"{BaseUri}/{path}");
+            return new HttpRequestMessage(method, $"{BaseUri}/{path}") { Content = content };
         }
     }
 }

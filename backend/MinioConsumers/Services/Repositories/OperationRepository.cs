@@ -1,5 +1,6 @@
 ﻿using MinioConsumer.Models;
 using System.Diagnostics;
+using FileInfo = MinioConsumer.Models.FileInfo;
 
 namespace MinioConsumer.Services.Repositories;
 
