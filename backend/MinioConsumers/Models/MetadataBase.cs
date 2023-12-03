@@ -1,6 +1,6 @@
 ﻿namespace MinioConsumer.Models;
 
-public abstract record MetadataBase
+public record MetadataBase
 {
     public Guid Id { get; init; }
 
@@ -9,5 +9,17 @@ public abstract record MetadataBase
     public string Schema { get; init; }
 
     // metadata for file group
-    FileInfo? LinkedFileInfo { get; init; }
+    public FileInfo? LinkedFileInfo { get; set; }
+
+    public MetadataBase(Guid id, string externalTag, string schema, FileInfo? linkedFileInfo)
+    {
+        Id = id;
+        ExternalTag = externalTag;
+        Schema = schema;
+        LinkedFileInfo = linkedFileInfo;
+    }
+
+    public MetadataBase()
+    {
+    }
 }

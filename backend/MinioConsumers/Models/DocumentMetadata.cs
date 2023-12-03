@@ -11,4 +11,13 @@ public record DocumentMetadata : MetadataBase
     public string FileName { get; init; }
 
     public bool IsPublic { get; init; }
+
+    public DocumentMetadata() : base()
+    {
+        Id = Guid.NewGuid();
+    }
+    
+    public DocumentMetadata(Guid id, string externalTag, string schema, FileInfo? linkedFileInfo) : base(id, externalTag, schema, linkedFileInfo)
+    {
+    }
 }
