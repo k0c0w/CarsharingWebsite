@@ -1,27 +1,29 @@
-﻿using MinioConsumer.Models;
+﻿using MassTransit;
+using MinioConsumer.Models;
+using MinioConsumer.Services.PrimaryStorageSaver;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using Shared.Results;
-using System.Diagnostics;
 using FileInfo = MinioConsumer.Models.FileInfo;
 
 namespace MinioConsumer.Services;
 
-public class MetadataSaver
+public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 {
-    private static string[] bucketPool = new []{ "zebra", "mongoose", "elephant", "monkey", "pantera" };
-
     private readonly ILogger<Exception> _exceptionLogger;
 
-    private readonly IMetadataRepository metadataRepository;
+    private readonly ITempMetadataRepository<TMetadata> metadataRepository;
 
     private readonly IS3Service s3Service;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, IMetadataRepository metadataRepository, IS3Service s3Service)
+    private readonly IBus bus;
+
+    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, ITempS3Service s3Service, IBus bus)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
+        this.bus = bus;
     }
 
     /// <summary>
@@ -30,7 +32,7 @@ public class MetadataSaver
     /// <param name="metadata"></param>
     /// <param name="file"></param>
     /// <returns></returns>
-    public async Task<Result> UploadFile(Guid operationId, MetadataBase metadata, IFormFile file) 
+    public async Task<Result> UploadFile(Guid operationId, TMetadata metadata, IFormFile file) 
     {
         var metadaResult = await UploadFileAsync(operationId, metadata);
         if (!metadaResult)
@@ -41,22 +43,19 @@ public class MetadataSaver
 
     public async Task<Result> AppendFileAsync(Guid operationId, IFormFile file) 
     {
-        if (!await metadataRepository.MetadataExists(operationId))
+        if (!await metadataRepository.MetadataExistsByIdAsync(operationId))
             return Result.ErrorResult;
 
-        if (await metadataRepository.IsCompletedById(operationId))
+        if (await metadataRepository.IsCompletedByIdAsync(operationId))
             return Result.ErrorResult;
 
-        var rand = new Random();
-
-        var tempBucketName = bucketPool[rand.Next(bucketPool.Length)];
+        var tempBucketName = KnownBuckets.GetRandomBucketFromPool();
         var bucketObjectName = Guid.NewGuid().ToString();
 
         var info = new FileInfo
         {
             BucketName = tempBucketName,
             ContentType = file.ContentType,
-            IsTemporary = true,
             ObjectName = bucketObjectName,
             OriginalFileName = file.FileName,
         };
@@ -73,7 +72,7 @@ public class MetadataSaver
                 await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
             },
             TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith( savingTask => metadataRepository.UpdateFileInfo(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
+            .ContinueWith( savingTask => metadataRepository.UpdateFileInfoAsync(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
         catch(Exception ex)
         {
@@ -84,30 +83,37 @@ public class MetadataSaver
         return Result.SuccessResult; 
     }
 
-    public async Task<Result> UploadFileAsync(Guid operationId, MetadataBase metadata) 
+    public async Task<Result> UploadFileAsync(Guid operationId, TMetadata metadata) 
     {
-        Debug.Assert(operationId == metadata.Id);
-
-        if (!await metadataRepository.MetadataExists(operationId) || await metadataRepository.IsCompletedById(operationId))
+        if (!await metadataRepository.MetadataExistsByIdAsync(operationId) || await metadataRepository.IsCompletedByIdAsync(operationId))
             return Result.ErrorResult;
 
-        await metadataRepository.Add(metadata);
+        await metadataRepository.AddAsync(metadata);
         return Result.SuccessResult;
     }
 
     public async Task<Result<bool>> IsOperationCompleted(Guid id)
     {
-        var completed = (await metadataRepository.MetadataExists(id))
-            && (await metadataRepository.IsCompletedById(id));
+        var completed = (await metadataRepository.MetadataExistsByIdAsync(id))
+            && (await metadataRepository.IsCompletedByIdAsync(id));
 
         return new Ok<bool>(completed);
     }
 
-    // call another service here
-    public Result CommitOperation(Guid operationId)
+    public async Task<Result> CommitOperationAsync(Guid operationId)
     {
-        //todo: initilize saving to mongo and main s3 service
-        // on complete it should update operation status
-        throw new NotImplementedException();
+        try
+        {
+            if (await metadataRepository.MetadataExistsByIdAsync(operationId))
+            {
+                await bus.Publish(new SaveInPRimaryDbRequest<TMetadata>(operationId, operationId));
+                return Result.SuccessResult;
+            }
+            return Result.ErrorResult;
+        }
+        catch
+        {
+            return Result.ErrorResult;
+        }
     }
 }

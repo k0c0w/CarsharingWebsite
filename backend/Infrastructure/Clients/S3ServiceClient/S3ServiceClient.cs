@@ -1,32 +1,24 @@
 ﻿using Clients.Objects;
 using Clients.S3ServiceClient.ResponseModels;
-using System.Globalization;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.Json.Nodes;
 
 namespace Clients.S3ServiceClient
 {
     public class S3ServiceClient : ClientBase
     {
-        public S3ServiceClient(string baseUrl, HttpClient httpClient) : base(baseUrl, httpClient)
+        public S3ServiceClient(HttpClient httpClient) : base("https://localhost:8000", httpClient)
         {
         }
 
-        public async Task<WebCallResult<UploadFileResult>> CreateFileAsync(string fileName, string bucketName, Stream bytes, string contentType)
+        public async Task<WebCallResult<UploadFileResult>> CreateFileAsync(string fileName, Stream bytes, string contentType)
         {
             if (!ValidContentType(contentType))
                 return new WebCallResult<UploadFileResult>(new ArgumentError<UploadFileResult>($"Unsupported Content-Type: {contentType}"));
 
-            var requestPath = $"files/{bucketName}";
-            var requestContent = new MultipartFormDataContent();
-            {
-                var streamContent = new StreamContent(bytes);
-                streamContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
-                requestContent.Add(streamContent, "file", fileName);
-            }
-
-            var request = CreateRequestMessage(HttpMethod.Post, requestPath, requestContent);
+            var requestPath = $"files/{fileName}";
+            var request = CreateRequestMessage(HttpMethod.Post, $"files/{fileName}");
+            request.Content = new StreamContent(bytes);
+            request.Headers.Add("Content-Type", contentType);
 
             try
             {
@@ -35,16 +27,12 @@ namespace Clients.S3ServiceClient
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return new WebCallResult<UploadFileResult>(new UploadFileResult() { Success = true, Url = $"{BaseUri}/{requestPath}/{fileName}"});
+                    return new WebCallResult<UploadFileResult>(new UploadFileResult() { Success = true, Url = $"{BaseUri}/{requestPath}"});
                 }
 
                 var json = JsonNode.Parse(responseText);
 
-                int? code = default;
-                if (!int.TryParse(json["code"]?.ToString(), out int responseCode))
-                    code = responseCode;
-
-                return new WebCallResult<UploadFileResult>(new ServerError<UploadFileResult>(code, json["errorMessage"].ToString()));
+                return new WebCallResult<UploadFileResult>(new UploadFileResult() { Message = json["message"].ToString() });
             }
             catch(HttpRequestException ex)
             {

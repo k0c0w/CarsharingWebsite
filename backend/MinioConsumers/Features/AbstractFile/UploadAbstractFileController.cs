@@ -21,8 +21,8 @@ public class UploadAbstractFileController : ControllerBase
     [HttpPost("{bucketName}")]
     public async Task<IActionResult> UploadFileAsync([FromRoute] string bucketName, IFormFile file)
     {
-        using var stream = file?.OpenReadStream();
-        var fileToSave = new S3File(file?.FileName, bucketName, stream, file?.ContentType);
+        using var stream = file.OpenReadStream();
+        var fileToSave = new S3File(file.FileName, bucketName, stream, file.ContentType);
         var response = await _sender.Send(new UploadAbstractFileCommand(fileToSave));
 
         if (response.IsSuccess)

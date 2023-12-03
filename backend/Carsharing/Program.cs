@@ -3,6 +3,7 @@ using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
 using Domain.Common;
+using Features.Utils;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
@@ -10,12 +11,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
-
-services
-    .AddHttpContextAccessor()
-    .AddTransient<HttpTrackerHandler>()
-    .AddHttpClient("authorized")
-    .AddHttpMessageHandler<HttpTrackerHandler>();
 
 services.AddDatabase(builder.Configuration)
         .AddMassTransitWithRabbitMQProvider(builder.Configuration);
@@ -53,8 +48,9 @@ if (builder.Environment.IsDevelopment())
     services.AddCors(options =>
     {
         var configuration = builder.Configuration;
-        var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
-        var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
+        var mainFront = configuration["FrontendHost:Main"]!;
+        var adminFront = configuration["FrontendHost:Admin"]!;
+        Console.WriteLine(configuration["FrontendHost:Admin"]);
 
         options.AddPolicy("DevFrontEnds",
             builder =>
@@ -79,11 +75,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger()
        .UseSwaggerUI()
        .UseCors("DevFrontEnds");
-}
-else
-{
-    app.UseSwagger()
-      .UseSwaggerUI();
 }
 
 app.UseAuthentication()

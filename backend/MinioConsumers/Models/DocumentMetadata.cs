@@ -11,4 +11,8 @@ public record DocumentMetadata : MetadataBase
     public string FileName { get; init; }
 
     public bool IsPublic { get; init; }
+
+    public DocumentMetadata(Guid id, FileInfo? linkedFileInfo) : base(id, KnownBuckets.DOCUMENTS, linkedFileInfo)
+    {
+    }
 }

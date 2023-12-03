@@ -3,18 +3,13 @@ using FileInfo = MinioConsumer.Models.FileInfo;
 
 namespace MinioConsumer.Services.Repositories;
 
-public interface IMetadataRepository
+public interface IMetadataRepository<TMetada> where TMetada : MetadataBase
 {
+    public Task<bool> MetadataExistsByIdAsync(Guid id);
 
-    public Task<bool> MetadataExists(Guid guid);
+    public Task<TMetada?> GetByIdAsync(Guid id);
 
-    public Task<MetadataBase?> GetById(Guid id);
+    public Task<Guid> AddAsync(TMetada metadata);
 
-    public Task<MetadataBase> Add(MetadataBase metadata);
-
-    public Task UpdateFileInfo(Guid metadataGuid, FileInfo file);
-
-    public Task<bool> IsCompletedById(Guid metadataGuid);
-
-    public Task<MetadataBase> RemoveById(Guid guid);
+    public Task RemoveByIdAsync(Guid id);
 }
