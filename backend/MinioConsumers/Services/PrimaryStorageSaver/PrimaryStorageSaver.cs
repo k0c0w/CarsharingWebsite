@@ -33,6 +33,8 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
     {
         try
         {
+            await operationRepository.UpdateOperationStatusAsync(operationId, OperationStatus.InProggress);
+
             var metadata = await tempMetadataRepository.GetByIdAsync(metadataId);
             if (metadata == null)
             {
