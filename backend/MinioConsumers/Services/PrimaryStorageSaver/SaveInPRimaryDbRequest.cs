@@ -1,4 +1,6 @@
-﻿namespace MinioConsumer.Services.PrimaryStorageSaver
+﻿using MinioConsumer.Models;
+
+namespace MinioConsumer.Services.PrimaryStorageSaver
 {
-    public record SaveInPRimaryDbRequest(Guid OperationId, Guid MetadataId);
+    public record SaveInPRimaryDbRequest<TMetadata>(Guid OperationId, Guid MetadataId) where TMetadata : MetadataBase;
 }

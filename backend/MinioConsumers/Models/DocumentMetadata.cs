@@ -12,7 +12,7 @@ public record DocumentMetadata : MetadataBase
 
     public bool IsPublic { get; init; }
 
-    public DocumentMetadata(Guid id, string externalTag, string schema, FileInfo? linkedFileInfo) : base(id, externalTag, schema, linkedFileInfo)
+    public DocumentMetadata(Guid id, FileInfo? linkedFileInfo) : base(id, KnownBuckets.DOCUMENTS, linkedFileInfo)
     {
     }
 }

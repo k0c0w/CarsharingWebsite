@@ -9,7 +9,12 @@ public class S3Service : IS3Service
 {
     private readonly IMinioClient _minioClient;
 
-    public S3Service(IMinioClient minioClient)
+    public S3Service(MinioClientFactory minioClient)
+    {
+        _minioClient = minioClient.CreateClient(false);
+    }
+
+    protected S3Service(IMinioClient minioClient)
     {
         _minioClient = minioClient;
     }

@@ -5,58 +5,64 @@ using FileInfo = MinioConsumer.Models.FileInfo;
 
 namespace MinioConsumer.Services.Repositories;
 
-public class MetadataRepository : IMetadataRepository
+internal static class MetadataSchemas
 {
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
-    
-    public MetadataRepository(IConnectionMultiplexer connectionMultiplexer)
+    public static IReadOnlyDictionary<Type, string> Schemas = new Dictionary<Type, string>()
     {
-        _connectionMultiplexer = connectionMultiplexer;
+        [typeof(DocumentMetadata)] = "document",
+    };
+}
+
+
+public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetadata> where TMetadata : MetadataBase
+{
+    private readonly IDatabase _db;
+    
+    public RedisMetadataRepository(IConnectionMultiplexer connectionMultiplexer)
+    {
+        _db = connectionMultiplexer.GetDatabase((int)RedisDatabaseId.TempMetadata);
     }
     
-    public async Task<bool> MetadataExists(Guid guid)
+    public async Task<bool> MetadataExistsByIdAsync(Guid id)
     {
-        var result = await _connectionMultiplexer.GetDatabase().StringGetAsync(guid.ToString());
+        var result = await _db.StringGetAsync(GetInternalKey(id));
         return !result.IsNullOrEmpty;
     }
 
-    public async Task<MetadataBase?> GetById(Guid id)
+    public async Task<TMetadata?> GetByIdAsync(Guid id)
     {
-        var db = _connectionMultiplexer.GetDatabase();
-        var redisValue = await db.StringGetAsync(id.ToString());
-        var result = JsonConvert.DeserializeObject<MetadataBase>(redisValue);
+        var redisValue = await _db.StringGetAsync(GetInternalKey(id));
+        if (redisValue.IsNull)
+            return default;
+        var result = JsonConvert.DeserializeObject<TMetadata>(redisValue.ToString());
         return result;
     }
 
-    public async Task<MetadataBase> Add(MetadataBase metadata)
+    public async Task<Guid> AddAsync(TMetadata metadata)
     {
-        var db = _connectionMultiplexer.GetDatabase();
         var value = JsonConvert.SerializeObject(metadata);
-        var redisValue = await db.StringSetAndGetAsync(metadata.Id.ToString(), value);
-        return metadata;
+        await _db.StringSetAsync(GetInternalKey(metadata.Id), value);
+        return metadata.Id;
     }
 
-    public async Task UpdateFileInfo(Guid metadataGuid, FileInfo file)
+    public async Task UpdateFileInfoAsync(Guid metadataGuid, FileInfo file)
     {
-        var metadata = await GetById(metadataGuid);
+        var metadata = await GetByIdAsync(metadataGuid);
         metadata.LinkedFileInfo = file;
-        await Add(metadata);
+        await AddAsync(metadata);
     }
 
-    public async Task<bool> IsCompletedById(Guid metadataGuid)
+    public async Task<bool> IsCompletedByIdAsync(Guid metadataGuid)
     {
-        var metadata = await GetById(metadataGuid);
+        var metadata = await GetByIdAsync(metadataGuid);
         if (metadata is null)
             return false;
         
         return !(metadata.LinkedFileInfo is null);
     }
 
-    public async Task<MetadataBase> RemoveById(Guid guid)
-    {
-        var db = _connectionMultiplexer.GetDatabase();
-        var metadata = await GetById(guid);
-        var redisValue = await db.KeyDeleteAsync(guid.ToString());
-        return metadata;
-    }
+    public Task RemoveByIdAsync(Guid id)
+        => _db.KeyDeleteAsync(GetInternalKey(id));
+
+    private string GetInternalKey(Guid id) => $"{MetadataSchemas.Schemas[typeof(TMetadata)]}:{id}";
 }
