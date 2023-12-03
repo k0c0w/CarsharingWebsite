@@ -1,9 +1,16 @@
 using MassTransit;
 using Minio;
 using MinioConsumer.Services.PrimaryStorageSaver;
+using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(x =>
+        ConnectionMultiplexer.Connect(
+            builder.Configuration["Redis:Connection"] ?? throw new InvalidOperationException())
+);
 
 builder.Services.AddMinio(configuration =>
 {
@@ -13,13 +20,13 @@ builder.Services.AddMinio(configuration =>
     configuration.WithCredentials(
         builder.Configuration["MinioS3:AccessKey"]!,
         builder.Configuration["MinioS3:SecretKey"]!);
-    Console.WriteLine(builder.Configuration["MinioS3:AccessKey"]!);
 });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IS3Service, S3Service>();
+builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
@@ -30,7 +37,6 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<IConsumer<SaveInPRimaryDbRequest>>(typeof(SaveInPRimaryDbRequestConsumer));
 });
-
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -41,14 +47,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-//todo: delete
-else
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
 app.Run();
