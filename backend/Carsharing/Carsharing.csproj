@@ -23,6 +23,7 @@
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Facebook" Version="7.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="7.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.14" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.13">
       <PrivateAssets>all</PrivateAssets>
@@ -38,5 +39,9 @@
     <ProjectReference Include="..\Infrastructure\Clients\Clients.csproj" />
     <ProjectReference Include="..\Infrastructure\Migrations\Migrations.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Helpers\Extensions\Controllers\" />
   </ItemGroup>
 </Project>

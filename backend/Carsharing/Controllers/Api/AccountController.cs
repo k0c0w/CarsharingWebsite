@@ -12,9 +12,12 @@ using Carsharing.ViewModels;
 using Domain.Entities;
 using Domain;
 using Carsharing.Helpers;
+using Carsharing.Helpers.Authorization;
 using Migrations.CarsharingApp;
 using Domain.Common;
 using Persistence.Chat.ChatEntites.Dtos;
+using Shared.Results;
+
 namespace Carsharing.Controllers;
 
 [Route("api/[controller]")]
@@ -26,6 +29,7 @@ public class AccountController : ControllerBase
     private readonly SignInManager<User> _signInManager;
     private readonly CarsharingContext _carsharingContext;
     private readonly IConfiguration _configuration;
+    private readonly IJwtGenerator _jwtGenerator;
     private readonly IMapper _mapper;
 
     public AccountController(
@@ -33,10 +37,12 @@ public class AccountController : ControllerBase
         UserManager<User> userManager,
         IMapper mapper,
         SignInManager<User> signInManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        IJwtGenerator jwtGenerator)
     {
         _mapper = mapper;
         _configuration = configuration;
+        _jwtGenerator = jwtGenerator;
         _userManager = userManager;
         _signInManager = signInManager;
         _carsharingContext = carsharingContext;
@@ -64,9 +70,11 @@ public class AccountController : ControllerBase
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
         await _userManager.AddToRoleAsync(user, Role.User.ToString());
-        await _signInManager.SignInAsync(user, false);
+        // await _signInManager.SignInAsync(user, false);
+        var claims = await _userManager.GetClaimsAsync(user);
+        var token = _jwtGenerator.CreateToken(user: user, claims: claims);
         
-        return Created("/", null);
+        return new JsonResult(new ResponseBearerTokenVm(token));
     }
     
     [HttpPost("login")]
@@ -80,7 +88,10 @@ public class AccountController : ControllerBase
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
 
-        return Ok();
+        var claims = await _userManager.GetClaimsAsync(user);
+        var token = _jwtGenerator.CreateToken(user: user, claims: claims);
+        
+        return new CreatedResult("/", new ResponseBearerTokenVm(token));
     }
 
     [HttpGet]
@@ -127,17 +138,10 @@ public class AccountController : ControllerBase
             
             userInfo ??= await _carsharingContext.UserInfos.SingleAsync(entity => entity.UserId == user.Id);
 
-            List<Claim> claims = new()
-            {
-                new Claim(ClaimTypes.DateOfBirth, "1992-04-19 11:25:07.53+04"),
-                new Claim("Passport", userInfo?.Passport?.ToString() ?? "passport")
-            };
-
-            var pr = await _signInManager.CreateUserPrincipalAsync(user);
-            pr.AddIdentity(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
-
-            await _signInManager.SignInWithClaimsAsync(user, false, claims);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, pr);
+            var claims = await _userManager.GetClaimsAsync(user);
+            claims.Add(new Claim(ClaimTypes.DateOfBirth, "1992-04-19 11:25:07.53+04"));
+            claims.Add(new Claim("Passport", userInfo.Passport ?? "passport"));
+            var token = _jwtGenerator.CreateToken(user, claims);
 
             return Redirect("/profile");
         }
