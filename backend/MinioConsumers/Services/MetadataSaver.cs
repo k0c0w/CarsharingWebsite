@@ -1,4 +1,6 @@
-﻿using MinioConsumer.Models;
+﻿using MassTransit;
+using MinioConsumer.Models;
+using MinioConsumer.Services.PrimaryStorageSaver;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using Shared.Results;
@@ -9,7 +11,6 @@ namespace MinioConsumer.Services;
 
 public class MetadataSaver
 {
-    private static string[] bucketPool = new []{ "zebra", "mongoose", "elephant", "monkey", "pantera" };
 
     private readonly ILogger<Exception> _exceptionLogger;
 
@@ -17,11 +18,14 @@ public class MetadataSaver
 
     private readonly IS3Service s3Service;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, IMetadataRepository metadataRepository, IS3Service s3Service)
+    private readonly IBus bus;
+
+    public MetadataSaver(ILogger<Exception> exceptionLogger, IMetadataRepository metadataRepository, IS3Service s3Service, IBus bus)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
+        this.bus = bus;
     }
 
     /// <summary>
@@ -47,16 +51,13 @@ public class MetadataSaver
         if (await metadataRepository.IsCompletedById(operationId))
             return Result.ErrorResult;
 
-        var rand = new Random();
-
-        var tempBucketName = bucketPool[rand.Next(bucketPool.Length)];
+        var tempBucketName = KnownBuckets.GetRandomBucketFromPool();
         var bucketObjectName = Guid.NewGuid().ToString();
 
         var info = new FileInfo
         {
             BucketName = tempBucketName,
             ContentType = file.ContentType,
-            IsTemporary = true,
             ObjectName = bucketObjectName,
             OriginalFileName = file.FileName,
         };
@@ -103,11 +104,20 @@ public class MetadataSaver
         return new Ok<bool>(completed);
     }
 
-    // call another service here
-    public Result CommitOperation(Guid operationId)
+    public async Task<Result> CommitOperationAsync(Guid operationId)
     {
-        //todo: initilize saving to mongo and main s3 service
-        // on complete it should update operation status
-        throw new NotImplementedException();
+        try
+        {
+            if (await metadataRepository.MetadataExists(operationId))
+            {
+                await bus.Publish(new SaveInPRimaryDbRequest(operationId, operationId));
+                return Result.SuccessResult;
+            }
+            return Result.ErrorResult;
+        }
+        catch
+        {
+            return Result.ErrorResult;
+        }
     }
 }

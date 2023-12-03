@@ -1,4 +1,6 @@
+using MassTransit;
 using Minio;
+using MinioConsumer.Services.PrimaryStorageSaver;
 using MinioConsumers.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,12 @@ builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
+});
+
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<IConsumer<SaveInPRimaryDbRequest>>(typeof(SaveInPRimaryDbRequestConsumer));
 });
 
 builder.Services.AddControllers();
