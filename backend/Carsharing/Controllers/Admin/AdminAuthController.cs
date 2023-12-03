@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using System.Security.Claims;
+using Carsharing.Helpers.Authorization;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Carsharing.Controllers.Admin
@@ -16,15 +17,16 @@ namespace Carsharing.Controllers.Admin
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IJwtGenerator _jwtGenerator;
 
         public AdminAuthController
             (
             UserManager<User> userManager,
-            SignInManager<User> signInManager
-            )
+            SignInManager<User> signInManager, IJwtGenerator jwtGenerator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _jwtGenerator = jwtGenerator;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginVM vm)
@@ -36,10 +38,11 @@ namespace Carsharing.Controllers.Admin
             var result = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
             if (!result.Succeeded)
                 return Unauthorized(GetLoginError());
-            
-            await _signInManager.SignInAsync(user, false);
+
+            var claims = await _userManager.GetClaimsAsync(user);
             var userRoles = await _userManager.GetRolesAsync(user);
-            LoginAdminVM response = new LoginAdminVM() { Roles = userRoles };
+            var token = _jwtGenerator.CreateToken(claims: claims, user: user);
+            var response = new LoginAdminVM(userRoles, token);
             return new JsonResult(response);
         }
 
@@ -57,8 +60,7 @@ namespace Carsharing.Controllers.Admin
 
             await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Role.Admin.ToString()));
-
-
+            
             await _signInManager.SignInAsync(user, false);
             
             return Ok();
@@ -71,7 +73,11 @@ namespace Carsharing.Controllers.Admin
             IEnumerable<string> roles = User.Claims.Where(claim => claim.Type == ClaimTypes.Role)
                 .Select(claim => claim.Value)
                 .ToList();
-            return new JsonResult(new LoginAdminVM() { Roles = roles });
+            var jwt = "";
+            if (Request.Headers.TryGetValue("Authorization", out var headerValue))
+                jwt = headerValue.ToString().Replace("Bearer ", "").Trim();
+            
+            return new JsonResult(new LoginAdminVM( roles, jwt ));
         }
 
         private static object GetLoginError() => new { error = new ErrorsVM { Code = (int)ErrorCode.ServiceError, Messages = new[] { "Неверная почта или пароль." } } };
