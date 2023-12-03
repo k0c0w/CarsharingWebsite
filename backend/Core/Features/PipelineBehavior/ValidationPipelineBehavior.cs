@@ -19,14 +19,7 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
     {
         if (!_validators.Any())
         {
-            try
-            {
                 return await next();
-            }
-            catch (Exception e)
-            {
-                return ReturnResult<TResponse>(e.Message);
-            }
         }
 
         var errors = _validators
@@ -36,17 +29,10 @@ public class ValidationPipelineBehavior<TRequest, TResponse> : IPipelineBehavior
             .Select(error => new Error(error.ErrorMessage))
             .Distinct();
 
-        if (errors.Any())
+        /*if (errors.Any())
             return ReturnResult<TResponse>(errors.First().ErrorMessage);
-        
-        try
-        {
-            return await next();
-        }
-        catch (Exception e)
-        {
-            return ReturnResult<TResponse>(e.Message);
-        }
+        */
+        return await next();
     }
 
     private static TResult ReturnResult<TResult>(string message)

@@ -15,16 +15,17 @@ services:
         - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
         - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
       depends_on:
-       - rabbitmq
-        
+       - rabbitmq      
+  
   backend:
       build: 
         context: ./backend
         dockerfile: CarsharingDockerfile
       container_name: backend
       environment:
-        - FrontendHost__Main =${FRONT_MAIN}
-        - FrontendHost__Admin =${FRONT_ADMIN}
+        - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
+        - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
+        - KnownHosts__BackendHosts__FileService=${BACK_FILESERVICE}
         - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
         - ASPNETCORE_URLS=${ASPNETCORE_URLS}
         - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
@@ -62,8 +63,7 @@ services:
         - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
         - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
         - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-        - REACT_LOCAL_HOST=${FRONT_ADMIN}
-
+        - REACT_LOCAL_HOST=${FRONT_ADMIN}        
       ports:
         - ${FRONT_ADMIN_PORTS}
   db:
@@ -83,7 +83,40 @@ services:
     container_name: rabbitmq
     image: rabbitmq:3-alpine
     ports:
+      - "15672:15672"
       - "5672:5672"
     environment:
       RABBITMQ_DEFAULT_USER: "chatConsumer"
       RABBITMQ_DEFAULT_PASS: "Passw0rd"
+
+  minio_carsharing:
+    build: 
+      context: ./backend
+      dockerfile: MinioConsumersDockerfile
+    ports:
+      - "7125:80"
+      - "7126:443"
+    container_name: minio_carsharing
+    depends_on:
+      - minioS3
+    environment:
+      - MinioS3__AccessKey=minioadmin
+      - MinioS3__SecretKey=minioadmin
+      - MinioS3__Timeout=5000
+      - MinioS3__Endpoint=minio:9000
+      - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+    
+  minioS3:
+    image: minio/minio
+    container_name: minio    
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: "carsharing"
+      MINIO_ROOT_PASSWORD: "carsharingAdmin"
+    command: server --console-address ":9090" /data/

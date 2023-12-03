@@ -7,6 +7,7 @@ using Carsharing.Helpers.Extensions.Controllers;
 using MediatR;
 using Features.CarManagement;
 using Features.CarManagement.Admin;
+using System.Net.Mime;
 
 namespace Carsharing.Controllers;
 
@@ -146,12 +147,11 @@ public class AdminCarController : ControllerBase
     {
         Contracts.File file;
 
-        var _stream = formFile.OpenReadStream();
-
         file = new Contracts.File()
         {
             Name = formFile.FileName,
-            Content = _stream
+            Content = formFile.OpenReadStream(),
+            ContentType = formFile.ContentType,
         };
 
         return file;

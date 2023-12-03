@@ -18,6 +18,6 @@ public record CreateCarModelVM
     [Required(ErrorMessage = "Укажите описание прототипа.")]
     public string? Description { get; init; }
 
-    [ImageValidator(10000000)]
+    //[ImageValidator(10000000)]
     public IFormFile? Image { get; init; }
 }

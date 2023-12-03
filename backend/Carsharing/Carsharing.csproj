@@ -35,6 +35,7 @@
     <ProjectReference Include="..\Core\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Core\Domain\Domain.csproj" />
     <ProjectReference Include="..\Core\Features\Features.csproj" />
+    <ProjectReference Include="..\Infrastructure\Clients\Clients.csproj" />
     <ProjectReference Include="..\Infrastructure\Migrations\Migrations.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />
   </ItemGroup>
