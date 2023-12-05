@@ -93,6 +93,8 @@ services:
     build:
       context: ./backend
       dockerfile: MinioConsumersDockerfile
+    env_file:
+      - .mongo.env
     ports:
       - "7125:80"
       - "7126:443"
@@ -109,6 +111,10 @@ services:
       - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - Redis__Connection=""
+      - MongoDbSettings__Connection=${MONGO_DEFAULT_URL}
+      - MongoDbSettings__User=${MONGO_USER}
+      - MongoDbSettings__Password=${MONGO_PASSWORD}
   
   minioS3:
     image: minio/minio
@@ -120,3 +126,14 @@ services:
       MINIO_ROOT_USER: "carsharing"
       MINIO_ROOT_PASSWORD: "carsharingAdmin"
     command: server --console-address ":9090" /data/
+    
+  mongo:
+    image: mongo
+    restart: always
+    env_file:
+      - .mongo.env
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
