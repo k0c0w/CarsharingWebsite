@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using MinioConsumer.Models;
+﻿using MinioConsumer.Models;
 using MinioConsumer.Services.PrimaryStorageSaver;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
@@ -16,14 +15,14 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     private readonly IS3Service s3Service;
 
-    private readonly IBus bus;
+    private readonly PrimaryStorageSaver<TMetadata> operationRepository;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, ITempS3Service s3Service, IBus bus)
+    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, ITempS3Service s3Service, PrimaryStorageSaver<TMetadata> operationRepository)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
-        this.bus = bus;
+        this.operationRepository = operationRepository;
     }
 
     /// <summary>
@@ -106,7 +105,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             if (await metadataRepository.MetadataExistsByIdAsync(operationId))
             {
-                await bus.Publish(new SaveInPRimaryDbRequest<TMetadata>(operationId, operationId));
+                _ = Task.Run(() => operationRepository.MoveDataToPrimaryStorageAsync(operationId, operationId));
                 return Result.SuccessResult;
             }
             return Result.ErrorResult;

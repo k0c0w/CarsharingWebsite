@@ -1,4 +1,3 @@
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 using MinioConsumer.Models;
@@ -35,7 +34,9 @@ builder.Services.AddScoped<IS3Service, S3Service>();
 builder.Services.AddScoped<ITempS3Service, TempS3Service>();
 builder.Services.AddScoped<ITempMetadataRepository<DocumentMetadata>, RedisMetadataRepository<DocumentMetadata>>();
 builder.Services.AddScoped<IMetadataRepository<DocumentMetadata>, MongoDbMetadataRepository<DocumentMetadata>>();
+builder.Services.AddScoped<OperationRepository>();
 builder.Services.AddScoped<MetadataSaver<DocumentMetadata>>();
+builder.Services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
 //builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
 //builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
 builder.Services.AddMediatR(cfg =>
@@ -43,13 +44,6 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
 });
 
-
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumer<IConsumer<SaveInPRimaryDbRequest<DocumentMetadata>>>(typeof(SaveInPRimaryDbRequestConsumer<DocumentMetadata>));
-    //x.AddConsumer<IConsumer<SaveInPRimaryDbRequest<DocumentMetadata>>>(typeof(SaveInPRimaryDbRequestConsumer<DocumentMetadata>));
-    //x.AddConsumer<IConsumer<SaveInPRimaryDbRequest<DocumentMetadata>>>(typeof(SaveInPRimaryDbRequestConsumer<DocumentMetadata>));
-});
 builder.Services.AddControllers();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 

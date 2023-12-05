@@ -9,7 +9,7 @@ public interface ITempS3Service : IS3Service
 
 public class TempS3Service : S3Service, ITempS3Service
 {
-    public TempS3Service(IMinioClientFactory minioClient) : base(minioClient.CreateClient(true))
+    public TempS3Service(MinioClientFactory minioClient) : base(minioClient.CreateClient(true))
     {
     }
 }
