@@ -9,22 +9,19 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
 {
     private readonly ITempMetadataRepository<TMetadata> tempMetadataRepository;
     private readonly IMetadataRepository<TMetadata> primaryMetadataRepository;
-    private readonly IS3Service tempS3Service;
-    private readonly IS3Service primaryS3Service;
+    private readonly IS3Service s3Service;
     private readonly OperationRepository operationRepository;
     private readonly ILogger<Exception> _exceptionLogger;
 
     public PrimaryStorageSaver(ITempMetadataRepository<TMetadata> tempMetadataRepository, 
         IMetadataRepository<TMetadata> primaryMetadataRepository, 
-        ITempS3Service tempS3Service, 
-        IS3Service primaryS3Service, 
+        IS3Service s3Service, 
         OperationRepository operationRepository, 
         ILogger<Exception> exceptionLogger)
     {
         this.tempMetadataRepository = tempMetadataRepository;
         this.primaryMetadataRepository = primaryMetadataRepository;
-        this.tempS3Service = tempS3Service;
-        this.primaryS3Service = primaryS3Service;
+        this.s3Service = s3Service;
         this.operationRepository = operationRepository;
         _exceptionLogger = exceptionLogger;
     }
@@ -44,18 +41,24 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
             var fileInfo = metadata.LinkedFileInfo;
             Debug.Assert(fileInfo != null);
 
-            var file = await tempS3Service.GetFileFromBucketAsync(fileInfo.BucketName, fileInfo.ObjectName);
-            if (file == null)
+            var tempS3file = await s3Service.GetFileFromBucketAsync(fileInfo.BucketName, fileInfo.ObjectName);
+            if (tempS3file == null)
             {
                 throw new InvalidOperationException("File not found");
             }
 
-            if (!await primaryS3Service.BucketExsistAsync(file.BucketName)) ;
-            await primaryS3Service.CreateBucketAsync(file.BucketName);
-            await primaryS3Service.PutFileInBucketAsync(file);
+            if (!await s3Service.BucketExsistAsync(fileInfo.TargetBucketName))
+                await s3Service.CreateBucketAsync(fileInfo.TargetBucketName);
+            await s3Service.PutFileInBucketAsync(new S3File
+            (
+                fileInfo.ObjectName,
+                fileInfo.TargetBucketName,
+                tempS3file.ContentStream,
+                tempS3file.ContentType
+            ));
             await primaryMetadataRepository.AddAsync(metadata);
 
-            await tempS3Service.RemoveFileFromBucketAsync(fileInfo.BucketName, fileInfo.ObjectName);
+            await s3Service.RemoveFileFromBucketAsync(tempS3file.BucketName, tempS3file.Name);
             await tempMetadataRepository.RemoveByIdAsync(metadataId);
         }
         catch(Exception ex) 

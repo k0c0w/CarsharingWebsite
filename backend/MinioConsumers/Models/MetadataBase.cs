@@ -16,5 +16,4 @@ public record MetadataBase
         Schema = schema;
         LinkedFileInfo = linkedFileInfo;
     }
-
 }

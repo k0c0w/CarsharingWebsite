@@ -15,14 +15,17 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     private readonly IS3Service s3Service;
 
-    private readonly PrimaryStorageSaver<TMetadata> operationRepository;
+    private readonly PrimaryStorageSaver<TMetadata> primaryStorageSaver;
+    private readonly OperationRepository operationRepository;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, ITempS3Service s3Service, PrimaryStorageSaver<TMetadata> operationRepository)
+    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, IS3Service s3Service, PrimaryStorageSaver<TMetadata> primaryStorageSaver, 
+        OperationRepository operationRepository)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
         this.operationRepository = operationRepository;
+        this.primaryStorageSaver = primaryStorageSaver;
     }
 
     /// <summary>
@@ -31,7 +34,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
     /// <param name="metadata"></param>
     /// <param name="file"></param>
     /// <returns></returns>
-    public async Task<Result> UploadFile(Guid operationId, TMetadata metadata, IFormFile file) 
+    public async Task<Result> UploadFileAsync(Guid operationId, TMetadata metadata, IFormFile file) 
     {
         var metadaResult = await UploadFileAsync(operationId, metadata);
         if (!metadaResult)
@@ -54,6 +57,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         var info = new FileInfo
         {
             BucketName = tempBucketName,
+            TargetBucketName = KnownBuckets.DOCUMENTS,
             ContentType = file.ContentType,
             ObjectName = bucketObjectName,
             OriginalFileName = file.FileName,
@@ -84,7 +88,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     public async Task<Result> UploadFileAsync(Guid operationId, TMetadata metadata) 
     {
-        if (!await metadataRepository.MetadataExistsByIdAsync(operationId) || await metadataRepository.IsCompletedByIdAsync(operationId))
+        if (await metadataRepository.MetadataExistsByIdAsync(operationId) || await metadataRepository.IsCompletedByIdAsync(operationId))
             return Result.ErrorResult;
 
         await metadataRepository.AddAsync(metadata);
@@ -105,7 +109,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             if (await metadataRepository.MetadataExistsByIdAsync(operationId))
             {
-                _ = Task.Run(() => operationRepository.MoveDataToPrimaryStorageAsync(operationId, operationId));
+                _ = Task.Run(() => primaryStorageSaver.MoveDataToPrimaryStorageAsync(operationId, operationId));
                 return Result.SuccessResult;
             }
             return Result.ErrorResult;
