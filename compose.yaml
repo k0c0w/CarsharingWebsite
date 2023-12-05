@@ -120,3 +120,16 @@ services:
       MINIO_ROOT_USER: "carsharing"
       MINIO_ROOT_PASSWORD: "carsharingAdmin"
     command: server --console-address ":9090" /data/
+    
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - ${REDIS_PORTS}
+    volumes:
+      - /path/to/local/dаta:/root/redis
+      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DATABASES=${REDIS_DATABASES}
