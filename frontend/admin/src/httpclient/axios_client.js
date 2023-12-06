@@ -245,6 +245,10 @@ class AxiosWrapper {
         return result;
     } 
 
+    async uploadDocument() {
+        
+    }
+
     async _put(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.put(endpoint, model)

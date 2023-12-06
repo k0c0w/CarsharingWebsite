@@ -50,6 +50,7 @@ services:
     container_name: frontend
     environment:
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
       - REACT_LOCAL_HOST=${FRONT_MAIN}
     
@@ -64,6 +65,7 @@ services:
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
       - REACT_LOCAL_HOST=${FRONT_ADMIN}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
     ports:
       - ${FRONT_ADMIN_PORTS}
   db:
