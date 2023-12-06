@@ -1,60 +1,28 @@
-using Microsoft.AspNetCore.Mvc;
-using Minio;
-using MinioConsumer.Models;
-using MinioConsumer.Services;
-using MinioConsumer.Services.PrimaryStorageSaver;
-using MinioConsumer.Services.Repositories;
-using MinioConsumers.Services;
-using StackExchange.Redis;
+using MinioConsumer.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+var configuration = builder.Configuration;
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(x =>
-        ConnectionMultiplexer.Connect(
-            builder.Configuration["Redis:Connection"] ?? throw new InvalidOperationException())
-);
-
-
-builder.Services.AddMinio(configuration =>
-{
-    configuration.WithSSL(false);
-    configuration.WithTimeout(int.Parse(builder.Configuration["MinioS3:Timeout"]!));
-    configuration.WithEndpoint(builder.Configuration["MinioS3:Endpoint"]);
-    configuration.WithCredentials(
-        builder.Configuration["MinioS3:AccessKey"]!,
-        builder.Configuration["MinioS3:SecretKey"]!);
-});
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-builder.Services.AddScoped<IS3Service, S3Service>();
-builder.Services.AddScoped<ITempMetadataRepository<DocumentMetadata>, RedisMetadataRepository<DocumentMetadata>>();
-builder.Services.AddScoped<IMetadataRepository<DocumentMetadata>, MongoDbMetadataRepository<DocumentMetadata>>();
-builder.Services.AddScoped<OperationRepository>();
-builder.Services.AddScoped<MetadataSaver<DocumentMetadata>>();
-builder.Services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
-//builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
-//builder.Services.AddScoped<IMetadataRepository, MetadataRepository>();
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
-});
-
-builder.Services.AddControllers();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+services.AddMinioSetUp(configuration);
+services.AddRedisSetUp(configuration);
+services.AddMongoSetUp(configuration);
+services.AddServices();
+services.AddInfrastructure();
 
 var app = builder.Build();
 
+#region Use Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+#endregion
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapPost("test", ([FromServices] MetadataSaver<DocumentMetadata> p) => p.UploadFileAsync(Guid.NewGuid(), new DocumentMetadata(Guid.NewGuid(), default)));
 app.Run();

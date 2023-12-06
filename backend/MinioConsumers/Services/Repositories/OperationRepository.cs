@@ -61,7 +61,7 @@ public class OperationRepository
         TimeSpan? expireTime = status switch
         {
             OperationStatus.Canceled or OperationStatus.Failed or OperationStatus.Completed => TimeSpan.FromMinutes(30),
-            _ => default
+            _ => default(TimeSpan?)
         };
 
         await _db.StringSetAsync(operationId.ToString(), Serilize(info), expireTime);

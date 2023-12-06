@@ -95,12 +95,15 @@ services:
       dockerfile: MinioConsumersDockerfile
     env_file:
       - .mongo.env
+      - .redis.env
     ports:
       - "7125:80"
       - "7126:443"
     container_name: minio_carsharing
     depends_on:
       - minioS3
+      - redisDB
+      - mongoDB
     environment:
       - MinioS3__AccessKey=minioadmin
       - MinioS3__SecretKey=minioadmin
@@ -111,10 +114,14 @@ services:
       - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      - Redis__Connection=""
-      - MongoDbSettings__Connection=${MONGO_DEFAULT_URL}
+      - RedisDbSettings__Host="redisDB"
+      - RedisDbSettings__Port=6379
+      - RedisDbSettings__Password=${REDIS_PASSWORD}
+      - MongoDbSettings__Host="mongoDB"
+      - MongoDbSettings__Port=27017
       - MongoDbSettings__User=${MONGO_USER}
       - MongoDbSettings__Password=${MONGO_PASSWORD}
+      - MongoDbSettings__DatabaseName=${MONGO_DEFAULT_DATABASE}
   
   minioS3:
     image: minio/minio
@@ -127,8 +134,9 @@ services:
       MINIO_ROOT_PASSWORD: "carsharingAdmin"
     command: server --console-address ":9090" /data/
     
-  mongo:
+  mongoDB:
     image: mongo
+    container_name: mongoDB
     restart: always
     env_file:
       - .mongo.env
@@ -138,12 +146,14 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       
-  redis:
+  redisDB:
     image: redis:latest
-    container_name: redis
+    container_name: redisDB
+    env_file:
+      - .redis.env
     restart: always
     ports:
-      - ${REDIS_PORTS}
+      - "6379:6379"
     volumes:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf

@@ -65,4 +65,9 @@ public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetad
         => _db.KeyDeleteAsync(GetInternalKey(id));
 
     private string GetInternalKey(Guid id) => $"{MetadataSchemas.Schemas[typeof(TMetadata)]}:{id}";
+
+    public Task<IEnumerable<TMetadata>> GetAllAsync()
+    {
+        throw new NotImplementedException();
+    }
 }

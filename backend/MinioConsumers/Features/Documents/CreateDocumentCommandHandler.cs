@@ -25,7 +25,8 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
             var metadata = new DocumentMetadata(trackingId, default)
             {
                 IsPublic = !request.IsPrivate,
-                CreationDateTimeUtc = DateTime.UtcNow
+                CreationDateTimeUtc = DateTime.UtcNow,
+                Annotation = request.AnnotationToFile,
             };
             if (request.File is null)
             {
@@ -33,7 +34,8 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
             }
             else
             {
-                await _metadataSaver.UploadFileAsync(trackingId, metadata, request.File);
+                if (await _metadataSaver.UploadFileAsync(trackingId, metadata, request.File))
+                    await _metadataSaver.CommitOperationAsync(trackingId);
             }
         //});
 

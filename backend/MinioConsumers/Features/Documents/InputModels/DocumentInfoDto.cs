@@ -5,4 +5,6 @@ public class DocumentInfoDto
     public IEnumerable<string> AccessRoles { get; set; } = new string[] { "user" };
 
     public bool IsPrivate { get; set; } 
+
+    public string Annotation { get; set; }
 }

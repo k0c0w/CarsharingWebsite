@@ -109,7 +109,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             if (await metadataRepository.MetadataExistsByIdAsync(operationId))
             {
-                _ = Task.Run(() => primaryStorageSaver.MoveDataToPrimaryStorageAsync(operationId, operationId));
+                await primaryStorageSaver.MoveDataToPrimaryStorageAsync(operationId, operationId);
                 return Result.SuccessResult;
             }
             return Result.ErrorResult;

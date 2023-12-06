@@ -10,10 +10,13 @@ namespace MinioConsumer.Features.Documents.Query;
 public class DownloadDocumentQuery : IRequest<Result<S3File>>
 {
 	public Guid Id { get; }
+    public bool IsAdminRequest { get; }
 
-	public DownloadDocumentQuery(Guid guid)
+
+    public DownloadDocumentQuery(Guid guid, bool isAdminRequest = false)
 	{
 		Id = guid;
+		IsAdminRequest = isAdminRequest;
 	}
 }
 
@@ -33,11 +36,10 @@ public class DownloadDocumentQueryHandler : IRequestHandler<DownloadDocumentQuer
 		try
 		{
 			var metadata = await metadataRepository.GetByIdAsync(request.Id);
-			if (metadata== null)
+			if (metadata== null || !(request.IsAdminRequest || metadata.IsPublic))
 				return new Error<S3File>();
 
 			var file = await s3Service.GetFileFromBucketAsync(metadata.LinkedFileInfo.TargetBucketName, metadata.LinkedFileInfo.ObjectName);
-			
 
 			return new Ok<S3File>(new S3File(metadata.LinkedFileInfo.OriginalFileName, file.BucketName, file.ContentStream, file.ContentType));
 		}

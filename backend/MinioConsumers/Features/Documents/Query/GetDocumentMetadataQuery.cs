@@ -1,11 +1,18 @@
 ﻿using MediatR;
-using Shared.Results;
 
 namespace MinioConsumer.Features.Documents.Query;
 
-public class GetDocumentMetadataQuery : IRequest<HttpResponse<DocumentMetadataDto>>
+public class GetDocumentMetadataQuery : IRequest<HttpResponse<IEnumerable<DocumentMetadataDto>>>
 {
     public Guid Id { get; }
 
-    public GetDocumentMetadataQuery(Guid id) => Id = id;
+    public bool IsAdminRequest { get; }
+
+    public GetDocumentMetadataQuery(Guid id = default, bool adminRequest = false)
+    {
+        Id = id;
+        IsAdminRequest = adminRequest;
+    }
+
+    public bool IsAllDocumentsRequest => Id == default;
 }

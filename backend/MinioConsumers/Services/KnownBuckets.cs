@@ -1,4 +1,4 @@
-﻿namespace MinioConsumer;
+﻿namespace MinioConsumer.Services;
 
 public static class KnownBuckets
 {
