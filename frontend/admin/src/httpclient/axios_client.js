@@ -31,6 +31,17 @@ class AxiosWrapper {
         return [];
     }
 
+    async sendDocument(body) {
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+        debugger;
+        const result = await this._post("", body, config);
+        return result
+    }
+
     async getOnlineRooms() {
         const result =  await this.mainSiteAxios.get("/chat/rooms");
         return result.data;
