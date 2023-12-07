@@ -68,7 +68,6 @@ function App() {
         const roles = r?.data?.roles;
         const isAuthorized = true;
         setAuth({ roles, isAuthorized });
-
       }
       else{
         const roles = [];
@@ -98,8 +97,10 @@ function App() {
                 <Route path='/users' element={<UserMngmt />} />
                 <Route path='/documents' element={<Documents />} />
                 <Route path='/carpark' element={<CarParkMngmt/>} />
-                <Route path='/chat' element={<Chats />} />
               </ Route> 
+              <Route element={<RequireAuth allowedRoles={[_roles.Manager]}/>}>
+                <Route path='/chat' element={<Chats />} />
+              </Route>
               <Route path='/login' element={<Login />} />
             </Routes>
           </div>

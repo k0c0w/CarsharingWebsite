@@ -32,6 +32,12 @@ public static class AuthenticationAndAuthorizationRegistration
                 };
             });
 
+        serviceCollection
+            .AddHttpContextAccessor()
+            .AddTransient<HttpTrackerHandler>()
+            .AddHttpClient("authorized")
+            .AddHttpMessageHandler<HttpTrackerHandler>();
+
         return serviceCollection;
     }
 }

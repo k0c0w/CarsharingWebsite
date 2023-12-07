@@ -59,17 +59,19 @@ class AxiosWrapper {
 
     async documents() {
         const result = {successed: false}
-        return await axios.get('/documents', {
+        await axios.get('/documents', {
             baseURL: process.env.REACT_APP_S3_API_URL,
           }) 
             .then(response => {
                 result.successed = true;
-                result.documents = response.value.map(x => {return {annotation: x.annotation, download_url: `${process.env.REACT_APP_S3_API_URL}/${x.download_url}`}});
+                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `${process.env.REACT_APP_S3_API_URL}${x.download_url}`}});
 
                 return result;
             })
             .catch(error => {
             });
+
+        return result;
     }
 
     async news() {

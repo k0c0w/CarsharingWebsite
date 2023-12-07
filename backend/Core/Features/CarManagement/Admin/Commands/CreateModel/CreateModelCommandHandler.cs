@@ -1,6 +1,4 @@
 ﻿using Clients.S3ServiceClient;
-using Contracts;
-using Domain.Common;
 using Domain.Entities;
 using Migrations.CarsharingApp;
 using Shared.CQRS;
@@ -11,12 +9,11 @@ public class CreateModelCommandHandler : ICommandHandler<CreateModelCommand, int
 {
     private readonly CarsharingContext _ctx;
     private readonly S3ServiceClient _s3Service;
-    
 
-    public CreateModelCommandHandler(CarsharingContext ctx, S3ServiceClient s3Service)
+    public CreateModelCommandHandler(CarsharingContext ctx, IHttpClientFactory factory)
     {
         _ctx = ctx;
-        _s3Service = s3Service;
+        _s3Service = new S3ServiceClient(factory.CreateClient("authorized"));
     }
 
     public async Task<Result<int>> Handle(CreateModelCommand request, CancellationToken cancellationToken)

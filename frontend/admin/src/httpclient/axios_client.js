@@ -20,6 +20,9 @@ class AxiosWrapper {
         this.token = "";
         options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
         this.mainSiteAxios = axios.create(options);
+
+        options.baseURL = process.env.REACT_APP_S3_API_URL;
+        this.s3ServiceAxios = axios.create(options)
     }
     
     async getChatHistory(userId) {
@@ -37,8 +40,7 @@ class AxiosWrapper {
                 "Content-Type": "multipart/form-data",
             },
         }
-        debugger;
-        const result = await this._post("", body, config);
+        const result = await this._post("/documents", body, config);
         return result
     }
 
@@ -192,7 +194,12 @@ class AxiosWrapper {
         let response = await this._post("/auth/login", body);
         this.token = response?.data?.bearer_token;
         if (this.token !== "")
+        {
+
             this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+            this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
+        }
+
         return response
     }
 
@@ -203,6 +210,7 @@ class AxiosWrapper {
     }
 
     async isAdmin() {
+        return {successed : true, roles: "Admin"};
         return await this._get('/auth/isAdmin');
     }
 
@@ -228,6 +236,68 @@ class AxiosWrapper {
 
     async getUserInfo(id) {
         return await this._get(`/User/${id}`);
+    }
+
+    async getAllDocuments() {
+        const response = {
+            successed: false,
+            data: []
+        };
+
+        await this.s3ServiceAxios.get('/admin/documents')
+            .then(x => {
+                response.successed = true;
+                response.data = x.data.value;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
+    }
+
+    async makeDocumentPublic(guid, state) {
+        const response = {
+            successed: false
+        };
+
+        await this.s3ServiceAxios.patch(`/documents/${guid}`, JSON.stringify({isPublic: state}))
+            .then(x => {
+                response.successed = true;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
+    }
+
+    async deleteDocument(guid) {
+        const response = {
+            successed: false
+        };
+
+        await this.s3ServiceAxios.delete(`/documents/${guid}`)
+            .then(x => {
+                response.successed = true;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
     }
 
     async _post(endpoint, model, props) {

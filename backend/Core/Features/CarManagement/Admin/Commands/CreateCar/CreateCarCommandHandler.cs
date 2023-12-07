@@ -11,7 +11,7 @@ public class CreateCarCommandHandler : ICommandHandler<CreateCarCommand, int>
 {
     private readonly CarsharingContext _ctx;
 
-    public CreateCarCommandHandler(CarsharingContext ctx, IFileProducer fileProducer)
+    public CreateCarCommandHandler(CarsharingContext ctx)
     {
         _ctx = ctx;
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MinioConsumer.DependencyInjection.ConfigSettings;
 using MinioConsumer.Models;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MinioConsumer.Services.Repositories
@@ -37,10 +38,19 @@ namespace MinioConsumer.Services.Repositories
         {
             return (await _collection.FindAsync(x => x.Id == id)).Any();
         }
-
+         
         public async Task RemoveByIdAsync(Guid id)
         {
             await _collection.FindOneAndDeleteAsync(x => x.Id == id);
+        }
+
+        public Task UpdateAsync(DocumentMetadata metadata)
+        {
+            var filter = Builders<DocumentMetadata>.Filter.Eq(s => s.Id, metadata.Id);
+            var update = Builders<DocumentMetadata>.Update
+                //.Set(s => s.Annotation, metadata.Annotation)
+                .Set(s => s.IsPublic, metadata.IsPublic);
+            return _collection.UpdateOneAsync(filter, update);
         }
     }
 }

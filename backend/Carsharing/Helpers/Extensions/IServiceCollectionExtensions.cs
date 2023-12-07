@@ -10,7 +10,6 @@ using Features.PipelineBehavior;
 using Features.Utils;
 using FluentValidation;
 using MediatR;
-using Features.CarManagement.Admin.Commands.CreateModel;
 
 namespace Carsharing;
 
@@ -35,7 +34,6 @@ public static class IServiceCollectionExtensions
     {
         services.AddMassTransit(config =>
         {
-            config.AddConsumer<CreateCarModelSaveImageResponseConsumer>();
             config.UsingRabbitMq((ctx, cfg) =>
             {
                 /*cfg.Host(configuration

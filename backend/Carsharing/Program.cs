@@ -2,8 +2,6 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
-using Domain.Common;
-using Features.Utils;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
@@ -23,8 +21,6 @@ services.AddAutoMapper(typeof(Program).Assembly);
 services.RegisterChat()
         .RegisterBuisnessLogicServices()
         .RegisterSwagger();
-
-services.AddTransient<IFileProducer, FileProducer>();
 
 services.AddMediatorWithFeatures();
 
@@ -50,7 +46,6 @@ if (builder.Environment.IsDevelopment())
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
-        Console.WriteLine(configuration["FrontendHost:Admin"]);
 
         options.AddPolicy("DevFrontEnds",
             builder =>
@@ -66,9 +61,6 @@ if (builder.Environment.IsDevelopment())
 var app = builder.Build(); 
 var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
-app.UseHttpsRedirection()
-   .UseStaticFiles()
-   .UseRouting();
 
 if (app.Environment.IsDevelopment())
 {
@@ -76,7 +68,7 @@ if (app.Environment.IsDevelopment())
        .UseSwaggerUI()
        .UseCors("DevFrontEnds");
 }
-
+app.UseHttpsRedirection();
 app.UseAuthentication()
    .UseAuthorization();
 

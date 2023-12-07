@@ -70,4 +70,9 @@ public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetad
     {
         throw new NotImplementedException();
     }
+
+    public Task UpdateAsync(TMetadata metadata)
+    {
+        throw new NotImplementedException();
+    }
 }

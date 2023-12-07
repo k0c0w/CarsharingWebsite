@@ -74,7 +74,7 @@ public class DocumentsController : ControllerBase
 	{
 		var query = new GetDocumentMetadataQuery(adminRequest: true);
 
-		return GetDocumentMetadataResponseAsync(query);
+		return GetDocumentMetadataResponseAsync(query, adminRequest: true);
     }
 
 	[HttpDelete("{id:guid}")]
@@ -87,9 +87,25 @@ public class DocumentsController : ControllerBase
 		return StatusCode((int)response.Code, response);
 	}
 
-	private async Task<IActionResult> GetDocumentMetadataResponseAsync(GetDocumentMetadataQuery query)
+	[HttpPatch("{id:guid}")]
+	public async Task<IActionResult> EditDocumentAnnotationOrPublicityAsync([FromRoute] Guid id, [FromBody] EditDocumentInfoDto editDocumentInfoDto)
+	{
+		var command = new UpdateDocumentMetadataCommand(id, editDocumentInfoDto.IsPublic, editDocumentInfoDto.Annotation);
+
+		var response = await _mediator.Send(command);
+
+		if (response)
+			return NoContent();
+
+		return StatusCode((int)response.Code, response);
+	}
+
+	private async Task<IActionResult> GetDocumentMetadataResponseAsync(GetDocumentMetadataQuery query, bool adminRequest = false)
 	{
 		var response = await _mediator.Send(query);
+
+		if (adminRequest && response.IsSuccess)
+			return StatusCode((int)response.Code, new HttpResponse<IEnumerable<AdminDocumentMetadataDto>>(response.Value.Cast<AdminDocumentMetadataDto>()));
 
 		return StatusCode((int)response.Code, response);
 	}

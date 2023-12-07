@@ -13,4 +13,6 @@ public interface IMetadataRepository<TMetada> where TMetada : MetadataBase
     public Task<Guid> AddAsync(TMetada metadata);
 
     public Task RemoveByIdAsync(Guid id);
+
+    public Task UpdateAsync(TMetada metadata);
 }

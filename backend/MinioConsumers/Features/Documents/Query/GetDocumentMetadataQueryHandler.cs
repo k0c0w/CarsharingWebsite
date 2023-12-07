@@ -25,13 +25,15 @@ public class GetDocumentMetadataQueryHandler : IRequestHandler<GetDocumentMetada
             {
                 var metadatas = await metadataRepository.GetAllAsync();
 
-                results = request.IsAdminRequest ? metadatas.Select(MapToAdminDto) : metadatas.Select(MapToDto);
+                results = request.IsAdminRequest ? 
+                    metadatas.Select(MapToAdminDto) 
+                    : metadatas.Where(x => x.IsPublic).Select(MapToDto);
             }
             else
             {
                 var metadata = await metadataRepository.GetByIdAsync(request.Id);
 
-                if (metadata == null)
+                if (metadata == null || !(request.IsAdminRequest || metadata.IsPublic))
                     return new HttpResponse<IEnumerable<DocumentMetadataDto>>(System.Net.HttpStatusCode.NotFound, default, error: "Data not found.");
 
                 results = request.IsAdminRequest ? new[] { MapToDto(metadata) } : new[] { MapToAdminDto(metadata) };  
@@ -49,6 +51,7 @@ public class GetDocumentMetadataQueryHandler : IRequestHandler<GetDocumentMetada
     private DocumentMetadataDto MapToDto(DocumentMetadata metadata)
     => new()
     {
+        Id = metadata.Id,
         CreationDate = metadata.CreationDateTimeUtc,
         DisplayableHeader = metadata.Annotation,
         Name = metadata.LinkedFileInfo.OriginalFileName,
@@ -58,6 +61,7 @@ public class GetDocumentMetadataQueryHandler : IRequestHandler<GetDocumentMetada
     private AdminDocumentMetadataDto MapToAdminDto(DocumentMetadata metadata)
     => new()
     {
+        Id = metadata.Id,
         CreationDate = metadata.CreationDateTimeUtc,
         DisplayableHeader = metadata.Annotation,
         IsPrivate = !metadata.IsPublic,
