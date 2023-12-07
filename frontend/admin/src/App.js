@@ -15,6 +15,7 @@ import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
 import Chats from './pages/Chats';
 import useAuth from './hooks/useAuth';
+import Documents from "./pages/Documents";
 
 
 const _routes = [
@@ -37,6 +38,10 @@ const _routes = [
   {
     path: '/users',
     name: "Пользователи"
+  },
+  {
+    path: '/documents',
+    name: "Документы"
   },
   {
     path: '/login',
@@ -91,6 +96,7 @@ function App() {
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
+                <Route path='/documents' element={<Documents />} />
                 <Route path='/carpark' element={<CarParkMngmt/>} />
                 <Route path='/chat' element={<Chats />} />
               </ Route> 
