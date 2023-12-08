@@ -36,8 +36,7 @@ public static class ServiceCollectionExtensions
         {
             var settings = new RedisDbSettings();
             configuration.GetSection(nameof(RedisDbSettings)).Bind(settings);
-
-            return ConnectionMultiplexer.Connect(settings.GetConnectionString());
+            return ConnectionMultiplexer.Connect(settings.ConnectionUrl);
         });
 
         services.AddScoped<ITempMetadataRepository<DocumentMetadata>, RedisMetadataRepository<DocumentMetadata>>();
@@ -52,7 +51,7 @@ public static class ServiceCollectionExtensions
             var settings = new MongoDbSettings();
             configuration.GetSection(nameof(MongoDbSettings)).Bind(settings);
 
-            return new MongoClient(settings.GetConnectionString());
+            return new MongoClient(settings.ConnectionUrl);
         });
 
         services.AddScoped<IMetadataRepository<DocumentMetadata>, DocumentMetadataRepository>();
