@@ -40,7 +40,8 @@ class AxiosWrapper {
                 "Content-Type": "multipart/form-data",
             },
         }
-        const result = await this._post("/documents", body, config);
+        debugger;
+        const result = await this.s3ServiceAxios.post("/documents", body, config);
         return result
     }
 
@@ -244,7 +245,7 @@ class AxiosWrapper {
             data: []
         };
 
-        await this.s3ServiceAxios.get('/admin/documents')
+        await this.s3ServiceAxios.get('/documents')
             .then(x => {
                 response.successed = true;
                 response.data = x.data.value;
