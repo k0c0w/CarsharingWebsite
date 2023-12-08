@@ -1,13 +1,21 @@
-﻿using Shared.CQRS;
+﻿using Entities.Entities;
+using Shared.CQRS;
 using Shared.Results;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Features.Occasion;
 
-internal class CreateOccasionCommand : ICommand<Result<Guid>>
+public class CreateOccasionCommand : ICommand<Result<Guid>>
 {
+    public Guid IssuerId { get; }
+
+    public string Topic { get; }
+
+    public OccasionTypeDefinition OccasionType { get; }
+
+    public CreateOccasionCommand(Guid issuerId, string topic, OccasionTypeDefinition occasionType)
+    {
+        IssuerId = issuerId;
+        Topic = topic;
+        OccasionType = occasionType;
+    }
 }
