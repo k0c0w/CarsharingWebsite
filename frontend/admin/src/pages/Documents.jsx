@@ -4,11 +4,12 @@ import { FormControl, FormLabel } from '@mui/material';
 import {useTheme} from "@emotion/react";
 import {tokens} from "../theme";
 import { DataGrid } from '@mui/x-data-grid';
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import API from "../httpclient/axios_client";
 import { TableAddRefreshButtons } from '../components/TableCommon';
 import { Popup } from '../components/Popup';
 import { styleTextField } from "../styleComponents";
+import DocumentsGrid from "../components/DocumentsPage/DocumentsGrid";
 
 
 async function send() {
@@ -24,7 +25,8 @@ export default function Documents () {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [documents, setDocuments] = useState([]);
+    const [documents, setDocuments] = useState([{ id:"1", name: "lol", annotation: "__lol__", creation:"" }]);
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
 
     const [popup, setPopup] = useState(
         {
@@ -49,7 +51,7 @@ export default function Documents () {
         if (index !== -1) {
             const data = [...documents]
             data.splice(index, 1);
-            setTariffsData(data)
+            setDocuments(data)
         }
     }
 
@@ -66,6 +68,7 @@ export default function Documents () {
     }
 
     const handleDelete = async (id) => {
+        debugger;
         const response = await API.deleteDocument(id);
         if(response.successed){
             onDelete(id);
@@ -86,7 +89,7 @@ export default function Documents () {
     }
 
     const onStateUpdate = (guid, state) => {
-        const index = documents.findIndex(x => x.guid == guid);
+        const index = documents.findIndex(x => x.guid === guid);
         if (index !== -1) {
             const data = [...documents]
             data[index] = Object.assign({}, data[index], { isPublic: state });
@@ -111,59 +114,6 @@ export default function Documents () {
         }
     }
 
-    const _handleSelect = async (listId) => {
-        const result = []
-        listId.forEach(id => {
-            rows.forEach( row => {
-                if (row.guid == id) {
-                    result.push(row);
-                }
-            })
-        })
-
-        handleSelect(result);
-    }
-
-    const columns = [
-        { field: 'id', headerName: '№', flex:1 },
-        { field: 'name', headerName: 'Имя файла', flex:2 },
-        { field: 'annotation', headerName: 'Аннотация', flex:3 },
-        {
-            field: 'isPublic',
-            headerName: 'Публичный',
-            flex:4,
-            menu:false,
-            sortable: false,
-            renderCell: (params) => {
-                const is_public = params.row.isPublic;
-                return (
-                    <Box
-                    width="20%"
-                    borderRadius={"5px"}
-                    sx= {{ height: '30px', width: '10px',  }}
-                    >
-                        {is_public && <Button 
-                            variant={'contained'} 
-                            style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.guid, false)}
-                            >
-                            Public
-                        </Button>}
-                        {!is_public &&<Button 
-                            variant={'contained'} 
-                            style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.guid, true)}
-                            >
-                            Private
-                        </Button>}
-                    </Box>
-                )
-            }
-        },
-        { field: 'creation', headerName: 'Дата создания', flex:5 },
-    ];
-
-
     return (
         <>
             <h1>
@@ -175,79 +125,31 @@ export default function Documents () {
             </FormControl>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={() => loadDocumentData()} color={color}/>
 
-            <Box
-                width="100%"
-                m="0 auto"
-                p="5px"
-                display="flex"
-                justifyContent="center"
-                sx={{
-                    "& .MuiDataGrid-root": {
-                        border: "none",
-                    },
-                    "& .MuiDataGrid-cell": {
-                        borderBottom: "none",
-                    },
-                    "& .name-column-cell": {
-                        color: color.grey[600],
-                    },
-                    "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: color.grey[800],
-                        borderBottom: "none",
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        backgroundColor: color.grey[900],
-                    },
-                    "& .MuiDataGrid-footerContainer": {
-                        borderTop: "none",
-                        backgroundColor: color.grey[800],
-                    },
-                    "& .MuiCheckbox-root": {
-                        color: `${color.grey[500]} !important`,
-                    },
-                }}
-            >
-                <DataGrid
-                    style={{marginTop:"20px"}}
-                    autoHeight
-                    rows={documents}
-                    columns={columns}
-                    initialState={{
-                        pagination: {
-                            paginationModel: {
-                                pageSize: 20,
-                            },
-                        },
-                    }}
-                    pageSizeOptions={[10, 25]}
-                    checkboxSelection
-                    onRowSelectionModelChange={(e)=>_handleSelect(e)}
-                />
+            <DocumentsGrid handleSelect={(selectedDocuments)=>setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>
+
+            <Box style={{ display:display, color: color.grey[100] }}>
+                <Popup {...popup} />
             </Box>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
-                <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>
+                <footer style={{ opacity: (selectedDocuments.length === 0 ? 0 : 1) }}>
                     <div style={{ position: 'absolute', left: '80%' }}>
                         <Button
-                            disabled={selected.length !== 1}
+                            disabled={selectedDocuments.length !== 1}
                             variant={'contained'}
-                            style={{ backgroundColor: (selected.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
+                            style={{ backgroundColor: (selectedDocuments.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
                             onClick={()=>handleClickEdit()}
-                            >
+                        >
                             Изменить
                         </Button>
                         <Button
                             variant={'contained'}
-                            disabled={selected.length === 0} onClick={() => handleDelete(selected[0].guid)}
+                            disabled={selectedDocuments.length === 0} onClick={() => handleDelete(selectedDocuments[0].id)}
                             style={{ backgroundColor: color.redAccent[200], color: color.primary[900], marginRight: '20px' }}>Удалить</Button>
                     </div>
                 </footer>
             </Box>
 
-
-            <Box style={{ display:display, color: color.grey[100] }}>
-                <Popup {...popup} />
-            </Box>
         </>
     )
 };
@@ -287,31 +189,6 @@ const DocumentFormTitle = ({title='Загрузить документ'}) => {
 const DocumentFormSubmit = () => {
 }
 
-export function TarrifViewInfo({ tarrifModel }) {
-    const theme = useTheme();
-    const color = tokens(theme.palette.mode);
 
-    return (
-        <>
-            <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', justifyContent: 'center', color: color.grey[100] }}>
-                <h4>Id:</h4>
-                <div>{tarrifModel?.id}</div>
-                <hr style={hrStyle}/>
-                <h4>Название:</h4>
-                <div>{tarrifModel?.name}</div>
-                <hr  style={hrStyle}/>
-                <h4>Макс. Пробег:</h4>
-                <div>{tarrifModel?.max_millage}</div>
-                <hr  style={hrStyle}/>
-                <h4>Стоимость:</h4>
-                <div>{tarrifModel?.price}</div>
-                <hr style={hrStyle}/>
-                <h4>Статус:</h4>
-                <div>{tarrifModel?.is_active ? "Активен" : "Отключен"}</div>
-                <hr style={hrStyle}/>
-                <h4>Описание:</h4>
-                <div>{tarrifModel?.description}</div>
-            </div>
-        </>
-    )
-}
+// Footer для удаления и изменения данных из таблицы
+
