@@ -16,9 +16,10 @@ class AxiosWrapper {
             },
             withCredentials: true,
         }
-        this.token = "";
+        this.token = localStorage.getItem("token");
         this.axiosInstance = axios.create(options);
         this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
+        this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
     }
 
     async getChatHistory(userId) {
@@ -82,6 +83,8 @@ class AxiosWrapper {
         let response = await this._post(`/account/login/`, this._getModelFromForm(form));
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        localStorage.setItem("token", this.token)
+        debugger;
         return response
     }
 
@@ -110,6 +113,7 @@ class AxiosWrapper {
     }
 
     async profile() {
+        debugger
         return await this._get('/Account');
     }
 

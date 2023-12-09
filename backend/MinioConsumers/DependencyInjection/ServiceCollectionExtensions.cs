@@ -1,4 +1,7 @@
-﻿using Minio;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Minio;
 using MinioConsumer.DependencyInjection.ConfigSettings;
 using MinioConsumer.Models;
 using MinioConsumer.Services.PrimaryStorageSaver;
@@ -44,7 +47,7 @@ public static class ServiceCollectionExtensions
     }
 
     public static void AddMongoSetUp(this IServiceCollection services, IConfiguration configuration)
-    {
+    { 
         services.Configure<MongoDbSettings>(configuration.GetSection(nameof(MongoDbSettings)));
         services.AddSingleton<IMongoClient>(sp =>
         {
@@ -74,5 +77,35 @@ public static class ServiceCollectionExtensions
         
         services.AddControllers();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+    }
+
+    internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection,
+        IConfiguration configuration)
+    {
+        serviceCollection.Configure<JwtSettings>(
+            configuration.GetSection(JwtSettings.Jwt));
+
+        serviceCollection
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException())),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = false
+                };
+            });
+
+        return serviceCollection;
     }
 }

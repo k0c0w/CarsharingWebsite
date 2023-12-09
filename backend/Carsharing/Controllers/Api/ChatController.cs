@@ -1,5 +1,6 @@
 ﻿using Carsharing.ViewModels;
 using Domain.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
@@ -57,5 +58,12 @@ public class ChatController : ControllerBase
             x.RoomId,
             x.ProcessingManagersCount
         }));
+    }
+
+    [Route("appeals")]
+    [HttpGet]
+    public async Task<IActionResult> GetAppeals()
+    {
+        return Ok(new List<string>() { "Авария", "Поломка", "Документы" });
     }
 }

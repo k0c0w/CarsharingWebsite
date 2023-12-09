@@ -26,7 +26,7 @@ export default function PopupChat () {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL)
+          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
           .configureLogging(LogLevel.Information)
           .build();
 

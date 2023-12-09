@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -147,6 +148,7 @@ public class AdminUserController : ControllerBase
             return Ok();
 
         await _userManager.AddToRoleAsync(user, newUserRole.Name!);
+        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, newUserRole.Name!));
 
         return Ok();
     }
@@ -165,6 +167,7 @@ public class AdminUserController : ControllerBase
             return NoContent();
 
         await _userManager.RemoveFromRoleAsync(user, newUserRole!.Name!);
+        await _userManager.RemoveClaimAsync(user, new Claim(ClaimTypes.Role, newUserRole.Name!));
 
         return NoContent();
     }
