@@ -9,5 +9,5 @@ public interface IOccasionRepository : IRepository<Occassion, Guid>
 
     public Task<Occassion?> GetOpenOccasionByIssuerIdAsync(Guid issuerId);
 
-    public Task<Occassion?> GetOpenedOccasionsAsync();
+    public Task<IEnumerable<Occassion>> GetOpenedOccasionsAsync();
 }

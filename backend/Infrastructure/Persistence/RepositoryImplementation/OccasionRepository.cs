@@ -39,14 +39,12 @@ public class OccasionRepository : IOccasionRepository
             .ToArrayAsync();
     }
 
-    public Task<Occassion?> GetOpenedOccasionsAsync()
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<Occassion?> GetOpenOccasionByIssuerIdAsync(Guid issuerId)
     {
-        throw new NotImplementedException();
+        var strId = issuerId.ToString();
+        return _ctx.Occasions
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.IssuerId == strId && x.CloseDateUtc == null);
     }
 
     public Task RemoveByIdAsync(Guid primaryKey)
@@ -56,6 +54,15 @@ public class OccasionRepository : IOccasionRepository
 
     public Task UpdateAsync(Occassion entity)
     {
-        throw new NotImplementedException();
+        _ctx.Occasions.Update(entity);
+        return _ctx.SaveChangesAsync();
+    }
+
+    async Task<IEnumerable<Occassion>> IOccasionRepository.GetOpenedOccasionsAsync()
+    {
+        return await _ctx.Occasions
+            .Where(x => x.CloseDateUtc == null)
+            .AsNoTracking()
+            .ToArrayAsync();
     }
 }

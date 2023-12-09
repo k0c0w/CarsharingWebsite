@@ -1,21 +1,19 @@
 ﻿using Entities.Entities;
+using Features.Occasion.Inputs;
 using Shared.CQRS;
 using Shared.Results;
 
 namespace Features.Occasion;
 
-public class CreateOccasionCommand : ICommand<Result<Guid>>
+public class CreateOccasionCommand : ICommand<Guid>
 {
     public Guid IssuerId { get; }
 
-    public string Topic { get; }
+    public CreateOccasionDto OccasionInfo { get; }
 
-    public OccasionTypeDefinition OccasionType { get; }
-
-    public CreateOccasionCommand(Guid issuerId, string topic, OccasionTypeDefinition occasionType)
+    public CreateOccasionCommand(Guid issuerId, CreateOccasionDto occasionInfo)
     {
         IssuerId = issuerId;
-        Topic = topic;
-        OccasionType = occasionType;
+        OccasionInfo = occasionInfo;
     }
 }
