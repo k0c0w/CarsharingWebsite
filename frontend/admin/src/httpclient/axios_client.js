@@ -17,12 +17,15 @@ class AxiosWrapper {
         };
 
         this.axiosInstance = axios.create(options);
-        this.token = "";
+        this.token = localStorage.getItem("token");
+
+        this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
         this.mainSiteAxios = axios.create(options);
 
         options.baseURL = process.env.REACT_APP_S3_API_URL;
         this.s3ServiceAxios = axios.create(options)
+        this.s3ServiceAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
     }
     
     async getChatHistory(userId) {
@@ -176,6 +179,7 @@ class AxiosWrapper {
 
     // Users
     async getUsers() {
+        debugger;
         const result = await this._get("/user/all");
         return result;
     }
@@ -200,7 +204,7 @@ class AxiosWrapper {
             this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
             this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
         }
-
+        localStorage.setItem("token", this.token)
         return response
     }
 

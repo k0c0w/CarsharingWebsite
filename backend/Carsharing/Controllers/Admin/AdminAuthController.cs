@@ -35,7 +35,7 @@ namespace Carsharing.Controllers.Admin
             if (user == null)
                 return Unauthorized(GetLoginError());
 
-            var result = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
+            var result = await _signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
             if (!result.Succeeded)
                 return Unauthorized(GetLoginError());
 
@@ -59,8 +59,7 @@ namespace Carsharing.Controllers.Admin
                 return NotFound();
 
             await _userManager.AddToRoleAsync(user, Role.Admin.ToString());
-            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Role.Admin.ToString()));
-            
+
             await _signInManager.SignInAsync(user, false);
             
             return Ok();
