@@ -27,6 +27,7 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
                 IsPublic = !request.IsPrivate,
                 CreationDateTimeUtc = DateTime.UtcNow,
                 Annotation = request.AnnotationToFile,
+                LinkedMetadataCount = 1
             };
             if (request.File is null)
             {

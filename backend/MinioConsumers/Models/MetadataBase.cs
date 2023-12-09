@@ -4,16 +4,18 @@ public record MetadataBase
 {
     public Guid Id { get; init; }
 
-
     public string Schema { get; init; }
 
     // metadata for file group
-    public FileInfo? LinkedFileInfo { get; set; }
+    public List<FileInfo> LinkedFileInfos { get; set; } = new List<FileInfo>();
 
-    public MetadataBase(Guid id, string schema, FileInfo? linkedFileInfo)
+    public int LinkedMetadataCount { get; set; }
+
+    public MetadataBase(Guid id, string schema, int targetFilesCount,  List<FileInfo>? linkedFileInfos = default)
     {
         Id = id;
         Schema = schema;
-        LinkedFileInfo = linkedFileInfo;
+        LinkedMetadataCount = targetFilesCount;
+        LinkedFileInfos ??= linkedFileInfos;
     }
 }

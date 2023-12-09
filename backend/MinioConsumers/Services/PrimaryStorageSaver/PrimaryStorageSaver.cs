@@ -38,27 +38,54 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
                 throw new InvalidOperationException("Metadata was not found");
             }
 
-            var fileInfo = metadata.LinkedFileInfo;
-            Debug.Assert(fileInfo != null);
+            var fileInfos = metadata.LinkedFileInfos;
+            Debug.Assert(fileInfos.Count == metadata.LinkedMetadataCount);
 
-            var tempS3file = await s3Service.GetFileFromBucketAsync(fileInfo.BucketName, fileInfo.ObjectName);
-            if (tempS3file == null)
+            foreach (var bucket in fileInfos
+                                    .Select(x => x.TargetBucketName)
+                                    .Distinct()
+                                    )
             {
-                throw new InvalidOperationException("File not found");
+                if (!await s3Service.BucketExsistAsync(bucket))
+                    await s3Service.CreateBucketAsync(bucket);
+            }
+            var tasks = new Task[fileInfos.Count];
+            var tempS3Files = new S3File[fileInfos.Count];
+            for (var i = 0; i < fileInfos.Count; i++)
+            {
+                var index = i;
+                var fileInfo = fileInfos[i];
+                tasks[i] = Task.Run(async () =>
+                {
+                    var tempS3File = await s3Service.GetFileFromBucketAsync(fileInfo.BucketName, fileInfo.ObjectName);
+                    if (tempS3File == null)
+                    {
+                        throw new InvalidOperationException("File not found");
+                    }
+                    tempS3Files[index] = tempS3File!;
+
+                    await s3Service.PutFileInBucketAsync(new S3File
+                    (
+                        fileInfo.ObjectName,
+                        fileInfo.TargetBucketName,
+                        tempS3File.ContentStream,
+                        tempS3File.ContentType
+                    ));
+                });
             }
 
-            if (!await s3Service.BucketExsistAsync(fileInfo.TargetBucketName))
-                await s3Service.CreateBucketAsync(fileInfo.TargetBucketName);
-            await s3Service.PutFileInBucketAsync(new S3File
-            (
-                fileInfo.ObjectName,
-                fileInfo.TargetBucketName,
-                tempS3file.ContentStream,
-                tempS3file.ContentType
-            ));
+            await Task.WhenAll(tasks);
+            if (tasks.Any(x => x.IsFaulted))
+                throw new InvalidOperationException($"One of coping files faulted metadataId ({metadata.Id})");
             await primaryMetadataRepository.AddAsync(metadata);
 
-            await s3Service.RemoveFileFromBucketAsync(tempS3file.BucketName, tempS3file.Name);
+            for (var i = 0; i < fileInfos.Count; i++)
+            {
+                var fileInfo = fileInfos[i];
+                var tempS3File = tempS3Files[i];
+                tasks[i] = s3Service.RemoveFileFromBucketAsync(tempS3File.BucketName, tempS3File.Name); 
+            }
+            await Task.WhenAll(tasks);
             await tempMetadataRepository.RemoveByIdAsync(metadataId);
         }
         catch(Exception ex) 

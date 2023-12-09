@@ -75,7 +75,8 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
                 await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
             },
             TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith( savingTask => metadataRepository.UpdateFileInfoAsync(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
+            .ContinueWith( savingTask => 
+            metadataRepository.UpdateFileInfoAsync(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
         }
         catch(Exception ex)
         {
@@ -107,7 +108,9 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
     {
         try
         {
-            if (await metadataRepository.MetadataExistsByIdAsync(operationId))
+            var metadata = await metadataRepository.GetByIdAsync(operationId);
+
+            if (metadata != null && metadata.LinkedMetadataCount == metadata.LinkedFileInfos.Count)
             {
                 await primaryStorageSaver.MoveDataToPrimaryStorageAsync(operationId, operationId);
                 return Result.SuccessResult;

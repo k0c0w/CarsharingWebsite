@@ -54,7 +54,7 @@ public class GetDocumentMetadataQueryHandler : IRequestHandler<GetDocumentMetada
         Id = metadata.Id,
         CreationDate = metadata.CreationDateTimeUtc,
         DisplayableHeader = metadata.Annotation,
-        Name = metadata.LinkedFileInfo.OriginalFileName,
+        Name = metadata.LinkedFileInfos.First().OriginalFileName,
         Url = GetPartialPath(metadata.Id)
     };
 
@@ -65,7 +65,7 @@ public class GetDocumentMetadataQueryHandler : IRequestHandler<GetDocumentMetada
         CreationDate = metadata.CreationDateTimeUtc,
         DisplayableHeader = metadata.Annotation,
         IsPrivate = !metadata.IsPublic,
-        Name = metadata.LinkedFileInfo.OriginalFileName,
+        Name = metadata.LinkedFileInfos.First().OriginalFileName,
         Url = GetPartialPath(metadata.Id)
     };
 

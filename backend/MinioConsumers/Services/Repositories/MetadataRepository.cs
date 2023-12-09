@@ -48,7 +48,7 @@ public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetad
     public async Task UpdateFileInfoAsync(Guid metadataGuid, FileInfo file)
     {
         var metadata = await GetByIdAsync(metadataGuid);
-        metadata.LinkedFileInfo = file;
+        metadata.LinkedFileInfos.Add(file);
         await AddAsync(metadata);
     }
 
@@ -58,7 +58,7 @@ public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetad
         if (metadata is null)
             return false;
         
-        return !(metadata.LinkedFileInfo is null);
+        return (metadata.LinkedFileInfos.Count == metadata.LinkedMetadataCount);
     }
 
     public Task RemoveByIdAsync(Guid id)

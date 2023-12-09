@@ -38,10 +38,10 @@ public class DownloadDocumentQueryHandler : IRequestHandler<DownloadDocumentQuer
 			var metadata = await metadataRepository.GetByIdAsync(request.Id);
 			if (metadata== null || !(request.IsAdminRequest || metadata.IsPublic))
 				return new Error<S3File>();
+			var fileinfo = metadata.LinkedFileInfos.First();
+			var file = await s3Service.GetFileFromBucketAsync(fileinfo.TargetBucketName, fileinfo.ObjectName);
 
-			var file = await s3Service.GetFileFromBucketAsync(metadata.LinkedFileInfo.TargetBucketName, metadata.LinkedFileInfo.ObjectName);
-
-			return new Ok<S3File>(new S3File(metadata.LinkedFileInfo.OriginalFileName, file.BucketName, file.ContentStream, file.ContentType));
+			return new Ok<S3File>(new S3File(fileinfo.OriginalFileName, file.BucketName, file.ContentStream, file.ContentType));
 		}
 		catch
 		{
