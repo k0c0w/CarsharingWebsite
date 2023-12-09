@@ -1,34 +1,33 @@
 ﻿using Microsoft.Extensions.Options;
 using MinioConsumer.DependencyInjection.ConfigSettings;
 using MinioConsumer.Models;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace MinioConsumer.Services.Repositories
 {
-    public class DocumentMetadataRepository : IMetadataRepository<DocumentMetadata>
+    public class OccasionAttachmentMetadataRepository : IMetadataRepository<OccasionAttachmentMetadata>
     {
-        private readonly IMongoCollection<DocumentMetadata> _collection;
+        private readonly IMongoCollection<OccasionAttachmentMetadata> _collection;
 
-        public DocumentMetadataRepository(IMongoClient client, IOptions<MongoDbSettings> settings)
+        public OccasionAttachmentMetadataRepository(IMongoClient client, IOptions<MongoDbSettings> settings)
         {
-            _collection = client.GetDatabase(settings.Value.DatabaseName).GetCollection<DocumentMetadata>("Documents");
+            _collection = client.GetDatabase(settings.Value.DatabaseName).GetCollection<OccasionAttachmentMetadata>("OccasionAttachment");
         }
 
-        public async Task<Guid> AddAsync(DocumentMetadata metadata)
+        public async Task<Guid> AddAsync(OccasionAttachmentMetadata metadata)
         {
             await _collection.InsertOneAsync(metadata);
             return metadata.Id;
         }
 
-        public async Task<IEnumerable<DocumentMetadata>> GetAllAsync()
+        public async Task<IEnumerable<OccasionAttachmentMetadata>> GetAllAsync()
         {
             var cursor = await _collection.FindAsync(x => true);
 
             return await cursor.ToListAsync();
         }
 
-        public async Task<DocumentMetadata?> GetByIdAsync(Guid id)
+        public async Task<OccasionAttachmentMetadata?> GetByIdAsync(Guid id)
         {
             var cursor = await _collection.FindAsync(x => x.Id == id);
             return await cursor.FirstOrDefaultAsync();
@@ -38,18 +37,17 @@ namespace MinioConsumer.Services.Repositories
         {
             return (await _collection.FindAsync(x => x.Id == id)).Any();
         }
-         
+
         public async Task RemoveByIdAsync(Guid id)
         {
             await _collection.FindOneAndDeleteAsync(x => x.Id == id);
         }
 
-        public Task UpdateAsync(DocumentMetadata metadata)
+        public Task UpdateAsync(OccasionAttachmentMetadata metadata)
         {
-            var filter = Builders<DocumentMetadata>.Filter.Eq(s => s.Id, metadata.Id);
-            var update = Builders<DocumentMetadata>.Update
-                .Set(s => s.Annotation, metadata.Annotation)
-                .Set(s => s.IsPublic, metadata.IsPublic);
+            var filter = Builders<OccasionAttachmentMetadata>.Filter.Eq(s => s.Id, metadata.Id);
+            var update = Builders<OccasionAttachmentMetadata>.Update
+                .Set(s => s.AccessUserList, metadata.AccessUserList);
             return _collection.UpdateOneAsync(filter, update);
         }
     }

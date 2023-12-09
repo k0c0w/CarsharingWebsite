@@ -45,7 +45,8 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     public async Task<Result> AppendFileAsync(Guid operationId, IFormFile file) 
     {
-        if (!await metadataRepository.MetadataExistsByIdAsync(operationId))
+        var metadata = await metadataRepository.GetByIdAsync(operationId);
+        if (metadata is null)
             return Result.ErrorResult;
 
         if (await metadataRepository.IsCompletedByIdAsync(operationId))
@@ -57,7 +58,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         var info = new FileInfo
         {
             BucketName = tempBucketName,
-            TargetBucketName = KnownBuckets.DOCUMENTS,
+            TargetBucketName = metadata.Schema,
             ContentType = file.ContentType,
             ObjectName = bucketObjectName,
             OriginalFileName = file.FileName,
