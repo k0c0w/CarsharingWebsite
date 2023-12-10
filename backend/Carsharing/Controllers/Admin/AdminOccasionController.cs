@@ -32,7 +32,7 @@ public class AdminOccasionController : ControllerBase
     }
 
     [HttpGet("{guid:guid}")]
-    public async Task<IActionResult> GetAllOpenOccasionsAsync([FromRoute] Guid guid)
+    public async Task<IActionResult> GetOcassionInfoByIdAsync([FromRoute] Guid guid)
     {
         var getAllOpenedOccasionsQuery = new GetOccasionQuery(guid);
 

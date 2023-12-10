@@ -36,7 +36,12 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
 
             return new HttpResponse<OccasionAttachmentInfoDto>(new OccasionAttachmentInfoDto()
             {
-                AttachmentsUrls = metadata.LinkedFileInfos.Select(x => GetDownloadPath(metadata.Id, x.ObjectName)).ToArray(),
+                Attachments = metadata.LinkedFileInfos
+                    .Select(x => new AttachmentInfoDto()
+                    {
+                        ContentType = x.ContentType,
+                        DownloadUrl = GetDownloadPath(metadata.Id, x.ObjectName),
+                    }).ToArray(),
                 CreationDateUtc = metadata.CreationDateTimeUtc,
                 UploaderId = metadata.AttachmentAuthorId
             });

@@ -11,5 +11,14 @@ public class OccasionAttachmentInfoDto
     public Guid UploaderId { get; init; }
 
     [JsonPropertyName("attachments")]
-    public IEnumerable<string> AttachmentsUrls { get; init; } = Array.Empty<string>();
+    public IEnumerable<AttachmentInfoDto> Attachments { get; init; } = Array.Empty<AttachmentInfoDto>();
+}
+
+public class AttachmentInfoDto
+{
+    [JsonPropertyName("content_type")]
+    public string ContentType { get; set; }
+
+    [JsonPropertyName("download_url")]
+    public string DownloadUrl { get; set; }
 }
