@@ -1,26 +1,26 @@
-﻿using Domain.Entities;
-using MassTransit;
+﻿using System.Runtime.CompilerServices;
+using Domain.Common;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Persistence;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.SignalRModels;
-using System.Runtime.CompilerServices;
-using Domain.Common;
-using Persistence;
 
 namespace Carsharing.ChatHub;
 
-public class ChatHub : Hub<IChatClient>
+[Authorize]
+public class OccasionsSupportChat : Hub<IChatClient>
 {
     private const string ADMIN_GROUP = "managers";
 
     private readonly IMessageProducer _publisher;
     private readonly UserManager<User> _userManager;
-    private readonly IChatUserRepository<ChatUser> _chatUserRepository;
-    private readonly IChatRoomRepository<TechSupportChatRoom> _chatRoomRepository;
+    private readonly IChatUserRepository<OccasionChatUser> _chatUserRepository;
+    private readonly IChatRoomRepository<OccasionsSupportChatRoom> _chatRoomRepository;
 
-    public ChatHub(IMessageProducer publisher, UserManager<User> userManager, IChatUserRepository<ChatUser> userRepository, IChatRoomRepository<TechSupportChatRoom> roomRepository)
+    public OccasionsSupportChat(IMessageProducer publisher, UserManager<User> userManager, IChatUserRepository<OccasionChatUser> userRepository, IChatRoomRepository<OccasionsSupportChatRoom> roomRepository)
     {
         _publisher = publisher;
         _userManager = userManager;
@@ -92,13 +92,46 @@ public class ChatHub : Hub<IChatClient>
         }
     }
 
+    [HubMethodName("CloseOccasionChat")]
+    public async Task CloseOccasionChat()
+    {
+        if (IsCurrentUserManager())
+            return;
+        
+        var disconnectedUserId = GetUserId();
+        var actualUserId = Context.UserIdentifier;
+        
+        if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(actualUserId, out var room))
+        {
+            var connectionId = Context.ConnectionId;
+            user!.RemoveConnection(connectionId);
+
+            if (user.ConnectionsCount == 0)
+            {
+                foreach (var managerId in room!.ProcessingManagersIds)
+                {
+                    if (_chatUserRepository.TryGetUser(managerId, out var chatManager))
+                        foreach (var managerConnectionId in chatManager!.UserConnections)
+                            await Groups.RemoveFromGroupAsync(managerConnectionId, room.RoomId).ConfigureAwait(false);
+                }
+
+                _chatUserRepository.TryRemoveUser(actualUserId, out _);
+                _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
+                await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+            }
+        }
+
+        await OnDisconnectedAsync(null);
+    }
+
+
     [Authorize(Roles = nameof(Role.Manager))]
     [HubMethodName("LeaveRoom")]
     public async Task LeaveRoomAsync(string roomId)
     {
         var managerId = Context.UserIdentifier!;
         var connectionId = Context.ConnectionId;
-
+        
         if (!(_chatUserRepository.ContainsUserById(managerId) && _chatRoomRepository.TryGetRoom(roomId, out var room)))
         {
             await Clients.Client(connectionId).LeaveRoomResult(new LeaveRoomResult () { RoomId = roomId }).ConfigureAwait(false);
@@ -123,15 +156,22 @@ public class ChatHub : Hub<IChatClient>
             .ConfigureAwait(false);
     }
 
+    /// Если входит юзер, то мы проверяем, есть ли комната по его occasion.
+    /// Если да, то присоединяем его туда
     public override async Task OnConnectedAsync()
     {
         var connectedUserId = Context.UserIdentifier;
 
         if (connectedUserId == null)
-            await CreateNewUserWithRoomAndNotifyAsync(false).ConfigureAwait(false);
-        else
-            await ExecuteAuthorizedPipelineAsync().ConfigureAwait(false);
+            return;
 
+        if (!(_chatUserRepository.TryGetUser(connectedUserId, out var user) 
+              && 
+              _chatRoomRepository.TryGetRoom(user!.UserId, out var room)))
+            return;
+
+        await AddConnectionToGroupAsync(connectedUserId, room!.RoomId);
+        
         await base.OnConnectedAsync().ConfigureAwait(false);
     }
 
@@ -140,75 +180,42 @@ public class ChatHub : Hub<IChatClient>
         var disconnectedUserId = GetUserId();
         var actualUserId = Context.UserIdentifier;
         if (actualUserId == null)
-            await ExecuteUnauthorizeDisconnectAsync(disconnectedUserId).ConfigureAwait(false);
-        else
-            await ExecuteAuthorizedDisconnectAsync(disconnectedUserId, actualUserId).ConfigureAwait(false);
+            return;
+        
+        await ExecuteAuthorizedDisconnectAsync(disconnectedUserId).ConfigureAwait(false);
 
         await base.OnDisconnectedAsync(exception).ConfigureAwait(false);
     }
 
-    private async Task ExecuteUnauthorizeDisconnectAsync(string disconnectedUserId)
+    private async Task ExecuteAuthorizedDisconnectAsync(string disconnectedUserId)
     {
-        _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room);
-        await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room!.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
-        _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
-        _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-    }
-
-    private async Task ExecuteAuthorizedDisconnectAsync(string disconnectedUserId, string actualUserId)
-    {
-        if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(actualUserId, out var room))
+        if (_chatUserRepository.TryGetUser(disconnectedUserId, out var user) && _chatRoomRepository.TryGetRoom(disconnectedUserId, out var room))
         {
             var connectionId = Context.ConnectionId;
             user!.RemoveConnection(connectionId);
-
-            if (user.ConnectionsCount == 0)
-            {
-                foreach (var managerId in room!.ProcessingManagersIds)
-                {
-                    if (_chatUserRepository.TryGetUser(managerId, out var chatManager))
-                        foreach (var managerConnectionId in chatManager!.UserConnections)
-                            await Groups.RemoveFromGroupAsync(managerConnectionId, room.RoomId).ConfigureAwait(false);
-                }
-
-                _chatUserRepository.TryRemoveUser(actualUserId, out _);
-                _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
-                await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
-            }
+            
+            // Оставляем нашего юзера и комнату. Убираем лишь соединение
+            // if (user.ConnectionsCount == 0)
+            // {
+            //     _chatUserRepository.TryRemoveUser(disconnectedUserId, out _);
+            //     _chatRoomRepository.TryRemoveRoom(disconnectedUserId, out _);
+            //     await Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = room.RoomId, Event = RoomUpdateEvent.Deleted }).ConfigureAwait(false);
+            // }
         }
     }
 
-    private async Task ExecuteAuthorizedPipelineAsync()
+    /// После подключения юзер отправляет гуид с нужным occasion
+    /// Создается комната с его userId
+    private async Task SendOccasionRequest(Guid occasionId)
     {
-        var connectionId = Context.ConnectionId;
-        var userId = Context.UserIdentifier;
-        bool isAuthenticated = IsAuthenticatedUser();
+        var newChatUser = await CreateNewChatUserAsync(IsAuthenticatedUser()).ConfigureAwait(false);
 
-        // if user has already connected with other session, he must be saved in connections and connection must be assigned to user groups
-        if (isAuthenticated && _chatUserRepository.TryGetUser(userId!, out var chatUser))
-        {
-            chatUser!.AddConnection(connectionId);
+        await CreateRoomAsync(IsAuthenticatedUser(), occasionId);
 
-            if (IsCurrentUserManager())
-            {
-                await AddConnectionToGroupAsync(connectionId, ADMIN_GROUP);
-            }
-            else
-            {
-                await AddConnectionToGroupAsync(connectionId, GetUserId());
-                await SendRoomIdToConnectionAsync(connectionId, GetUserId());
-            }
-
-            return;
-        }
-
-        // Create user, create room, notify admins about new room
-        await CreateNewUserWithRoomAndNotifyAsync(isAuthenticated);
+        await NotifyAboutRoomCreationAsync(newChatUser.UserId, newChatUser.Name, occasionId);
     }
 
-    private bool IsAuthenticatedUser() => Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated;
-
-    private async Task CreateNewUserWithRoomAndNotifyAsync(bool isUserAuthenticated)
+    private async Task CreateRoomAsync(bool isUserAuthenticated, Guid occasionId)
     {
         // Create new chat user
         var newChatUser = await CreateNewChatUserAsync(isUserAuthenticated).ConfigureAwait(false);
@@ -217,35 +224,20 @@ public class ChatHub : Hub<IChatClient>
         if (isUserAuthenticated && IsCurrentUserManager())
             return;
 
-        //Create room and assign it to user (anonymous or authorized customers)
-        var room = await CreateNewRoomForUserAsync(newChatUser).ConfigureAwait(false);
+        //Create room and assign it to user (authorized customers)
+        var room = new OccasionsSupportChatRoom(newChatUser, newChatUser.UserId, occasionId);
+        var roomId = room.RoomId;
+        if (!_chatRoomRepository.TryAddRoom(roomId, room))
+            return;
 
         if (room == null)
             return;
-
-        //Notify managers about room creation
-        await NotifyAboutRoomCreationAsync(room.RoomId, room.Client.Name).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Creates new room and assignes it to user
-    /// </summary>
-    /// <param name="user"></param>
-    /// <returns>Created room id</returns>
-    private async Task<TechSupportChatRoom?> CreateNewRoomForUserAsync(ChatUser user)
-    {
-        var room = new TechSupportChatRoom(user);
-        var roomId = room.RoomId;
-        if (!_chatRoomRepository.TryAddRoom(roomId, room))
-            return null!;
-
+        
         // assign room to chatUser
         await AddConnectionToGroupAsync(Context.ConnectionId, roomId);
-
-        return room;
     }
 
-    private async Task<ChatUser> CreateNewChatUserAsync(bool isUserAuthenticated)
+    private async Task<OccasionChatUser> CreateNewChatUserAsync(bool isUserAuthenticated)
     {
         var connectionId = Context.ConnectionId;
 
@@ -253,7 +245,7 @@ public class ChatHub : Hub<IChatClient>
         if (isUserAuthenticated)
             name = (await _userManager.FindByIdAsync(GetUserId()).ConfigureAwait(false))!.FirstName!;
 
-        ChatUser newUser = new(GetUserId(), name);
+        OccasionChatUser newUser = new(GetUserId(), name);
 
         newUser.AddConnection(connectionId);
 
@@ -267,29 +259,26 @@ public class ChatHub : Hub<IChatClient>
         return newUser;
     }
 
-    private ConfiguredTaskAwaitable AddConnectionToGroupAsync(string connectionId, string groupName)
-        => Groups.AddToGroupAsync(connectionId, groupName).ConfigureAwait(false);
-
-    private string GetUserId() => Context.UserIdentifier ?? $"anonymous_{Context.ConnectionId}";
-
     /// <summary>
     /// Notify admins to maintain roomlist
     /// </summary>
     /// <param name="roomId"></param>
     /// <param name="userFirstName"></param>
     /// <returns></returns>
-    private Task NotifyAboutRoomCreationAsync(string roomId, string userFirstName)
+    private Task NotifyAboutRoomCreationAsync(string roomId, string userFirstName, Guid occasionId)
     {
-        return Clients.Group(ADMIN_GROUP).ChatRoomUpdate(new ChatRoomUpdate() { RoomId = roomId, RoomName = userFirstName, Event = RoomUpdateEvent.Created})
-        .ContinueWith((task) => SendRoomIdToConnectionAsync(Context.ConnectionId, roomId));
+        return Clients.Group(ADMIN_GROUP)
+            .ChatRoomUpdate(new OccasionChatRoomUpdate(occasionId) { RoomId = roomId, RoomName = userFirstName, Event = RoomUpdateEvent.Created})
+            .ContinueWith((task) => SendRoomIdToConnectionAsync(Context.ConnectionId, roomId));
     }
 
-    /// <summary>
-    /// Used to send room id to client, admins might know roomid
-    /// </summary>
-    /// <param name="connectionId"></param>
-    /// <param name="roomId"></param>
-    /// <returns></returns>
+    private ConfiguredTaskAwaitable AddConnectionToGroupAsync(string connectionId, string groupName)
+        => Groups.AddToGroupAsync(connectionId, groupName).ConfigureAwait(false);
+
+    private bool IsAuthenticatedUser() => Context.User != null && Context.User.Identity != null && Context.User.Identity.IsAuthenticated;
+
+    private string GetUserId() => Context.UserIdentifier ?? throw new Exception();
+    
     private Task SendRoomIdToConnectionAsync(string connectionId, string roomId)
         => Clients.Clients(connectionId).RecieveRoomId(roomId);
 

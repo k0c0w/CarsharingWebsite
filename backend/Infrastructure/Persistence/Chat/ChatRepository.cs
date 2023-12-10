@@ -3,11 +3,11 @@ using System.Collections.Concurrent;
 
 namespace Persistence.Chat;
 
-public class ChatRepository : IChatUserRepository, IChatRoomRepository
+public class ChatRepository : IChatUserRepository<ChatUser>, IChatRoomRepository<TechSupportChatRoom>
 {
     // to map user and their connections
     // for anonymous users we will use their session token (notice that it can be hacked)
-    private static readonly ConcurrentDictionary<string, ChatRoom> Rooms = new();
+    private static readonly ConcurrentDictionary<string, TechSupportChatRoom> Rooms = new();
 
     private static readonly ConcurrentDictionary<string, ChatUser> ConnectedUsers = new();
 
@@ -17,19 +17,19 @@ public class ChatRepository : IChatUserRepository, IChatRoomRepository
         return ConnectedUsers.TryGetValue(userId, out chatUser);
     }
 
-    public bool TryGetRoom(string roomId, out ChatRoom? chatRoom)
+    public bool TryGetRoom(string roomId, out TechSupportChatRoom? chatRoom)
     {
         return Rooms.TryGetValue(roomId, out chatRoom);
     }
 
-    public bool TryRemoveRoom(string roomId, out ChatRoom? chatRoom)
+    public bool TryRemoveRoom(string roomId, out TechSupportChatRoom? chatRoom)
     {
         return Rooms.TryRemove(roomId, out chatRoom);
     }
 
-    public bool TryAddRoom(string roomId, ChatRoom chatRoom)
+    public bool TryAddRoom(string roomId, TechSupportChatRoom techSupportChatRoom)
     {
-        return Rooms.TryAdd(roomId, chatRoom);
+        return Rooms.TryAdd(roomId, techSupportChatRoom);
     }
 
     public bool TryRemoveUser(string userId, out ChatUser? chatUser)
@@ -47,7 +47,7 @@ public class ChatRepository : IChatUserRepository, IChatRoomRepository
         return ConnectedUsers.ContainsKey(userId);
     }
 
-    public IEnumerable<ChatRoom> GetAll()
+    public IEnumerable<TechSupportChatRoom> GetAll()
     { 
         return Rooms.Values.ToArray();
     }
