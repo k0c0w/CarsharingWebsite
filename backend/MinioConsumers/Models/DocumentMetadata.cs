@@ -4,8 +4,6 @@ namespace MinioConsumer.Models;
 
 public record DocumentMetadata : MetadataBase
 {
-    public DateTime CreationDateTimeUtc { get; init; }
-
     public string Annotation { get; set; }
 
     public string BucketName { get; } = KnownBuckets.DOCUMENTS;

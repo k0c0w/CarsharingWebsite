@@ -8,8 +8,7 @@ services.AddMinioSetUp(configuration);
 services.AddRedisSetUp(configuration);
 services.AddMongoSetUp(configuration);
 services.AddServices();
-services.AddInfrastructure();
-services.AddJwtAuthorization(configuration);
+services.AddInfrastructure(configuration);
 
 if (builder.Environment.IsDevelopment())
 {

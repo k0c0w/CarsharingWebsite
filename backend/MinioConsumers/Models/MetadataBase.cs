@@ -11,6 +11,8 @@ public record MetadataBase
 
     public int LinkedMetadataCount { get; set; }
 
+    public DateTime CreationDateTimeUtc { get; set; }
+
     public MetadataBase(Guid id, string schema, int targetFilesCount,  List<FileInfo>? linkedFileInfos = default)
     {
         Id = id;

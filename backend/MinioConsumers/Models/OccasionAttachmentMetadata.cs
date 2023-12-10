@@ -4,8 +4,6 @@ namespace MinioConsumer.Models;
 
 public record OccasionAttachmentMetadata : MetadataBase
 {
-    public DateTime CreationDateTimeUtc { get; init; }
-
     public string BucketName { get; } = KnownBuckets.OCCASIONATTACHMENTS;
 
     public List<Guid> AccessUserList {  get; set; }

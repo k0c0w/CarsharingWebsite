@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using MinioConsumer.BackgroundServices;
 
 namespace MinioConsumer.DependencyInjection;
 
@@ -77,13 +78,19 @@ public static class ServiceCollectionExtensions
         });
     }
 
-    public static void AddInfrastructure(this IServiceCollection services)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         
         services.AddControllers();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+        services.AddJwtAuthorization(configuration);
+
+        services.AddHostedService<TempFileCleanerBackgroundService>();
+        services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
     }
 
     public static void AddJwtAuthorization(this IServiceCollection services, IConfiguration configuration)
