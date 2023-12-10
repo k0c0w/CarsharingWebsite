@@ -7,6 +7,10 @@ using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using MongoDB.Driver;
 using StackExchange.Redis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace MinioConsumer.DependencyInjection;
 
@@ -80,5 +84,25 @@ public static class ServiceCollectionExtensions
         
         services.AddControllers();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+    }
+
+    public static void AddJwtAuthorization(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException())),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true
+                };
+            });
     }
 }

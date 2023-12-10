@@ -7,7 +7,7 @@ using MinioConsumer.Services;
 namespace MinioConsumer.Features.UploadAbstractFile;
 
 [Route("files")]
-//[Authorize]
+[Authorize(Roles ="Admin")]
 public class UploadAbstractFileController : ControllerBase
 {
     private readonly ISender _sender;

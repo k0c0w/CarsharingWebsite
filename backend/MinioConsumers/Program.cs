@@ -9,6 +9,7 @@ services.AddRedisSetUp(configuration);
 services.AddMongoSetUp(configuration);
 services.AddServices();
 services.AddInfrastructure();
+services.AddJwtAuthorization(configuration);
 
 if (builder.Environment.IsDevelopment())
 {

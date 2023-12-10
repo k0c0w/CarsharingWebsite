@@ -7,7 +7,7 @@ using MinioConsumer.Features.Documents.Query;
 namespace MinioConsumer.Features.Documents;
 
 [Route("documents")]
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class DocumentsController : ControllerBase
 {
 	private readonly IMediator _mediator;
