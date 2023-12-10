@@ -10,6 +10,7 @@ using Features.PipelineBehavior;
 using Features.Utils;
 using FluentValidation;
 using MediatR;
+using Carsharing.Consumers;
 
 namespace Carsharing;
 
@@ -36,13 +37,14 @@ public static class IServiceCollectionExtensions
         {
             config.UsingRabbitMq((ctx, cfg) =>
             {
-                /*cfg.Host(configuration
+                cfg.Host(configuration
                         .GetSection(RabbitMqConfig.SectionName)
                         .Get<RabbitMqConfig>()!
                         .FullHostname);
                 cfg.ConfigureEndpoints(ctx);
-                */
             });
+
+            config.AddConsumer<OccasionStatusChangeConsumer>();
         });
 
         return services;
