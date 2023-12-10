@@ -28,7 +28,7 @@ public class OccasionAttachmentController : ControllerBase
 		return StatusCode((int)response.Code, response);
 	}
 
-	[HttpGet("{attachmentId:guid}/download/{attachmentFileName:string}")]
+	[HttpGet("{attachmentId:guid}/download/{attachmentFileName}")]
 	public async Task<IResult> DownloadAttachmentFileAsync([FromRoute] Guid attachmentId, [FromRoute] string attachmentFileName)
 	{
 		if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))
@@ -46,7 +46,7 @@ public class OccasionAttachmentController : ControllerBase
 
 
 	[HttpPost("")]
-	[Authorize]
+	//[Authorize]
 	public Task<IActionResult> AppendAttachmentAsync(IEnumerable<IFormFile> files)
 	{
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))

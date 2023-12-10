@@ -10,9 +10,9 @@ internal static class MetadataSchemas
     public static IReadOnlyDictionary<Type, string> Schemas = new Dictionary<Type, string>()
     {
         [typeof(DocumentMetadata)] = "document",
+        [typeof(OccasionAttachmentMetadata)] = "attachment"
     };
 }
-
 
 public class RedisMetadataRepository<TMetadata> : ITempMetadataRepository<TMetadata> where TMetadata : MetadataBase
 {

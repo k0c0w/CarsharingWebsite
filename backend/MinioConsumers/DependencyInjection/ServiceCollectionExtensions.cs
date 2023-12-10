@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<ITempMetadataRepository<DocumentMetadata>, RedisMetadataRepository<DocumentMetadata>>();
+        services.AddScoped<ITempMetadataRepository<OccasionAttachmentMetadata>, RedisMetadataRepository<OccasionAttachmentMetadata>>();
         services.AddScoped<OperationRepository>();
     }
 
@@ -56,12 +57,16 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IMetadataRepository<DocumentMetadata>, DocumentMetadataRepository>();
+        services.AddScoped<IMetadataRepository<OccasionAttachmentMetadata>, OccasionAttachmentMetadataRepository>();
     }
 
     public static void AddServices(this IServiceCollection services)
     {
         services.AddScoped<MetadataSaver<DocumentMetadata>>();
         services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
+        services.AddScoped<MetadataSaver<OccasionAttachmentMetadata>>();
+        services.AddScoped<PrimaryStorageSaver<OccasionAttachmentMetadata>>();
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);

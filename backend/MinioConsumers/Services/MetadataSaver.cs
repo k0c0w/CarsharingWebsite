@@ -68,16 +68,12 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             using var fileStream = file.OpenReadStream();
 
-            await s3Service.BucketExsistAsync(tempBucketName)
-            .ContinueWith(async (existanceTask) =>
-            {
-                if (!existanceTask.Result)
-                    await s3Service.CreateBucketAsync(tempBucketName);
-                await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
-            },
-            TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith( savingTask => 
-            metadataRepository.UpdateFileInfoAsync(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
+            if (!await s3Service.BucketExsistAsync(tempBucketName))
+                await s3Service.CreateBucketAsync(tempBucketName);
+
+            await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
+
+            await metadataRepository.UpdateFileInfoAsync(operationId, info);
         }
         catch(Exception ex)
         {
