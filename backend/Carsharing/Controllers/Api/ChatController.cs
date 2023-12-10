@@ -84,16 +84,4 @@ public class ChatController : ControllerBase
             x.ProcessingManagersCount
         }));
     }
-
-    [Route("appeals")]
-    [HttpGet]
-    public async Task<IActionResult> GetAppeals()
-    {
-        return Ok(new List<object>()
-        {
-            (name: "Авария", id: Guid.NewGuid()),
-            (name: "Документы", id: Guid.NewGuid()), 
-            (name: "Поломка", id: Guid.NewGuid())
-        });
-    }
 }

@@ -10,6 +10,11 @@ using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using MongoDB.Driver;
 using StackExchange.Redis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using MinioConsumer.BackgroundServices;
 
 namespace MinioConsumer.DependencyInjection;
 
@@ -43,6 +48,7 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<ITempMetadataRepository<DocumentMetadata>, RedisMetadataRepository<DocumentMetadata>>();
+        services.AddScoped<ITempMetadataRepository<OccasionAttachmentMetadata>, RedisMetadataRepository<OccasionAttachmentMetadata>>();
         services.AddScoped<OperationRepository>();
     }
 
@@ -58,25 +64,55 @@ public static class ServiceCollectionExtensions
         });
 
         services.AddScoped<IMetadataRepository<DocumentMetadata>, DocumentMetadataRepository>();
+        services.AddScoped<IMetadataRepository<OccasionAttachmentMetadata>, OccasionAttachmentMetadataRepository>();
     }
 
     public static void AddServices(this IServiceCollection services)
     {
         services.AddScoped<MetadataSaver<DocumentMetadata>>();
         services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
+        services.AddScoped<MetadataSaver<OccasionAttachmentMetadata>>();
+        services.AddScoped<PrimaryStorageSaver<OccasionAttachmentMetadata>>();
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly);
         });
     }
 
-    public static void AddInfrastructure(this IServiceCollection services)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         
         services.AddControllers();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+        services.AddJwtAuthorization(configuration);
+
+        services.AddHostedService<TempFileCleanerBackgroundService>();
+        services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
+    }
+
+    public static void AddJwtAuthorization(this IServiceCollection services, IConfiguration configuration)
+    {
+        services
+            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = configuration["Jwt:Issuer"],
+                    ValidAudience = configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey
+                        (Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException())),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true
+                };
+            });
     }
 
     internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection,

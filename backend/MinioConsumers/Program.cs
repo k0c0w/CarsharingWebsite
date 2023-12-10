@@ -7,9 +7,8 @@ var configuration = builder.Configuration;
 services.AddMinioSetUp(configuration);
 services.AddRedisSetUp(configuration);
 services.AddMongoSetUp(configuration);
-services.AddAuthenticationAndAuthorization(configuration);
 services.AddServices();
-services.AddInfrastructure();
+services.AddInfrastructure(configuration);
 
 if (builder.Environment.IsDevelopment())
 {

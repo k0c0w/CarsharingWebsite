@@ -1,5 +1,10 @@
 import axios from "axios"
 
+function delay(ms) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, ms);
+    });
+  }
 
 class AxiosWrapper {
 
@@ -129,6 +134,111 @@ class AxiosWrapper {
 
     async tryChangePassword(form) {
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
+    }
+
+    async loadOccasionHistory(occasionId) {
+        const loadHistoryResult = {successed: false, messages: []}
+        await this.axiosInstance.get(`/occasions/${occasionId}/chat`)
+            .then(response => {
+                loadHistoryResult.successed = true;
+                loadHistoryResult.messages = response.data;
+            });
+        
+        return loadHistoryResult;
+    }
+
+    async loadMyOccasion() {
+        const occasionInfo = {successed: false, openedOccasionId: null};
+        await this.axiosInstance.get("/occasions/my")
+        .then(resp => {
+            occasionInfo.openedOccasionId = resp.data;
+            occasionInfo.successed = true;
+        })
+        .catch(err => {
+            if (err.response){
+                const status = err.response.status;
+                if (status == 404)
+                    occasionInfo.successed = true;
+                else
+                    alert(err.response.data.errorMessage);
+            }
+        });
+
+        return occasionInfo;
+    }
+
+    async openNewOccasion() {
+        const occasionCreationInfo = {successed: false, createdOccasionId: null, errorMessage: null};
+        await this.axiosInstance.post("/occasions")
+            .then(response => {
+                occasionCreationInfo.successed = true;
+                occasionCreationInfo.createdOccasionId = response.data;
+            })
+            .catch(err => {
+                if (err.response) {
+                    const response = err.response;
+                    if (response.status === 400 && response.data)
+                        occasionCreationInfo.errorMessage = response.data;
+                }
+            });
+
+        return occasionCreationInfo;
+    }
+
+    async getOccasionTypes() {
+        let occasionTypes = [];
+        await this.axiosInstance.get("/occasions/types")
+        .then(response => occasionTypes = response.data);
+
+        return occasionTypes;
+    }
+
+        //attachments must be array of files from form multiple data
+    async addAttachment(occasionIssuerdGuid, attachments){
+        let attachmentCreationTrackingId = null;
+        const attachmentCreationResult = { successed: false, attachmentId: null }
+
+        await this.s3ServiceAxios.post("/admin/attachments", {
+            occasionUserId: occasionIssuerdGuid,
+            files: attachments
+        })
+        .then(response =>{
+            attachmentCreationTrackingId = response.data;
+        })
+        .catch(err => {});
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    attachmentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    attachmentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
+        }
+
+        return attachmentCreationResult;
     }
 
     async _post(endpoint, model) {

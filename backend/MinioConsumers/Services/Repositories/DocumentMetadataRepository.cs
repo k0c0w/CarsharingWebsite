@@ -48,7 +48,7 @@ namespace MinioConsumer.Services.Repositories
         {
             var filter = Builders<DocumentMetadata>.Filter.Eq(s => s.Id, metadata.Id);
             var update = Builders<DocumentMetadata>.Update
-                //.Set(s => s.Annotation, metadata.Annotation)
+                .Set(s => s.Annotation, metadata.Annotation)
                 .Set(s => s.IsPublic, metadata.IsPublic);
             return _collection.UpdateOneAsync(filter, update);
         }

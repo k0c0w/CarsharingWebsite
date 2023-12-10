@@ -8,5 +8,9 @@ namespace MinioConsumer.Services.Repositories
         public Task UpdateFileInfoAsync(Guid id, FileInfo file);
 
         public Task<bool> IsCompletedByIdAsync(Guid id);
+
+        public IAsyncEnumerable<Guid> IterThroughKeysAsync();
+
+        public Task StopIterationAsync();
     }
 }

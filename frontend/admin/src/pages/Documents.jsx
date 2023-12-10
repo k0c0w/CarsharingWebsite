@@ -15,9 +15,6 @@ import DocumentsGrid from "../components/DocumentsPage/DocumentsGrid";
 async function send() {
     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-
-    var body = JSON.stringify(obj);
-    API.getCars(body);
 }
 
 
@@ -25,7 +22,7 @@ export default function Documents () {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [documents, setDocuments] = useState([{ id:"1", name: "lol", annotation: "__lol__", creation:"" }]);
+    const [documents, setDocuments] = useState([]);
     const [selectedDocuments, setSelectedDocuments] = useState([]);
 
     const [popup, setPopup] = useState(
@@ -120,9 +117,6 @@ export default function Documents () {
                 Documents
             </h1>
             {errorMessage && <h3 style={{color: 'red'}}>{errorMessage}</h3>}
-            <FormControl>
-                
-            </FormControl>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={() => loadDocumentData()} color={color}/>
 
             <DocumentsGrid handleSelect={(selectedDocuments)=>setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>

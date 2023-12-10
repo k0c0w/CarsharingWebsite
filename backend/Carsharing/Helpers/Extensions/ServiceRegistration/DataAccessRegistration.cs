@@ -13,6 +13,7 @@ public static class DataAccessRegistration
         services.AddScoped<OccasionMessageRepository>();
         services.AddScoped<IPostRepository, NotUnitOfWorkPostRepository>();
         services.AddScoped<ITariffRepository, TariffRepository>();
+        services.AddScoped<IOccasionRepository, OccasionRepository>();
         return services;
     }
 

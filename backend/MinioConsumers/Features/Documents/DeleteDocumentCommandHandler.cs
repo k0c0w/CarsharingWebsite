@@ -2,6 +2,7 @@
 using MinioConsumer.Models;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
+using FileInfo = MinioConsumer.Models.FileInfo;
 
 namespace MinioConsumer.Features.Documents;
 
@@ -26,7 +27,15 @@ public class DeleteDocumentCommandHandler : IRequestHandler<DeleteDocumentComman
             if (metadata == null)
                 return new HttpResponse(System.Net.HttpStatusCode.NotFound, "Document was not found.");
 
-            await _s3Service.RemoveFileFromBucketAsync(metadata.LinkedFileInfo.TargetBucketName, metadata.LinkedFileInfo.ObjectName)
+            var tasks = new Task[metadata.LinkedFileInfos.Count];
+            FileInfo fileInfo;
+            for (var i = 0; i < tasks.Length; i++)
+            {
+                fileInfo = metadata.LinkedFileInfos[i];
+                tasks[i] = _s3Service.RemoveFileFromBucketAsync(fileInfo.TargetBucketName, fileInfo.ObjectName);
+            }
+
+           await Task.WhenAll(tasks)
                    .ContinueWith((t) => _metadataRepository.RemoveByIdAsync(request.Id), TaskContinuationOptions.OnlyOnRanToCompletion);
 
             return new HttpResponse();
