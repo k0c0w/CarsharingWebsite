@@ -1,113 +1,69 @@
 import React, {useEffect, useState} from 'react';
 import '../css/popup-chat.css';
-import SendMessageForm from '../Components/SendMessageForm';
-import MessageContainer from "../Components/MessageContainer";
+import SendMessageForm, {OccasionSendMessageForm} from '../Components/SendMessageForm';
+import MessageContainer, {OccasionMessageContainer } from "../Components/MessageContainer";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
-import {Box} from "@mui/material";
-
 
 export default function PopupChat () {
     const [hiding, setHideFlag] = useState(false);
+    const [iHaveOpenOccasion, setIHaveOpenOccasion] = useState(null);
+    const [myOccasionId, setMyOccasionId] = useState(null);
+    const [occasionTypes, setOccasionTypes] = useState([]);
+    const [occasionCreationRequestSent, setOccasionCreationRequestSent] = useState(false);
 
-    const switchHidingFlag = () => {
-        setHideFlag(!hiding);
+    function onCloseOccasionRecieved() {
+        setMyOccasionId(null);
+        setIHaveOpenOccasion(false);
     }
 
-    const [connection, setConnection] = useState()
-    const [occasionId, setOccasionId] = useState();
-    const [messages, setMessages] = useState([])
-    const [connectedRoomId, setConnectedRoomId] = useState();
-    const [occasions, setOccasions] = useState([{ name: "kik" }]);
-
-    async function onRecieveRoomId(roomId) {
-      const history = await API.getChatHistory(roomId);
-      setMessages(history);
-      setConnectedRoomId(roomId);
-    }
-
-    const joinRoom = async () => {
-      try {
-          debugger;
-        const connection = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
-          .configureLogging(LogLevel.Information)
-          .build();
-
-        connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
-
-        connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
-
-        connection.onclose(() => {
-          setConnection();
-          setMessages([]);
-        });
-
-        await connection.start();
-        setConnection(connection);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-
-    const sendMessage = async (message) => {
-      try {
-        const messageModel = {
-          Text: message,
-          Time: new Date().toJSON(),
-          RoomId: connectedRoomId,
-        };
-
-        await connection.invoke('SendMessage', messageModel);
-      } catch (e) {
-        console.log(e)
-      }
-    }
-
-    const getOccasions = async () => {
+    async function tryCreateOccasion(occasionType) {
+        setOccasionCreationRequestSent(true);
         try{
-            // var _occasions = await API.getChatOccasions();
-            // debugger
-            // setOccasions(_occasions);
+            const creationResult = await API.openNewOccasion(occasionType, occasionType);
+            if (creationResult.successed){
+                setMyOccasionId(creationResult.createdOccasionId);
+                setIHaveOpenOccasion(true);
+            }
+            else{
+                console.log(creationResult.errorMessage);
+            }
         }
-        catch (e){
-            console.log(e)
-        }
-    }
-
-    const stopConnection = () => {
-        connection.stop();
-        setConnection();
-    }
-
-    const connectToOccasionChat = async () => {
-        stopConnection();
-        debugger
-        try {
-            const connection = new HubConnectionBuilder()
-                .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
-                .configureLogging(LogLevel.Information)
-                .build();
-
-            connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
-
-            connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
-
-            connection.onclose(() => {
-                setConnection();
-                setMessages([]);
-            });
-
-            await connection.start();
-            setConnection(connection);
-        } catch (e) {
-            console.log(e);
+        finally{
+            setOccasionCreationRequestSent(false);
         }
     }
 
     useEffect(() => {
-        joinRoom();
+        async function fetchOccasion(){
+            const response = await API.loadMyOccasion();
+            if (response?.successed){
+                if (response.openedOccasionId){
+                    setIHaveOpenOccasion(true);
+                    setMyOccasionId(response.openedOccasionId);
+                }
+                else{
+                    setIHaveOpenOccasion(false);
+                }
+            }
+        }
+
+        fetchOccasion();
+    }, [myOccasionId, iHaveOpenOccasion]);
+
+    useEffect(() => {
+        async function fetchOccasionTypes() {
+            const response = await API.getOccasionTypes();
+            if (response)
+                setOccasionTypes(response);
+        }
+        
+        fetchOccasionTypes();
     }, []);
+
+    const switchHidingFlag = () => {
+        setHideFlag(!hiding);
+    }
 
     return (
         <div className='popup-chat' style={{ height:`${hiding?"30px":"60vh"}` }}>
@@ -115,23 +71,144 @@ export default function PopupChat () {
                 <div className='popup-chat-header'  style={{flexGrow:0.5, display:'flex', flexDirection:'row', zIndex:'10'}}>
                     <div style={{zIndex:'10', color:'#767575'}} onClick={() => switchHidingFlag()}>=</div>
                 </div>
-                {!hiding && <>
+                {iHaveOpenOccasion != null && !hiding && !occasionCreationRequestSent &&
+                <>
                     <div className="dropdown">
-                        <button className="dropbtn">Обратиться с случаем</button>
+                        <button className="dropbtn">Происшествие</button>
                         <div className="dropdown-content">
-                            {occasions.map((occasion, key) =>
-                                <a key={key} href="#" onClick={async () => await connectToOccasionChat()}>{occasion.name}</a>
+                            {occasionTypes.map((occasion, key) =>
+                                <div key={key} onClick={() => tryCreateOccasion(occasion)}>{occasion}</div>
                             )}
                         </div>
                     </div>
-                    <div className='message-container-wrapper' style={{flexGrow:7}}>
-                        <MessageContainer messages={messages} />
-                    </div>
-                    <div className='popup-chat-input' >
-                        <SendMessageForm sendMessage={sendMessage} className='popup-chat-input' style={{flexGrow:0.5, width:'100%'}} />
-                    </div>
+                    {!iHaveOpenOccasion && <DefaultSupportChat/>}
+                    {iHaveOpenOccasion && <OccasionChat occasionId={myOccasionId} onCloseOccasionRecieved={onCloseOccasionRecieved}/>}
                 </>}
             </div>
         </div>
         );
+}
+
+function OccasionChat({occasionId, onCloseOccasionRecieved}) {
+    const [connection, setConnection] = useState();
+    const [messages, setMessages] = useState([]);
+
+    const sendMessage = async (message) => {
+        try {
+          const messageModel = {
+            message: message
+          };
+    
+          await connection.invoke('SendMessage', messageModel);
+        } catch (e) {
+          console.log(e)
+        }
+      }
+    
+    useEffect(() => {
+        async function loadOccasionChatHistory() {
+            const response = await API.loadOccasionHistory(occasionId);
+            if (response?.successed){
+                setMessages(response.messages);
+            }
+        }
+
+        loadOccasionChatHistory();
+    }, []);
+
+    async function createHubConnection() {
+        const con = new HubConnectionBuilder()
+          .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, {
+            accessTokenFactory: () => localStorage.getItem("token"),
+          })
+          .configureLogging(LogLevel.Information)
+          .withAutomaticReconnect()
+          .build();
+
+        con.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
+        con.on('OccassionClosed', () => {onCloseOccasionRecieved()});
+
+        await connection.start();
+        setConnection(con);
+      }
+
+    useEffect(() => {
+        createHubConnection();
+
+        return () => connection?.stop()
+    }, [connection]);
+
+    return <>
+        <div className='message-container-wrapper' style={{flexGrow:7}}>
+            <OccasionMessageContainer messages={messages} />
+        </div>
+        <div className='popup-chat-input' >
+            <OccasionSendMessageForm sendMessage={sendMessage} className='popup-chat-input' style={{flexGrow:0.5, width:'100%'}} />
+        </div>
+    </>
+}
+
+function DefaultSupportChat() {
+    const [connection, setConnection] = useState();
+    const [messages, setMessages] = useState([]);
+    const [connectedRoomId, setConnectedRoomId] = useState();
+
+    async function onRecieveRoomId(roomId) {
+        const history = await API.getChatHistory(roomId);
+        setMessages(history);
+        setConnectedRoomId(roomId);
+      }
+
+    const joinRoom = async () => {
+      try {
+        const connection = new HubConnectionBuilder()
+          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+          .configureLogging(LogLevel.Information)
+          .withAutomaticReconnect()
+          .build();
+  
+        connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
+  
+        connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
+  
+        connection.onclose(() => {
+          setConnection();
+          setMessages([]);
+        });
+  
+        await connection.start();
+        setConnection(connection);
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  
+    const sendMessage = async (message) => {
+      try {
+        const messageModel = {
+          Text: message,
+          Time: new Date().toJSON(),
+          RoomId: connectedRoomId,
+        };
+  
+        await connection.invoke('SendMessage', messageModel);
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    useEffect(() => {
+        joinRoom();
+
+        return () => connection?.stop();
+    }, [connection]);
+
+    return <>
+        <div className='message-container-wrapper' style={{flexGrow:7}}>
+            <MessageContainer messages={messages} />
+        </div>
+        <div className='popup-chat-input' >
+            <SendMessageForm sendMessage={sendMessage} className='popup-chat-input' style={{flexGrow:0.5, width:'100%'}} />
+        </div>
+    </>
 }

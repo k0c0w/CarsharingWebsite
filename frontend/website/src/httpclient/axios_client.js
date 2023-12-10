@@ -1,7 +1,7 @@
 import axios from "axios"
 
 function delay(ms) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
@@ -41,7 +41,7 @@ class AxiosWrapper {
         }
     }
 
-    async getChatOccasions(userId) {
+    async getChatOccasions() {
         try{
             const history = await this.axiosInstance.get(`/chat/appeals`);
             return history.data
@@ -84,7 +84,7 @@ class AxiosWrapper {
 
                 return result;
             })
-            .catch(error => {
+            .catch(() => {
             });
 
         return result;
@@ -99,7 +99,6 @@ class AxiosWrapper {
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         localStorage.setItem("token", this.token)
-        debugger;
         return response
     }
 
@@ -128,7 +127,6 @@ class AxiosWrapper {
     }
 
     async profile() {
-        debugger
         return await this._get('/Account');
     }
 
@@ -167,9 +165,9 @@ class AxiosWrapper {
         return occasionInfo;
     }
 
-    async openNewOccasion() {
+    async openNewOccasion(occasionType, topic) {
         const occasionCreationInfo = {successed: false, createdOccasionId: null, errorMessage: null};
-        await this.axiosInstance.post("/occasions")
+        await this.axiosInstance.post("/occasions", { event: occasionType, topic: topic })
             .then(response => {
                 occasionCreationInfo.successed = true;
                 occasionCreationInfo.createdOccasionId = response.data;
@@ -188,7 +186,8 @@ class AxiosWrapper {
     async getOccasionTypes() {
         let occasionTypes = [];
         await this.axiosInstance.get("/occasions/types")
-        .then(response => occasionTypes = response.data);
+        .then(response => occasionTypes = response.data)
+        .catch(() => {});
 
         return occasionTypes;
     }
@@ -198,14 +197,13 @@ class AxiosWrapper {
         let attachmentCreationTrackingId = null;
         const attachmentCreationResult = { successed: false, attachmentId: null }
 
-        await this.s3ServiceAxios.post("/admin/attachments", {
-            occasionUserId: occasionIssuerdGuid,
+        await this.s3ServiceAxios.post("/attachments", {
             files: attachments
         })
         .then(response =>{
             attachmentCreationTrackingId = response.data;
         })
-        .catch(err => {});
+        .catch(() => {});
 
         if (attachmentCreationTrackingId)
         {
