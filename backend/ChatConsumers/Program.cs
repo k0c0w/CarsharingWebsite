@@ -5,6 +5,7 @@ using Carsharing.ChatHub;
 using ChatConsumers.Options;
 using Persistence.Chat;
 using Persistence.UnitOfWork;
+using ChatConsumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<ChatContext>(options => options.UseNpgsql(builder.
 builder.Services.AddMassTransit(config =>
 {
     config.AddConsumer<ChatMessageConsumer>();
+    config.AddConsumer<OccasionMessageConsumer>();
 
     config.UsingRabbitMq((ctx, cfg) =>
     {
