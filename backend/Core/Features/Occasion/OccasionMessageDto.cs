@@ -17,3 +17,4 @@ public class OccasionMessageAttachmentDto
     public string DownloadUrl { get; init; }
 
     public string ContentType { get; init; }
+}
