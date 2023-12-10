@@ -15,9 +15,10 @@ export default function PopupChat () {
     }
 
     const [connection, setConnection] = useState()
+    const [occasionId, setOccasionId] = useState();
     const [messages, setMessages] = useState([])
     const [connectedRoomId, setConnectedRoomId] = useState();
-    const [occasions, setOccasions] = useState([]);
+    const [occasions, setOccasions] = useState([{ name: "kik" }]);
 
     async function onRecieveRoomId(roomId) {
       const history = await API.getChatHistory(roomId);
@@ -27,6 +28,7 @@ export default function PopupChat () {
 
     const joinRoom = async () => {
       try {
+          debugger;
         const connection = new HubConnectionBuilder()
           .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
           .configureLogging(LogLevel.Information)
@@ -64,9 +66,9 @@ export default function PopupChat () {
 
     const getOccasions = async () => {
         try{
-            var _occasions = await API.getChatOccasions();
-            debugger
-            setOccasions(_occasions);
+            // var _occasions = await API.getChatOccasions();
+            // debugger
+            // setOccasions(_occasions);
         }
         catch (e){
             console.log(e)
@@ -80,7 +82,7 @@ export default function PopupChat () {
 
     const connectToOccasionChat = async () => {
         stopConnection();
-
+        debugger
         try {
             const connection = new HubConnectionBuilder()
                 .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
@@ -105,7 +107,6 @@ export default function PopupChat () {
 
     useEffect(() => {
         joinRoom();
-        getOccasions();
     }, []);
 
     return (
@@ -119,7 +120,7 @@ export default function PopupChat () {
                         <button className="dropbtn">Обратиться с случаем</button>
                         <div className="dropdown-content">
                             {occasions.map((occasion, key) =>
-                                <a key={key} href="#" onClick={async () => await connectToOccasionChat(occasion.id)}>{occasion.name}</a>
+                                <a key={key} href="#" onClick={async () => await connectToOccasionChat()}>{occasion.name}</a>
                             )}
                         </div>
                     </div>

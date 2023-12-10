@@ -7,6 +7,8 @@ using Persistence;
 using Persistence.Chat;
 using Persistence.Chat.ChatEntites.SignalRModels;
 using Persistence.RepositoryImplementation;
+using Persistence.Chat.ChatEntites;
+using OccasionChatRepository = Persistence.Chat.ChatEntites.OccasionChatRepository;
 
 namespace Carsharing.Controllers.Api;
 
@@ -17,13 +19,15 @@ public class ChatController : ControllerBase
     private readonly IMessageRepository _messageUoW;
     private readonly IChatRoomRepository<TechSupportChatRoom> _chatRoomRepository;
     private readonly OccasionMessageRepository _occasionMessageRepository;
+    private readonly OccasionChatRepository _occasionChatRepository;
         
 
-    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository<TechSupportChatRoom> chatRoomRepository, OccasionMessageRepository occasionMessageRepository)
+    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository<TechSupportChatRoom> chatRoomRepository, OccasionMessageRepository occasionMessageRepository, OccasionChatRepository occasionChatRepository)
     {
         _messageUoW = messageUnitOfWork;
         _chatRoomRepository = chatRoomRepository;
         _occasionMessageRepository = occasionMessageRepository;
+        _occasionChatRepository = occasionChatRepository;
     }
 
     [Route("{userId}/history")]
@@ -77,11 +81,28 @@ public class ChatController : ControllerBase
     [HttpGet]
     public IActionResult GetAllRooms()
     {
-        return new JsonResult(_chatRoomRepository.GetAll().Select(x => new
+        var regularChats = _chatRoomRepository.GetAll().Select(x => new
         {
             RoomName = x.Client.Name,
             x.RoomId,
-            x.ProcessingManagersCount
-        }));
+            x.ProcessingManagersCount,
+            IsOccasion = false
+        });
+        return new JsonResult(regularChats);
+    }
+    
+    [Route("occasions_rooms")]
+    [Authorize(Roles = nameof(Role.Manager))]
+    [HttpGet]
+    public IActionResult GetAllOccasionsRooms()
+    {
+        var occasionChats = _occasionChatRepository.GetAll().Select(x => new
+        {
+            RoomName = x.Client.Name,
+            RoomId = x.RoomId.ToString(),
+            x.ProcessingManagersCount,
+            IsOccasion = true
+        });
+        return new JsonResult(occasionChats);
     }
 }

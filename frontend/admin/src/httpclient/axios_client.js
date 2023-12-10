@@ -253,6 +253,7 @@ class AxiosWrapper {
 
             this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
             this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
+            this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         }
         localStorage.setItem("token", this.token)
         return response

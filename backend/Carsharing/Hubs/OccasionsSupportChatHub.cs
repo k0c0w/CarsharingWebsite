@@ -165,12 +165,18 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         if (connectedUserId == null)
             return;
 
+        OccasionsSupportChatRoom room = null;
+        Guid roomId = default;
+        
         if (!(_occasionChatRepository.TryGetUser(connectedUserId, out var user) 
               && 
-              _occasionChatRepository.TryGetRoomByUser(user!.UserId, out var room)))
-            return;
+              _occasionChatRepository.TryGetRoomByUser(user!.UserId, out room)))
+        {
+            roomId = Guid.NewGuid();
+            await CreateOccasionCharRoom(roomId).ConfigureAwait(false);
+        }
 
-        await AddConnectionToGroupAsync(connectedUserId, room!.RoomId.ToString());
+        await AddConnectionToGroupAsync(connectedUserId, room is not null? room!.RoomId.ToString() : roomId.ToString());
         
         await base.OnConnectedAsync().ConfigureAwait(false);
     }
@@ -204,37 +210,29 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         }
     }
 
-    /// После подключения юзер отправляет гуид с нужным occasion
-    /// Создается комната с его userId
-    private async Task SendOccasionRequest(Guid occasionId)
+    private async Task CreateOccasionCharRoom(Guid occasionId)
     {
         var newChatUser = await CreateNewChatUserAsync(IsAuthenticatedUser()).ConfigureAwait(false);
 
-        await CreateRoomAsync(IsAuthenticatedUser(), occasionId);
+        await CreateRoomAsync(IsAuthenticatedUser(), newChatUser, occasionId);
 
         await NotifyAboutRoomCreationAsync(newChatUser.UserId, newChatUser.Name, occasionId);
     }
 
-    private async Task CreateRoomAsync(bool isUserAuthenticated, Guid occasionId)
+    private async Task CreateRoomAsync(bool isUserAuthenticated, OccasionChatUser user, Guid occasionId)
     {
-        // Create new chat user
-        var newChatUser = await CreateNewChatUserAsync(isUserAuthenticated).ConfigureAwait(false);
-
         // if user is manger, we dont need to create room for him
         if (isUserAuthenticated && IsCurrentUserManager())
             return;
 
         //Create room and assign it to user (authorized customers)
-        var room = new OccasionsSupportChatRoom(newChatUser, Guid.NewGuid(), occasionId);
+        var room = new OccasionsSupportChatRoom(user, Guid.NewGuid(), occasionId);
         var roomId = room.RoomId;
         if (!_occasionChatRepository.TryAddRoom(roomId, room))
             return;
 
         if (room == null)
             return;
-        
-        // assign room to chatUser
-        await AddConnectionToGroupAsync(Context.ConnectionId, roomId.ToString());
     }
 
     private async Task<OccasionChatUser> CreateNewChatUserAsync(bool isUserAuthenticated)
