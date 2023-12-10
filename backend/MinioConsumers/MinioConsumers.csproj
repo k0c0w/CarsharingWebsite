@@ -86,4 +86,8 @@
       <ProjectReference Include="..\Core\Shared\Shared.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Features\OccasionAttachment\InputModels\" />
+    </ItemGroup>
+
 </Project>

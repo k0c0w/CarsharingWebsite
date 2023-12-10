@@ -6,6 +6,8 @@ public static class KnownBuckets
 
     public const string DOCUMENTS = "documents";
 
+    public const string OCCASIONATTACHMENTS = "occasion-attachments";
+
     public static IReadOnlyList<string> BucketPool = new[] { "zebra", "mongoose", "elephant", "monkey", "pantera" };
 
     public static string GetRandomBucketFromPool()

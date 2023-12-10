@@ -74,6 +74,11 @@ public class OperationRepository
         return info?.OperationStatus;
     }
 
+    public Task<bool> KeyExistsAsync(Guid key)
+    {
+        return _db.KeyExistsAsync(key.ToString());
+    }
+
     private static string Serilize<T>(T obj) => JsonSerializer.Serialize(obj);
     private static T Deserilize<T>(string obj) => JsonSerializer.Deserialize<T>(obj);
 }

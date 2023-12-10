@@ -2,7 +2,8 @@ using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Entities.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
+using Entities.Entities;
+using Migrations.EntityConfigurations;
 
 namespace Migrations.CarsharingApp;
 
@@ -28,6 +29,9 @@ public class CarsharingContext : IdentityDbContext<User>
     public virtual DbSet<Post> News { get; set; }
     
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
+
+    public virtual DbSet<OccasionType> OccasionTypes { get; set; }
+    public virtual DbSet<Occassion> Occasions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -83,6 +87,9 @@ public class CarsharingContext : IdentityDbContext<User>
         });
 
         builder.Entity<UserRole>().HasData(roles);
+
+        builder.ApplyConfiguration(new OccasionTypeConfiguration());
+        builder.ApplyConfiguration(new OccasionConfiguration());
     }
 
     private static void SetUniqueFields(ModelBuilder modelBuilder)
