@@ -27,7 +27,9 @@ class AxiosWrapper {
 
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
+
         this.mainSiteAxios = axios.create(options);
+        this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
         options.baseURL = process.env.REACT_APP_S3_API_URL;
         this.s3ServiceAxios = axios.create(options)
@@ -266,7 +268,6 @@ class AxiosWrapper {
     }
 
     async isAdmin() {
-        return {successed : true, roles: "Admin"};
         return await this._get('/auth/isAdmin');
     }
 

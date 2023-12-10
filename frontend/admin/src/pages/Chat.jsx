@@ -5,8 +5,7 @@ import { Button } from '@mui/material';
 import MessageContainer from "../components/Chat/MessageContainer";
 import SendMessageForm from "../components/Chat/SendMessageForm";
 
-
-export default function Chat ({sendMessage, messages, leaveRoom}) {
+export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnabled}) {
 
     return (
       <div className='app'>
@@ -18,8 +17,15 @@ export default function Chat ({sendMessage, messages, leaveRoom}) {
   
         <div className='chat' >
           <MessageContainer messages={messages} />
+          { isDocumentsEnabled && <DocumentsPlaceHolder /> }
           <SendMessageForm sendMessage={sendMessage} />
         </div>
       </div>
+    )
+}
+
+function DocumentsPlaceHolder () {
+    return (
+        <div style={{height:'10px', width:"100%", backgroundColor:"black"}}></div>
     )
 }

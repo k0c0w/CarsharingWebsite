@@ -22,7 +22,24 @@ public class GetOpenedOccasionsQueryHandler : IQueryHandler<GetOpenedOccasionsQu
         try
         {
             var occasions = await _occasionRepository.GetOpenedOccasionsAsync();
-
+            occasions = new Occassion[] { 
+                new (){ 
+                    CreationDateUtc = DateTime.Now, 
+                    CloseDateUtc = null, 
+                    OccasionType = OccasionTypeDefinition.RoadAccident, 
+                    Id = Guid.NewGuid(), 
+                    Topic = "", 
+                    IssuerId = Guid.NewGuid().ToString() 
+                },
+                new (){ 
+                    CreationDateUtc = DateTime.Now, 
+                    CloseDateUtc = null, 
+                    OccasionType = OccasionTypeDefinition.Other, 
+                    Id = Guid.NewGuid(), 
+                    Topic = "", 
+                    IssuerId = Guid.NewGuid().ToString() 
+                } 
+            };
             return new Ok<IEnumerable<Occassion>>(occasions);
         }
         catch (Exception ex)

@@ -29,7 +29,15 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
             || RequestContext.User.IsInRole(Role.Admin.ToString()) || RequestContext.User.IsInRole(Role.Manager.ToString())))
             return new Error<IEnumerable<OccasionMessageDto>>();
 
-
+        var result = new List<OccasionMessageDto>()
+        {
+            new () { AuthorName = "Lol", IsFromManager = true, MessageText = "Hello!!!!", Id = Guid.NewGuid(), Attachments = default},
+          
+            new () { AuthorName = "Lol", IsFromManager = true, MessageText = "Hello!!!!", Id = Guid.NewGuid(), Attachments = default},
+        };
+        
+        return new Ok<IEnumerable<OccasionMessageDto>>(result);
+        
         // todo: get history
 
         //if attachments
