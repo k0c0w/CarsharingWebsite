@@ -389,6 +389,17 @@ class AxiosWrapper {
         return historyResult;
     }
 
+    async loadOccasionHistory(occasionId) {
+        const loadHistoryResult = {successed: false, messages: []}
+        await this.axiosInstance.get(`/occasions/${occasionId}/chat`)
+            .then(response => {
+                loadHistoryResult.successed = true;
+                loadHistoryResult.messages = response.data;
+            });
+        
+        return loadHistoryResult;
+    }
+
     //attachments must be array of files from form multiple data
     async addAttachment(occasionIssuerdGuid, attachments){
         let attachmentCreationTrackingId = null;

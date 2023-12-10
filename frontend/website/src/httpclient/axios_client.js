@@ -126,9 +126,20 @@ class AxiosWrapper {
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
     }
 
+    async loadOccasionHistory(occasionId) {
+        const loadHistoryResult = {successed: false, messages: []}
+        await this.axiosInstance.get(`/occasions/${occasionId}/chat`)
+            .then(response => {
+                loadHistoryResult.successed = true;
+                loadHistoryResult.messages = response.data;
+            });
+        
+        return loadHistoryResult;
+    }
+
     async loadMyOccasion() {
         const occasionInfo = {successed: false, openedOccasionId: null};
-        await this.axiosInstance.get("/occasion/my")
+        await this.axiosInstance.get("/occasions/my")
         .then(resp => {
             occasionInfo.openedOccasionId = resp.data;
             occasionInfo.successed = true;
@@ -148,7 +159,7 @@ class AxiosWrapper {
 
     async openNewOccasion() {
         const occasionCreationInfo = {successed: false, createdOccasionId: null, errorMessage: null};
-        await this.axiosInstance.post("/occasion")
+        await this.axiosInstance.post("/occasions")
             .then(response => {
                 occasionCreationInfo.successed = true;
                 occasionCreationInfo.createdOccasionId = response.data;
@@ -166,7 +177,7 @@ class AxiosWrapper {
 
     async getOccasionTypes() {
         let occasionTypes = [];
-        await this.axiosInstance.get("/occasion/types")
+        await this.axiosInstance.get("/occasions/types")
         .then(response => occasionTypes = response.data);
 
         return occasionTypes;

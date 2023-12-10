@@ -10,11 +10,11 @@ namespace Carsharing.Controllers.Api;
 
 [Authorize]
 [Route("api/[controller]")]
-public class OccasionController : ControllerBase
+public class OccasionsController : ControllerBase
 {
     private readonly ISender _mediator;
 
-    public OccasionController(ISender mediator)
+    public OccasionsController(ISender mediator)
     {
         _mediator = mediator;
     }
@@ -68,5 +68,18 @@ public class OccasionController : ControllerBase
             OccasionTypeDefinition.VehicleBreakdown,
             OccasionTypeDefinition.Other
         });
+    }
+
+    [HttpGet("{guid:guid}/chat")]
+    public async Task<IActionResult> GetMessagesRelatedToOccasionAsync([FromRoute] Guid guid)
+    {
+        var userId = HttpContext.User.GetId();
+        var query = new GetOccasionMessagesQuery(guid, userId);
+
+        var response = await _mediator.Send(query);
+        if (response)
+            return new JsonResult(response.Value);
+
+        return NotFound();
     }
 }
