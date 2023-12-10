@@ -45,8 +45,8 @@ if (builder.Environment.IsDevelopment())
     services.AddCors(options =>
     {
         var configuration = builder.Configuration;
-        var mainFront = configuration["FrontendHost:Main"]!;
-        var adminFront = configuration["FrontendHost:Admin"]!;
+        var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
+        var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
 
         options.AddPolicy("DevFrontEnds",
             builder =>
