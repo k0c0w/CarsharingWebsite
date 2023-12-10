@@ -36,6 +36,16 @@ class AxiosWrapper {
         }
     }
 
+    async getChatOccasions(userId) {
+        try{
+            const history = await this.axiosInstance.get(`/chat/appeals`);
+            return history.data
+        }
+        catch{
+            return [];
+        }
+    }
+
     async book(model) {
         return await this._post('booking/rent', model);
     } 

@@ -3,31 +3,60 @@ using Persistence.Chat.ChatEntites.SignalRModels;
 
 namespace Persistence.Chat.ChatEntites;
 
-public class OccasionChatRepository : IChatUserRepository<OccasionChatUser>, IChatRoomRepository<OccasionsSupportChatRoom>
+public class OccasionChatRepository
 {
     // to map user and their connections
     // for anonymous users we will use their session token (notice that it can be hacked)
-    private static readonly ConcurrentDictionary<string, OccasionsSupportChatRoom> Rooms = new();
+    private static readonly ConcurrentDictionary<Guid, OccasionsSupportChatRoom> Rooms = new();
 
     private static readonly ConcurrentDictionary<string, OccasionChatUser> ConnectedUsers = new();
-
 
     public bool TryGetUser(string userId, out OccasionChatUser? chatUser)
     {
         return ConnectedUsers.TryGetValue(userId, out chatUser);
     }
 
-    public bool TryGetRoom(string roomId, out OccasionsSupportChatRoom? chatRoom)
+    public bool TryGetRoom(Guid roomId, out OccasionsSupportChatRoom? chatRoom)
     {
         return Rooms.TryGetValue(roomId, out chatRoom);
     }
 
-    public bool TryRemoveRoom(string roomId, out OccasionsSupportChatRoom? chatRoom)
+    public bool TryGetRoomByUser(string userId, out OccasionsSupportChatRoom chatRoom)
+    {
+        foreach (var pair in Rooms)
+        {
+            if (pair.Value.Client.UserId == userId)
+            {
+                chatRoom = pair.Value;
+                return true;
+            }
+        }
+
+        chatRoom = null;
+        return false;
+    }
+    
+    public bool TryRemoveRoom(Guid roomId, out OccasionsSupportChatRoom? chatRoom)
     {
         return Rooms.TryRemove(roomId, out chatRoom);
     }
+    
+    public bool TryRemoveRoomByUserId(string userId, out OccasionsSupportChatRoom? chatRoom)
+    {
+        foreach (var pair in Rooms)
+        {
+            if (pair.Value.Client.UserId == userId)
+            {
+                TryRemoveRoom(pair.Value.RoomId, out chatRoom);
+                return true;
+            }
+        }
 
-    public bool TryAddRoom(string roomId, OccasionsSupportChatRoom techSupportChatRoom)
+        chatRoom = null;
+        return false;
+    }
+
+    public bool TryAddRoom(Guid roomId, OccasionsSupportChatRoom techSupportChatRoom)
     {
         return Rooms.TryAdd(roomId, techSupportChatRoom);
     }

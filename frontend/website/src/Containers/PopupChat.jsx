@@ -4,6 +4,7 @@ import SendMessageForm from '../Components/SendMessageForm';
 import MessageContainer from "../Components/MessageContainer";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
+import {Box} from "@mui/material";
 
 
 export default function PopupChat () {
@@ -16,6 +17,7 @@ export default function PopupChat () {
     const [connection, setConnection] = useState()
     const [messages, setMessages] = useState([])
     const [connectedRoomId, setConnectedRoomId] = useState();
+    const [occasions, setOccasions] = useState([]);
 
     async function onRecieveRoomId(roomId) {
       const history = await API.getChatHistory(roomId);
@@ -60,8 +62,50 @@ export default function PopupChat () {
       }
     }
 
+    const getOccasions = async () => {
+        try{
+            var _occasions = await API.getChatOccasions();
+            debugger
+            setOccasions(_occasions);
+        }
+        catch (e){
+            console.log(e)
+        }
+    }
+
+    const stopConnection = () => {
+        connection.stop();
+        setConnection();
+    }
+
+    const connectToOccasionChat = async () => {
+        stopConnection();
+
+        try {
+            const connection = new HubConnectionBuilder()
+                .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+                .configureLogging(LogLevel.Information)
+                .build();
+
+            connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
+
+            connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
+
+            connection.onclose(() => {
+                setConnection();
+                setMessages([]);
+            });
+
+            await connection.start();
+            setConnection(connection);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     useEffect(() => {
         joinRoom();
+        getOccasions();
     }, []);
 
     return (
@@ -71,12 +115,20 @@ export default function PopupChat () {
                     <div style={{zIndex:'10', color:'#767575'}} onClick={() => switchHidingFlag()}>=</div>
                 </div>
                 {!hiding && <>
-                <div className='message-container-wrapper' style={{flexGrow:7}}>
-                    <MessageContainer messages={messages} />
-                </div>
-                <div className='popup-chat-input' >
-                    <SendMessageForm sendMessage={sendMessage} className='popup-chat-input' style={{flexGrow:0.5, width:'100%'}} />
-                </div>
+                    <div className="dropdown">
+                        <button className="dropbtn">Обратиться с случаем</button>
+                        <div className="dropdown-content">
+                            {occasions.map((occasion, key) =>
+                                <a key={key} href="#" onClick={async () => await connectToOccasionChat(occasion.id)}>{occasion.name}</a>
+                            )}
+                        </div>
+                    </div>
+                    <div className='message-container-wrapper' style={{flexGrow:7}}>
+                        <MessageContainer messages={messages} />
+                    </div>
+                    <div className='popup-chat-input' >
+                        <SendMessageForm sendMessage={sendMessage} className='popup-chat-input' style={{flexGrow:0.5, width:'100%'}} />
+                    </div>
                 </>}
             </div>
         </div>

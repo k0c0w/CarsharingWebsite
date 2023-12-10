@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Chat.ChatEntites.SignalRModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -74,6 +75,7 @@ app.UseAuthentication()
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
+app.MapHub<OccasionsSupportChatHub>("/occasion_chat");
 
 
 await migrateDatabaseTask;

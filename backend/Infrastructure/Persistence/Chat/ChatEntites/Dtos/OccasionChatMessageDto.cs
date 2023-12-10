@@ -1,6 +1,6 @@
 ﻿namespace Persistence.Chat.ChatEntites.Dtos;
 
-public record ChatMessageDto
+public class OccasionChatMessageDto
 {
     public string Text { get; init; } = string.Empty;
 
@@ -13,5 +13,5 @@ public record ChatMessageDto
 
     public DateTime Time { get; init; }
 
-    public string RoomInitializerId { get; init; } = string.Empty;
+    public Guid RoomId { get; init; }
 }

@@ -14,9 +14,7 @@ public static class ChatRegistration
         services.AddSignalR();
         services.AddSingleton<IChatRoomRepository<TechSupportChatRoom>, ChatRepository>();
         services.AddSingleton<IChatUserRepository<ChatUser>, ChatRepository>();
-
-        services.AddSingleton<IChatRoomRepository<OccasionsSupportChatRoom>, OccasionChatRepository>();
-        services.AddSingleton<IChatUserRepository<OccasionChatUser>, OccasionChatRepository>();
+        services.AddSingleton<OccasionChatRepository>();
 
         services.AddTransient<IMessageProducer, MessageProducer>();
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Persistence.Chat;
 using Persistence.Chat.ChatEntites.SignalRModels;
+using Persistence.RepositoryImplementation;
 
 namespace Carsharing.Controllers.Api;
 
@@ -15,11 +16,14 @@ public class ChatController : ControllerBase
 {
     private readonly IMessageRepository _messageUoW;
     private readonly IChatRoomRepository<TechSupportChatRoom> _chatRoomRepository;
+    private readonly OccasionMessageRepository _occasionMessageRepository;
+        
 
-    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository<TechSupportChatRoom> chatRoomRepository)
+    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository<TechSupportChatRoom> chatRoomRepository, OccasionMessageRepository occasionMessageRepository)
     {
         _messageUoW = messageUnitOfWork;
         _chatRoomRepository = chatRoomRepository;
+        _occasionMessageRepository = occasionMessageRepository;
     }
 
     [Route("{userId}/history")]
@@ -48,6 +52,26 @@ public class ChatController : ControllerBase
           .ToArray());
     }
 
+    [Route("{userId}/occasion_history")]
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetOccasionChatHistoryAsync([FromRoute] Guid occasionId,
+        [FromQuery] int limit = 100, [FromQuery] int offset = 0)
+    {
+        var history = await _occasionMessageRepository.GetMessagesAssosiatedWithUserAsync(occasionId, offset, limit).ConfigureAwait(false);
+
+        return new JsonResult(history
+            .Select(x => new ChatMessageVM()
+            {
+                AuthorName = x.AuthorName!,
+                IsFromManager = x.IsFromManager,
+                MessageId = x.MessageId!,
+                Text = x.Text,
+                Time = x.Time,
+            })
+            .ToArray());
+    }
+
     [Route("rooms")]
     [Authorize(Roles = nameof(Role.Manager))]
     [HttpGet]
@@ -65,6 +89,11 @@ public class ChatController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAppeals()
     {
-        return Ok(new List<string>() { "Авария", "Поломка", "Документы" });
+        return Ok(new List<object>()
+        {
+            (name: "Авария", id: Guid.NewGuid()),
+            (name: "Документы", id: Guid.NewGuid()), 
+            (name: "Поломка", id: Guid.NewGuid())
+        });
     }
 }
