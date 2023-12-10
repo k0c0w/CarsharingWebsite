@@ -16,8 +16,8 @@ public class OccasionStatusChangeConsumer : IConsumer<OccasionStatusChangeDto>
         {
             var task = occasionStatusChangeDto.ChangeType switch
             {
-                OccasionStatusChange.Created => OnCreationAsync(),
-                OccasionStatusChange.Completed => OnCompletionAsync(),
+                OccasionStatusChange.Created => OnCreationAsync(occasionStatusChangeDto.OccasionId),
+                OccasionStatusChange.Completed => OnCompletionAsync(occasionStatusChangeDto.OccasionId),
                 _ => Task.CompletedTask,
             };
 
