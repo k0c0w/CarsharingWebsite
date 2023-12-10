@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Entities.Entities;
 
 namespace Carsharing.Controllers.Api;
 
@@ -56,5 +57,16 @@ public class OccasionController : ControllerBase
         }
 
         return BadRequest(creationResult.ErrorMessage);
+    }
+
+    [HttpGet("types")]
+    public IActionResult GetOccasionTypes()
+    {
+        return Ok(new OccasionTypeDefinition[]
+        {
+            OccasionTypeDefinition.RoadAccident,
+            OccasionTypeDefinition.VehicleBreakdown,
+            OccasionTypeDefinition.Other
+        });
     }
 }
