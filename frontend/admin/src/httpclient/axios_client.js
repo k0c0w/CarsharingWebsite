@@ -43,15 +43,59 @@ class AxiosWrapper {
         return [];
     }
 
-    async sendDocument(body) {
+    async sendDocument(form) {
         const config = {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
+        };
+        const requestBody = {
+            Annotation: form.annotation,
+            IsPrivate: form.isPublic == true,
+            document: form.Document
+        };
+
+        let attachmentCreationTrackingId = null;
+        const documentCreationResult = { successed: false, attachmentId: null }
+
+        await this.s3ServiceAxios.post("/documents", requestBody, config)
+        .then(response =>{
+            attachmentCreationTrackingId = response.data;
+        })
+        .catch(err => {});
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    documentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    documentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
         }
-        debugger;
-        const result = await this.s3ServiceAxios.post("/documents", body, config);
-        return result
+
+        return documentCreationResult;
     }
 
     async getOnlineRooms() {
