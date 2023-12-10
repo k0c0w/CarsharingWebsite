@@ -23,7 +23,7 @@ public class CreateOccasionAttachmentCommandHandler : IRequestHandler<CreateOcca
         var attachmentsCount = request.Attachments.Count();
         if (attachmentsCount > 5 || attachmentsCount < 1)
         {
-            await _operations.UpdateOperationStatusAsync(trackingId, OperationStatus.Failed);
+            await _operations.UpdateOperationStatusAsync(trackingId, Models.OperationStatus.Failed);
             return new HttpResponse<Guid>(System.Net.HttpStatusCode.BadRequest, trackingId, error: "Invalid attachments count.");
         }
 
