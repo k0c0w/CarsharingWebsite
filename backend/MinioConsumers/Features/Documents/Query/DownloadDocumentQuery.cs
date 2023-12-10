@@ -12,7 +12,6 @@ public class DownloadDocumentQuery : IRequest<Result<S3File>>
 	public Guid Id { get; }
     public bool IsAdminRequest { get; }
 
-
     public DownloadDocumentQuery(Guid guid, bool isAdminRequest = false)
 	{
 		Id = guid;

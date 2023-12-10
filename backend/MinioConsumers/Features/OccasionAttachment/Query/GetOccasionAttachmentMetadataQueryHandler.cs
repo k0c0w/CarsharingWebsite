@@ -49,5 +49,5 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
         }
     }
 
-    private string GetDownloadPath(Guid metadataId, string s3objectName) => $"{BaseUrl}/attachments/{metadataId}/{s3objectName}/download";
+    private string GetDownloadPath(Guid metadataId, string s3objectName) => $"{BaseUrl}/attachments/{metadataId}/download/{s3objectName}";
 }
