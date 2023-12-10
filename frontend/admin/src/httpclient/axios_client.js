@@ -1,5 +1,11 @@
 import axios from "axios"
 
+function delay(ms) {
+    return new Promise((resolve, reject) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
 class AxiosWrapper {
     constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
@@ -333,6 +339,102 @@ class AxiosWrapper {
 
     async uploadDocument() {
         
+    }
+
+    async completeOccasion(occasionGuid) {
+        const occasionCompletionResult = { successed: false, errorMessage: null}
+        await this.axiosInstance.post(`/occasions/${occasionGuid}/complete`)
+            .then(response => {
+                occasionCompletionResult.successed = true;
+            })
+            .catch(err => {
+                if (err.response)
+                    occasionCompletionResult.errorMessage = err.response.errorMessage;
+            })
+        
+        return occasionCompletionResult;
+    }
+
+    async getUncompletedOccasions() {
+        const uncompletedOccasionResult = {successed:false, occasions: [], errorMessage: null}
+
+        await this.axiosInstance.get("/occasions/uncompleted")
+            .then(response => {
+                uncompletedOccasionResult.successed=true;
+                // [ { Id, OccasionType, Topic }
+                uncompletedOccasionResult.occasions=response.data;
+            })
+            .catch(err => {
+                if (err.response){
+                    uncompletedOccasionResult.errorMessage = response.errorMessage;
+                }
+            });
+
+        return uncompletedOccasionResult;
+    }
+
+    async getOccasionChatHistory(occasionGuid) {
+        const historyResult = {successed: false, messages: [], errorMessage: null}
+
+        await this.mainSiteAxios.get($`/occassions/${occasionGuid}/chat`)
+            .then(response => {
+                historyResult.successed = true;
+                historyResult.messages = response.data;
+            })
+            .catch(err => {
+                if(err.response)
+                    historyResult.errorMessage = err.response.data;
+            });
+
+        return historyResult;
+    }
+
+    //attachments must be array of files from form multiple data
+    async addAttachment(occasionIssuerdGuid, attachments){
+        let attachmentCreationTrackingId = null;
+        const attachmentCreationResult = { successed: false, attachmentId: null }
+
+        await this.s3ServiceAxios.post("/admin/attachments", {
+            occasionUserId: occasionIssuerdGuid,
+            files: attachments
+        })
+        .then(response =>{
+            attachmentCreationTrackingId = response.data;
+        })
+        .catch(err => {});
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    attachmentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    attachmentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
+        }
+
+        return attachmentCreationResult;
     }
 
     async _put(endpoint, model) {
