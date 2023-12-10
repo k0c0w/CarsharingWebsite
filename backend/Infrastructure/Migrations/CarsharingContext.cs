@@ -32,6 +32,7 @@ public class CarsharingContext : IdentityDbContext<User>
 
     public virtual DbSet<OccasionType> OccasionTypes { get; set; }
     public virtual DbSet<Occassion> Occasions { get; set; }
+    
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

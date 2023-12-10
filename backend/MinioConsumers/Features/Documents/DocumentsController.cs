@@ -20,12 +20,9 @@ public class DocumentsController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Documents(DocumentInfoDto documentInfo , IFormFile document)
 	{
-		/*
-		//todo: parse user id
 		if (!Guid.TryParse(HttpContext.User.Identity.Name, out Guid userId))
 			return  StatusCode(403, (new HttpResponse(System.Net.HttpStatusCode.Forbidden, error: "Authentication required.")));
-		*/
-		var userId = Guid.NewGuid();
+
 		var command = new CreateDocumentCommand(documentInfo.IsPrivate, documentInfo.Annotation, userId, document);
 
 		var response = await _mediator.Send(command);
