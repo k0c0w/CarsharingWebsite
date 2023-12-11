@@ -1,12 +1,19 @@
 ﻿using Contracts.Occasion;
 using MassTransit;
+using Persistence.Chat.ChatEntites;
 
 namespace Carsharing.Consumers;
 
 public class OccasionStatusChangeConsumer : IConsumer<OccasionStatusChangeDto>
 {
     private ILogger<Exception> _logger;
+    private readonly OccasionChatRepository _occasionRepository;
 
+    public OccasionStatusChangeConsumer(ILogger<Exception> logger, OccasionChatRepository repo)
+    {
+        _logger = logger;
+        _occasionRepository = repo;
+    }
 
     public async Task Consume(ConsumeContext<OccasionStatusChangeDto> context)
     {
@@ -16,7 +23,7 @@ public class OccasionStatusChangeConsumer : IConsumer<OccasionStatusChangeDto>
         {
             var task = occasionStatusChangeDto.ChangeType switch
             {
-                OccasionStatusChange.Created => OnCreationAsync(occasionStatusChangeDto.OccasionId),
+                OccasionStatusChange.Created => OnCreationAsync(occasionStatusChangeDto.OccasionId, occasionStatusChangeDto.IssuerId),
                 OccasionStatusChange.Completed => OnCompletionAsync(occasionStatusChangeDto.OccasionId),
                 _ => Task.CompletedTask,
             };
@@ -29,17 +36,16 @@ public class OccasionStatusChangeConsumer : IConsumer<OccasionStatusChangeDto>
         }
     }
 
-    private Task OnCreationAsync(Guid occasionId)
+    private Task OnCreationAsync(Guid occasionId, Guid issuerId)
     {
-        //todo: proccess status change
+        _occasionRepository.TryAddRoom(occasionId, issuerId);
 
         return Task.CompletedTask;
     }
 
     private Task OnCompletionAsync(Guid occasionId)
     {
-        //todo: proccess status change
-
+        _occasionRepository.TryRemoveRoom(occasionId);
         return Task.CompletedTask;
     }
 }

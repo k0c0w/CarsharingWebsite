@@ -7,59 +7,44 @@ public class OccasionChatRepository
 {
     // to map user and their connections
     // for anonymous users we will use their session token (notice that it can be hacked)
-    private static readonly ConcurrentDictionary<Guid, OccasionsSupportChatRoom> Rooms = new();
+    private static readonly ConcurrentDictionary<Guid, OccasionChatRoom> Rooms = new();
 
     private static readonly ConcurrentDictionary<string, OccasionChatUser> ConnectedUsers = new();
+
+    // admin connection to connectiongroup
+    private static readonly ConcurrentDictionary<string, string> AdminConnectionsToGroups= new();
 
     public bool TryGetUser(string userId, out OccasionChatUser? chatUser)
     {
         return ConnectedUsers.TryGetValue(userId, out chatUser);
     }
 
-    public bool TryGetRoom(Guid roomId, out OccasionsSupportChatRoom? chatRoom)
+    public bool TryRemoveRoom(Guid roomId)
     {
-        return Rooms.TryGetValue(roomId, out chatRoom);
+        return Rooms.TryRemove(roomId, out _);
     }
 
-    public bool TryGetRoomByUser(string userId, out OccasionsSupportChatRoom chatRoom)
+    public bool TryAddRoom(Guid occasionId, Guid issuerId)
     {
-        foreach (var pair in Rooms)
-        {
-            if (pair.Value.Client.UserId == userId)
-            {
-                chatRoom = pair.Value;
-                return true;
-            }
-        }
+        var room = new OccasionChatRoom(issuerId, occasionId, occasionId);
 
-        chatRoom = null;
-        return false;
-    }
-    
-    public bool TryRemoveRoom(Guid roomId, out OccasionsSupportChatRoom? chatRoom)
-    {
-        return Rooms.TryRemove(roomId, out chatRoom);
-    }
-    
-    public bool TryRemoveRoomByUserId(string userId, out OccasionsSupportChatRoom? chatRoom)
-    {
-        foreach (var pair in Rooms)
-        {
-            if (pair.Value.Client.UserId == userId)
-            {
-                TryRemoveRoom(pair.Value.RoomId, out chatRoom);
-                return true;
-            }
-        }
-
-        chatRoom = null;
-        return false;
+        return Rooms.TryAdd(occasionId, room);
     }
 
-    public bool TryAddRoom(Guid roomId, OccasionsSupportChatRoom techSupportChatRoom)
+    public bool TryAddAdminConnectionToGroup(string connectionId, string groupId)
     {
-        return Rooms.TryAdd(roomId, techSupportChatRoom);
+        if (AdminConnectionsToGroups.TryGetValue(connectionId, out _))
+            return false;
+
+        return AdminConnectionsToGroups.TryAdd(connectionId, groupId);
     }
+
+    public bool TryRemoveAdminConnection(string connectionId, out string groupname)
+    {
+        return AdminConnectionsToGroups.TryRemove(connectionId, out groupname);
+    }
+
+    public bool TryGetAdminConnectionGroup(string connectionId, out string groupname) => AdminConnectionsToGroups.TryGetValue(connectionId, out groupname);
 
     public bool TryRemoveUser(string userId, out OccasionChatUser? chatUser)
     {
@@ -71,12 +56,7 @@ public class OccasionChatRepository
         return ConnectedUsers.TryAdd(userId, user);
     }
 
-    public bool ContainsUserById(string userId)
-    {
-        return ConnectedUsers.ContainsKey(userId);
-    }
-
-    public IEnumerable<OccasionsSupportChatRoom> GetAll()
+    public IEnumerable<OccasionChatRoom> GetAll()
     { 
         return Rooms.Values.ToArray();
     }

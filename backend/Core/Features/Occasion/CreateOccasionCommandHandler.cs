@@ -46,6 +46,7 @@ public class CreateOccasionCommandHandler : ICommandHandler<CreateOccasionComman
             {
                 ChangeType = OccasionStatusChange.Created,
                 OccasionId = createdId,
+                IssuerId = request.IssuerId,
             });
 
             return new Ok<Guid>(createdId);

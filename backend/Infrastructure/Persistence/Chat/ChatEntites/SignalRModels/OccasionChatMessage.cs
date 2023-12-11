@@ -2,6 +2,8 @@
 
 public class OccasionChatMessage
 {
+    public Guid OccasionId { get; set; }
+
     public Guid MessageId { get; set; }
 
     public string Text { get; set; } = string.Empty;
@@ -11,8 +13,6 @@ public class OccasionChatMessage
     public bool IsFromManager { get; set; }
 
     public DateTime Time { get; set; }
-
-    public Guid RoomId { get; set; } 
 
     public Guid? Attachment { get; set; }
 }

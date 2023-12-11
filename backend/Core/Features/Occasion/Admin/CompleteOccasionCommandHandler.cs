@@ -38,6 +38,7 @@ public class CompleteOccasionCommandHandler : ICommandHandler<CompleteOccasionCo
             await _messageProducer.SendMessageAsync(new OccasionStatusChangeDto
             {
                 OccasionId = request.OccasionId,
+                IssuerId = Guid.Parse(occasion.IssuerId),
                 ChangeType = OccasionStatusChange.Completed
             });
 

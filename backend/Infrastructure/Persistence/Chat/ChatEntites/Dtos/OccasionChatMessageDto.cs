@@ -13,5 +13,5 @@ public class OccasionChatMessageDto
 
     public DateTime Time { get; init; }
 
-    public Guid RoomId { get; init; }
+    public Guid OccasionId { get; init; }
 }
