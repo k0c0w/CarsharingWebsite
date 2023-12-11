@@ -40,7 +40,7 @@ public class OccasionMessageRepository
         return _ctx.OccasionMessages.FirstOrDefaultAsync(x => x.Id == primaryKey);
     }
 
-    public async Task<IEnumerable<OccasionChatMessage>> GetMessagesAssosiatedWithUserAsync(Guid occasionId, int offset, int limit)
+    public async Task<IEnumerable<OccasionChatMessage>> GetMessagesAsync(Guid occasionId, int offset, int limit)
     {
         var history = await _ctx.OccasionMessages
                                 .AsNoTracking()
@@ -71,7 +71,7 @@ public class OccasionMessageRepository
             {
                 AuthorName = x.FirstName!,
                 IsFromManager = x.IsFromManager,
-                MessageId = x.UserId,
+                MessageId = x.Id,
                 Text = x.Text,
                 Time = x.Time,
             })

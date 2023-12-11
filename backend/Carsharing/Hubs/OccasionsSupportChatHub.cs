@@ -173,7 +173,11 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
               _occasionChatRepository.TryGetRoomByUser(user!.UserId, out room)))
         {
             roomId = Guid.NewGuid();
-            await CreateOccasionCharRoom(roomId).ConfigureAwait(false);
+            var newChatUser = await CreateNewChatUserAsync(IsAuthenticatedUser()).ConfigureAwait(false);
+            if (!IsCurrentUserManager())
+                await CreateOccasionCharRoom(roomId, newChatUser).ConfigureAwait(false);
+            else
+                return;
         }
 
         await AddConnectionToGroupAsync(connectedUserId, room is not null? room!.RoomId.ToString() : roomId.ToString());
@@ -210,10 +214,8 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         }
     }
 
-    private async Task CreateOccasionCharRoom(Guid occasionId)
+    private async Task CreateOccasionCharRoom(Guid occasionId, OccasionChatUser newChatUser)
     {
-        var newChatUser = await CreateNewChatUserAsync(IsAuthenticatedUser()).ConfigureAwait(false);
-
         await CreateRoomAsync(IsAuthenticatedUser(), newChatUser, occasionId);
 
         await NotifyAboutRoomCreationAsync(newChatUser.UserId, newChatUser.Name, occasionId);

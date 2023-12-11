@@ -62,14 +62,14 @@ public class ChatController : ControllerBase
     public async Task<IActionResult> GetOccasionChatHistoryAsync([FromRoute] Guid occasionId,
         [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
-        var history = await _occasionMessageRepository.GetMessagesAssosiatedWithUserAsync(occasionId, offset, limit).ConfigureAwait(false);
+        var history = await _occasionMessageRepository.GetMessagesAsync(occasionId, offset, limit).ConfigureAwait(false);
 
         return new JsonResult(history
             .Select(x => new ChatMessageVM()
             {
                 AuthorName = x.AuthorName!,
                 IsFromManager = x.IsFromManager,
-                MessageId = x.MessageId!,
+                MessageId = x.MessageId.ToString(),
                 Text = x.Text,
                 Time = x.Time,
             })
