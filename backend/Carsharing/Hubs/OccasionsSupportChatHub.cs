@@ -66,6 +66,10 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         var managerId = Context.UserIdentifier!;
         var connectionId = Context.ConnectionId;
 
+        //TODO: убрать
+        await Clients.Client(connectionId).JoinRoomResult(new JoinRoomResult() { RoomId = roomId.ToString(), Success = true }).ConfigureAwait(false);
+        return;
+        
         if (!(_occasionChatRepository.ContainsUserById(managerId) && _occasionChatRepository.TryGetRoom(roomId, out var room)))
         {
             await Clients.Client(connectionId).JoinRoomResult(new JoinRoomResult() { RoomId = roomId.ToString() }).ConfigureAwait(false);

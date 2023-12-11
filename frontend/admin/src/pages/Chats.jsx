@@ -18,6 +18,7 @@ export default function Chats () {
 
     const onJoinRoomResultRecieved = async (update) => {
         if (update.success){
+            debugger;
           const history = await API.getChatHistory(update.roomId);
           setActiveRoomMessages(history);
           const room = onlineRooms.find(elem => elem.roomId === update.roomId);
@@ -140,10 +141,10 @@ export default function Chats () {
 
     const joinRoom = async (roomId) => {
         try {
-                await connection.invoke('JoinRoom', roomId);
-            } catch (e) {
+            await connection.invoke('JoinRoom', roomId);
+        } catch (e) {
             console.log(e)
-            }   
+        }
     }
 
     const leaveRoom = async (roomId) => {
