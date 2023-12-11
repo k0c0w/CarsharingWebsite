@@ -47,14 +47,14 @@ export function OccasionSendMessageForm({sendMessage}) {
             filesArray[i] = files.item(i);
             i++;
         }
-        setAttachments(filesArray);
+        setAttachments([...filesArray]);
     }
 
     function removeFileFromAttachmentsByIndex(i) {
         if (-1 < i && i < attachments.length){
             const without = [...attachments];
             without.splice(i);
-            setAttachments(without);
+            setAttachments([...without]);
         }
     }
 
