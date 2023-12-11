@@ -95,11 +95,11 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
     const [connection, setConnection] = useState();
     const [messages, setMessages] = useState([]);
 
-    const sendMessage = async ({text, attachemntId}) => {
+    const sendMessage = async ({text, attachmentId}) => {
         try {
           const messageModel = {
             Text: text,
-            AttachmentId: attachemntId,
+            AttachmentId: attachmentId,
             OccasionId: occasionId,
             Time: new Date().toJSON(),
           };
@@ -110,6 +110,27 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
         }
       }
     
+    async function processMessage(receivedMessage) {
+        const message = {
+            text: receivedMessage.text,
+            authorName: receivedMessage.authorName,
+            attachmets: []
+        }
+        if (receivedMessage.attachmentId) {
+            const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);
+            if (attachmentInfo.successed){
+                message.attachments = attachmentInfo.attachments;
+
+            }
+            else{
+                message.attachmets = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg"}];
+            }
+        }
+
+        setMessages(messages => [...messages, message])
+    }  
+
+
     async function loadOccasionChatHistory() {
         const response = await API.loadOccasionHistory(occasionId);
         if (response?.successed){
@@ -129,7 +150,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
         con.on('ReceiveMessage',
          (message) => {
             console.log(message);
-            setMessages(messages => [...messages, message])
+            processMessage(message);
         });
         con.on('OccassionClosed', 
         () => {onCloseOccasionRecieved()});

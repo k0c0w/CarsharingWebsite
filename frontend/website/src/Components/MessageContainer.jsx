@@ -1,4 +1,5 @@
 import {useEffect, useRef} from 'react';
+import { AiFillFile } from 'react-icons/ai';
 import '../css/popup-chat.css';
 
 // eslint-disable-next-line react/prop-types
@@ -67,6 +68,16 @@ export function OccasionMessageContainer ({ messages }) {
     </div>
 }
 
-const Attachment = ({key, info, number}) => <div key={key} figure={number} className='attachment'>{info}</div>
+const Attachment = ({key, info, number}) => {
+
+    function BodyByContentType({contentType, link}) {
+        if (contentType.startsWith("image/"))
+        return <img src={link} alt={link} style={{maxWidth: 200}}/>
+        else 
+        return <AiFillFile color='#1475cf' src={link} />
+    }
+
+    return <div key={key} figure={number} className='attachment'><BodyByContentType contentType={info.content_type} link={info.download_link} /></div>
+}
 
 export default MessageContainer;

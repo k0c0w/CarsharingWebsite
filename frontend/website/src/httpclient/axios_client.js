@@ -260,6 +260,21 @@ class AxiosWrapper {
         return attachmentCreationResult;
     }
 
+    async getAttachmentInfo(attachmentId) {
+        const response = {successed: false};
+
+        await this.s3ServiceAxios.get(`attachments/${attachmentId}`)
+        .then(r => {
+            response.successed = true;
+            response.attachments = r.data.value.attachments;
+        })
+        .catch(err => {
+            response.defaultAttachment = "https://i.pinimg.com/originals/7c/1c/a4/7c1ca448be31c489fb66214ea3ae6deb.jpg"
+        })
+
+        return response;
+    }
+
     async _post(endpoint, model) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model)

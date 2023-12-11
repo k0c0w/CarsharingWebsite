@@ -41,6 +41,25 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
     setMessages([]);
   }
 
+  async function processMessage(receivedMessage) {
+    const message = {
+        text: receivedMessage.text,
+        authorName: receivedMessage.authorName,
+        attachments: []
+    }
+    if (receivedMessage.attachmentId) {
+        const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);
+        if (attachmentInfo.successed){
+            message.attachments = attachmentInfo.attachments;
+        }
+        else{
+            message.attachments = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg"}];
+        }
+    }
+
+    setMessages(message => [...messages, message])
+}  
+
   async function startConnection() {
     try {
         const localConnection = new HubConnectionBuilder()
@@ -51,7 +70,7 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
         localConnection.on('ReceiveMessage',
          (message) => {
             console.log(message);
-            setMessages(messages => [...messages, message])
+            processMessage(message);
         });
         localConnection.on('OccassionClosed', 
         () => {onCloseOccasionRecieved()});

@@ -40,9 +40,9 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
         foreach (var message in messages)
         {
             IEnumerable<AttachmentInfo> links;
-            if (message.Attachment is not null)
+            if (message.AttachmentId is not null)
             {
-                var webCallResult = await _s3ServiceClient.GetAttachmentInfosByIdsAsync(message.Attachment.Value);
+                var webCallResult = await _s3ServiceClient.GetAttachmentInfosByIdsAsync(message.AttachmentId.Value);
                 if (webCallResult.Success)
                 {
                     OccasionMessageDto dto = new OccasionMessageDto()
