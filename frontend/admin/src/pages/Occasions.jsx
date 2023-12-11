@@ -24,6 +24,7 @@ export default function Occasions () {
         }
     }
 
+
     useEffect(() => {
         async function retrieveOccasions() {
             let result = await API.getUncompletedOccasions();
@@ -43,7 +44,7 @@ export default function Occasions () {
         <>
             {!activeOccasion && <OccasionsList onlineOccasions={uncompletedOccasions} joinOccasion={setActiveOccasion} closeOccasion={completeOccasion}/>}
             {errorMessage && <div style='color:"red"'>{errorMessage}</div>}
-            {activeOccasion && <OccasionChat occasionId={activeOccasion}/>}
+            {activeOccasion && <OccasionChat occasionId={activeOccasion} onLeaveRoom={() => setActiveOccasion(null)}/>}
         </>
     )
 }

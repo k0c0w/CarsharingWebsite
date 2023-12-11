@@ -55,7 +55,7 @@ export function OccasionChat({occasionId, onLeaveRoom}) {
 
   const leaveRoom = async (roomId) => {
       try {
-          await connection.invoke('LeaveRoom', roomId);
+          //await connection.invoke('LeaveRoom', roomId);
           connection?.stop();
           onLeaveRoom();
       } catch (e) {
@@ -82,7 +82,7 @@ export function OccasionChat({occasionId, onLeaveRoom}) {
     async function init() {
       await loadHistory();
       await startConnection();
-      await connection.invoke('JoinRoom', occasionId);
+      //await connection.invoke('JoinRoom', occasionId);
     }
 
     init();
