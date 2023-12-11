@@ -6,7 +6,7 @@ import {OccasionMessageContainer} from "../components/Chat/MessageContainer";
 import  {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
-export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnabled}) {
+export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnabled=true}) {
 
     return (
       <div className='app'>
@@ -23,7 +23,6 @@ export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnab
       </div>
     )
 }
-
 
 export function OccasionChat({occasionId, onLeaveRoom}) {
   const [connection, setConnection] = useState(null);
