@@ -25,9 +25,21 @@ class AxiosWrapper {
         this.axiosInstance = axios.create(options);
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
-        options.baseURL = "http://localhost:5147"
-        options.headers["Access-Control-Allow-Origin"]="http://localhost:5147";
-        this.s3ServiceAxios = axios.create(options);
+        const s3options = {
+            baseURL: "http://localhost:5147",
+            timeout: 10000,
+            ssl: false,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": "http://localhost:5147",
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            withCredentials: true,
+        };
+
+        this.s3ServiceAxios = axios.create(s3options);
         this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
     }
 
@@ -201,9 +213,10 @@ class AxiosWrapper {
     async addAttachment(attachments){
         let attachmentCreationTrackingId = null;
         const attachmentCreationResult = { successed: false, attachmentId: null }
-
-        await this.s3ServiceAxios.post("/attachments", {
-            files: attachments
+        const formData = new FormData();
+        attachments.forEach(element => formData.append("file", element, element.name));
+        await this.s3ServiceAxios.post("/attachments", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
         })
         .then(response =>{
             attachmentCreationTrackingId = response.data;
