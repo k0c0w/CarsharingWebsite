@@ -78,7 +78,7 @@ export function OccasionSendMessageForm({sendMessage}) {
                 }
             }
             const messageInput = {
-                message: message ?? "", 
+                text: message ?? "", 
                 attachmentId: attachmentId
             };
             sendMessage(messageInput);

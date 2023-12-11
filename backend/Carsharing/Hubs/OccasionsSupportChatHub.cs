@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Domain.Common;
+﻿using Domain.Common;
 using Domain.Entities;
 using Entities.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +60,10 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
             }
         }
 
+        message.AuthorName = (await _userManager.FindByIdAsync(GetUserId())).FirstName!;
+        message.IsFromManager = IsCurrentUserManagerOrAdmin();
+        message.MessageId = Guid.NewGuid();
+
         await _publisher.SendMessageAsync(new OccasionChatMessageDto()
         {
             AuthorId = GetUserId(),
@@ -68,10 +71,10 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
             OccasionId = message.OccasionId,
             Text = message.Text,
             Time = message.Time,
-            IsAuthorManager = IsCurrentUserManagerOrAdmin(),
+            IsAuthorManager = message.IsFromManager,
         });
 
-        await Clients.Group(message.OccasionId.ToString()).RecieveMessage(message);
+        await Clients.Group(message.OccasionId.ToString()).ReceiveMessage(message);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)

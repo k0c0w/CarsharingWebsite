@@ -95,10 +95,13 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
     const [connection, setConnection] = useState();
     const [messages, setMessages] = useState([]);
 
-    const sendMessage = async (message) => {
+    const sendMessage = async ({text, attachemntId}) => {
         try {
           const messageModel = {
-            message: message
+            Text: text,
+            Attachment: attachemntId,
+            OccasionId: occasionId,
+            Time: new Date().toJSON(),
           };
     
           await connection.invoke('SendMessage', messageModel);
@@ -127,8 +130,10 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
           .withAutomaticReconnect()
           .build();
 
-        con.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
-        con.on('OccassionClosed', () => {onCloseOccasionRecieved()});
+        con.on('ReceiveMessage',
+         (message) => setMessages(messages => [...messages, message]));
+        con.on('OccassionClosed', 
+        () => {onCloseOccasionRecieved()});
 
         await connection.start();
         setConnection(con);
