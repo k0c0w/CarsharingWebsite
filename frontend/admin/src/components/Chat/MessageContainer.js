@@ -52,7 +52,7 @@ export function OccasionMessageContainer ({ messages }) {
                             {m.attachmets.map((x, i) => <Attachment key={i} info={x} number={i}/>)}
                         </div>
                     }
-                    <div className='message'>{m.text}</div>
+                    <div className='message' style={{color: "black"}}>{m.text}</div>
                 </div>
                 <div className='author'>{m.authorName}</div>
             </>

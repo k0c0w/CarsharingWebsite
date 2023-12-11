@@ -14,5 +14,5 @@ public class OccasionChatMessage
 
     public DateTime Time { get; set; }
 
-    public Guid? Attachment { get; set; }
+    public Guid? AttachmentId { get; set; }
 }

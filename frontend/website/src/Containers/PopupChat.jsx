@@ -99,7 +99,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
         try {
           const messageModel = {
             Text: text,
-            Attachment: attachemntId,
+            AttachmentId: attachemntId,
             OccasionId: occasionId,
             Time: new Date().toJSON(),
           };
