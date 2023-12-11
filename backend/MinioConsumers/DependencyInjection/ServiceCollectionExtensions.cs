@@ -89,30 +89,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
-        services.AddJwtAuthorization(configuration);
+        services.AddAuthenticationAndAuthorization(configuration);
 
         services.AddHostedService<TempFileCleanerBackgroundService>();
         services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
-    }
-
-    public static void AddJwtAuthorization(this IServiceCollection services, IConfiguration configuration)
-    {
-        services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(o =>
-            {
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey
-                        (Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException())),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = false,
-                    ValidateIssuerSigningKey = true
-                };
-            });
     }
 
     internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection,

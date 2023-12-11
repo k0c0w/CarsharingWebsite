@@ -25,7 +25,7 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
     public async Task<Result<IEnumerable<OccasionMessageDto>>> Handle(GetOccasionMessagesQuery request, CancellationToken cancellationToken)
     {
         var occasion = await _occasionRepository.GetByIdAsync(request.OccasionId);
-        if (!(occasion.IssuerId == request.ApplicantId && occasion.CloseDateUtc is null 
+        if (occasion is null || !(occasion.IssuerId == request.ApplicantId && occasion.CloseDateUtc is null 
             || RequestContext.User.IsInRole(Role.Admin.ToString()) || RequestContext.User.IsInRole(Role.Manager.ToString())))
             return new Error<IEnumerable<OccasionMessageDto>>();
 

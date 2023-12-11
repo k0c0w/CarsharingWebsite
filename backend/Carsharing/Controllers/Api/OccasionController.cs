@@ -62,11 +62,11 @@ public class OccasionsController : ControllerBase
     [HttpGet("types")]
     public IActionResult GetOccasionTypes()
     {
-        return Ok(new OccasionTypeDefinition[]
+        return Ok(new string[]
         {
-            OccasionTypeDefinition.RoadAccident,
-            OccasionTypeDefinition.VehicleBreakdown,
-            OccasionTypeDefinition.Other
+            OccasionTypeDefinition.RoadAccident.ToString(),
+            OccasionTypeDefinition.VehicleBreakdown.ToString(),
+            OccasionTypeDefinition.Other.ToString()
         });
     }
 

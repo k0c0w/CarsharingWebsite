@@ -8,7 +8,7 @@ function delay(ms) {
 
 class AxiosWrapper {
 
-    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
+    constructor(url = "https://localhost:7129/api") {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -16,15 +16,19 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": process.env.REACT_LOCAL_HOST,
+                "Access-Control-Allow-Origin": "https://localhost:7129",
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
         }
         this.token = localStorage.getItem("token");
         this.axiosInstance = axios.create(options);
-        this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+
+        options.baseURL = "http://localhost:5147"
+        options.headers["Access-Control-Allow-Origin"]="http://localhost:5147";
+        this.s3ServiceAxios = axios.create(options);
+        this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
     }
 
     async getChatHistory(userId) {
@@ -80,7 +84,7 @@ class AxiosWrapper {
           }) 
             .then(response => {
                 result.successed = true;
-                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `${process.env.REACT_APP_S3_API_URL}${x.download_url}`}});
+                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `http://localhost:7126/${x.download_url}`}});
 
                 return result;
             })
@@ -98,6 +102,7 @@ class AxiosWrapper {
         let response = await this._post(`/account/login/`, this._getModelFromForm(form));
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
         localStorage.setItem("token", this.token)
         return response
     }
@@ -193,7 +198,7 @@ class AxiosWrapper {
     }
 
         //attachments must be array of files from form multiple data
-    async addAttachment(occasionIssuerdGuid, attachments){
+    async addAttachment(attachments){
         let attachmentCreationTrackingId = null;
         const attachmentCreationResult = { successed: false, attachmentId: null }
 
@@ -203,7 +208,10 @@ class AxiosWrapper {
         .then(response =>{
             attachmentCreationTrackingId = response.data;
         })
-        .catch(() => {});
+        .catch((err) => {
+            if (err.response)
+                attachmentCreationResult.errorMessage = err.response.data.errorMessage;
+        });
 
         if (attachmentCreationTrackingId)
         {

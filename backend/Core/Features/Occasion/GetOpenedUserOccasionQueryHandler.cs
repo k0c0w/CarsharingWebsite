@@ -23,11 +23,11 @@ public class GetOpenedUserOccasionQueryHandler : IQueryHandler<GetOpenedUserOcca
             if (!Guid.TryParse(request.UserId, out Guid id))
                 return new Error<Guid?>();
 
-            var occasion = await _occasionRepository.GetOpenOccasionByIssuerIdAsync(Guid.Parse(request.UserId));
+            var occasion = await _occasionRepository.GetOpenOccasionByIssuerIdAsync(id);
 
             if (occasion == null)
             {
-                return new Ok<Guid?>(default(Guid?));
+                return new Ok<Guid?>(default(Guid));
             }
 
             return new Ok<Guid?>(occasion.Id);

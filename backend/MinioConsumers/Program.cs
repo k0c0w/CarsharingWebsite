@@ -10,24 +10,22 @@ services.AddMongoSetUp(configuration);
 services.AddServices();
 services.AddInfrastructure(configuration);
 
-if (builder.Environment.IsDevelopment())
-{
-    services.AddCors(options =>
-    {
-        var configuration = builder.Configuration;
-        var mainFront = configuration["FrontendHost:Main"]!;
-        var adminFront = configuration["FrontendHost:Admin"]!;
 
-        options.AddPolicy("DevFrontEnds",
-            builder =>
-                builder.WithOrigins(mainFront, adminFront)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .SetIsOriginAllowed(origin => true)
-        );
-    });
-}
+services.AddCors(options =>
+{
+    var configuration = builder.Configuration;
+    var mainFront = configuration["FrontendHost:Main"]!;
+    var adminFront = configuration["FrontendHost:Admin"]!;
+
+    options.AddPolicy("DevFrontEnds",
+        builder =>
+            builder.WithOrigins(mainFront, adminFront)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin => true)
+    );
+});
 
 var app = builder.Build();
 
@@ -40,10 +38,8 @@ if (app.Environment.IsDevelopment())
 #endregion
 
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("DevFrontEnds");
-}
+app.UseCors("DevFrontEnds");
+
 
 app.UseAuthentication();
 app.UseAuthorization();

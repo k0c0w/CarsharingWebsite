@@ -71,16 +71,18 @@ export default function PopupChat () {
                 <div className='popup-chat-header'  style={{flexGrow:0.5, display:'flex', flexDirection:'row', zIndex:'10'}}>
                     <div style={{zIndex:'10', color:'#767575'}} onClick={() => switchHidingFlag()}>=</div>
                 </div>
-                {iHaveOpenOccasion != null && !hiding && !occasionCreationRequestSent &&
+                {!hiding &&
                 <>
-                    <div className="dropdown">
-                        <button className="dropbtn">Происшествие</button>
-                        <div className="dropdown-content">
-                            {occasionTypes.map((occasion, key) =>
-                                <div key={key} onClick={() => tryCreateOccasion(occasion)}>{occasion}</div>
-                            )}
+                    {!iHaveOpenOccasion && !occasionCreationRequestSent &&
+                        <div className="dropdown">
+                            <button className="dropbtn">Происшествие</button>
+                            <div className="dropdown-content">
+                                {occasionTypes.map((occasion, key) =>
+                                    <div key={key} onClick={() => tryCreateOccasion(occasion)}>{occasion}</div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    }
                     {!iHaveOpenOccasion && <DefaultSupportChat/>}
                     {iHaveOpenOccasion && <OccasionChat occasionId={myOccasionId} onCloseOccasionRecieved={onCloseOccasionRecieved}/>}
                 </>}
@@ -113,12 +115,12 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
             }
         }
 
-        loadOccasionChatHistory();
+        //loadOccasionChatHistory();
     }, []);
 
     async function createHubConnection() {
         const con = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, {
+          .withUrl("https://localhost:7129/occasion_chat", {
             accessTokenFactory: () => localStorage.getItem("token"),
           })
           .configureLogging(LogLevel.Information)
@@ -162,7 +164,7 @@ function DefaultSupportChat() {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+          .withUrl("https://localhost:7129/chat", { accessTokenFactory: () => localStorage.getItem("token") })
           .configureLogging(LogLevel.Information)
           .withAutomaticReconnect()
           .build();
