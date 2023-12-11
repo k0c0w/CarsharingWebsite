@@ -7,6 +7,7 @@ using System.Security.Claims;
 namespace MinioConsumer.Features.OccasionAttachment;
 
 [Route("attachments")]
+[Authorize]
 public class OccasionAttachmentController : ControllerBase
 {
     private readonly ISender _sender;
@@ -56,6 +57,7 @@ public class OccasionAttachmentController : ControllerBase
     }
 
     [HttpPost("/admin/attachments")]
+    [Authorize(Roles = "Manager, Admin")]
     public Task<IActionResult> AppendAttachmentAsync(Guid occasionUserId, IEnumerable<IFormFile> files)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))

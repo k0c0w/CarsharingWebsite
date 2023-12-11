@@ -70,15 +70,4 @@ public class AdminOccasionController : ControllerBase
 
         return Ok();
     }
-
-    [HttpPost("send_message")]
-    [AllowAnonymous]
-    public async Task<IActionResult> SendMessage(OccasionMessage message)
-    {
-        await _occasionMessageRepository.AddAsync(message);
-
-        var result = await _occasionMessageRepository.GetMessagesAsync(message.OccasionId, 100, 0);
-
-        return Ok();
-    }
 }

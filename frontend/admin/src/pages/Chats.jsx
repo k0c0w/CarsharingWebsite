@@ -17,7 +17,6 @@ export default function Chats () {
     const [errorMessage, setErrorMessage] = useState();
 
     const onJoinRoomResultRecieved = async (update) => {
-        debugger;
         if (update.success){
             debugger;
           const history = await API.getChatHistory(update.roomId);
@@ -26,7 +25,6 @@ export default function Chats () {
           setActiveRoom(room);
         }
         else{
-            debugger;
           setErrorMessage("Не возможно присоедениться к комнате");
         }
     }
@@ -143,7 +141,6 @@ export default function Chats () {
 
     const joinRoom = async (roomId) => {
         try {
-            debugger
             await connection.invoke('JoinRoom', roomId);
         } catch (e) {
             console.log(e)
