@@ -87,6 +87,7 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
             }
             await Task.WhenAll(tasks);
             await tempMetadataRepository.RemoveByIdAsync(metadataId);
+            await operationRepository.UpdateOperationStatusAsync(operationId, OperationStatus.Completed);
         }
         catch(Exception ex) 
         {

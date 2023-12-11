@@ -214,12 +214,12 @@ class AxiosWrapper {
         let attachmentCreationTrackingId = null;
         const attachmentCreationResult = { successed: false, attachmentId: null }
         const formData = new FormData();
-        attachments.forEach(element => formData.append("file", element, element.name));
+        attachments.forEach(element => formData.append("files", element, element.name));
         await this.s3ServiceAxios.post("/attachments", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         })
         .then(response =>{
-            attachmentCreationTrackingId = response.data;
+            attachmentCreationTrackingId = response.data.value;
         })
         .catch((err) => {
             if (err.response)
@@ -231,9 +231,9 @@ class AxiosWrapper {
             let attempt = 0;
             let attemptResult = false;
             while (attempt < 5) {
-                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                await this.s3ServiceAxios.get(`/operation/${attachmentCreationTrackingId}/status`)
                     .then(response => {
-                        const status = response.data;
+                        const status = response.data.status;
                         if (status == "Failed"){
                             attempt = 1000;
                         }
