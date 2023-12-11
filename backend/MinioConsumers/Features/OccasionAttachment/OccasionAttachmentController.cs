@@ -46,7 +46,6 @@ public class OccasionAttachmentController : ControllerBase
 
 
 	[HttpPost("")]
-	[Authorize]
 	public Task<IActionResult> AppendAttachmentAsync(IEnumerable<IFormFile> files)
 	{
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))
@@ -57,7 +56,6 @@ public class OccasionAttachmentController : ControllerBase
     }
 
     [HttpPost("/admin/attachments")]
-    [Authorize(Roles = "Manager, Admin")]
     public Task<IActionResult> AppendAttachmentAsync(Guid occasionUserId, IEnumerable<IFormFile> files)
     {
         if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))

@@ -1,12 +1,32 @@
-﻿using MassTransit;
+﻿using Entities.Entities;
+using MassTransit;
 using Persistence.Chat.ChatEntites.Dtos;
+using Persistence.RepositoryImplementation;
 
 namespace ChatConsumers;
 
 public class OccasionMessageConsumer : IConsumer<OccasionChatMessageDto>
 {
-    public Task Consume(ConsumeContext<OccasionChatMessageDto> context)
+    private readonly OccasionMessageRepository _occasionMessageRepository;
+    public OccasionMessageConsumer(OccasionMessageRepository occasionMessageRepository)
     {
-        throw new NotImplementedException();
+        _occasionMessageRepository = occasionMessageRepository;
+    }
+    public async Task Consume(ConsumeContext<OccasionChatMessageDto> context)
+    {
+        var messageDto = context.Message;
+
+        var message = new OccasionMessage()
+        {
+            Attachment = messageDto.Attachment,
+            AuthorId = messageDto.AuthorId,
+            OccasionId = messageDto.OccasionId,
+            Id = messageDto.Guid,
+            Text = messageDto.Text,
+            Time = messageDto.Time,
+            IsFromManager = messageDto.IsAuthorManager,
+        };
+
+        await _occasionMessageRepository.AddAsync(message).ConfigureAwait(false);
     }
 }

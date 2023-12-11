@@ -2,6 +2,7 @@
 
 public class OccasionChatMessageDto
 {
+    public Guid Guid { get; init; }
     public string Text { get; init; } = string.Empty;
 
     public string AuthorId { get; init; } = string.Empty;

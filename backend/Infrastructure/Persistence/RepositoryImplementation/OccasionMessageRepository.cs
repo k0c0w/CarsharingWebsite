@@ -16,11 +16,11 @@ public class OccasionMessageRepository
         _ctx = context;
     }
 
-    public Task<Guid> AddAsync(OccasionMessage entity)
+    public async Task<Guid> AddAsync(OccasionMessage entity)
     {
         _ctx.Add(entity);
-
-        return Task.FromResult(entity.Id);
+        await _ctx.SaveChangesAsync();
+        return entity.Id;
     }
 
     public async Task<IEnumerable<OccasionMessage>> GetBatchAsync(int? offset = default, int? limit = default)
@@ -42,9 +42,10 @@ public class OccasionMessageRepository
 
     public async Task<IEnumerable<OccasionChatMessage>> GetMessagesAsync(Guid occasionId, int offset, int limit)
     {
+        var result = await _ctx.OccasionMessages.ToListAsync();
         var history = await _ctx.OccasionMessages
                                 .AsNoTracking()
-                                .Where(m => m.Id == occasionId)
+                                .Where(m => m.OccasionId == occasionId)
                                 .Join(
                                     _ctx.Users,
                                     m => m.AuthorId,

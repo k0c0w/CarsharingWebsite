@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Entities.Entities;
+using Persistence.RepositoryImplementation;
 
 namespace Carsharing.Controllers.Admin;
 
@@ -11,10 +13,12 @@ namespace Carsharing.Controllers.Admin;
 public class AdminOccasionController : ControllerBase
 {
     private readonly ISender _mediator;
+    private readonly OccasionMessageRepository _occasionMessageRepository; 
 
-    public AdminOccasionController(ISender mediator)
+    public AdminOccasionController(ISender mediator, OccasionMessageRepository occasionMessageRepository)
     {
         _mediator = mediator;
+        _occasionMessageRepository = occasionMessageRepository;
     }
 
     [HttpGet("uncompleted")]
@@ -63,6 +67,17 @@ public class AdminOccasionController : ControllerBase
 
         if (!completionResult)
             return BadRequest(completionResult);
+
+        return Ok();
+    }
+
+    [HttpPost("send_message")]
+    [AllowAnonymous]
+    public async Task<IActionResult> SendMessage(OccasionMessage message)
+    {
+        await _occasionMessageRepository.AddAsync(message);
+
+        var result = await _occasionMessageRepository.GetMessagesAsync(message.OccasionId, 100, 0);
 
         return Ok();
     }

@@ -1,4 +1,5 @@
-﻿using Clients.S3ServiceClient;
+﻿using Clients.Objects;
+using Clients.S3ServiceClient;
 using Domain.Entities;
 using Entities.Repository;
 using Microsoft.AspNetCore.Http;
@@ -30,37 +31,33 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
         var occasion = await _occasionRepository.GetByIdAsync(request.OccasionId);
         if (occasion is null || !(occasion.IssuerId == request.ApplicantId && occasion.CloseDateUtc is null 
             || RequestContext.User.IsInRole(Role.Admin.ToString()) || RequestContext.User.IsInRole(Role.Manager.ToString())))
-            return new Error<IEnumerable<OccasionMessageDto>>();
+            return new Shared.Results.Error<IEnumerable<OccasionMessageDto>>();
 
         var messages = await _occasionMessageRepository.GetMessagesAsync(request.OccasionId, 100, 0);
 
-        var result = messages.Select(x => new OccasionMessageDto()
+        var result = new List<OccasionMessageDto>();
+
+        foreach (var message in messages)
+        {
+            IEnumerable<AttachmentInfo> links;
+            if (message.Attachment is not null)
             {
-                Id = x.MessageId,
-                MessageText = x.Text,
-                IsFromManager = x.IsFromManager,
-                Attachments = default,
-                AuthorName = x.AuthorName,
+                var webCallResult = await _s3ServiceClient.GetAttachmentInfosByIdsAsync(message.Attachment.Value);
+                if (webCallResult.Success)
+                {
+                    OccasionMessageDto dto = new OccasionMessageDto()
+                    {
+                        Id = message.MessageId,
+                        MessageText = message.Text,
+                        IsFromManager = message.IsFromManager,
+                        AuthorName = message.AuthorName,
+                        Attachments = webCallResult.Data.Select(x=>new OccasionMessageAttachmentDto(){ ContentType = x.ContentType, DownloadUrl = x.DownloadUrl})
+                    };
+                    result.Add(dto);
+                }
             }
-        );
-        result.ToList()
-            .Add(
-                new () { AuthorName = "Lol", IsFromManager = true, MessageText = "Hello!!!!", Id = Guid.NewGuid(), Attachments = default}
-            );
+        }
 
         return new Ok<IEnumerable<OccasionMessageDto>>(result);
-        
-        // todo: get history
-
-        //if attachments
-        /*
-        foreach(var attachment in attachments)
-        {
-            var links = await s3ServiceClient.GetAttachments(occasion.Id);
-        }
-        */
-
-        //todo: return OccasionMessageDto
-        throw new NotImplementedException();
     }
 }
