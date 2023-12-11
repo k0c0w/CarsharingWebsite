@@ -31,8 +31,20 @@ class AxiosWrapper {
         this.mainSiteAxios = axios.create(options);
         this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
-        options.baseURL = process.env.REACT_APP_S3_API_URL;
-        this.s3ServiceAxios = axios.create(options)
+        const s3options = {
+            baseURL: "http://localhost:5147",
+            timeout: 10000,
+            ssl: false,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": "http://localhost:5147",
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            withCredentials: true,
+        };
+        this.s3ServiceAxios = axios.create(s3options)
         this.s3ServiceAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
     }
     
@@ -426,6 +438,22 @@ class AxiosWrapper {
             .then(response => {
                 historyResult.successed = true;
                 historyResult.messages = response.data;
+            })
+            .catch(err => {
+                if(err.response)
+                    historyResult.errorMessage = err.response.data;
+            });
+
+        return historyResult;
+    }
+
+    async getOccasionById(occasionId) {
+        const historyResult = {successed: false, occasion: [], errorMessage: null};
+
+        await this.axiosInstance.get(`/occasions/${occasionId}`)
+            .then(response => {
+                historyResult.successed = true;
+                historyResult.occasion = response.data;
             })
             .catch(err => {
                 if(err.response)

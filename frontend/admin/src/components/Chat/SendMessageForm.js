@@ -26,7 +26,7 @@ const SendMessageForm = ({ sendMessage }) => {
 }
 
 
-export function OccasionSendMessageForm({sendMessage}) {
+export function OccasionSendMessageForm({issuerId, sendMessage}) {
     const [message, setMessage] = useState(null);
     const [attachments, setAttachments] = useState([]);
     const [blockSendButton, setBlockSendButton] = useState(false);
@@ -68,7 +68,7 @@ export function OccasionSendMessageForm({sendMessage}) {
             let attachmentId = null;
 
             if (attachments.length > 0){
-                const creationStatus = await API.addAttachment(attachments);
+                const creationStatus = await API.addAttachment(issuerId, attachments);
                 if (creationStatus.successed){
                     attachmentId = creationStatus.attachmentId;
                     setAttachments([]);
@@ -106,7 +106,7 @@ export function OccasionSendMessageForm({sendMessage}) {
                         <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" xmlnsketch="http://www.bohemiancoding.com/sketch/ns"width="inherit" height="inherit" viewBox="0 0 59 63" version="1.1">
                             <defs/>
                             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketchType="MSPage">
-                                <path d="M36.3,46.5 L12.1,22.4 C9.4,19.7 9.1,15.6 11.8,12.9 L11.8,12.9 C14.5,10.2 19.1,10.1 21.8,12.8 L53.6,44.4 C57.8,48.6 58.2,54.9 54.5,58.5 L54.5,58.5 C50.8,62.1 44.5,61.7 40.3,57.6 L4.7,22.1 C-0.1,17.4 -0.2,9.8 4.3,5.3 L5.3,4.3 C9.8,-0.2 17.4,-0.1 22.2,4.7 L46,28.4" id="Paper-clip" stroke="#6B6C6E" stroke-width="2" sketchType="MSShapeGroup"/>
+                                <path d="M36.3,46.5 L12.1,22.4 C9.4,19.7 9.1,15.6 11.8,12.9 L11.8,12.9 C14.5,10.2 19.1,10.1 21.8,12.8 L53.6,44.4 C57.8,48.6 58.2,54.9 54.5,58.5 L54.5,58.5 C50.8,62.1 44.5,61.7 40.3,57.6 L4.7,22.1 C-0.1,17.4 -0.2,9.8 4.3,5.3 L5.3,4.3 C9.8,-0.2 17.4,-0.1 22.2,4.7 L46,28.4" id="Paper-clip" stroke="#6B6C6E" strokeWidth="2" sketchType="MSShapeGroup"/>
                             </g>
                         </svg>
                         <input ref={inputRef} accept="image/jpg, image/jpeg, image/png, application/pdf" multiple type="file" hidden onChange={fileAttachmentsChanged}/>

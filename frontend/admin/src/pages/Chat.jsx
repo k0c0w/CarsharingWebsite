@@ -5,6 +5,7 @@ import { Button } from '@mui/material';
 import {OccasionMessageContainer} from "../components/Chat/MessageContainer";
 import  {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import API from "../httpclient/axios_client";
 
 export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnabled=true}) {
 
@@ -24,11 +25,19 @@ export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnab
     )
 }
 
-export function OccasionChat({occasionId, onLeaveRoom}) {
+export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
   const [connection, setConnection] = useState(null);
+  const [occasionIssuerId, setOccasionIssuerId] = useState(null);
   const [messages, setMessages] = useState([]);
 
   async function loadHistory() {
+    const occasion = await API.getOccasionById(occasionId);
+    if (!occasion.successed){
+      setErrorMessage("Ошибка при открытии диалога.");
+      onLeaveRoom();
+      return;
+    }
+    setOccasionIssuerId(occasion.occasion.issuerId);
     setMessages([]);
   }
 
@@ -99,7 +108,7 @@ export function OccasionChat({occasionId, onLeaveRoom}) {
   
           <div className='chat' >
             <OccasionMessageContainer messages={messages} />
-            <OccasionSendMessageForm sendMessage={sendMessage} />
+            <OccasionSendMessageForm issuerId={occasionIssuerId} sendMessage={sendMessage} />
           </div>
         </div>
 }

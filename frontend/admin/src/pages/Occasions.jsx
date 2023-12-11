@@ -44,7 +44,7 @@ export default function Occasions () {
         <>
             {!activeOccasion && <OccasionsList onlineOccasions={uncompletedOccasions} joinOccasion={setActiveOccasion} closeOccasion={completeOccasion}/>}
             {errorMessage && <div style='color:"red"'>{errorMessage}</div>}
-            {activeOccasion && <OccasionChat occasionId={activeOccasion} onLeaveRoom={() => setActiveOccasion(null)}/>}
+            {activeOccasion && <OccasionChat occasionId={activeOccasion} setErrorMessage={setErrorMessage} onLeaveRoom={() => setActiveOccasion(null)}/>}
         </>
     )
 }

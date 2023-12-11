@@ -49,7 +49,8 @@ public class AdminOccasionController : ControllerBase
         {
             occasion.Id,
             occasion.Topic,
-            OccasionType = occasion.OccasionType.ToString()
+            OccasionType = occasion.OccasionType.ToString(),
+            IssuerId = occasion.IssuerId,
         });
     }
 
