@@ -64,6 +64,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         message.IsFromManager = IsCurrentUserManagerOrAdmin();
         message.MessageId = Guid.NewGuid();
 
+        /*
         await _publisher.SendMessageAsync(new OccasionChatMessageDto()
         {
             AuthorId = GetUserId(),
@@ -73,6 +74,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
             Time = message.Time,
             IsAuthorManager = message.IsFromManager,
         });
+        */
 
         await Clients.Group(message.OccasionId.ToString()).ReceiveMessage(message);
     }

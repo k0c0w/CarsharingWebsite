@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import '../css/popup-chat.css';
 import SendMessageForm, {OccasionSendMessageForm} from '../Components/SendMessageForm';
 import MessageContainer, {OccasionMessageContainer } from "../Components/MessageContainer";
-import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
+import { HubConnectionBuilder, LogLevel, TransportType } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
 
 export default function PopupChat () {
@@ -49,7 +49,7 @@ export default function PopupChat () {
         }
 
         fetchOccasion();
-    }, [myOccasionId, iHaveOpenOccasion]);
+    }, []);
 
     useEffect(() => {
         async function fetchOccasionTypes() {
@@ -110,40 +110,43 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
         }
       }
     
-    useEffect(() => {
-        async function loadOccasionChatHistory() {
-            const response = await API.loadOccasionHistory(occasionId);
-            if (response?.successed){
-                setMessages(response.messages);
-            }
+    async function loadOccasionChatHistory() {
+        const response = await API.loadOccasionHistory(occasionId);
+        if (response?.successed){
+            setMessages(response.messages);
         }
-
-        //loadOccasionChatHistory();
-    }, []);
+    }
 
     async function createHubConnection() {
         const con = new HubConnectionBuilder()
-          .withUrl("https://localhost:7129/occasion_chat", {
-            accessTokenFactory: () => localStorage.getItem("token"),
-          })
+          .withUrl("https://localhost:7129/occasion_chat", { 
+            accessTokenFactory: () => localStorage.getItem("token") 
+        })
           .configureLogging(LogLevel.Information)
           .withAutomaticReconnect()
           .build();
 
         con.on('ReceiveMessage',
-         (message) => setMessages(messages => [...messages, message]));
+         (message) => {
+            console.log(message);
+            setMessages(messages => [...messages, message])
+        });
         con.on('OccassionClosed', 
         () => {onCloseOccasionRecieved()});
 
-        await connection.start();
+        await con.start();
         setConnection(con);
       }
 
     useEffect(() => {
-        createHubConnection();
+        async function init() {
+            //await loadOccasionChatHistory();
+            await createHubConnection();
+        }
+        init();
 
         return () => connection?.stop()
-    }, [connection]);
+    }, []);
 
     return <>
         <div className='message-container-wrapper' style={{flexGrow:7}}>
@@ -208,7 +211,7 @@ function DefaultSupportChat() {
         joinRoom();
 
         return () => connection?.stop();
-    }, [connection]);
+    }, []);
 
     return <>
         <div className='message-container-wrapper' style={{flexGrow:7}}>

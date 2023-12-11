@@ -44,7 +44,7 @@ public static class AuthenticationAndAuthorizationRegistration
                         // если запрос направлен хабу
                         var path = context.HttpContext.Request.Path;
                         if (!string.IsNullOrEmpty(accessToken) &&
-                            (path.StartsWithSegments("/chat")))
+                            (path.StartsWithSegments("/chat") || path.StartsWithSegments("/occasion_chat")))
                         {
                             // получаем токен из строки запроса
                             context.Token = accessToken;

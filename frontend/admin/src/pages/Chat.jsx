@@ -96,7 +96,7 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
 
     init();
     return () => connection?.stop();
-  }, []);
+  }, [connection]);
   
 
   return  <div className='app'>
