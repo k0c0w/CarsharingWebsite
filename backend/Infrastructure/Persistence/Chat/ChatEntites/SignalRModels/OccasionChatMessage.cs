@@ -2,7 +2,7 @@
 
 public class OccasionChatMessage
 {
-    public string? MessageId { get; set; }
+    public Guid MessageId { get; set; }
 
     public string Text { get; set; } = string.Empty;
 

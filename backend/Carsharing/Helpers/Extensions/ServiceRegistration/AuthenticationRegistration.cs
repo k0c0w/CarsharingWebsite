@@ -32,7 +32,7 @@ public static class AuthenticationAndAuthorizationRegistration
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = false
+                    ValidateIssuerSigningKey = true
                 };
                 
                 o.Events = new JwtBearerEvents
