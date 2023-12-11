@@ -44,18 +44,25 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
   async function startConnection() {
     try {
         const localConnection = new HubConnectionBuilder()
-            .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+            .withUrl("https://localhost:7129/occasion_chat", { accessTokenFactory: () => localStorage.getItem("token") })
             .configureLogging(LogLevel.Information)
             .build();
 
-        localConnection.on('RecieveMessage', (message) => {
+        localConnection.on('ReceiveMessage',
+         (message) => {
+            console.log(message);
             setMessages(messages => [...messages, message])
         });
+        localConnection.on('OccassionClosed', 
+        () => {onCloseOccasionRecieved()});
+   
+        
         
         localConnection.onclose(() => {
             onLeaveRoom();
         });
 
+        await localConnection.start();
         setConnection(localConnection);
     } catch (e) {
         console.log(e);
@@ -77,7 +84,7 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
         const messageModel = {
             Text: text,
             Time: new Date().toJSON(),
-            RoomId: activeOccasion.roomId,
+            OccasionId: occasionId,
             AttachmentId: attachmentId
         };
       
@@ -96,7 +103,7 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
 
     init();
     return () => connection?.stop();
-  }, [connection]);
+  }, []);
   
 
   return  <div className='app'>

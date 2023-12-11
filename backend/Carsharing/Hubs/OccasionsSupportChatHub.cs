@@ -32,9 +32,12 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
     {
         var connectedUserId = GetUserId();
 
-        if (IsCurrentUserManagerOrAdmin())
+        if (await IsCurrentUserManagerOrAdmin())
         {
-            _occasionChatRepository.TryAddAdminConnectionToGroup(Context.ConnectionId, message.OccasionId.ToString());
+            if(_occasionChatRepository.TryAddAdminConnectionToGroup(Context.ConnectionId, message.OccasionId.ToString()))
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, message.OccasionId.ToString());
+            }
             if (!_occasionChatRepository.TryGetAdminConnectionGroup(Context.ConnectionId, out string groupName) || groupName != message.OccasionId.ToString())
                 return;
         }
@@ -61,7 +64,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         }
 
         message.AuthorName = (await _userManager.FindByIdAsync(GetUserId())).FirstName!;
-        message.IsFromManager = IsCurrentUserManagerOrAdmin();
+        message.IsFromManager = await IsCurrentUserManagerOrAdmin();
         message.MessageId = Guid.NewGuid();
 
         /*
@@ -82,7 +85,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var disconnectedUserId = GetUserId();
-        if (IsCurrentUserManagerOrAdmin())
+        if (await IsCurrentUserManagerOrAdmin())
         {
             _occasionChatRepository.TryRemoveAdminConnection(Context.ConnectionId, out _);
         }
@@ -116,9 +119,12 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
     }
 
     private string GetUserId() => Context.UserIdentifier ?? throw new Exception();
-    
-    private bool IsCurrentUserManagerOrAdmin()
+
+    private async Task<bool> IsCurrentUserManagerOrAdmin()
     {
-        return (Context.User.IsInRole(Role.Manager.ToString()) || Context.User.IsInRole(Role.Manager.ToString()));
+        var user = await _userManager.FindByIdAsync(GetUserId());
+        if (user is null)
+            return false;
+        return (await _userManager.IsInRoleAsync(user, Role.Manager.ToString())) || (await _userManager.IsInRoleAsync(user, Role.Admin.ToString()));
     }
 }
