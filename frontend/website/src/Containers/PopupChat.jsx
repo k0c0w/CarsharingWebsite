@@ -71,7 +71,7 @@ export default function PopupChat () {
                 <div className='popup-chat-header'  style={{flexGrow:0.5, display:'flex', flexDirection:'row', zIndex:'10'}}>
                     <div style={{zIndex:'10', color:'#767575'}} onClick={() => switchHidingFlag()}>=</div>
                 </div>
-                {!hiding &&
+                {!hiding && iHaveOpenOccasion != null &&
                 <>
                     {!iHaveOpenOccasion && !occasionCreationRequestSent &&
                         <div className="dropdown">

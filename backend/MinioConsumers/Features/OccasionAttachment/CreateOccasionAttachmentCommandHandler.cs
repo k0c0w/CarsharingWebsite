@@ -18,14 +18,13 @@ public class CreateOccasionAttachmentCommandHandler : IRequestHandler<CreateOcca
 
     public async Task<HttpResponse<Guid>> Handle(CreateOccasionAttachmentCommand request, CancellationToken cancellationToken)
     {
-        var trackingId = await _operations.CreateNewOperationAsync(request.AttachmetByUser);
-
         var attachmentsCount = request.Attachments.Count();
         if (attachmentsCount > 5 || attachmentsCount < 1)
         {
-            await _operations.UpdateOperationStatusAsync(trackingId, Models.OperationStatus.Failed);
-            return new HttpResponse<Guid>(System.Net.HttpStatusCode.BadRequest, trackingId, error: "Invalid attachments count.");
+            return new HttpResponse<Guid>(System.Net.HttpStatusCode.BadRequest, default, error: "Invalid attachments count.");
         }
+
+        var trackingId = await _operations.CreateNewOperationAsync(request.AttachmetByUser);
 
         //_ = Task.Run(async () =>
         //{
