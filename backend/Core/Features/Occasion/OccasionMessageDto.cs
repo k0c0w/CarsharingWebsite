@@ -7,6 +7,8 @@ public class OccasionMessageDto
     public string MessageText { get; init; }
 
     public string AuthorName { get; init; }
+    
+    public bool IsFromManager { get; init; }
 
     public IEnumerable<OccasionMessageAttachmentDto> Attachments { get; init; }
 }
