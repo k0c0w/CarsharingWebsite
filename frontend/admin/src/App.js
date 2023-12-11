@@ -70,7 +70,6 @@ function App() {
 
   useEffect(()=>{
     const authorize = () => API.isAdmin().then(r => {
-      debugger;
       if(r.successed){
         const roles = r?.data?.roles;
         const isAuthorized = true;

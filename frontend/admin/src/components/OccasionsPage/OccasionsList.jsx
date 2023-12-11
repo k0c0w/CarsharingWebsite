@@ -8,7 +8,7 @@ export default function OccasionsList({onlineOccasions, joinOccasion, closeOccas
                 <div className="name"> {occasion.type} </div>
                 <div className="text-message"> {occasion.topic} </div>
                 <button onClick={() => joinOccasion(occasion.id)}>Присоединиться</button>
-                <button onClick={() => closeOccasion(occasion.id)}>Присоединиться</button>
+                <button onClick={() => closeOccasion(occasion.id)}>Закрыть обращение</button>
             </div>
         ))}
     </div>);

@@ -1,7 +1,7 @@
 import axios from "axios"
 
 function delay(ms) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       setTimeout(resolve, ms);
     });
   }
@@ -9,7 +9,7 @@ function delay(ms) {
 class AxiosWrapper {
     constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
-            baseURL: url,
+            baseURL: "https://localhost:7129/api/admin",
             timeout: 10000,
             ssl: false,
             headers: {
@@ -447,27 +447,32 @@ class AxiosWrapper {
     }
 
     //attachments must be array of files from form multiple data
-    async addAttachment(occasionIssuerdGuid, attachments){
+    async addAttachment(occasionIssuerId, attachments){
         let attachmentCreationTrackingId = null;
         const attachmentCreationResult = { successed: false, attachmentId: null }
+        const formData = new FormData();
+        attachments.forEach(element => formData.append("files", element, element.name));
+        formData.append("occasionUserId", occasionIssuerId);
 
-        await this.s3ServiceAxios.post("/admin/attachments", {
-            occasionUserId: occasionIssuerdGuid,
-            files: attachments
+        await this.s3ServiceAxios.post("/admin/attachments", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
         })
         .then(response =>{
-            attachmentCreationTrackingId = response.data;
+            attachmentCreationTrackingId = response.data.value;
         })
-        .catch(err => {});
+        .catch((err) => {
+            if (err.response)
+                attachmentCreationResult.errorMessage = err.response.data.errorMessage;
+        });
 
         if (attachmentCreationTrackingId)
         {
             let attempt = 0;
             let attemptResult = false;
             while (attempt < 5) {
-                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                await this.s3ServiceAxios.get(`/operation/${attachmentCreationTrackingId}/status`)
                     .then(response => {
-                        const status = response.data;
+                        const status = response.data.status;
                         if (status == "Failed"){
                             attempt = 1000;
                         }

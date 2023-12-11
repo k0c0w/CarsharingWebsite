@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Carsharing.Controllers.Admin;
 
 [Route("api/admin/occasions")]
-[Authorize(Roles = "Manager")]
+[Authorize(Roles = "Manager, Admin")]
 public class AdminOccasionController : ControllerBase
 {
     private readonly ISender _mediator;

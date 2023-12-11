@@ -40,8 +40,7 @@ services.Configure<ApiBehaviorOptions>(o =>
     };
 });
 
-if (builder.Environment.IsDevelopment())
-{
+
     services.AddCors(options =>
     {
         var configuration = builder.Configuration;
@@ -57,18 +56,17 @@ if (builder.Environment.IsDevelopment())
                     .SetIsOriginAllowed(origin => true)
         );
     });
-}
+
 
 var app = builder.Build(); 
 var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger()
        .UseSwaggerUI()
        .UseCors("DevFrontEnds");
-}
+
 app.UseHttpsRedirection();
 app.UseAuthentication()
    .UseAuthorization();
