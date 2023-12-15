@@ -21,4 +21,7 @@ public class AttachmentInfoDto
 
     [JsonPropertyName("download_url")]
     public string DownloadUrl { get; set; }
+
+    [JsonPropertyName("file_name")]
+    public string FileName { get; set; }
 }

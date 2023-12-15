@@ -48,6 +48,9 @@ export function OccasionSendMessageForm({sendMessage}) {
             i++;
         }
         setAttachments([...filesArray]);
+        if (inputRef?.current) {
+            inputRef.current.value = "";
+        }
     }
 
     function removeFileFromAttachmentsByIndex(i) {

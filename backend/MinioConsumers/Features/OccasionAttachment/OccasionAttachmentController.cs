@@ -30,11 +30,15 @@ public class OccasionAttachmentController : ControllerBase
 	}
 
 	[HttpGet("{attachmentId:guid}/download/{attachmentFileName}")]
+	[AllowAnonymous]
 	public async Task<IResult> DownloadAttachmentFileAsync([FromRoute] Guid attachmentId, [FromRoute] string attachmentFileName)
 	{
+		//todo:
+		/*
 		if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))
 			return Results.NotFound(); 
-
+		*/
+		Guid applicantId = Guid.NewGuid();
 		var downloadQuery = new DownloadOccasionAttachmentQuery(attachmentId, attachmentFileName, applicantId);
 		var response = await _sender.Send(downloadQuery);
 

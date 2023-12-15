@@ -16,7 +16,8 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
     {
         _metadataRepository = metadataRepository;
         _logger = logger;
-        BaseUrl = httpContextAccessor!.HttpContext!.Request.Host.Value;//.Replace("", "localhost");
+        var request = httpContextAccessor!.HttpContext!.Request;
+        BaseUrl = $"{request.Scheme}://{request.Host}";
         RequestContext = httpContextAccessor.HttpContext!;
     }
 
@@ -41,6 +42,7 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
                     {
                         ContentType = x.ContentType,
                         DownloadUrl = GetDownloadPath(metadata.Id, x.ObjectName),
+                        FileName = x.OriginalFileName,
                     }).ToArray(),
                 CreationDateUtc = metadata.CreationDateTimeUtc,
                 UploaderId = metadata.AttachmentAuthorId

@@ -114,7 +114,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
         const message = {
             text: receivedMessage.text,
             authorName: receivedMessage.authorName,
-            attachmets: []
+            attachments: []
         }
         if (receivedMessage.attachmentId) {
             const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);
@@ -123,7 +123,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
 
             }
             else{
-                message.attachmets = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg"}];
+                message.attachments = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg"}];
             }
         }
 

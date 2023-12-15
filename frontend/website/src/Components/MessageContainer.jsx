@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { AiFillFile } from 'react-icons/ai';
 import '../css/popup-chat.css';
 
@@ -41,6 +41,11 @@ const MessageContainer = ({ messages }) => {
 export function OccasionMessageContainer ({ messages }) {
     const messageRef = useRef();
     const isFromClient = (message) => !message.isFromManager;
+    const [downloadedAttachments] = useState({});
+    
+    function appendNewDownloadedAttachment(id) {
+        
+    }
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -54,10 +59,11 @@ export function OccasionMessageContainer ({ messages }) {
         {messages?.map((m, i) => (
             <>
                 <div className={isFromClient(m) ? 'message-sent':'message-rcvd'} style={{marginTop:"0px"}} id={i}>
-                    {m.attachments && 
+                    {m.attachments && m.attachments.map(x => 
                         <div className='attachments-container'>
-                            {m.attachmets.map((x, i) => <Attachment key={i} info={x} number={i}/>)}
+                            <Attachment link={x.download_url} contentType={x.content_type}/>
                         </div>
+                        )
                     }
                     <div className='message'>{m.text}</div>
                 </div>
@@ -68,16 +74,11 @@ export function OccasionMessageContainer ({ messages }) {
     </div>
 }
 
-const Attachment = ({key, info, number}) => {
-
-    function BodyByContentType({contentType, link}) {
-        if (contentType.startsWith("image/"))
+const Attachment = ({key, link, contentType}) => {
+    if (contentType.startsWith("image/"))
         return <img src={link} alt={link} style={{maxWidth: 200}}/>
-        else 
-        return <AiFillFile color='#1475cf' src={link} />
-    }
 
-    return <div key={key} figure={number} className='attachment'><BodyByContentType contentType={info.content_type} link={info.download_link} /></div>
+    return <AiFillFile color='#1475cf' src={link} />
 }
 
 export default MessageContainer;
