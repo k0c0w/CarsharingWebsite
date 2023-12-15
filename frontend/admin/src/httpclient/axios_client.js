@@ -424,7 +424,7 @@ class AxiosWrapper {
             })
             .catch(err => {
                 if (err.response){
-                    uncompletedOccasionResult.errorMessage = response.errorMessage;
+                    uncompletedOccasionResult.errorMessage = err.response.errorMessage;
                 }
             });
 
@@ -434,7 +434,7 @@ class AxiosWrapper {
     async getOccasionChatHistory(occasionGuid) {
         const historyResult = {successed: false, messages: [], errorMessage: null}
 
-        await this.mainSiteAxios.get($`/occassions/${occasionGuid}/chat`)
+        await this.mainSiteAxios.get(`/occassions/${occasionGuid}/chat`)
             .then(response => {
                 historyResult.successed = true;
                 historyResult.messages = response.data;

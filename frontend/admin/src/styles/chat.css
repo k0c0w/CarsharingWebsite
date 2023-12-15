@@ -47,7 +47,7 @@ hr.line {
 
 .message-container {
     height: 600px;    
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     overflow: auto;
     border-radius: 5px;
     margin-bottom: 2px;

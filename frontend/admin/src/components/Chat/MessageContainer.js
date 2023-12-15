@@ -1,6 +1,8 @@
 import React,{ useEffect, useRef } from 'react';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../../theme';
+import { AiFillFile } from 'react-icons/ai';
+
 
 const MessageContainer = ({ messages }) => {
     const theme = useTheme();
@@ -45,24 +47,30 @@ export function OccasionMessageContainer ({ messages }) {
     return <div ref={messageRef} className='message-container' >
         {/* eslint-disable-next-line react/prop-types */}
         {messages?.map((m, i) => (
-            <>
-                <div className={isFromClient(m) ? 'message-sent':'message-rcvd'} style={{marginTop:"0px"}} id={i}>
-                    {m.attachments && 
+            <div className={isFromClient(m) ? 'user-message':'other-message'}>
+                <div  style={{marginTop:"0px"}} id={i}>
+                    {m.attachments && m.attachments.map(x => 
                         <div className='attachments-container'>
-                            {m.attachmets.map((x, i) => <Attachment key={i} info={x} number={i}/>)}
+                            <Attachment link={x.download_url} contentType={x.content_type} fileName={x.file_name}/>
                         </div>
-                    }
-                    <div className='message' style={{color: "black"}}>{m.text}</div>
+                    )}
+                    <div className='message bg-primary'>{m.text}</div>
                 </div>
-                <div className='author'>{m.authorName}</div>
-            </>
+                <div className='info-message-text'>{m.authorName}</div>
+            </div>
             )
         )}
     </div>
 }
 
 
-const Attachment = ({key, info, number}) => <div key={key} figure={number} className='attachment'>{info}</div>
+const Attachment = ({fileName, link, contentType}) => {
+    if (contentType.startsWith("image/"))
+        return <img src={link} alt={fileName} style={{maxWidth: 200}}/>
+
+    return <AiFillFile color='#1475cf' src={link} style={{width: 50}} />
+}
+
 
 export default MessageContainer;
     

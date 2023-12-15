@@ -61,10 +61,9 @@ export function OccasionMessageContainer ({ messages }) {
                 <div className={isFromClient(m) ? 'message-sent':'message-rcvd'} style={{marginTop:"0px"}} id={i}>
                     {m.attachments && m.attachments.map(x => 
                         <div className='attachments-container'>
-                            <Attachment link={x.download_url} contentType={x.content_type}/>
+                            <Attachment link={x.download_url} contentType={x.content_type} fileName={x.file_name}/>
                         </div>
-                        )
-                    }
+                    )}
                     <div className='message'>{m.text}</div>
                 </div>
                 <div className='author'>{m.authorName}</div>
@@ -74,9 +73,9 @@ export function OccasionMessageContainer ({ messages }) {
     </div>
 }
 
-const Attachment = ({key, link, contentType}) => {
+const Attachment = ({fileName, link, contentType}) => {
     if (contentType.startsWith("image/"))
-        return <img src={link} alt={link} style={{maxWidth: 200}}/>
+        return <img src={link} alt={fileName} style={{maxWidth: 200}}/>
 
     return <AiFillFile color='#1475cf' src={link} />
 }

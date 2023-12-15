@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import '../styles/chat.css';
 import { Button } from '@mui/material';
-
 import {OccasionMessageContainer} from "../components/Chat/MessageContainer";
 import  {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
@@ -51,14 +50,15 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
         const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);
         if (attachmentInfo.successed){
             message.attachments = attachmentInfo.attachments;
+
         }
         else{
-            message.attachments = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg"}];
+            message.attachments = [{download_url:attachmentInfo.defaultAttachment, content_type:"image/jpg", file_name:"not foung.jpg"}];
         }
     }
 
-    setMessages(message => [...messages, message])
-}  
+    setMessages(messages => [...messages, message])
+  }  
 
   async function startConnection() {
     try {
@@ -74,8 +74,6 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
         });
         localConnection.on('OccassionClosed', 
         () => {onCloseOccasionRecieved()});
-   
-        
         
         localConnection.onclose(() => {
             onLeaveRoom();
