@@ -1,5 +1,5 @@
-﻿using MinioConsumer.Models;
-using MinioConsumer.Services.PrimaryStorageSaver;
+﻿using MinioConsumer.BackgroundServices;
+using MinioConsumer.Models;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using Shared.Results;
@@ -15,17 +15,18 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     private readonly IS3Service s3Service;
 
-    private readonly PrimaryStorageSaver<TMetadata> primaryStorageSaver;
     private readonly OperationRepository operationRepository;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, IS3Service s3Service, PrimaryStorageSaver<TMetadata> primaryStorageSaver, 
+    private readonly IBackgroundTaskQueue _taskQueue;
+
+    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, IS3Service s3Service, IBackgroundTaskQueue taskQueue, 
         OperationRepository operationRepository)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
         this.operationRepository = operationRepository;
-        this.primaryStorageSaver = primaryStorageSaver;
+        this._taskQueue = taskQueue;
     }
 
     /// <summary>
@@ -107,11 +108,14 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             var metadata = await metadataRepository.GetByIdAsync(operationId);
 
-            if (metadata != null && metadata.LinkedMetadataCount == metadata.LinkedFileInfos.Count)
+            if (metadata != null && await metadataRepository.IsCompletedByIdAsync(metadata.Id))
             {
-                await primaryStorageSaver.MoveDataToPrimaryStorageAsync(operationId, operationId);
+                await operationRepository.UpdateOperationStatusAsync(operationId, OperationStatus.InProggress);
+                _taskQueue.QueueOperationIdToSave(operationId);
+
                 return Result.SuccessResult;
             }
+
             return Result.ErrorResult;
         }
         catch

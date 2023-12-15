@@ -10,10 +10,6 @@ using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using MongoDB.Driver;
 using StackExchange.Redis;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
 using MinioConsumer.BackgroundServices;
 
@@ -115,7 +111,9 @@ public static class ServiceCollectionExtensions
         services.AddAuthenticationAndAuthorization(configuration);
 
         services.AddHostedService<TempFileCleanerBackgroundService>();
+        services.AddHostedService<BackgroundSaver>();
         services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
     }
 
     internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection,
