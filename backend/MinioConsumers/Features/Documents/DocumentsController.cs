@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinioConsumer.Features.Documents.InputModels;
 using MinioConsumer.Features.Documents.Query;
+using System.Security.Claims;
 
 namespace MinioConsumer.Features.Documents;
 
@@ -20,7 +21,7 @@ public class DocumentsController : ControllerBase
 	[HttpPost]
 	public async Task<IActionResult> Documents(DocumentInfoDto documentInfo , IFormFile document)
 	{
-		if (!Guid.TryParse(HttpContext.User.Identity.Name, out Guid userId))
+		if (!Guid.TryParse(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId))
 			return  StatusCode(403, (new HttpResponse(System.Net.HttpStatusCode.Forbidden, error: "Authentication required.")));
 
 		var command = new CreateDocumentCommand(documentInfo.IsPrivate, documentInfo.Annotation, userId, document);
@@ -45,8 +46,7 @@ public class DocumentsController : ControllerBase
 	[AllowAnonymous]
     public async Task<IResult> GetFileAsync([FromRoute] Guid id)
     {
-		var userIsInAdminRole = HttpContext.User.IsInRole("Admin");
-        var query = new DownloadDocumentQuery(id, isAdminRequest: userIsInAdminRole);
+        var query = new DownloadDocumentQuery(id, isAdminRequest: User.UserIsInRole("Admin"));
 
         var result = await _mediator.Send(query);
 

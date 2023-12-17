@@ -29,7 +29,7 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
             if (metadata == null)
                 return new HttpResponse<OccasionAttachmentInfoDto>(System.Net.HttpStatusCode.NotFound, default);
 
-            if (!(RequestContext.User.IsInRole("Manager") || RequestContext.User.IsInRole("Admin")))
+            if (!(RequestContext.User.UserIsInRole("Manager") || RequestContext.User.UserIsInRole("Admin")))
             {
                 if (!(metadata.AccessUserList.Contains(request.Applicant) || metadata.AttachmentAuthorId == request.Applicant))
                     return new HttpResponse<OccasionAttachmentInfoDto>(System.Net.HttpStatusCode.NotFound, default);

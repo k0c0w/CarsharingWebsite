@@ -74,7 +74,7 @@ class AxiosWrapper {
 
         await this.s3ServiceAxios.post("/documents", requestBody, config)
         .then(response =>{
-            attachmentCreationTrackingId = response.data;
+            attachmentCreationTrackingId = response.data.message;
         })
         .catch(err => {});
 
