@@ -161,7 +161,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
 
     useEffect(() => {
         async function init() {
-            //await loadOccasionChatHistory();
+            await loadOccasionChatHistory();
             await createHubConnection();
         }
         init();

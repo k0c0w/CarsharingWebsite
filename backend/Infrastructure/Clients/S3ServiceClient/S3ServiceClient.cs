@@ -116,4 +116,7 @@ public class AttachmentInfo
 
     [JsonPropertyName("download_url")]
     public string DownloadUrl { get; set; }
+
+    [JsonPropertyName("file_name")]
+    public string FileName { get; set; }
 }

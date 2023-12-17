@@ -37,7 +37,9 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
       return;
     }
     setOccasionIssuerId(occasion.occasion.issuerId);
-    setMessages([]);
+    const occasionHistory = await API.loadOccasionHistory(occasionId);
+    if (occasionHistory.successed)
+      setMessages(occasionHistory.messages);
   }
 
   async function processMessage(receivedMessage) {

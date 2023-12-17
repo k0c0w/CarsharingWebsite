@@ -35,7 +35,7 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
 
         var messages = await _occasionMessageRepository.GetMessagesAsync(request.OccasionId, 0, 50);
 
-        var result = new List<OccasionMessageDto>();
+        var result = new List<OccasionMessageDto>(50);
 
         foreach (var message in messages)
         {
@@ -51,7 +51,7 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
                 var webCallResult = await _s3ServiceClient.GetAttachmentInfosByIdsAsync(message.AttachmentId.Value);
                 if (webCallResult.Success)
                     dto.Attachments = webCallResult.Data.Select(x => new OccasionMessageAttachmentDto()
-                        { ContentType = x.ContentType, DownloadUrl = x.DownloadUrl });
+                        { ContentType = x.ContentType, DownloadUrl = x.DownloadUrl, FileName = x.FileName});
             }
             result.Add(dto);
         }

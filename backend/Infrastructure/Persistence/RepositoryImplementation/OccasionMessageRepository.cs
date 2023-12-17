@@ -42,7 +42,6 @@ public class OccasionMessageRepository
 
     public async Task<IEnumerable<OccasionChatMessage>> GetMessagesAsync(Guid occasionId, int offset, int limit)
     {
-        var result = await _ctx.OccasionMessages.ToListAsync();
         var history = await _ctx.OccasionMessages
                                 .AsNoTracking()
                                 .Where(m => m.OccasionId == occasionId)
@@ -65,8 +64,7 @@ public class OccasionMessageRepository
                                 .Skip(offset)
                                 .Take(limit)
                                 .OrderByDescending(x => x.Time)
-                                .ToArrayAsync()
-                                .ConfigureAwait(false);
+                                .ToArrayAsync();
 
         return history
             .Select(x => new OccasionChatMessage()
