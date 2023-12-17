@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinioConsumer.Features.OccasionAttachment.Query;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace MinioConsumer.Features.OccasionAttachment;
@@ -20,10 +21,13 @@ public class OccasionAttachmentController : ControllerBase
 	[HttpGet("{attachmentId:guid}")]
 	public async Task<IActionResult> GetAttachmentInformationAsync([FromRoute] Guid attachmentId)
 	{
-		if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))
-			return NotFound();
+		Guid? applicantId = User.GetUserId();
 
-		var getAttachmentMetadata = new GetOccasionAttachmentMetadataQuery(attachmentId, applicantId);
+        if (applicantId == null)
+			return NotFound();
+		Debug.Assert(applicantId.HasValue);
+
+		var getAttachmentMetadata = new GetOccasionAttachmentMetadataQuery(attachmentId, applicantId.Value);
 		var response = await _sender.Send(getAttachmentMetadata);
 
 		return StatusCode((int)response.Code, response);

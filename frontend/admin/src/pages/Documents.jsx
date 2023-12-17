@@ -119,7 +119,7 @@ export default function Documents () {
             {errorMessage && <h3 style={{color: 'red'}}>{errorMessage}</h3>}
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={() => loadDocumentData()} color={color}/>
 
-            <DocumentsGrid handleSelect={(selectedDocuments)=>setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>
+            <DocumentsGrid handleSwitch={handleSwitch} handleSelect={(selectedDocuments)=>setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>
 
             <Box style={{ display:display, color: color.grey[100] }}>
                 <Popup {...popup} />

@@ -24,10 +24,8 @@ public class CreateOccasionAttachmentCommandHandler : IRequestHandler<CreateOcca
             return new HttpResponse<Guid>(System.Net.HttpStatusCode.BadRequest, default, error: "Invalid attachments count.");
         }
 
-        var trackingId = await _operations.CreateNewOperationAsync(request.AttachmetByUser);
+        var trackingId = await _operations.CreateNewOperationAsync(request.AttachmetByUser, schemaName: MetadataSchemas.Schemas[typeof(OccasionAttachmentMetadata)]);
 
-        //_ = Task.Run(async () =>
-        //{
         var metadata = new OccasionAttachmentMetadata(trackingId, request.AttachmetByUser, attachmentsCount)
         {
             CreationDateTimeUtc = DateTime.UtcNow,
@@ -47,7 +45,6 @@ public class CreateOccasionAttachmentCommandHandler : IRequestHandler<CreateOcca
         }
 
         await _metadataSaver.CommitOperationAsync(trackingId);
-        //});
 
         return new HttpResponse<Guid>(trackingId);
     }
