@@ -115,6 +115,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
             text: receivedMessage.text,
             authorName: receivedMessage.authorName,
             attachments: [],
+            isFromManager: receivedMessage.isFromManager
         }
         if (receivedMessage.attachmentId) {
             const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);

@@ -170,7 +170,7 @@ class AxiosWrapper {
         .catch(err => {
             if (err.response){
                 const status = err.response.status;
-                if (status == 404)
+                if (status == 404 || status == 401)
                     occasionInfo.successed = true;
                 else
                     alert(err.response.data.errorMessage);

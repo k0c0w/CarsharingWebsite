@@ -31,7 +31,7 @@ public class OccasionsController : ControllerBase
 
         if (occasionQuery)
         {
-            if(occasionQuery.Value is null)
+            if(occasionQuery.Value is null || occasionQuery.Value == Guid.Empty)
                 return NotFound();
 
             return Ok(occasionQuery.Value);

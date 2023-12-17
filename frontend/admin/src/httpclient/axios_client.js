@@ -26,7 +26,7 @@ class AxiosWrapper {
         this.token = localStorage.getItem("token");
 
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
-        options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
+        options.baseURL = "https://localhost:7129/api"
 
         this.mainSiteAxios = axios.create(options);
         this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
@@ -478,7 +478,7 @@ class AxiosWrapper {
 
     async loadOccasionHistory(occasionId) {
         const loadHistoryResult = {successed: false, messages: []}
-        await this.axiosInstance.get(`/occasions/${occasionId}/chat`)
+        await this.mainSiteAxios.get(`/occasions/${occasionId}/chat`)
             .then(response => {
                 loadHistoryResult.successed = true;
                 loadHistoryResult.messages = response.data;

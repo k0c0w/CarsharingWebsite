@@ -48,7 +48,7 @@ export function OccasionMessageContainer ({ messages }) {
     return <div ref={messageRef} className='message-container' >
         {/* eslint-disable-next-line react/prop-types */}
         {messages?.map((m, i) => (
-            <div className={isFromClient(m) ? 'user-message':'other-message'}>
+            <div className={isFromClient(m) ? 'other-message' : 'user-message'}>
                 <div  style={{marginTop:"0px"}} id={i}>
                     {m.attachments && m.attachments.map(x => 
                         <div className='attachments-container'>

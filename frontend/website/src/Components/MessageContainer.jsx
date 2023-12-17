@@ -41,7 +41,7 @@ const MessageContainer = ({ messages }) => {
 
 export function OccasionMessageContainer ({ messages }) {
     const messageRef = useRef();
-    const isFromClient = (message) => !message.isFromManager;
+    const isFromClient = (message) => message.isFromManager === false;
     
     useEffect(() => {
         if (messageRef && messageRef.current) {

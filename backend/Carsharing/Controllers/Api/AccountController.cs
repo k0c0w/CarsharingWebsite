@@ -70,8 +70,6 @@ public class AccountController : ControllerBase
         await _carsharingContext.SaveChangesAsync();
         
         await _userManager.AddToRoleAsync(user, Role.User.ToString());
-        await _userManager.AddToRoleAsync(user, Role.Admin.ToString()); //TODO: удалить
-        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, Role.Admin.ToString())); //TODO: удалить
         await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, user.Id));
         
         var claims = await _userManager.GetClaimsAsync(user);

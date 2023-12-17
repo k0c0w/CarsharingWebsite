@@ -46,7 +46,8 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
     const message = {
         text: receivedMessage.text,
         authorName: receivedMessage.authorName,
-        attachments: []
+        attachments: [],
+        isFromManager: receivedMessage.isFromManager
     }
     if (receivedMessage.attachmentId) {
         const attachmentInfo = await API.getAttachmentInfo(receivedMessage.attachmentId);
