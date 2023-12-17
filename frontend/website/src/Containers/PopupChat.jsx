@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import '../css/popup-chat.css';
 import SendMessageForm, {OccasionSendMessageForm} from '../Components/SendMessageForm';
 import MessageContainer, {OccasionMessageContainer } from "../Components/MessageContainer";
-import { HubConnectionBuilder, LogLevel, TransportType } from '@microsoft/signalr'
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
 
 export default function PopupChat () {

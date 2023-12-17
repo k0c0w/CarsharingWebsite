@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import '../styles/chat.css';
 import { Button } from '@mui/material';
-import {OccasionMessageContainer} from "../components/Chat/MessageContainer";
-import  {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
+import MessageContainer, {OccasionMessageContainer} from "../components/Chat/MessageContainer";
+import  SendMessageForm, {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 import API from "../httpclient/axios_client";
 
-export default function Chat ({sendMessage, messages, leaveRoom, isDocumentsEnabled=true}) {
+export default function Chat ({sendMessage, messages, leaveRoom}) {
 
     return (
       <div className='app'>
@@ -28,6 +28,13 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
   const [connection, setConnection] = useState(null);
   const [occasionIssuerId, setOccasionIssuerId] = useState(null);
   const [messages, setMessages] = useState([]);
+
+  function onCloseOccasionRecieved() {
+    setOccasionIssuerId(null);
+    connection?.stop();
+    setConnection(null);
+    setErrorMessage("Occasion was closed");
+  }
 
   async function loadHistory() {
     const occasion = await API.getOccasionById(occasionId);
@@ -89,9 +96,8 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
     }
   }
 
-  const leaveRoom = async (roomId) => {
+  const leaveRoom = async () => {
       try {
-          //await connection.invoke('LeaveRoom', roomId);
           connection?.stop();
           onLeaveRoom();
       } catch (e) {

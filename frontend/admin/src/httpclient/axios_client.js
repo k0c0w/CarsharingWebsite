@@ -76,7 +76,7 @@ class AxiosWrapper {
         .then(response =>{
             attachmentCreationTrackingId = response.data.message;
         })
-        .catch(err => {});
+        .catch(() => {});
 
         if (attachmentCreationTrackingId)
         {
@@ -256,7 +256,6 @@ class AxiosWrapper {
 
     // Users
     async getUsers() {
-        debugger;
         const result = await this._get("/user/all");
         return result;
     }
@@ -348,7 +347,7 @@ class AxiosWrapper {
         };
 
         await this.s3ServiceAxios.patch(`/documents/${guid}`, JSON.stringify({isPublic: state}))
-            .then(x => {
+            .then(() => {
                 response.successed = true;
             })
             .catch(error => {
@@ -368,7 +367,7 @@ class AxiosWrapper {
         };
 
         await this.s3ServiceAxios.delete(`/documents/${guid}`)
-            .then(x => {
+            .then(() => {
                 response.successed = true;
             })
             .catch(error => {
@@ -415,7 +414,7 @@ class AxiosWrapper {
     async completeOccasion(occasionGuid) {
         const occasionCompletionResult = { successed: false, errorMessage: null}
         await this.axiosInstance.post(`/occasions/${occasionGuid}/complete`)
-            .then(response => {
+            .then(() => {
                 occasionCompletionResult.successed = true;
             })
             .catch(err => {

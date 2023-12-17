@@ -1,14 +1,11 @@
 import { Form, InputGroup } from 'react-bootstrap';
-import { OutlinedInput, Button } from '@mui/material';
+import { OutlinedInput, Button, TextField } from '@mui/material';
 import { useRef, useState } from 'react';
 import {AiFillFileImage} from "react-icons/ai"
 import {MdDelete} from "react-icons/md"
 import API from '../../httpclient/axios_client';
 
-
 const SendMessageForm = ({ sendMessage }) => {
-    //const theme = useTheme();
-    //const color = tokens(theme.palette.mode);
     const [message, setMessage] = useState('');
 
     return <form
@@ -62,7 +59,7 @@ export function OccasionSendMessageForm({issuerId, sendMessage}) {
         }
     }
 
-    async function onSendButtonClicked(e) {
+    async function onSendButtonClicked() {
         if (message == null && attachments.length == 0)
             return;
 

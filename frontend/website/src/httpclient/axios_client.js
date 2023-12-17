@@ -266,7 +266,7 @@ class AxiosWrapper {
             response.successed = true;
             response.attachments = r.data.value.attachments;
         })
-        .catch(err => {
+        .catch(() => {
             response.defaultAttachment = "https://i.pinimg.com/originals/7c/1c/a4/7c1ca448be31c489fb66214ea3ae6deb.jpg"
         })
 

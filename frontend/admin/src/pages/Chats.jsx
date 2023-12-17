@@ -18,7 +18,6 @@ export default function Chats () {
 
     const onJoinRoomResultRecieved = async (update) => {
         if (update.success){
-            debugger;
           const history = await API.getChatHistory(update.roomId);
           setActiveRoomMessages(history);
           const room = onlineRooms.find(elem => elem.roomId === update.roomId);
