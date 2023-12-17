@@ -31,14 +31,11 @@ public class DownloadOccasionAttachmentQueryHandler : IRequestHandler<DownloadOc
 
             if (metadata == null)
                 return new Error<S3File>();
-            //todo: 
-            /*
             if (!(RequestContext.User.UserIsInRole("Manager") || RequestContext.User.UserIsInRole("Admin")))
             {
                 if (!(metadata.AccessUserList.Contains(request.ApplicantId) || metadata.AttachmentAuthorId == request.ApplicantId))
                     return new Error<S3File>();
             }
-            */
 
             var fileinfo = metadata.LinkedFileInfos.FirstOrDefault(x => x.ObjectName == request.AttachmentFileName);
             if (fileinfo == null)

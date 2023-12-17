@@ -2,6 +2,7 @@ import React,{ useEffect, useRef } from 'react';
 import { useTheme } from '@emotion/react';
 import { tokens } from '../../theme';
 import { AiFillFile } from 'react-icons/ai';
+import API from '../../httpclient/axios_client';
 
 
 const MessageContainer = ({ messages }) => {
@@ -64,13 +65,39 @@ export function OccasionMessageContainer ({ messages }) {
 }
 
 
-const Attachment = ({fileName, link, contentType}) => {
+function Attachment({fileName, link, contentType}) {
+    const imgRef = useRef(null);
+
+    async function downloadAttachment(){
+        const fileResult = await API.getAttachmnet(link);
+        if (!fileResult.successed)
+            return;
+        
+        const href = URL.createObjectURL(fileResult.file);
+
+        if (contentType.startsWith("image/") && imgRef.current)
+        {
+            imgRef.current.src = href;
+        }
+        else{
+            const aElement = document.createElement("a");
+            aElement.setAttribute("download", fileName);
+            aElement.href = href;
+            aElement.setAttribute("target", "_blank");
+            aElement.click();
+            URL.revokeObjectURL(href);
+        }
+    }
+    useEffect(() => {
+        if (contentType.startsWith("image/"))
+            downloadAttachment();
+
+    }, []);
+
     if (contentType.startsWith("image/"))
-        return <img src={link} alt={fileName} style={{maxWidth: 200}}/>
+        return <img ref={imgRef} alt={fileName} style={{maxWidth: 200}}/>
 
-    return <AiFillFile color='#1475cf' src={link} style={{width: 50}} />
+    return <AiFillFile color='#1475cf' onClick={() => downloadAttachment()}/>
 }
-
-
 export default MessageContainer;
     

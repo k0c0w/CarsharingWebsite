@@ -117,6 +117,19 @@ class AxiosWrapper {
         return result.data;
     }
 
+    async getAttachmnet(url) {
+        const response = {successed: false, file: null}
+
+        await this.s3ServiceAxios.get(url, {responseType: 'blob'})
+            .then(res => {
+                response.successed = true;
+                response.file = res.data;
+            })
+            .catch(err => console.log(err));
+
+        return response;
+    }
+
     //Posts
     async getPosts () {
         const result = await this._get("/post/posts");

@@ -9,7 +9,6 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
 {
     private IMetadataRepository<OccasionAttachmentMetadata> _metadataRepository;
     private ILogger<Exception> _logger;
-    private string BaseUrl { get; }
     private HttpContext RequestContext { get; }
 
     public GetOccasionAttachmentMetadataQueryHandler(IHttpContextAccessor httpContextAccessor, IMetadataRepository<OccasionAttachmentMetadata> metadataRepository, ILogger<Exception> logger)
@@ -17,7 +16,6 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
         _metadataRepository = metadataRepository;
         _logger = logger;
         var request = httpContextAccessor!.HttpContext!.Request;
-        BaseUrl = $"{request.Scheme}://{request.Host}";
         RequestContext = httpContextAccessor.HttpContext!;
     }
 
@@ -56,5 +54,5 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
         }
     }
 
-    private string GetDownloadPath(Guid metadataId, string s3objectName) => $"{BaseUrl}/attachments/{metadataId}/download/{s3objectName}";
+    private string GetDownloadPath(Guid metadataId, string s3objectName) => $"/attachments/{metadataId}/download/{s3objectName}";
 }
