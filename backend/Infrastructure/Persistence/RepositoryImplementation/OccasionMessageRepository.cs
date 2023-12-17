@@ -63,7 +63,7 @@ public class OccasionMessageRepository
                                 )
                                 .Skip(offset)
                                 .Take(limit)
-                                .OrderByDescending(x => x.Time)
+                                .OrderBy(x => x.Time)
                                 .ToArrayAsync();
 
         return history
