@@ -6,7 +6,6 @@ using StackExchange.Redis;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace MinioConsumer.BackgroundServices;
 
@@ -45,11 +44,15 @@ public class BackgroundSaver : BackgroundService
                 {
                     proccessedFromRedis = 0;
 
-                    var key = await TaskQueue.DequeueOperationIdToSaveAsync(stoppingToken);
-                    if (stoppingToken.IsCancellationRequested || key is null)
+                    var dequeKeyTask = TaskQueue.DequeueOperationIdToSaveAsync(stoppingToken);
+                    var timeoutTask = Task.Delay(1000, stoppingToken);
+
+                    var winner = await Task.WhenAny(dequeKeyTask, timeoutTask);
+                    if (winner == timeoutTask || stoppingToken.IsCancellationRequested)
                         continue;
 
-                    if (key != default)
+                    var key = dequeKeyTask.Result;
+                    if (key is not null && key != Guid.Empty)
                         await BackgroundProcessing(key.Value);
                 }
                 else
@@ -58,22 +61,23 @@ public class BackgroundSaver : BackgroundService
                     var moveNext = await redisKeysAsyncEnumerator.MoveNextAsync();
 
                     var key = redisKeysAsyncEnumerator.Current;
-
-                     await BackgroundProcessing(key!);
+                    if (key != default)
+                        await BackgroundProcessing(key!);
 
                     if (!moveNext)
                         redisKeysAsyncEnumerator = GetOperationsKeysAsyncEnumerator(stoppingToken);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
+                proccessedFromRedis = 0;
+                redisKeysAsyncEnumerator = GetOperationsKeysAsyncEnumerator(stoppingToken);
             }
         }
     }
 
     private static readonly Type _openPrimaryStorageSaverType = typeof(PrimaryStorageSaver<>);
-    private const string entryPointName = "MoveDataToPrimaryStorageAsync";
 
     private async Task BackgroundProcessing(Guid id)
     {
@@ -95,11 +99,11 @@ public class BackgroundSaver : BackgroundService
             var primarySaverType = _openPrimaryStorageSaverType.MakeGenericType(metadataType);
             using var scope = _serviceProvider.CreateScope();
 
-            var primarySaver = _serviceProvider.GetService(primarySaverType);
+            var primarySaver = (IPrimaryStorageSaver)scope.ServiceProvider.GetService(primarySaverType)!;
 
-            await(primarySaverType.GetMethod(entryPointName).Invoke(primarySaver, new object[] { id, id }) as Task);
+            await primarySaver.MoveDataToPrimaryStorageAsync(id, id);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             _logger.LogError(ex, "An error occured while saving metadada!");
         }
@@ -124,7 +128,7 @@ public class BackgroundTaskQueue : IBackgroundTaskQueue
     private readonly ConcurrentQueue<Guid> _queue = new ConcurrentQueue<Guid>();
 
     public void QueueOperationIdToSave(Guid id)
-    { 
+    {
         _queue.Enqueue(id);
     }
 

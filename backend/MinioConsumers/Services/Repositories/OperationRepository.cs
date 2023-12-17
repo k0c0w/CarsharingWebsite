@@ -21,13 +21,14 @@ public class OperationRepository
         _server = connectionMultiplexer.GetServer(redisSettings.Host, redisSettings.Port);
     }
 
-    public async Task<Guid> CreateNewOperationAsync(Guid initializerUserId)
+    public async Task<Guid> CreateNewOperationAsync(Guid initializerUserId, string schemaName)
     {
         var operation = new OperationInfo
         {
             Id = Guid.NewGuid(),
             InitializerUserId = initializerUserId,
             OperationStatus = OperationStatus.Receiving,
+            MetadataSchemaName = schemaName,
         };
 
         await _db.StringSetAsync(operation.Id.ToString(), Serilize(operation));

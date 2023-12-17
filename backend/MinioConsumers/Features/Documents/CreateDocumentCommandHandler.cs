@@ -18,10 +18,8 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
 
     public async Task<HttpResponse> Handle(CreateDocumentCommand request, CancellationToken cancellationToken)
     {
-        var trackingId = await _operations.CreateNewOperationAsync(request.UserId);
+        var trackingId = await _operations.CreateNewOperationAsync(request.UserId, MetadataSchemas.Schemas[typeof(DocumentMetadata)]);
 
-        //_ = Task.Run(async () =>
-        //{
             var metadata = new DocumentMetadata(trackingId, default)
             {
                 IsPublic = !request.IsPrivate,
@@ -38,7 +36,6 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
                 if (await _metadataSaver.UploadFileAsync(trackingId, metadata, request.File))
                     await _metadataSaver.CommitOperationAsync(trackingId);
             }
-        //});
 
         return new HttpResponse(trackingId.ToString());
     }
