@@ -59,6 +59,7 @@ public class OccasionMessageRepository
                                         m.IsFromManager,
                                         u.FirstName,
                                         UserId = u.Id,
+                                        m.Attachment
                                     }
                                 )
                                 .Skip(offset)
@@ -70,6 +71,7 @@ public class OccasionMessageRepository
         return history
             .Select(x => new OccasionChatMessage()
             {
+                AttachmentId = x.Attachment,
                 AuthorName = x.FirstName!,
                 IsFromManager = x.IsFromManager,
                 MessageId = x.Id,

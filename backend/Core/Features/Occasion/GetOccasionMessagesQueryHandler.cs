@@ -33,29 +33,27 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
             || RequestContext.User.IsInRole(Role.Admin.ToString()) || RequestContext.User.IsInRole(Role.Manager.ToString())))
             return new Shared.Results.Error<IEnumerable<OccasionMessageDto>>();
 
-        var messages = await _occasionMessageRepository.GetMessagesAsync(request.OccasionId, 100, 0);
+        var messages = await _occasionMessageRepository.GetMessagesAsync(request.OccasionId, 0, 50);
 
         var result = new List<OccasionMessageDto>();
 
         foreach (var message in messages)
         {
-            IEnumerable<AttachmentInfo> links;
+            OccasionMessageDto dto = new OccasionMessageDto()
+            {
+                Id = message.MessageId,
+                MessageText = message.Text,
+                IsFromManager = message.IsFromManager,
+                AuthorName = message.AuthorName
+            };
             if (message.AttachmentId is not null)
             {
                 var webCallResult = await _s3ServiceClient.GetAttachmentInfosByIdsAsync(message.AttachmentId.Value);
                 if (webCallResult.Success)
-                {
-                    OccasionMessageDto dto = new OccasionMessageDto()
-                    {
-                        Id = message.MessageId,
-                        MessageText = message.Text,
-                        IsFromManager = message.IsFromManager,
-                        AuthorName = message.AuthorName,
-                        Attachments = webCallResult.Data.Select(x=>new OccasionMessageAttachmentDto(){ ContentType = x.ContentType, DownloadUrl = x.DownloadUrl})
-                    };
-                    result.Add(dto);
-                }
+                    dto.Attachments = webCallResult.Data.Select(x => new OccasionMessageAttachmentDto()
+                        { ContentType = x.ContentType, DownloadUrl = x.DownloadUrl });
             }
+            result.Add(dto);
         }
 
         return new Ok<IEnumerable<OccasionMessageDto>>(result);

@@ -10,7 +10,7 @@ public class OccasionMessageDto
     
     public bool IsFromManager { get; init; }
 
-    public IEnumerable<OccasionMessageAttachmentDto> Attachments { get; init; }
+    public IEnumerable<OccasionMessageAttachmentDto> Attachments { get; set; }
 }
 
 

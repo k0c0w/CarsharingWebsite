@@ -66,18 +66,16 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         message.AuthorName = (await _userManager.FindByIdAsync(GetUserId())).FirstName!;
         message.IsFromManager = await IsCurrentUserManagerOrAdmin();
         message.MessageId = Guid.NewGuid();
-
-        /*
+        
         await _publisher.SendMessageAsync(new OccasionChatMessageDto()
         {
             AuthorId = GetUserId(),
-            Attachment = message.Attachment,
+            Attachment = message.AttachmentId,
             OccasionId = message.OccasionId,
             Text = message.Text,
             Time = message.Time,
             IsAuthorManager = message.IsFromManager,
         });
-        */
 
         await Clients.Group(message.OccasionId.ToString()).ReceiveMessage(message);
     }
