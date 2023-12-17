@@ -6,8 +6,6 @@ services:
       context: ./backend
       dockerfile: ChatConsumersDockerfile
     container_name: chatConsumer
-    env_file:
-      - .rabbitmq.env
     environment:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       - RabbitMqConfig__Username=${RABBITMQ_USER}
@@ -24,9 +22,6 @@ services:
       context: ./backend
       dockerfile: CarsharingDockerfile
     container_name: backend
-    env_file:
-      - .env
-      - .rabbitmq.env
     environment:
       - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
       - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
@@ -95,8 +90,6 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
-    env_file:
-      - .rabbitmq.env
     environment:
       RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
