@@ -6,10 +6,12 @@ services:
       context: ./backend
       dockerfile: ChatConsumersDockerfile
     container_name: chatConsumer
+    env_file:
+      - .rabbitmq.env
     environment:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-      - RabbitMqConfig__Username=chatConsumer
-      - RabbitMqConfig__Password=Passw0rd
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
       - RabbitMqConfig__Hostname=rabbitmq
       - RabbitMqConfig__Port=5672
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -22,6 +24,9 @@ services:
       context: ./backend
       dockerfile: CarsharingDockerfile
     container_name: backend
+    env_file:
+      - .env
+      - .rabbitmq.env
     environment:
       - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
       - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
@@ -34,8 +39,8 @@ services:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       - Authorization__Google__AppId =${GOOGLE_APP_ID}
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
-      - RabbitMqConfig__Username=chatConsumer
-      - RabbitMqConfig__Password=Passw0rd
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
       - RabbitMqConfig__Hostname=rabbitmq
       - RabbitMqConfig__Port=5672
     depends_on:
@@ -50,6 +55,7 @@ services:
     container_name: frontend
     environment:
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+      - REACT_APP_WEBSITE_ORIGIN=${WEBSITE_ORIGIN}
       - REACT_APP_S3_API_URL=${S3_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
       - REACT_LOCAL_HOST=${FRONT_MAIN}
@@ -65,7 +71,8 @@ services:
       - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-      - REACT_LOCAL_HOST=${FRONT_ADMIN}
+      - REACT_APP_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
+      - REACT_LOCAL_HOST=${WEBSITE_ORIGIN}
       - REACT_APP_S3_API_URL=${S3_API_URL}
     ports:
       - ${FRONT_ADMIN_PORTS}
@@ -88,9 +95,11 @@ services:
     ports:
       - "15672:15672"
       - "5672:5672"
+    env_file:
+      - .rabbitmq.env
     environment:
-      RABBITMQ_DEFAULT_USER: "chatConsumer"
-      RABBITMQ_DEFAULT_PASS: "Passw0rd"
+      RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
 
   minio_carsharing:
     build:
@@ -99,6 +108,7 @@ services:
     env_file:
       - .mongo.env
       - .redis.env
+      - .env
     ports:
       - "7125:80"
       - "7126:443"
@@ -108,6 +118,8 @@ services:
       - tmdb
       - pmdb
     environment:
+      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
+      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
       - MinioS3__AccessKey=minioadmin
       - MinioS3__SecretKey=minioadmin
       - MinioS3__Timeout=5000

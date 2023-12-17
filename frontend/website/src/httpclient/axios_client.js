@@ -7,8 +7,7 @@ function delay(ms) {
   }
 
 class AxiosWrapper {
-
-    constructor(url = "https://localhost:7129/api") {
+    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -16,7 +15,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": "https://localhost:7129",
+                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL,
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
@@ -26,13 +25,13 @@ class AxiosWrapper {
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
         const s3options = {
-            baseURL: "http://localhost:5147",
+            baseURL: process.env.REACT_APP_S3_API_URL,
             timeout: 10000,
             ssl: false,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:5147",
+                "Access-Control-Allow-Origin": process.env.REACT_APP_S3_API_URL,
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },

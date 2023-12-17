@@ -66,7 +66,7 @@ export function OccasionChat({occasionId, onLeaveRoom, setErrorMessage}) {
   async function startConnection() {
     try {
         const localConnection = new HubConnectionBuilder()
-            .withUrl("https://localhost:7129/occasion_chat", { accessTokenFactory: () => localStorage.getItem("token") })
+            .withUrl(process.env.REACT_APP_OCCASION_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
             .configureLogging(LogLevel.Information)
             .build();
 

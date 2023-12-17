@@ -52,7 +52,7 @@ export default function Chats () {
       const startConnection = async () => {
           try {
           const localConnection = new HubConnectionBuilder()
-           .withUrl('https://localhost:81/chat', { accessTokenFactory: () => localStorage.getItem("token") })
+           .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
               .configureLogging(LogLevel.Information)
            .build();
       
