@@ -14,8 +14,8 @@ services.AddBackgroundWorkers();
 services.AddCors(options =>
 {
     var configuration = builder.Configuration;
-    var mainFront = configuration["FrontendHost:Main"]!;
-    var adminFront = configuration["FrontendHost:Admin"]!;
+    var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
+    var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
 
     options.AddPolicy("DevFrontEnds",
         builder =>
@@ -30,11 +30,8 @@ services.AddCors(options =>
 var app = builder.Build();
 
 #region Use Swagger
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 #endregion
 
 

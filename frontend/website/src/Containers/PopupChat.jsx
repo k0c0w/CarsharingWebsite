@@ -141,7 +141,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
 
     async function createHubConnection() {
         const con = new HubConnectionBuilder()
-          .withUrl("https://localhost:7129/occasion_chat", { 
+          .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL , { 
             accessTokenFactory: () => localStorage.getItem("token") 
         })
           .configureLogging(LogLevel.Information)
@@ -194,7 +194,7 @@ function DefaultSupportChat() {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl("https://localhost:7129/chat", { accessTokenFactory: () => localStorage.getItem("token") })
+          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
           .configureLogging(LogLevel.Information)
           .withAutomaticReconnect()
           .build();

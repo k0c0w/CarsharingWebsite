@@ -9,7 +9,7 @@ function delay(ms) {
 class AxiosWrapper {
     constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
-            baseURL: "https://localhost:7129/api/admin",
+            baseURL: url,
             timeout: 10000,
             ssl: false,
             headers: {
@@ -26,19 +26,19 @@ class AxiosWrapper {
         this.token = localStorage.getItem("token");
 
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
-        options.baseURL = "https://localhost:7129/api"
+        options.baseURL = process.env.REACT_APP_WEBSITE_API_URL;
 
         this.mainSiteAxios = axios.create(options);
         this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
         const s3options = {
-            baseURL: "http://localhost:5147",
+            baseURL: process.env.REACT_APP_S3_API_URL,
             timeout: 10000,
             ssl: false,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
-                "Access-Control-Allow-Origin": "http://localhost:5147",
+                "Access-Control-Allow-Origin": process.env.REACT_APP_S3_API_URL,
                 "Access-Control-Allow-Credentials": "true",
                 "X-Requested-With": "XMLHttpRequest"
             },
