@@ -13,7 +13,7 @@ import { tokens } from '../../theme';
 
 
 
-function DocumentsGrid({handleClickInfo, handleSelect, rows}) {
+function DocumentsGrid({handleSwitch, handleSelect, rows}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
 

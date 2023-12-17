@@ -91,12 +91,10 @@ class AxiosWrapper {
 
     async documents() {
         const result = {successed: false}
-        await axios.get('/documents', {
-            baseURL: process.env.REACT_APP_S3_API_URL,
-          }) 
+        await this.s3ServiceAxios.get('/documents') 
             .then(response => {
                 result.successed = true;
-                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `http://localhost:7126/${x.download_url}`}});
+                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `${this.s3ServiceAxios.defaults.baseURL}${x.download_url}`}});
 
                 return result;
             })

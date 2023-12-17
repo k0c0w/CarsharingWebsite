@@ -33,7 +33,7 @@ public class DownloadOccasionAttachmentQueryHandler : IRequestHandler<DownloadOc
                 return new Error<S3File>();
             //todo: 
             /*
-            if (!(RequestContext.User.IsInRole("Manager") || RequestContext.User.IsInRole("Admin")))
+            if (!(RequestContext.User.UserIsInRole("Manager") || RequestContext.User.UserIsInRole("Admin")))
             {
                 if (!(metadata.AccessUserList.Contains(request.ApplicantId) || metadata.AttachmentAuthorId == request.ApplicantId))
                     return new Error<S3File>();

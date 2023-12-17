@@ -9,7 +9,7 @@ services.AddRedisSetUp(configuration);
 services.AddMongoSetUp(configuration);
 services.AddServices();
 services.AddInfrastructure(configuration);
-
+services.AddBackgroundWorkers();
 
 services.AddCors(options =>
 {

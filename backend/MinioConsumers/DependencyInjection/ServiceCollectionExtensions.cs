@@ -10,12 +10,9 @@ using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using MongoDB.Driver;
 using StackExchange.Redis;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.OpenApi.Models;
 using MinioConsumer.BackgroundServices;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MinioConsumer.DependencyInjection;
 
@@ -71,8 +68,8 @@ public static class ServiceCollectionExtensions
     public static void AddServices(this IServiceCollection services)
     {
         services.AddScoped<MetadataSaver<DocumentMetadata>>();
-        services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
         services.AddScoped<MetadataSaver<OccasionAttachmentMetadata>>();
+        services.AddScoped<PrimaryStorageSaver<DocumentMetadata>>();
         services.AddScoped<PrimaryStorageSaver<OccasionAttachmentMetadata>>();
 
         services.AddMediatR(cfg =>
@@ -86,7 +83,8 @@ public static class ServiceCollectionExtensions
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
@@ -105,17 +103,11 @@ public static class ServiceCollectionExtensions
                         new string[] {}
                     }
                 });
-            })
-            ;
+            });
         
         services.AddControllers();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-
         services.AddAuthenticationAndAuthorization(configuration);
-
-        services.AddHostedService<TempFileCleanerBackgroundService>();
-        services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
     }
 
     internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection,
@@ -146,5 +138,13 @@ public static class ServiceCollectionExtensions
             });
 
         return serviceCollection;
+    }
+
+    internal static void AddBackgroundWorkers(this IServiceCollection services)
+    {
+        services.AddHostedService<TempFileCleanerBackgroundService>();
+        services.AddHostedService<BackgroundSaver>();
+        services.AddScoped<IMetadataScopedProcessingService, TempFileCleanerScopedProcessingService>();
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
     }
 }

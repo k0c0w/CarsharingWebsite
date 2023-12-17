@@ -5,7 +5,12 @@ using System.Diagnostics;
 
 namespace MinioConsumer.Services.PrimaryStorageSaver;
 
-public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
+public interface IPrimaryStorageSaver
+{
+    public Task MoveDataToPrimaryStorageAsync(Guid operationId, Guid metadataId);
+}
+
+public class PrimaryStorageSaver<TMetadata> : IPrimaryStorageSaver where TMetadata : MetadataBase
 {
     private readonly ITempMetadataRepository<TMetadata> tempMetadataRepository;
     private readonly IMetadataRepository<TMetadata> primaryMetadataRepository;
@@ -13,10 +18,10 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
     private readonly OperationRepository operationRepository;
     private readonly ILogger<Exception> _exceptionLogger;
 
-    public PrimaryStorageSaver(ITempMetadataRepository<TMetadata> tempMetadataRepository, 
-        IMetadataRepository<TMetadata> primaryMetadataRepository, 
-        IS3Service s3Service, 
-        OperationRepository operationRepository, 
+    public PrimaryStorageSaver(ITempMetadataRepository<TMetadata> tempMetadataRepository,
+        IMetadataRepository<TMetadata> primaryMetadataRepository,
+        IS3Service s3Service,
+        OperationRepository operationRepository,
         ILogger<Exception> exceptionLogger)
     {
         this.tempMetadataRepository = tempMetadataRepository;
@@ -83,13 +88,13 @@ public class PrimaryStorageSaver<TMetadata> where TMetadata : MetadataBase
             {
                 var fileInfo = fileInfos[i];
                 var tempS3File = tempS3Files[i];
-                tasks[i] = s3Service.RemoveFileFromBucketAsync(tempS3File.BucketName, tempS3File.Name); 
+                tasks[i] = s3Service.RemoveFileFromBucketAsync(tempS3File.BucketName, tempS3File.Name);
             }
             await Task.WhenAll(tasks);
             await tempMetadataRepository.RemoveByIdAsync(metadataId);
             await operationRepository.UpdateOperationStatusAsync(operationId, OperationStatus.Completed);
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             _exceptionLogger.LogError(ex, "Exception while transition files from temp storages to primary.");
 
