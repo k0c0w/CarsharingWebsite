@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MinioConsumer.Features.OccasionAttachment.Query;
-using System.Diagnostics;
 using System.Security.Claims;
+using Shared;
 
 namespace MinioConsumer.Features.OccasionAttachment;
 
@@ -21,13 +21,10 @@ public class OccasionAttachmentController : ControllerBase
 	[HttpGet("{attachmentId:guid}")]
 	public async Task<IActionResult> GetAttachmentInformationAsync([FromRoute] Guid attachmentId)
 	{
-		Guid? applicantId = User.GetUserId();
-
-        if (applicantId == null)
+        if (!Guid.TryParse(User.GetId(), out Guid applicantGuid))
 			return NotFound();
-		Debug.Assert(applicantId.HasValue);
 
-		var getAttachmentMetadata = new GetOccasionAttachmentMetadataQuery(attachmentId, applicantId.Value);
+		var getAttachmentMetadata = new GetOccasionAttachmentMetadataQuery(attachmentId, applicantGuid);
 		var response = await _sender.Send(getAttachmentMetadata);
 
 		return StatusCode((int)response.Code, response);
@@ -37,13 +34,12 @@ public class OccasionAttachmentController : ControllerBase
 	[AllowAnonymous]
 	public async Task<IResult> DownloadAttachmentFileAsync([FromRoute] Guid attachmentId, [FromRoute] string attachmentFileName)
 	{
-		//todo:
-		/*
-		if (!Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid applicantId))
+		var applicantId = User.GetId();
+
+        if (!Guid.TryParse(applicantId, out Guid applicantGuid))
 			return Results.NotFound(); 
-		*/
-		Guid applicantId = Guid.NewGuid();
-		var downloadQuery = new DownloadOccasionAttachmentQuery(attachmentId, attachmentFileName, applicantId);
+
+		var downloadQuery = new DownloadOccasionAttachmentQuery(attachmentId, attachmentFileName, applicantGuid);
 		var response = await _sender.Send(downloadQuery);
 
 		if (!response)

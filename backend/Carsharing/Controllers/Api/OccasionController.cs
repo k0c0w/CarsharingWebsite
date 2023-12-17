@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Entities.Entities;
+using Shared;
 
 namespace Carsharing.Controllers.Api;
 

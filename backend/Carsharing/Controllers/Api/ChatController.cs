@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Persistence.Chat;
 using Persistence.Chat.ChatEntites.SignalRModels;
+using Shared;
 
 namespace Carsharing.Controllers.Api;
 

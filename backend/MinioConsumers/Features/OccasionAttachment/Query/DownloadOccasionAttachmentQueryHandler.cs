@@ -4,6 +4,7 @@ using MinioConsumer.Services;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using Shared.Results;
+using Shared;
 
 namespace MinioConsumer.Features.OccasionAttachment.Query;
 

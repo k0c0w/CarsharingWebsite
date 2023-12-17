@@ -8,6 +8,7 @@ using Persistence.Chat.ChatEntites;
 using Persistence.Chat.ChatEntites.Dtos;
 using Persistence.Chat.ChatEntites.SignalRModels;
 using Persistence.Chat.ChatEntites.SignalRModels.Shared;
+using Shared;
 
 namespace Carsharing.ChatHub;
 
@@ -32,7 +33,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
     {
         var connectedUserId = GetUserId();
 
-        if (await IsCurrentUserManagerOrAdmin())
+        if (IsCurrentUserManagerOrAdmin())
         {
             if(_occasionChatRepository.TryAddAdminConnectionToGroup(Context.ConnectionId, message.OccasionId.ToString()))
             {
@@ -64,7 +65,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
         }
 
         message.AuthorName = (await _userManager.FindByIdAsync(GetUserId())).FirstName!;
-        message.IsFromManager = await IsCurrentUserManagerOrAdmin();
+        message.IsFromManager = IsCurrentUserManagerOrAdmin();
         message.MessageId = Guid.NewGuid();
         
         await _publisher.SendMessageAsync(new OccasionChatMessageDto()
@@ -83,7 +84,7 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         var disconnectedUserId = GetUserId();
-        if (await IsCurrentUserManagerOrAdmin())
+        if (IsCurrentUserManagerOrAdmin())
         {
             _occasionChatRepository.TryRemoveAdminConnection(Context.ConnectionId, out _);
         }
@@ -118,11 +119,5 @@ public class OccasionsSupportChatHub : Hub<IOccasionChatClient>
 
     private string GetUserId() => Context.UserIdentifier ?? throw new Exception();
 
-    private async Task<bool> IsCurrentUserManagerOrAdmin()
-    {
-        var user = await _userManager.FindByIdAsync(GetUserId());
-        if (user is null)
-            return false;
-        return (await _userManager.IsInRoleAsync(user, Role.Manager.ToString())) || (await _userManager.IsInRoleAsync(user, Role.Admin.ToString()));
-    }
+    private bool IsCurrentUserManagerOrAdmin() => Context.User.UserIsInRole(Role.Manager.ToString()) || Context.User.UserIsInRole(Role.Admin.ToString());
 }

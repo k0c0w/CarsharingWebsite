@@ -2,6 +2,7 @@
 using MinioConsumer.Features.OccasionAttachment.Query.Dto;
 using MinioConsumer.Models;
 using MinioConsumer.Services.Repositories;
+using Shared;
 
 namespace MinioConsumer.Features.OccasionAttachment.Query;
 
@@ -15,7 +16,6 @@ public class GetOccasionAttachmentMetadataQueryHandler : IRequestHandler<GetOcca
     {
         _metadataRepository = metadataRepository;
         _logger = logger;
-        var request = httpContextAccessor!.HttpContext!.Request;
         RequestContext = httpContextAccessor.HttpContext!;
     }
 

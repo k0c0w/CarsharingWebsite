@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MinioConsumer.Features.Documents.InputModels;
 using MinioConsumer.Features.Documents.Query;
 using System.Security.Claims;
+using Shared;
 
 namespace MinioConsumer.Features.Documents;
 

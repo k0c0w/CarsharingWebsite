@@ -1,10 +1,10 @@
-﻿using Clients.Objects;
-using Clients.S3ServiceClient;
+﻿using Clients.S3ServiceClient;
 using Domain.Entities;
 using Entities.Repository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Persistence.RepositoryImplementation;
+using Shared;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -30,7 +30,7 @@ public class GetOccasionMessagesQueryHandler : IQueryHandler<GetOccasionMessages
     {
         var occasion = await _occasionRepository.GetByIdAsync(request.OccasionId);
         if (occasion is null || !(occasion.IssuerId == request.ApplicantId && occasion.CloseDateUtc is null 
-            || RequestContext.User.IsInRole(Role.Admin.ToString()) || RequestContext.User.IsInRole(Role.Manager.ToString())))
+            || RequestContext.User.UserIsInRole(Role.Admin.ToString()) || RequestContext.User.UserIsInRole(Role.Manager.ToString())))
             return new Shared.Results.Error<IEnumerable<OccasionMessageDto>>();
 
         var messages = await _occasionMessageRepository.GetMessagesAsync(request.OccasionId, 0, 50);
