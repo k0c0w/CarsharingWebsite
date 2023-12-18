@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\Clients\Clients.csproj" />
     <ProjectReference Include="..\..\Infrastructure\Migrations\Migrations.csproj" />
+    <ProjectReference Include="..\..\Infrastructure\Persistence\Persistence.csproj" />
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
@@ -20,6 +22,8 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="FluentValidation" Version="11.8.0" />
+    <PackageReference Include="MassTransit.AspNetCore" Version="7.3.1" />
+	<PackageReference Include="MassTransit.RabbitMQ" Version="8.1.1" />
   </ItemGroup>
 
 </Project>

@@ -1,21 +1,17 @@
-﻿namespace Persistence.Chat.ChatEntites.SignalRModels;
+﻿namespace Persistence.Chat.ChatEntites.SignalRModels.Shared;
 
-public class ChatRoom
+public abstract class ChatRoom
 {
     private readonly List<string> _managersIds = new List<string>();
     public IReadOnlyList<string> ProcessingManagersIds => _managersIds;
-
     public int ProcessingManagersCount => _managersIds.Count;
+    public ChatUserBase Client { get; }
 
-    public ChatUser Client { get; }
-
-    public string RoomId => Client.UserId;
-
-    public ChatRoom(ChatUser client)
+    protected ChatRoom(ChatUserBase client)
     {
         Client = client;
     }
-
+    
     public void AssignManager(string managerId)
     {
         _managersIds.Add(managerId);

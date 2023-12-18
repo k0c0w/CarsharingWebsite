@@ -330,6 +330,106 @@ namespace Entities.Migrations
                     b.ToTable("UserInfos");
                 });
 
+            modelBuilder.Entity("Entities.Entities.OccasionMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("Attachment")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFromManager")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OccasionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("TopicAuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OccasionMessages");
+                });
+
+            modelBuilder.Entity("Entities.Entities.OccasionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OccasionTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "ДТП"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Поломка ТС"
+                        },
+                        new
+                        {
+                            Id = 2048,
+                            Description = "Прочее"
+                        });
+                });
+
+            modelBuilder.Entity("Entities.Entities.Occassion", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CloseDateUtc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("CreationDateUtc")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IssuerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OccasionType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IssuerId")
+                        .IsUnique();
+
+                    b.ToTable("Occasions");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -561,6 +661,15 @@ namespace Entities.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Entities.Entities.Occassion", b =>
+                {
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("Entities.Entities.Occassion", "IssuerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

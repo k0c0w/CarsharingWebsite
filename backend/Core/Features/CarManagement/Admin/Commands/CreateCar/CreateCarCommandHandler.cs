@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Domain.Common;
 using Domain.Entities;
 using Migrations.CarsharingApp;
 using Shared.CQRS;

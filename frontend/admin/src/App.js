@@ -15,12 +15,18 @@ import API from './httpclient/axios_client';
 import RequireAuth from './components/RequireAuth';
 import Chats from './pages/Chats';
 import useAuth from './hooks/useAuth';
+import Documents from "./pages/Documents";
+import Occasions from "./pages/Occasions";
 
 
 const _routes = [
   {
     path: '/chat',
     name: "Чаты"
+  },
+  {
+    path: '/occasions',
+    name: 'Обращения'
   },
   {
     path: '/cars',
@@ -37,6 +43,10 @@ const _routes = [
   {
     path: '/users',
     name: "Пользователи"
+  },
+  {
+    path: '/documents',
+    name: "Документы"
   },
   {
     path: '/login',
@@ -56,6 +66,7 @@ function App() {
   const [path, setPath] = useState(window.location.pathname);
   const [theme, colorMode] = useMode();
   const { auth, setAuth } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(()=>{
     const authorize = () => API.isAdmin().then(r => {
@@ -63,13 +74,13 @@ function App() {
         const roles = r?.data?.roles;
         const isAuthorized = true;
         setAuth({ roles, isAuthorized });
-
       }
       else{
         const roles = [];
         const isAuthorized = false;
         setAuth({ roles, isAuthorized });
       }
+      setIsAuthenticated(true);
     });
     authorize()
   },[])
@@ -85,17 +96,23 @@ function App() {
           <Header></Header>
           <SideNavBar isAuthorized={auth.isAuthorized} path={path} routes={_routes} handlePath={handlePath}></SideNavBar>
           <div className='Page' >
+            { isAuthenticated &&
             <Routes>
               <Route element={<RequireAuth allowedRoles={[_roles.Admin, _roles.Manager]} /> } >
                 <Route path= '/posts' element={<PostMngmt/>} />
                 <Route path='/tariffs' element={<TarrifMngmt />} />
                 <Route path='/cars' element={<CarsMngmt /> } />
                 <Route path='/users' element={<UserMngmt />} />
+                <Route path='/occasions' element={<Occasions />} />
+                <Route path='/documents' element={<Documents />} />
                 <Route path='/carpark' element={<CarParkMngmt/>} />
-                <Route path='/chat' element={<Chats />} />
               </ Route> 
+              <Route element={<RequireAuth allowedRoles={[_roles.Manager]}/>}>
+                <Route path='/chat' element={<Chats />} />
+              </Route>
               <Route path='/login' element={<Login />} />
             </Routes>
+            }
           </div>
         </ThemeProvider>
       </ColorModeContext.Provider>

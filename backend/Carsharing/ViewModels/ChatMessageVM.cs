@@ -11,4 +11,7 @@ public record ChatMessageVM
     public DateTime Time { get; set; }
 
     public string MessageId { get; set; } = string.Empty;
+    
+    public Guid? Attachment { get; set; }
+
 }

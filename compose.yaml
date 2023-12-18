@@ -1,89 +1,162 @@
 version: '3.9'
 
-services:  
+services:
   chat_history_saver:
-      build: 
-        context: ./backend
-        dockerfile: ChatConsumersDockerfile 
-      container_name: chatConsumer
-      environment:
-        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-        - RabbitMqConfig__Username=chatConsumer
-        - RabbitMqConfig__Password=Passw0rd
-        - RabbitMqConfig__Hostname=rabbitmq
-        - RabbitMqConfig__Port=5672
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-        - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      depends_on:
-       - rabbitmq
-        
+    build:
+      context: ./backend
+      dockerfile: ChatConsumersDockerfile
+    container_name: chatConsumer
+    environment:
+      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
+      - RabbitMqConfig__Hostname=rabbitmq
+      - RabbitMqConfig__Port=5672
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+    depends_on:
+      - rabbitmq
+  
   backend:
-      build: 
-        context: ./backend
-        dockerfile: CarsharingDockerfile
-      container_name: backend
-      environment:
-        - FrontendHost__Main =${FRONT_MAIN}
-        - FrontendHost__Admin =${FRONT_ADMIN}
-        - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
-        - ASPNETCORE_URLS=${ASPNETCORE_URLS}
-        - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
-        - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-        - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-        - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-        - Authorization__Google__AppId =${GOOGLE_APP_ID}
-        - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
-        - RabbitMqConfig__Username=chatConsumer
-        - RabbitMqConfig__Password=Passw0rd
-        - RabbitMqConfig__Hostname=rabbitmq
-        - RabbitMqConfig__Port=5672
-      depends_on:
-       - db 
-       - rabbitmq   
-      ports:
-        - ${BACK_ASP_PORTS}
-        - ${BACK_ASP_PORTS2}
-        
+    build:
+      context: ./backend
+      dockerfile: CarsharingDockerfile
+    container_name: backend
+    environment:
+      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
+      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
+      - KnownHosts__BackendHosts__FileService=${BACK_FILESERVICE}
+      - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+      - Authorization__Google__AppId =${GOOGLE_APP_ID}
+      - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
+      - RabbitMqConfig__Hostname=rabbitmq
+      - RabbitMqConfig__Port=5672
+    depends_on:
+      - db
+      - rabbitmq
+    ports:
+      - ${BACK_ASP_PORTS}
+      - ${BACK_ASP_PORTS2}
+  
   website:
-      build: ./frontend/website
-      container_name: frontend
-      environment:
-       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
-       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-       - REACT_LOCAL_HOST=${FRONT_MAIN}
-      
-      ports:
-        - ${FRONT_WEBSITE_PORTS}
-        
+    build: ./frontend/website
+    container_name: frontend
+    environment:
+      - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+      - REACT_APP_WEBSITE_ORIGIN=${WEBSITE_ORIGIN}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
+      - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
+      - REACT_LOCAL_HOST=${FRONT_MAIN}
+      - REACT_APP_WEBSITE_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
+    
+    ports:
+      - ${FRONT_WEBSITE_PORTS}
+  
   admin:
-      build: ./frontend/admin
-      container_name: admin_dashboard
-      environment:
-        - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
-        - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
-        - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-        - REACT_LOCAL_HOST=${FRONT_ADMIN}
-
-      ports:
-        - ${FRONT_ADMIN_PORTS}
+    build: ./frontend/admin
+    container_name: admin_dashboard
+    environment:
+      - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
+      - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+      - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
+      - REACT_APP_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
+      - REACT_LOCAL_HOST=${WEBSITE_ORIGIN}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
+    ports:
+      - ${FRONT_ADMIN_PORTS}
   db:
-      container_name: database
-      image: postgres:latest
-      environment:
-        POSTGRES_DB: Carsharing
-        POSTGRES_USER: ${DB_USER}
-        POSTGRES_PASSWORD: ${DB_PASSWORD}
-        PGDATA: "/var/lib/postgresql/data/pgdata"
-      volumes:
-        - ../2. Init Database:/docker-entrypoint-initdb.d
-      ports:
-        - ${DB_PORTS}
-        
+    container_name: database
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: Carsharing
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+    ports:
+      - ${DB_PORTS}
+  
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-alpine
+    env_file:
+      - .env
     ports:
+      - "15672:15672"
       - "5672:5672"
     environment:
-      RABBITMQ_DEFAULT_USER: "chatConsumer"
-      RABBITMQ_DEFAULT_PASS: "Passw0rd"
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+
+  minio_carsharing:
+    build:
+      context: ./backend
+      dockerfile: MinioConsumersDockerfile
+    env_file:
+      - .mongo.env
+      - .redis.env
+      - .env
+    ports:
+      - "7125:80"
+      - "7126:443"
+    container_name: minio_carsharing
+    depends_on:
+      - minioS3
+      - tmdb
+      - pmdb
+    environment:
+      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
+      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
+      - MinioS3__AccessKey=minioadmin
+      - MinioS3__SecretKey=minioadmin
+      - MinioS3__Timeout=5000
+      - MinioS3__Endpoint=minio:9000
+      - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - RedisDbSettings__ConnectionUrl=tmdb:6379
+      - RedisDbSettings__Host=tmdb
+      - RedisDbSettings__Port=6379
+      - MongoDbSettings__ConnectionUrl=mongodb://pmdb:27017/
+      - MongoDbSettings__DatabaseName=carsharing
+    links:
+      - "tmdb"
+      - "pmdb"
+  
+  minioS3:
+    image: minio/minio
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9090:9090"
+    environment:
+      MINIO_ROOT_USER: "carsharing"
+      MINIO_ROOT_PASSWORD: "carsharingAdmin"
+    command: server --console-address ":9090" /data/
+    
+  pmdb:
+    image: mongo
+    container_name: pmdb
+    restart: always
+    ports:
+      - "27017:27017"
+      
+  tmdb:
+    image: redis:latest
+    container_name: tmdb
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - /path/to/local/dаta:/root/redis
+      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf

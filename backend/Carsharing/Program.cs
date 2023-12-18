@@ -2,11 +2,11 @@ using Carsharing;
 using Carsharing.ChatHub;
 using Carsharing.Helpers;
 using Carsharing.Helpers.Extensions.ServiceRegistration;
-using Features.Utils;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Chat.ChatEntites.SignalRModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -25,6 +25,8 @@ services.RegisterChat()
 
 services.AddMediatorWithFeatures();
 
+services.AddAuthenticationAndAuthorization(builder.Configuration);
+
 services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
@@ -38,14 +40,12 @@ services.Configure<ApiBehaviorOptions>(o =>
     };
 });
 
-if (builder.Environment.IsDevelopment())
-{
+
     services.AddCors(options =>
     {
         var configuration = builder.Configuration;
-        var mainFront = configuration["FrontendHost:Main"]!;
-        var adminFront = configuration["FrontendHost:Admin"]!;
-        Console.WriteLine(configuration["FrontendHost:Admin"]);
+        var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
+        var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
 
         options.AddPolicy("DevFrontEnds",
             builder =>
@@ -57,33 +57,23 @@ if (builder.Environment.IsDevelopment())
         );
     });
 
-    services.ConfigureApplicationCookie(options =>
-    {
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.HttpOnly = true;
-    });
-}
 
-var app = builder.Build();
+var app = builder.Build(); 
 var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
-app.UseHttpsRedirection()
-   .UseStaticFiles()
-   .UseRouting();
 
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger()
        .UseSwaggerUI()
        .UseCors("DevFrontEnds");
-}
 
+app.UseHttpsRedirection();
 app.UseAuthentication()
    .UseAuthorization();
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
+app.MapHub<OccasionsSupportChatHub>("/occasion_chat");
 
 
 await migrateDatabaseTask;
