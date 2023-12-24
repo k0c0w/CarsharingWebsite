@@ -12,8 +12,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-services.AddDatabase(builder.Configuration)
-        .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+ services.AddDatabase(builder.Configuration)
+         .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+
 
 services.AddIdentityAuthorization()
         .AddControllers();
@@ -50,7 +51,6 @@ if (builder.Environment.IsDevelopment())
         var configuration = builder.Configuration;
         var mainFront = configuration["FrontendHost:Main"]!;
         var adminFront = configuration["FrontendHost:Admin"]!;
-        Console.WriteLine(configuration["FrontendHost:Admin"]);
 
         options.AddPolicy("DevFrontEnds",
             builder =>
@@ -84,7 +84,10 @@ app.MapControllers();
 app.MapHub<ChatHub>("/chat");
 
 
-await migrateDatabaseTask;
+await migrateDatabaseTask;  
+Console.WriteLine(builder.Configuration["RabbitMqConfig:HostName"]);
+
+
 app.Run();
 
 

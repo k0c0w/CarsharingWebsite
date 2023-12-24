@@ -18,7 +18,7 @@ class AxiosWrapper {
         }
         this.token = "";
         this.axiosInstance = axios.create(options);
-        this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
+        //this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
     }
 
     async getChatHistory(userId) {

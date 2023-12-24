@@ -14,7 +14,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(x =>
             builder.Configuration["Redis:Connection"] ?? throw new InvalidOperationException())
 );
 
-/*
+
 builder.Services.AddMinio(configuration =>
 {
     configuration.WithSSL(false);
@@ -24,7 +24,7 @@ builder.Services.AddMinio(configuration =>
         builder.Configuration["MinioS3:AccessKey"]!,
         builder.Configuration["MinioS3:SecretKey"]!);
 });
-*/
+
 builder.Services.AddSingleton<MinioClientFactory>();
 
 builder.Services.AddEndpointsApiExplorer();

@@ -8,5 +8,6 @@ namespace Clients.DependecyInjectionExtensions
 {
     public static class ServiceCollectionExtensions
     {
+        
     }
 }

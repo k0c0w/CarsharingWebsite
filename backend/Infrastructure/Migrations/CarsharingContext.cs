@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using Entities.EntityConfigurations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -64,14 +65,14 @@ public class CarsharingContext : IdentityDbContext<User>
                 NormalizedName = Role.Admin.ToString().ToUpper(),
             }
         };
-
+        
         builder.Entity<User>(b =>
-        {
-            b.HasMany(e => e.UserRoles)
-                .WithOne(e => e.User)
-                .HasForeignKey(ur => ur.UserId)
-                .IsRequired();
-        });
+                {
+                    b.HasMany(e => e.UserRoles)
+                        .WithOne(e => e.User)
+                        .HasForeignKey(ur => ur.UserId)
+                        .IsRequired();
+                });
 
         builder.Entity<UserRole>(b =>
         {

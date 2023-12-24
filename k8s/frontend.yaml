@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: website-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: website
+  template:
+    metadata:
+      labels:
+        app: website
+    spec:
+      containers:
+        - name: frontend
+          image: valentine1907/frontend_website:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          env: 
+            - name : REACT_APP_WEBSITE_API_URL
+              value: https://localhost:8080/api
+            - name : REACT_LOCAL_HOST
+              value: http://localhost:3000 
+            - name: REACT_APP_WEBSITE_CHAT_URL
+              value: https://localhost:8080/chat
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: website-service
+  labels:
+    app: website
+spec:
+  selector:
+    app: website
+  ports:
+  - port: 3000
+    targetPort: 3000
+    protocol: TCP
+  type: LoadBalancer
