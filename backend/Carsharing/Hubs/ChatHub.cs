@@ -17,10 +17,10 @@ public class ChatHub : Hub<IChatClient>
 
     private readonly IMessageProducer _publisher;
     private readonly UserManager<User> _userManager;
-    private readonly IChatUserRepository _chatUserRepository;
-    private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IChatUserRepository<ChatUser> _chatUserRepository;
+    private readonly IChatRoomRepository<TechSupportChatRoom> _chatRoomRepository;
 
-    public ChatHub(IMessageProducer publisher, UserManager<User> userManager, IChatUserRepository userRepository, IChatRoomRepository roomRepository)
+    public ChatHub(IMessageProducer publisher, UserManager<User> userManager, IChatUserRepository<ChatUser> userRepository, IChatRoomRepository<TechSupportChatRoom> roomRepository)
     {
         _publisher = publisher;
         _userManager = userManager;
@@ -232,9 +232,9 @@ public class ChatHub : Hub<IChatClient>
     /// </summary>
     /// <param name="user"></param>
     /// <returns>Created room id</returns>
-    private async Task<ChatRoom?> CreateNewRoomForUserAsync(ChatUser user)
+    private async Task<TechSupportChatRoom?> CreateNewRoomForUserAsync(ChatUser user)
     {
-        var room = new ChatRoom(user);
+        var room = new TechSupportChatRoom(user);
         var roomId = room.RoomId;
         if (!_chatRoomRepository.TryAddRoom(roomId, room))
             return null!;

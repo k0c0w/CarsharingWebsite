@@ -8,8 +8,8 @@ services:
     container_name: chatConsumer
     environment:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-      - RabbitMqConfig__Username=chatConsumer
-      - RabbitMqConfig__Password=Passw0rd
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
       - RabbitMqConfig__Hostname=rabbitmq
       - RabbitMqConfig__Port=5672
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -34,8 +34,8 @@ services:
       - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
       - Authorization__Google__AppId =${GOOGLE_APP_ID}
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
-      - RabbitMqConfig__Username=chatConsumer
-      - RabbitMqConfig__Password=Passw0rd
+      - RabbitMqConfig__Username=${RABBITMQ_USER}
+      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
       - RabbitMqConfig__Hostname=rabbitmq
       - RabbitMqConfig__Port=5672
     depends_on:
@@ -50,8 +50,11 @@ services:
     container_name: frontend
     environment:
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
+      - REACT_APP_WEBSITE_ORIGIN=${WEBSITE_ORIGIN}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
       - REACT_LOCAL_HOST=${FRONT_MAIN}
+      - REACT_APP_WEBSITE_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
     
     ports:
       - ${FRONT_WEBSITE_PORTS}
@@ -63,7 +66,9 @@ services:
       - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
       - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
       - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-      - REACT_LOCAL_HOST=${FRONT_ADMIN}
+      - REACT_APP_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
+      - REACT_LOCAL_HOST=${WEBSITE_ORIGIN}
+      - REACT_APP_S3_API_URL=${S3_API_URL}
     ports:
       - ${FRONT_ADMIN_PORTS}
   db:
@@ -82,12 +87,14 @@ services:
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:3-alpine
+    env_file:
+      - .env
     ports:
       - "15672:15672"
       - "5672:5672"
     environment:
-      RABBITMQ_DEFAULT_USER: "chatConsumer"
-      RABBITMQ_DEFAULT_PASS: "Passw0rd"
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
 
   minio_carsharing:
     build:
@@ -95,13 +102,19 @@ services:
       dockerfile: MinioConsumersDockerfile
     env_file:
       - .mongo.env
+      - .redis.env
+      - .env
     ports:
       - "7125:80"
       - "7126:443"
     container_name: minio_carsharing
     depends_on:
       - minioS3
+      - tmdb
+      - pmdb
     environment:
+      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
+      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
       - MinioS3__AccessKey=minioadmin
       - MinioS3__SecretKey=minioadmin
       - MinioS3__Timeout=5000
@@ -111,10 +124,14 @@ services:
       - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      - Redis__Connection=""
-      - MongoDbSettings__Connection=${MONGO_DEFAULT_URL}
-      - MongoDbSettings__User=${MONGO_USER}
-      - MongoDbSettings__Password=${MONGO_PASSWORD}
+      - RedisDbSettings__ConnectionUrl=tmdb:6379
+      - RedisDbSettings__Host=tmdb
+      - RedisDbSettings__Port=6379
+      - MongoDbSettings__ConnectionUrl=mongodb://pmdb:27017/
+      - MongoDbSettings__DatabaseName=carsharing
+    links:
+      - "tmdb"
+      - "pmdb"
   
   minioS3:
     image: minio/minio
@@ -127,26 +144,19 @@ services:
       MINIO_ROOT_PASSWORD: "carsharingAdmin"
     command: server --console-address ":9090" /data/
     
-  mongo:
+  pmdb:
     image: mongo
+    container_name: pmdb
     restart: always
-    env_file:
-      - .mongo.env
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       
-  redis:
+  tmdb:
     image: redis:latest
-    container_name: redis
+    container_name: tmdb
     restart: always
     ports:
-      - ${REDIS_PORTS}
+      - "6379:6379"
     volumes:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_DATABASES=${REDIS_DATABASES}

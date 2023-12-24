@@ -1,5 +1,5 @@
-﻿using MinioConsumer.Models;
-using MinioConsumer.Services.PrimaryStorageSaver;
+﻿using MinioConsumer.BackgroundServices;
+using MinioConsumer.Models;
 using MinioConsumer.Services.Repositories;
 using MinioConsumers.Services;
 using Shared.Results;
@@ -15,14 +15,18 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     private readonly IS3Service s3Service;
 
-    private readonly PrimaryStorageSaver<TMetadata> operationRepository;
+    private readonly OperationRepository operationRepository;
 
-    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, ITempS3Service s3Service, PrimaryStorageSaver<TMetadata> operationRepository)
+    private readonly IBackgroundTaskQueue _taskQueue;
+
+    public MetadataSaver(ILogger<Exception> exceptionLogger, ITempMetadataRepository<TMetadata> metadataRepository, IS3Service s3Service, IBackgroundTaskQueue taskQueue, 
+        OperationRepository operationRepository)
     {
         _exceptionLogger = exceptionLogger;
         this.metadataRepository = metadataRepository;
         this.s3Service = s3Service;
         this.operationRepository = operationRepository;
+        this._taskQueue = taskQueue;
     }
 
     /// <summary>
@@ -31,7 +35,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
     /// <param name="metadata"></param>
     /// <param name="file"></param>
     /// <returns></returns>
-    public async Task<Result> UploadFile(Guid operationId, TMetadata metadata, IFormFile file) 
+    public async Task<Result> UploadFileAsync(Guid operationId, TMetadata metadata, IFormFile file) 
     {
         var metadaResult = await UploadFileAsync(operationId, metadata);
         if (!metadaResult)
@@ -42,7 +46,8 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     public async Task<Result> AppendFileAsync(Guid operationId, IFormFile file) 
     {
-        if (!await metadataRepository.MetadataExistsByIdAsync(operationId))
+        var metadata = await metadataRepository.GetByIdAsync(operationId);
+        if (metadata is null)
             return Result.ErrorResult;
 
         if (await metadataRepository.IsCompletedByIdAsync(operationId))
@@ -54,6 +59,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         var info = new FileInfo
         {
             BucketName = tempBucketName,
+            TargetBucketName = metadata.Schema,
             ContentType = file.ContentType,
             ObjectName = bucketObjectName,
             OriginalFileName = file.FileName,
@@ -63,15 +69,12 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
         {
             using var fileStream = file.OpenReadStream();
 
-            await s3Service.BucketExsistAsync(tempBucketName)
-            .ContinueWith(async (existanceTask) =>
-            {
-                if (!existanceTask.Result)
-                    await s3Service.CreateBucketAsync(tempBucketName);
-                await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
-            },
-            TaskContinuationOptions.OnlyOnRanToCompletion)
-            .ContinueWith( savingTask => metadataRepository.UpdateFileInfoAsync(operationId, info), TaskContinuationOptions.OnlyOnRanToCompletion);
+            if (!await s3Service.BucketExsistAsync(tempBucketName))
+                await s3Service.CreateBucketAsync(tempBucketName);
+
+            await s3Service.PutFileInBucketAsync(new S3File(bucketObjectName, tempBucketName, fileStream, file.ContentType));
+
+            await metadataRepository.UpdateFileInfoAsync(operationId, info);
         }
         catch(Exception ex)
         {
@@ -84,7 +87,7 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
 
     public async Task<Result> UploadFileAsync(Guid operationId, TMetadata metadata) 
     {
-        if (!await metadataRepository.MetadataExistsByIdAsync(operationId) || await metadataRepository.IsCompletedByIdAsync(operationId))
+        if (await metadataRepository.MetadataExistsByIdAsync(operationId) || await metadataRepository.IsCompletedByIdAsync(operationId))
             return Result.ErrorResult;
 
         await metadataRepository.AddAsync(metadata);
@@ -103,11 +106,16 @@ public class MetadataSaver<TMetadata> where TMetadata : MetadataBase
     {
         try
         {
-            if (await metadataRepository.MetadataExistsByIdAsync(operationId))
+            var metadata = await metadataRepository.GetByIdAsync(operationId);
+
+            if (metadata != null && await metadataRepository.IsCompletedByIdAsync(metadata.Id))
             {
-                _ = Task.Run(() => operationRepository.MoveDataToPrimaryStorageAsync(operationId, operationId));
+                await operationRepository.UpdateOperationStatusAsync(operationId, OperationStatus.InProggress);
+                _taskQueue.QueueOperationIdToSave(operationId);
+
                 return Result.SuccessResult;
             }
+
             return Result.ErrorResult;
         }
         catch

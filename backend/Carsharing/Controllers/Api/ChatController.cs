@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Persistence.Chat;
+using Persistence.Chat.ChatEntites.SignalRModels;
+using Shared;
 
 namespace Carsharing.Controllers.Api;
 
@@ -12,9 +14,10 @@ namespace Carsharing.Controllers.Api;
 public class ChatController : ControllerBase
 {
     private readonly IMessageRepository _messageUoW;
-    private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IChatRoomRepository<TechSupportChatRoom> _chatRoomRepository;
+        
 
-    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository chatRoomRepository)
+    public ChatController(IMessageRepository messageUnitOfWork, IChatRoomRepository<TechSupportChatRoom> chatRoomRepository)
     {
         _messageUoW = messageUnitOfWork;
         _chatRoomRepository = chatRoomRepository;
@@ -51,11 +54,13 @@ public class ChatController : ControllerBase
     [HttpGet]
     public IActionResult GetAllRooms()
     {
-        return new JsonResult(_chatRoomRepository.GetAll().Select(x => new
+        var regularChats = _chatRoomRepository.GetAll().Select(x => new
         {
             RoomName = x.Client.Name,
             x.RoomId,
-            x.ProcessingManagersCount
-        }));
+            x.ProcessingManagersCount,
+            IsOccasion = false
+        });
+        return new JsonResult(regularChats);
     }
 }

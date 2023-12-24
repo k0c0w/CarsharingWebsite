@@ -9,6 +9,8 @@ public record ChatRoomUpdate
     public RoomUpdateEvent Event { get; init; }
 }
 
+public record OccasionChatRoomUpdate(Guid OccasionId) : ChatRoomUpdate;
+
 public enum RoomUpdateEvent
 {
     Created = 1,

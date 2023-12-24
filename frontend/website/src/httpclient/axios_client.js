@@ -1,8 +1,12 @@
 import axios from "axios"
 
+function delay(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
 
 class AxiosWrapper {
-
     constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
         const options = {
             baseURL: url,
@@ -11,14 +15,35 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": process.env.REACT_LOCAL_HOST,
+                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL,
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
         }
-        this.token = "";
+        this.token = localStorage.getItem("token");
         this.axiosInstance = axios.create(options);
-        //this.axiosInstance.defaults.headers.common['User-Agent'] = 'PostmanRuntime/7.26.2';
+
+        
+
+        this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+
+        const s3options = {
+            baseURL: process.env.REACT_APP_S3_API_URL,
+            timeout: 10000,
+            ssl: false,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": process.env.REACT_APP_S3_API_URL,
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            withCredentials: true,
+        };
+
+        this.s3ServiceAxios = axios.create(s3options);
+        this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
+
     }
 
     async getChatHistory(userId) {
@@ -29,6 +54,16 @@ class AxiosWrapper {
                     return a.time.localeCompare(b.time);
                 });
             return [];
+        }
+        catch{
+            return [];
+        }
+    }
+
+    async getChatOccasions() {
+        try{
+            const history = await this.axiosInstance.get(`/chat/appeals`);
+            return history.data
         }
         catch{
             return [];
@@ -58,7 +93,18 @@ class AxiosWrapper {
     }
 
     async documents() {
-        return await this._get(`/information/documents`);
+        const result = {successed: false}
+        await this.s3ServiceAxios.get('/documents') 
+            .then(response => {
+                result.successed = true;
+                result.documents = response.data.value.map(x => {return {annotation: x.annotation, download_url: `${this.s3ServiceAxios.defaults.baseURL}${x.download_url}`}});
+
+                return result;
+            })
+            .catch(() => {
+            });
+
+        return result;
     }
 
     async news() {
@@ -69,6 +115,8 @@ class AxiosWrapper {
         let response = await this._post(`/account/login/`, this._getModelFromForm(form));
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
+        localStorage.setItem("token", this.token)
         return response
     }
 
@@ -102,6 +150,143 @@ class AxiosWrapper {
 
     async tryChangePassword(form) {
         return await this._post('/Account/ChangePassword', this._getModelFromForm(form));
+    }
+
+    async loadOccasionHistory(occasionId) {
+        const loadHistoryResult = {successed: false, messages: []}
+        await this.axiosInstance.get(`/occasions/${occasionId}/chat`)
+            .then(response => {
+                loadHistoryResult.successed = true;
+                loadHistoryResult.messages = response.data;
+            });
+        
+        return loadHistoryResult;
+    }
+
+    async loadMyOccasion() {
+        const occasionInfo = {successed: false, openedOccasionId: null};
+        await this.axiosInstance.get("/occasions/my")
+        .then(resp => {
+            occasionInfo.openedOccasionId = resp.data;
+            occasionInfo.successed = true;
+        })
+        .catch(err => {
+            if (err.response){
+                const status = err.response.status;
+                if (status == 404 || status == 401)
+                    occasionInfo.successed = true;
+                else
+                    alert(err.response.data.errorMessage);
+            }
+        });
+
+        return occasionInfo;
+    }
+
+    async openNewOccasion(occasionType, topic) {
+        const occasionCreationInfo = {successed: false, createdOccasionId: null, errorMessage: null};
+        await this.axiosInstance.post("/occasions", { event: occasionType, topic: topic })
+            .then(response => {
+                occasionCreationInfo.successed = true;
+                occasionCreationInfo.createdOccasionId = response.data;
+            })
+            .catch(err => {
+                if (err.response) {
+                    const response = err.response;
+                    if (response.status === 400 && response.data)
+                        occasionCreationInfo.errorMessage = response.data;
+                }
+            });
+
+        return occasionCreationInfo;
+    }
+
+    async getOccasionTypes() {
+        let occasionTypes = [];
+        await this.axiosInstance.get("/occasions/types")
+        .then(response => occasionTypes = response.data)
+        .catch(() => {});
+
+        return occasionTypes;
+    }
+
+        //attachments must be array of files from form multiple data
+    async addAttachment(attachments){
+        let attachmentCreationTrackingId = null;
+        const attachmentCreationResult = { successed: false, attachmentId: null }
+        const formData = new FormData();
+        attachments.forEach(element => formData.append("files", element, element.name));
+        await this.s3ServiceAxios.post("/attachments", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        })
+        .then(response =>{
+            attachmentCreationTrackingId = response.data.value;
+        })
+        .catch((err) => {
+            if (err.response)
+                attachmentCreationResult.errorMessage = err.response.data.errorMessage;
+        });
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.s3ServiceAxios.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data.status;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    attachmentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    attachmentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
+        }
+
+        return attachmentCreationResult;
+    }
+
+    async getAttachmentInfo(attachmentId) {
+        const response = {successed: false};
+
+        await this.s3ServiceAxios.get(`attachments/${attachmentId}`)
+        .then(r => {
+            response.successed = true;
+            response.attachments = r.data.value.attachments;
+        })
+        .catch(() => {
+            response.defaultAttachment = "https://i.pinimg.com/originals/7c/1c/a4/7c1ca448be31c489fb66214ea3ae6deb.jpg"
+        })
+
+        return response;
+    }
+
+    async getAttachmnet(url) {
+        const response = {successed: false, file: null}
+
+        await this.s3ServiceAxios.get(url, {responseType: 'blob'})
+            .then(res => {
+                response.successed = true;
+                response.file = res.data;
+            })
+            .catch(err => console.log(err));
+
+        return response;
     }
 
     async _post(endpoint, model) {

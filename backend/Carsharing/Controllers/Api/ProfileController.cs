@@ -10,9 +10,9 @@ using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetPersonalInfo;
 using Features.Users.Queries.GetProfileInfo;
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 using UserInfoVM = Carsharing.ViewModels.Profile.UserInfoVM;
 
 namespace Carsharing.Controllers;
@@ -85,7 +85,7 @@ public class ProfileController : ControllerBase
                 DriverLicense = info.DriverLicense,
                 FirstName = info.FirstName
             })
-            : BadRequest(queryResult.ErrorMessage); //TODO: как правильнее вернуть ошибку 
+            : BadRequest(queryResult.ErrorMessage); 
     }
 
     [HttpPut("PersonalInfo/Edit")]

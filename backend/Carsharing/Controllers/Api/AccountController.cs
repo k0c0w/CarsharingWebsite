@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using Carsharing.Persistence.GoogleAPI;
@@ -15,6 +13,7 @@ using Carsharing.Helpers;
 using Carsharing.Helpers.Authorization;
 using Migrations.CarsharingApp;
 using Domain.Common;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Persistence.Chat.ChatEntites.Dtos;
 using Shared.Results;
 
@@ -69,8 +68,12 @@ public class AccountController : ControllerBase
         var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
-        await _userManager.AddToRoleAsync(user, Role.User.ToString().ToUpper());
-        // await _signInManager.SignInAsync(user, false);
+
+        
+        await _userManager.AddToRoleAsync(user, Role.User.ToString());
+        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, user.Id));
+        
+
         var claims = await _userManager.GetClaimsAsync(user);
         var token = _jwtGenerator.CreateToken(user: user, claims: claims);
         
@@ -84,7 +87,7 @@ public class AccountController : ControllerBase
         if (user == null)
             return Unauthorized(GetLoginError());
 
-        var resultSignIn = await _signInManager.PasswordSignInAsync(user, vm.Password, false, false);
+        var resultSignIn = await _signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
         if (!resultSignIn.Succeeded)
             return Unauthorized(GetLoginError());
 

@@ -17,3 +17,15 @@ public record class HttpResponse : Result
 
     public string? Message { get; }
 }
+
+public record class HttpResponse<T> : Result<T>
+{
+    public HttpResponse(HttpStatusCode code, T? data, string? error = default) : base(code.IsSuccessful(), data, error)
+    {
+        Code = code;
+    }
+
+    public HttpResponse(T data) : this(HttpStatusCode.OK, data) { }
+
+    public HttpStatusCode Code { get; } = HttpStatusCode.OK;
+}

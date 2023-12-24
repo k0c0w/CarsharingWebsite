@@ -1,18 +1,16 @@
-﻿namespace MinioConsumer.Models;
+﻿using MinioConsumer.Services;
+
+namespace MinioConsumer.Models;
 
 public record DocumentMetadata : MetadataBase
 {
-    public DateTime CreationDateTimeUtc { get; init; }
-
-    public string ContentType { get; init; }
+    public string Annotation { get; set; }
 
     public string BucketName { get; } = KnownBuckets.DOCUMENTS;
 
-    public string FileName { get; init; }
+    public bool IsPublic { get; set; }
 
-    public bool IsPublic { get; init; }
-
-    public DocumentMetadata(Guid id, FileInfo? linkedFileInfo) : base(id, KnownBuckets.DOCUMENTS, linkedFileInfo)
+    public DocumentMetadata(Guid id, FileInfo? linkedFileInfo = default) : base(id, KnownBuckets.DOCUMENTS, 1)
     {
     }
 }

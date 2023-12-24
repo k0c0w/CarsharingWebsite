@@ -415,3 +415,5 @@ yarn.lock
 
 ### compose ##
 .env
+
+appsettings.Development.json

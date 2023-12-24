@@ -9,4 +9,6 @@ public class FileInfo
     public string OriginalFileName { get; set; }
 
     public string ContentType { get; set; }
+
+    public string TargetBucketName { get; set; }
 }
