@@ -12,5 +12,5 @@ public record CarShortcutDto
 
     public string? LicensePlate { get; set; }
     
-    public string? Image { get; init; }
+    public string? ImageUrl { get; init; }
 }

@@ -51,8 +51,8 @@ export default function Chats () {
       const startConnection = async () => {
           try {
           const localConnection = new HubConnectionBuilder()
-           .withUrl('https://localhost:81/chat')
-            .configureLogging(LogLevel.Information)
+           .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+              .configureLogging(LogLevel.Information)
            .build();
       
            localConnection.on('RecieveMessage', (message) => {
@@ -140,10 +140,10 @@ export default function Chats () {
 
     const joinRoom = async (roomId) => {
         try {
-                await connection.invoke('JoinRoom', roomId);
-            } catch (e) {
+            await connection.invoke('JoinRoom', roomId);
+        } catch (e) {
             console.log(e)
-            }   
+        }
     }
 
     const leaveRoom = async (roomId) => {

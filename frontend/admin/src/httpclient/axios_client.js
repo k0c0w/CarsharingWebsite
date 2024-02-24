@@ -1,5 +1,11 @@
 import axios from "axios"
 
+function delay(ms) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
 class AxiosWrapper {
     constructor(url = process.env.REACT_APP_ADMIN_API_URL) {
         const options = {
@@ -17,9 +23,29 @@ class AxiosWrapper {
         };
 
         this.axiosInstance = axios.create(options);
+        this.token = localStorage.getItem("token");
 
-        options.baseURL = process.env.REACT_APP_WEBSITE_API_URL
+        this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        options.baseURL = process.env.REACT_APP_WEBSITE_API_URL;
+
         this.mainSiteAxios = axios.create(options);
+        this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+
+        const s3options = {
+            baseURL: process.env.REACT_APP_S3_API_URL,
+            timeout: 10000,
+            ssl: false,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": process.env.REACT_APP_S3_API_URL,
+                "Access-Control-Allow-Credentials": "true",
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            withCredentials: true,
+        };
+        this.s3ServiceAxios = axios.create(s3options)
+        this.s3ServiceAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
     }
     
     async getChatHistory(userId) {
@@ -31,9 +57,77 @@ class AxiosWrapper {
         return [];
     }
 
+    async sendDocument(form) {
+        const config = {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        };
+        const requestBody = {
+            Annotation: form.annotation,
+            IsPrivate: form.isPublic == true,
+            document: form.Document
+        };
+
+        let attachmentCreationTrackingId = null;
+        const documentCreationResult = { successed: false, attachmentId: null }
+
+        await this.s3ServiceAxios.post("/documents", requestBody, config)
+        .then(response =>{
+            attachmentCreationTrackingId = response.data.message;
+        })
+        .catch(() => {});
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.axiosInstance.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    documentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    documentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
+        }
+
+        return documentCreationResult;
+    }
+
     async getOnlineRooms() {
         const result =  await this.mainSiteAxios.get("/chat/rooms");
         return result.data;
+    }
+
+    async getAttachmnet(url) {
+        const response = {successed: false, file: null}
+
+        await this.s3ServiceAxios.get(url, {responseType: 'blob'})
+            .then(res => {
+                response.successed = true;
+                response.file = res.data;
+            })
+            .catch(err => console.log(err));
+
+        return response;
     }
 
     //Posts
@@ -178,9 +272,17 @@ class AxiosWrapper {
 
     // Auth
     async login(body) {
-        const result = await this._post("/auth/login", body);
+        let response = await this._post("/auth/login", body);
+        this.token = response?.data?.bearer_token;
+        if (this.token !== "")
+        {
 
-        return result
+            this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+            this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
+            this.mainSiteAxios.defaults.headers["Authorization"] = `Bearer ${this.token}`;
+        }
+        localStorage.setItem("token", this.token)
+        return response
     }
 
     async become() {
@@ -217,6 +319,68 @@ class AxiosWrapper {
         return await this._get(`/User/${id}`);
     }
 
+    async getAllDocuments() {
+        const response = {
+            successed: false,
+            data: []
+        };
+
+        await this.s3ServiceAxios.get('/documents')
+            .then(x => {
+                response.successed = true;
+                response.data = x.data.value;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
+    }
+
+    async makeDocumentPublic(guid, state) {
+        const response = {
+            successed: false
+        };
+
+        await this.s3ServiceAxios.patch(`/documents/${guid}`, JSON.stringify({isPublic: state}))
+            .then(() => {
+                response.successed = true;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
+    }
+
+    async deleteDocument(guid) {
+        const response = {
+            successed: false
+        };
+
+        await this.s3ServiceAxios.delete(`/documents/${guid}`)
+            .then(() => {
+                response.successed = true;
+            })
+            .catch(error => {
+                if (error.response){
+                    response.error = error.response.errorMessage;
+                }
+                else
+                    alert("Ошибка при обработке запроса. Проверьте подключение к интернету и попробуйте снова.");
+            });
+
+        return response;
+    }
+
     async _post(endpoint, model, props) {
         const result = {successed: false};
         await this.axiosInstance.post(endpoint, model, props)
@@ -242,6 +406,151 @@ class AxiosWrapper {
         const result = await this._get("/user/getOpenChats");
         return result;
     } 
+
+    async uploadDocument() {
+        
+    }
+
+    async completeOccasion(occasionGuid) {
+        const occasionCompletionResult = { successed: false, errorMessage: null}
+        await this.axiosInstance.post(`/occasions/${occasionGuid}/complete`)
+            .then(() => {
+                occasionCompletionResult.successed = true;
+            })
+            .catch(err => {
+                if (err.response)
+                    occasionCompletionResult.errorMessage = err.response.errorMessage;
+            })
+        
+        return occasionCompletionResult;
+    }
+
+    async getUncompletedOccasions() {
+        const uncompletedOccasionResult = {successed:false, occasions: [], errorMessage: null}
+
+        await this.axiosInstance.get("/occasions/uncompleted")
+            .then(response => {
+                uncompletedOccasionResult.successed=true;
+                // [ { Id, OccasionType, Topic }
+                uncompletedOccasionResult.occasions=response.data;
+            })
+            .catch(err => {
+                if (err.response){
+                    uncompletedOccasionResult.errorMessage = err.response.errorMessage;
+                }
+            });
+
+        return uncompletedOccasionResult;
+    }
+
+    async getOccasionChatHistory(occasionGuid) {
+        const historyResult = {successed: false, messages: [], errorMessage: null}
+
+        await this.mainSiteAxios.get(`/occassions/${occasionGuid}/chat`)
+            .then(response => {
+                historyResult.successed = true;
+                historyResult.messages = response.data;
+            })
+            .catch(err => {
+                if(err.response)
+                    historyResult.errorMessage = err.response.data;
+            });
+
+        return historyResult;
+    }
+
+    async getOccasionById(occasionId) {
+        const historyResult = {successed: false, occasion: [], errorMessage: null};
+
+        await this.axiosInstance.get(`/occasions/${occasionId}`)
+            .then(response => {
+                historyResult.successed = true;
+                historyResult.occasion = response.data;
+            })
+            .catch(err => {
+                if(err.response)
+                    historyResult.errorMessage = err.response.data;
+            });
+
+        return historyResult;
+    }
+
+    async loadOccasionHistory(occasionId) {
+        const loadHistoryResult = {successed: false, messages: []}
+        await this.mainSiteAxios.get(`/occasions/${occasionId}/chat`)
+            .then(response => {
+                loadHistoryResult.successed = true;
+                loadHistoryResult.messages = response.data;
+            });
+        
+        return loadHistoryResult;
+    }
+
+    //attachments must be array of files from form multiple data
+    async addAttachment(occasionIssuerId, attachments){
+        let attachmentCreationTrackingId = null;
+        const attachmentCreationResult = { successed: false, attachmentId: null }
+        const formData = new FormData();
+        attachments.forEach(element => formData.append("files", element, element.name));
+        formData.append("occasionUserId", occasionIssuerId);
+
+        await this.s3ServiceAxios.post("/admin/attachments", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        })
+        .then(response =>{
+            attachmentCreationTrackingId = response.data.value;
+        })
+        .catch((err) => {
+            if (err.response)
+                attachmentCreationResult.errorMessage = err.response.data.errorMessage;
+        });
+
+        if (attachmentCreationTrackingId)
+        {
+            let attempt = 0;
+            let attemptResult = false;
+            while (attempt < 5) {
+                await this.s3ServiceAxios.get(`/operation/${attachmentCreationTrackingId}/status`)
+                    .then(response => {
+                        const status = response.data.status;
+                        if (status == "Failed"){
+                            attempt = 1000;
+                        }
+                        else if (status == "Completed"){
+                            attemptResult = true;
+                        }
+                    })
+                    .catch(err => {
+                        if (err.response && (err.response.status === 401 || err.response.status === 404))
+                            attempt = 1000;
+                    });
+                if (attemptResult){
+                    attachmentCreationResult.attachmentId = attachmentCreationTrackingId;
+                    attachmentCreationResult.successed = true;
+                    break;
+                }
+                else{
+                    ++attempt;
+                    await delay(5000);
+                }
+            }
+        }
+
+        return attachmentCreationResult;
+    }
+
+    async getAttachmentInfo(attachmentId) {
+        const response = {successed: false, attachments: [], defaultAttachment: "https://i.pinimg.com/originals/7c/1c/a4/7c1ca448be31c489fb66214ea3ae6deb.jpg"};
+
+        await this.s3ServiceAxios.get(`attachments/${attachmentId}`)
+        .then(r => {
+            response.successed = true;
+            response.attachments = r.data.value.attachments;
+        })
+        .catch(err => console.log(err));
+
+        return response;
+    }
 
     async _put(endpoint, model) {
         const result = {successed: false};

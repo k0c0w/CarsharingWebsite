@@ -13,6 +13,4 @@ public record CarModelDto
     public int TariffId { get; set; }
 
     public string? ImageUrl { get; init; }
-
-    public static string GenerateImageUrl(string fileName) => $"/models/{fileName}.png";
 }

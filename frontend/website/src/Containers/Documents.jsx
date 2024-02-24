@@ -77,22 +77,22 @@ const News = (props) => (
 )
 
 const Document = ({documentInfo}) => (
-    <a href={documentInfo.url} target="_blank" rel="noreferrer" className="flex-container rectangle-container-item_link">
+    <a href={documentInfo.download_url} target="_blank" rel="noreferrer" className="flex-container rectangle-container-item_link">
         <div className="flex-container" style={{overflow:"hidden"}}>
-            <h3 className="rectangle-container-item_head">{documentInfo.documentName}</h3>
+            <h3 className="rectangle-container-item_head">{documentInfo.annotation}</h3>
         </div>
         <HorizontalArrow/>
     </a>
 );
 
 export function Documents () {
-    const [documentLinks, setDocumentLinks] = useState([]);
+    const [documentInfos, setDocumentInfos] = useState([]);
     const [news, setNews] = useState([]);
     useState(() => { 
         async function fetchDocuments(){
             const response = await API.documents();
             if(response.successed)
-                setDocumentLinks(response.data);
+                setDocumentInfos(response.documents);
         }
 
         async function fetchNews() {
@@ -113,7 +113,7 @@ export function Documents () {
             <SectionTitle>Документы</SectionTitle>
             <div className="rectangle-container">
                 <ul className="tariff-holder">
-                    {documentLinks.map((info, i) => <li className="rectangle-container-item" key={i}><Document documentInfo={info}/></li>)}
+                    {documentInfos.map((info, i) => <li className="rectangle-container-item" key={i}><Document documentInfo={info}/></li>)}
                 </ul>
             </div>
         </Container>

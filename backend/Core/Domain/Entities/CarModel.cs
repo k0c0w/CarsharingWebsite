@@ -6,17 +6,17 @@ public class CarModel
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
-    
-    public string Brand { get; set; } = String.Empty;
 
-    public string Model { get; set; } = String.Empty;
+    public string Brand { get; set; } = null!;
 
-    public string Description { get; set; } = String.Empty;
+    public string Model { get; set; } = null!;
+
+    public string Description { get; set; } = null!;
+
+    public string ImageUrl { get; set; } = null!;
 
     [ForeignKey(nameof(Tariff))]
     public int TariffId { get; set; }
-
+    
     public virtual Tariff? Tariff { get; set; }
-
-    public string ImageName => $"{Brand.Replace(' ', '_')}_{Model.Replace(' ', '_')}_{TariffId}.png";
 }

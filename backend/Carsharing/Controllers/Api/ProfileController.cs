@@ -1,10 +1,19 @@
+using AutoMapper;
 using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Profile;
 using Contracts.UserInfo;
+using Features.Balance.Commands.IncreaseBalance;
+using Features.CarManagement;
+using Features.Users.Commands.ChangePassword;
+using Features.Users.Commands.EditUser;
+using Features.Users.Queries.GetPersonalInfo;
+using Features.Users.Queries.GetProfileInfo;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services.Abstractions;
+using Shared;
+using UserInfoVM = Carsharing.ViewModels.Profile.UserInfoVM;
 
 namespace Carsharing.Controllers;
 
@@ -13,131 +22,125 @@ namespace Carsharing.Controllers;
 [Authorize]
 public class ProfileController : ControllerBase
 {
-    
-    private readonly IUserService _userService;
-    private readonly IBalanceService _balanceService;
-    private readonly ICarService _carService;
-    public ProfileController(ICarService carService, IBalanceService balanceService, IUserService userService)
+    private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
+
+    public ProfileController(IMediator mediator,
+        IMapper mapper)
     {
-        _userService = userService;
-        _balanceService = balanceService;
-        _carService = carService;
+        _mediator = mediator;
+        _mapper = mapper;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> Profile()
     {
-        var info = await _userService.GetProfileInfoAsync(User.GetId());
-        return new JsonResult(new ProfileInfoVM
-        {
-            UserInfo = new UserInfoVM
+        var queryResult = await _mediator.Send(new GetProfileInfoQuery(User.GetId()));
+        var info = queryResult.Value;
+        return queryResult.IsSuccess
+            ? new JsonResult(new ProfileInfoVM
             {
-                Balance = info!.PersonalInfo!.Balance,
-                Email = info.PersonalInfo.Email,
-                FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
-            },
-            BookedCars = info!.CurrentlyBookedCars!.Select(x => new ProfileCarVM
-            {
-                Name = x.Model,
-                IsOpened = x.IsOpened,
-                LicensePlate = x.LicensePlate,
-                ImageUrl = x.Image
+                UserInfo = new UserInfoVM
+                {
+                    Balance = info!.PersonalInfo!.Balance,
+                    Email = info.PersonalInfo.Email,
+                    FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
+                },
+                BookedCars = info!.CurrentlyBookedCars!.Select(x => new ProfileCarVM
+                {
+                    Name = x.Model,
+                    IsOpened = x.IsOpened,
+                    LicensePlate = x.LicensePlate,
+                    ImageUrl = x.ImageUrl
+                })
             })
-        });
+            : BadRequest(queryResult.ErrorMessage);
     }
 
     [HttpPost("[action]")]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordVM change)
     {
-        var info = await _userService.ChangePassword(User.GetId(), change!.OldPassword!, change!.Password!);
-        if (info.Success) return NoContent();
+        var commandResult =
+            await _mediator.Send(new ChangePasswordCommand(User.GetId(), change!.OldPassword!, change!.Password!));
+        var info = commandResult.Value;
 
-        return BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info.Errors } });
+        return commandResult.IsSuccess && info?.Success is true
+            ? NoContent()
+            : BadRequest(new { error = new { code = (int)ErrorCode.ServiceError, messages = info!.Errors } });
     }
-    
+
     [HttpGet("[action]")]
     public async Task<IActionResult> PersonalInfo()
     {
-        var info = await _userService.GetPersonalInfoAsync(User.GetId());
-        return new JsonResult(new PersonalInfoVM()
-        {
-            Email = info.Email,
-            Passport = info.Passport,
-            Surname = info.LastName,
-            Phone = info.Phone,
-            BirthDate = DateOnly.FromDateTime(info.BirthDate),
-            DriverLicense = info.DriverLicense,
-            FirstName = info.FirstName
-        });
+        var queryResult = await _mediator.Send(new GetPersonalInfoQuery(User.GetId()));
+        var info = queryResult.Value;
+        return queryResult.IsSuccess && info is not null
+            ? new JsonResult(new PersonalInfoVM()
+            {
+                Email = info.Email,
+                Passport = info.Passport,
+                Surname = info.LastName,
+                Phone = info.Phone,
+                BirthDate = DateOnly.FromDateTime(info.BirthDate),
+                DriverLicense = info.DriverLicense,
+                FirstName = info.FirstName
+            })
+            : BadRequest(queryResult.ErrorMessage); 
     }
-    
+
     [HttpPut("PersonalInfo/Edit")]
     public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
     {
-        var result = await _userService.EditUser(User.GetId(), new EditUserDto
-        {
-            LastName = userVm.LastName,
-            FirstName = userVm.FirstName,
-            BirthDay = userVm.BirthDay,
-            Email = userVm.Email,
-            PhoneNumber = userVm.PhoneNumber,
-            Passport = userVm.Passport?.Substring(4),
-            PassportType = userVm.Passport?.Substring(4),
-            DriverLicense = userVm.DriverLicense
-        });
-        if (result)
-        {
-            return new JsonResult(new { result = "Success" });
-        }
-        
-        return new BadRequestObjectResult(new {error=new
-        {
-            code = (int)ErrorCode.ServiceError,
-            message = $"Ошибка сохранения"
-        }});
+        var commandResult = await _mediator.Send(new EditUserCommand(User.GetId(),
+            _mapper.Map<EditUserVm, EditUserDto>(userVm)));
+
+        return commandResult.IsSuccess
+            ? new JsonResult(new { result = "Success" })
+            : new BadRequestObjectResult(new
+            {
+                error = new
+                {
+                    code = (int)ErrorCode.ServiceError,
+                    message = "Ошибка сохранения"
+                }
+            });
     }
-    
+
     [HttpGet("increase")]
     public async Task<IActionResult> IncreaseBalance([FromQuery] decimal val)
     {
-        var result = await _balanceService.IncreaseBalance(User.GetId(), val);
+        var commandResult = await _mediator.Send(new IncreaseBalanceCommand(User.GetId(), val));
 
-        if (result == "success")
-        {
-            return new JsonResult(new
+        return commandResult.IsSuccess
+            ? new JsonResult(new
             {
                 result = $"Success, your Balance increased on {val}"
+            })
+            : new JsonResult(new
+            {
+                result = "Не удалось пополнить баланс"
             });
-        }
-
-        return new JsonResult(new
-        {
-            result = "Не удалось пополнить баланс"
-        });
-
     }
 
     [HttpGet("open/{licensePlate:required}")]
     public async Task<IActionResult> OpenCar([FromRoute] string licensePlate)
     {
-        var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.OpenCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
-        
-        return new JsonResult(new
-        {
-            result
-        });
+        var openResult = await _mediator.Send(new OpenCarCommand(licensePlate));
+
+        if (openResult)
+            return Ok();
+
+        return Forbid();
     }
-    
+
     [HttpGet("close/{licensePlate:required}")]
     public async Task<IActionResult> CloseCar([FromRoute] string licensePlate)
     {
-        var info = await _userService.GetProfileInfoAsync(User.GetId());
-        var result = await _carService.CloseCar(info!.CurrentlyBookedCars!.Select(x => x).First(x => x.LicensePlate == licensePlate).Id);
-        
-        return new JsonResult(new
-        {
-            result
-        });
+        var closeResult = await _mediator.Send(new CloseCarCommand(licensePlate));
+
+        if (closeResult)
+            return Ok();
+
+        return Forbid();
     }
 }
