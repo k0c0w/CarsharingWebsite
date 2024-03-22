@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinioConsumers", "MinioCons
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clients", "Infrastructure\Clients\Clients.csproj", "{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalanceService", "BalanceService\BalanceService.csproj", "{4A03AB42-5F00-49E0-9654-79C7319CE314}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

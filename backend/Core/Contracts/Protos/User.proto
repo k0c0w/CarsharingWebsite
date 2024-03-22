@@ -1,0 +1,35 @@
+﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Contracts";
+package user;
+
+service UserService {
+    rpc AddUser (GrpcUserRequest) returns (Result);
+    rpc RemoveUser (GrpcUserRequest) returns (Result);
+    rpc ShowAll (google.protobuf.Empty) returns (ShowAllReply);
+}
+
+
+message GrpcUserRequest {
+    string id = 1;
+}
+
+message Result {
+    bool is_success = 1;
+    string message = 2;
+}
+
+
+message ShowAllReply {
+    repeated UserReply items = 1;
+}
+message UserReply {
+    string id = 1;
+    BalanceReply balance = 2;
+}
+
+message BalanceReply {
+    string id = 1;
+    double savings = 2;
+}
