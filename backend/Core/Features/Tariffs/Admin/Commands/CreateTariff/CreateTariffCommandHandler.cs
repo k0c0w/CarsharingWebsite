@@ -22,7 +22,7 @@ public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
             Description = command.Description ?? string.Empty,
             ImageUrl = "",
             MaxMileage = command.MaxMileage,
-            Price = command.PriceInRubles ?? 1000,
+            PricePerMinute = command.PriceInRubles ?? 1000,
             IsActive = false,
         };
 

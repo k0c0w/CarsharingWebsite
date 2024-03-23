@@ -18,14 +18,5 @@ public class BalanceContext : DbContext
     {
         builder.ApplyConfiguration(new BalanceConfiguration());
         builder.ApplyConfiguration(new UserConfiguration());
-
-        base.OnModelCreating(builder);
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseNpgsql();
-        
-        base.OnConfiguring(optionsBuilder);
     }
 }

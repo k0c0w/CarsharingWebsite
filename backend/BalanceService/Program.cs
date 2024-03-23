@@ -38,7 +38,7 @@ if (app.Environment.IsDevelopment())
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:7242");
             var client = new Contracts.BalanceService.BalanceServiceClient(channel);
-            var request = new BalanceRequest() { UserId = guid.ToString(), Value = amount };
+            var request = new BalanceRequest() { UserId = guid.ToString(), IntegerPart = amount, IsPositive = true };
             var reply = await client.PrepareTransactionAsync(request);
             return new { Request = request, Result = reply };
         });
@@ -48,7 +48,7 @@ if (app.Environment.IsDevelopment())
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:7242");
             var client = new Contracts.BalanceService.BalanceServiceClient(channel);
-            var request = new BalanceRequest() { UserId = Guid.NewGuid().ToString(), Value = amount };
+            var request = new BalanceRequest() { UserId = Guid.NewGuid().ToString(), IntegerPart = amount, IsPositive = true };
             var reply = await client.PrepareTransactionAsync(request);
             return new { Request = request, Result = reply };
         });
@@ -58,7 +58,7 @@ if (app.Environment.IsDevelopment())
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:7242");
             var client = new Contracts.BalanceService.BalanceServiceClient(channel);
-            var request = new BalanceRequest() { UserId = guid.ToString(), Value = amount };
+            var request = new BalanceRequest() { UserId = guid.ToString(), IntegerPart = amount , IsPositive = true };
             var reply = await client.CommitTransactionAsync(request);
             return new { Request = request, Result = reply };
         });
@@ -68,7 +68,7 @@ if (app.Environment.IsDevelopment())
         {
             using var channel = GrpcChannel.ForAddress("https://localhost:7242");
             var client = new Contracts.BalanceService.BalanceServiceClient(channel);
-            var request = new BalanceRequest() { UserId = guid.ToString(), Value = amount };
+            var request = new BalanceRequest() { UserId = guid.ToString(), IntegerPart = amount, IsPositive = true };
             var reply = await client.AbortTransactionAsync(request);
             return new { Request = request, Result = reply };
         });

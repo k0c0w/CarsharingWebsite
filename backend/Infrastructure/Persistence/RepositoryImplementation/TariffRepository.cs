@@ -1,8 +1,10 @@
 ﻿using Domain.Entities;
+using Domain.Repository;
 using Entities.Exceptions;
 using Entities.Repository;
 using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
+using Persistence.UnitOfWork;
 
 namespace Persistence.RepositoryImplementation;
 
@@ -48,7 +50,7 @@ public class TariffRepository : ITariffRepository
                 .SetProperty(tariff => tariff.Description, e => entity.Description)
                 .SetProperty(tariff => tariff.Name, e => entity.Name)
                 .SetProperty(tariff => tariff.ImageUrl, e => entity.ImageUrl)
-                .SetProperty(tariff => tariff.Price, e => entity.Price)
+                .SetProperty(tariff => tariff.PricePerMinute, e => entity.PricePerMinute)
                 .SetProperty(tariff => tariff.IsActive, e => entity.IsActive)
                 .SetProperty(tariff => tariff.MaxMileage, e => entity.MaxMileage));
     }
@@ -66,5 +68,16 @@ public class TariffRepository : ITariffRepository
         var tariffs = await _ctx.Tariffs.Where(x => x.IsActive).ToArrayAsync();
 
         return tariffs;
+    }
+}
+
+public class TariffUnitOfWork : CarsharingUnitOfWorkBase, IUnitOfWork<ITariffRepository>
+{
+    public ITariffRepository Unit { get; }
+
+
+    public TariffUnitOfWork(ITariffRepository tariffRepository, CarsharingContext context) : base(context)
+    {
+        Unit = tariffRepository;
     }
 }

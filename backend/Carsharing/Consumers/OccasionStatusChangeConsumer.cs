@@ -6,7 +6,7 @@ namespace Carsharing.Consumers;
 
 public class OccasionStatusChangeConsumer : IConsumer<OccasionStatusChangeDto>
 {
-    private ILogger<Exception> _logger;
+    private readonly ILogger<Exception> _logger;
     private readonly OccasionChatRepository _occasionRepository;
 
     public OccasionStatusChangeConsumer(ILogger<Exception> logger, OccasionChatRepository repo)

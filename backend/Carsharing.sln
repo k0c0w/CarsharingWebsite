@@ -21,9 +21,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Features", "Core\Features\F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinioConsumers", "MinioConsumers\MinioConsumers.csproj", "{58D6B5B1-F835-439A-B201-CEA6ADFF7A19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clients", "Infrastructure\Clients\Clients.csproj", "{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clients", "Infrastructure\Clients\Clients.csproj", "{8F8B3FFD-78C8-41F8-A037-1028C5E63A72}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BalanceService", "BalanceService\BalanceService.csproj", "{4A03AB42-5F00-49E0-9654-79C7319CE314}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalanceService", "BalanceService\BalanceService.csproj", "{4A03AB42-5F00-49E0-9654-79C7319CE314}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Core\Services\Services.csproj", "{4AA0588C-0DD3-4F79-B87B-F26C66141212}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A03AB42-5F00-49E0-9654-79C7319CE314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

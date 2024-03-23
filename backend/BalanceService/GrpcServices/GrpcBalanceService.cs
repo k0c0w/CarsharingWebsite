@@ -1,6 +1,5 @@
 ﻿using BalanceService.Domain.Abstractions.DataAccess;
 using BalanceService.Domain.ValueObjects;
-using BalanceService.Infrastructure.Persistence;
 using Contracts;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -24,8 +23,9 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
         var result = new PrepareTransactionResult()
         {
             IsSuccess = true,
-            Message = String.Empty
+            Message = string.Empty
         };
+
         var user = await _userRepository.GetByIdAsync(new UserId(request.UserId), context.CancellationToken);
 
         if (user is not null)
@@ -46,7 +46,9 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
         
         try
         {
-            await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), request.Value,
+            var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
+
+            await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), balanceChange,
                 context.CancellationToken);
         }
         catch (Exception e)
@@ -60,7 +62,9 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
 
     public override async Task<Empty> AbortTransaction(BalanceRequest request, ServerCallContext context)
     {
-        await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), request.Value * -1,
+        var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
+
+        await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), -balanceChange,
             context.CancellationToken);
 
         return new Empty();

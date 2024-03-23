@@ -7,8 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\" />
-    <Folder Include="MessagingContracts\" />
+    <Compile Remove="Dtos\**" />
+    <Compile Remove="MessagingContracts\**" />
+    <EmbeddedResource Remove="Dtos\**" />
+    <EmbeddedResource Remove="MessagingContracts\**" />
+    <None Remove="Dtos\**" />
+    <None Remove="MessagingContracts\**" />
   </ItemGroup>
 
   <ItemGroup>

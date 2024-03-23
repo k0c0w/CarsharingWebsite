@@ -18,6 +18,9 @@ public class Car
     public bool IsOpened { get; set; }
 
     [ConcurrencyCheck]
+    public bool Prebooked { get; set; }
+
+    [ConcurrencyCheck]
     public bool IsTaken { get; set; }
     
     public decimal ParkingLatitude { get; set; }

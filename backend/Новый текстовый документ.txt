@@ -1,0 +1,8 @@
+GET /documents/ - meta data
+GET /documents/{externalTag or Metadata Id} - metadata for specific
+GET /documents/{externalTag or Metadata}/download - download file
+DELETE /documents/{externalTag or Id} - remove both metadata and file
+POST /documents/ - create upload
+POST /documents/?ammend:id = append info
+
+/
