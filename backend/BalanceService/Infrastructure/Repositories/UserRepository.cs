@@ -39,7 +39,7 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public Task<User> LoadBalance(User user)
+    public Task<User> LoadBalanceAsync(User user)
     {
         _balanceContext.Entry(user).Reference(p => p.Balance).Load();
 
@@ -54,5 +54,14 @@ public class UserRepository : IUserRepository
     public Task<IQueryable<User>> GetAllAsync(CancellationToken token)
     {
         return Task.FromResult(_balanceContext.Users.AsQueryable());
+    }
+    
+    public async Task<User?> GetUserWithBalanceAndTransactions(UserId userId, CancellationToken token)
+    {
+        return await _balanceContext.Users
+            .Where(x=>x.Id==userId)
+            .Include(x=>x.Balance)
+            .ThenInclude(x=>x.User)
+            .SingleOrDefaultAsync(cancellationToken: token);
     }
 }

@@ -7,8 +7,9 @@ public static class RepositoryRegistration
 {
     public static IServiceCollection AddRepositories(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddTransient<IUserRepository, UserRepository>();
-        serviceCollection.AddTransient<IBalanceRepository, BalanceRepository>();
+        serviceCollection.AddTransient<IUserRepository, UserRepository>()
+            .AddTransient<IBalanceRepository, BalanceRepository>()
+            .AddTransient<ITransactionRepository, TransactionRepository>();
 
         return serviceCollection;
     }

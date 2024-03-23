@@ -9,6 +9,8 @@ public class BalanceContext : DbContext
     public DbSet<Balance> Balances { get; set; }
 
     public DbSet<User> Users { get; set; }
+    
+    public DbSet<Transaction> Transactions { get; set; }
 
     public BalanceContext(DbContextOptions<BalanceContext> options)
         : base(options)
@@ -16,7 +18,6 @@ public class BalanceContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        builder.ApplyConfiguration(new BalanceConfiguration());
-        builder.ApplyConfiguration(new UserConfiguration());
+        builder.ApplyConfigurationsFromAssembly(typeof(Program).Assembly);
     }
 }

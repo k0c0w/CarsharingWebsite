@@ -17,5 +17,9 @@ public class BalanceConfiguration : IEntityTypeConfiguration<Balance>
         
         builder.Property(x => x.UserId)
             .HasConversion(id => id.Value, val => new UserId(val));
+
+        builder.HasMany(balance => balance.Transactions)
+            .WithOne(transaction => transaction.Balance)
+            .HasForeignKey(x=>x.BalanceId);
     }
 }

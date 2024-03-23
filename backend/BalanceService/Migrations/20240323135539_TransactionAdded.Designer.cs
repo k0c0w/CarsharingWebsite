@@ -3,6 +3,7 @@ using System;
 using BalanceService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BalanceService.Migrations
 {
     [DbContext(typeof(BalanceContext))]
-    partial class BalanceContextModelSnapshot : ModelSnapshot
+    [Migration("20240323135539_TransactionAdded")]
+    partial class TransactionAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,20 +47,14 @@ namespace BalanceService.Migrations
 
             modelBuilder.Entity("BalanceService.Domain.Transaction", b =>
                 {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
 
                     b.Property<Guid>("BalanceId")
                         .HasColumnType("uuid");
-
-                    b.Property<int>("FractionPart")
-                        .HasColumnType("integer");
-
-                    b.Property<long>("IntegerPart")
-                        .HasColumnType("bigint");
-
-                    b.Property<bool>("IsPositive")
-                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

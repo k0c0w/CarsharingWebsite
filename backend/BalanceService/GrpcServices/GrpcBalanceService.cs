@@ -1,5 +1,8 @@
-﻿using BalanceMicroservice.Clients;
+﻿using System.Data.Common;
+using AutoMapper;
+using BalanceMicroservice.Clients;
 using BalanceService.Domain.Abstractions.DataAccess;
+using BalanceService.Domain.ValueObjects;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
@@ -8,87 +11,127 @@ namespace BalanceService.GrpcServices;
 public class GrpcBalanceService : BalanceMicroservice.Clients.BalanceService.BalanceServiceBase
 {
     private readonly IBalanceRepository _balanceRepository;
+    private readonly ITransactionRepository _transactionRepository;
+    private readonly IMapper _mapper;
+    private TransactionMemory _transactionMemory;
     private readonly IUserRepository _userRepository;
-    private const string InvalidGuid = "Invalid Id of user";
+    private const string UserNotExistsError = "User not exists";
+    private const string PrevTransError = "Previous Transaction is still in process";
+    private const string TransNotExistsError = "Such Transaction does not exist";
 
-    public GrpcBalanceService(IBalanceRepository balanceRepository, IUserRepository userRepository)
+    public GrpcBalanceService(IBalanceRepository balanceRepository, IUserRepository userRepository, TransactionMemory transactionMemory, ITransactionRepository transactionRepository, IMapper mapper)
     {
         _balanceRepository = balanceRepository;
         _userRepository = userRepository;
+        _transactionMemory = transactionMemory;
+        _transactionRepository = transactionRepository;
+        _mapper = mapper;
     }
 
-    public override Task<TransactionInfo> PrepareTransaction(BalanceChangeRequest request, ServerCallContext context)
+    public override async Task<TransactionInfo> PrepareTransaction(BalanceChangeRequest request, ServerCallContext context)
     {
-        /* old one
-         *  var result = new PrepareTransactionResult()
+        var result = new TransactionInfo()
         {
-            IsSuccess = true,
+            IsSuccessReply = false,
             Message = string.Empty
         };
 
         var user = await _userRepository.GetByIdAsync(new UserId(request.UserId), context.CancellationToken);
-
-        if (user is not null)
+        if (user is null)
+        {
+            result.Message = UserNotExistsError;
             return result;
+        }
 
-        result.IsSuccess = false;
-        result.Message = InvalidGuid;
+        if (_transactionMemory.Find(new UserId(request.UserId)) is not null)
+        {
+            result.Message = PrevTransError;
+            return result;
+        }
+
+        try
+        {
+            var transaction = _mapper.Map<BalanceChangeRequest, Domain.Transaction>(request);
+            transaction.BalanceId = user.BalanceId;
+            result.Transaction = new Transaction() { Id = transaction.Id.Value };
+            await _transactionRepository.AddAsync(transaction);
+        }
+        catch (DbException e)
+        {
+            result.Message = e.Message;
+            return result;
+        }
+        
+        result.IsSuccessReply = true;
         return result;
-        */
-        //todo: подготовить транзакцию. проверить, что юзер существует
-        // заблокировать пользователя в таблице (inMemory, redis или mongo), связать с блокировкой некий Id транзакции, так же запомнить на сколько надо изменить баланс
-        // если пользователь уже заблокирован, то отвергнуть запрос либо ждать высвобождения ресурса
-        return base.PrepareTransaction(request, context);
     }
 
-    public override Task<Result> CommitTransaction(Transaction request, ServerCallContext context)
+    public override async Task<Result> CommitTransaction(Transaction request, ServerCallContext context)
     {
-        /* old one 
-         *  var result = new CommitTransactionResult()
+        var result = new Result()
         {
-            IsSuccess = true,
+            IsSuccess = false,
             Message = string.Empty
         };
+
+        var transaction = await _transactionRepository.GetByIdWithUserAndBalanceAsync(new TransactionId(request.Id));
+        if (transaction is null)
+        {
+            result.Message = TransNotExistsError;
+            return result;
+        }
+        
+        var userId = transaction.Balance.UserId;
+        _transactionMemory.RemoveTransaction(userId);
         
         try
         {
-            var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
+            var balanceChange = (transaction.IsPositive ? 1 : -1) * (transaction.IntegerPart + transaction.FractionPart / 100m);
 
-            await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), balanceChange,
+            await _balanceRepository.ChangeBalanceAsync(userId, balanceChange,
                 context.CancellationToken);
         }
         catch (Exception e)
         {
-            result.IsSuccess = false;
             result.Message = e.Message;
+            return result;
         }
 
+        result.IsSuccess = true;
         return result;
-        */
-
-        // todo: по полученному id транзакции найти юзера 
-        // выполнить операцию и вернуть результат выполнения
-        return base.CommitTransaction(request, context);
     }
 
-    public override Task<Empty> AbortTransaction(Transaction request, ServerCallContext context)
+    public override async Task<Empty> AbortTransaction(Transaction request, ServerCallContext context)
     {
-        /* old
-         *  var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
+        var transaction = await _transactionRepository.GetByIdWithUserAndBalanceAsync(new TransactionId(request.Id));
+        if (transaction is null)
+        {
+            return new Empty();
+        }
 
-        await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), -balanceChange,
+        var userId = transaction.Balance.UserId;
+        _transactionMemory.RemoveTransaction(userId);
+        
+        var balanceChange = (transaction.IsPositive ? 1 : -1) * (transaction.IntegerPart + transaction.FractionPart / 100m);
+
+        await _balanceRepository.ChangeBalanceAsync(userId, -balanceChange,
             context.CancellationToken);
 
         return new Empty();
-        */
         // todo: release юзера если не было комита или откат если комит был, естественно что id транзакции должен быть тем же что и последяя транзакция. 
         // аборт комита можно сделать допустим в течение 30 секунд после него и если ресурс не заблокирован
-        return base.AbortTransaction(request, context); 
     }
 
-    public override Task<DecimalValue> GetBalance(GrpcUserRequest request, ServerCallContext context)
+    public override async Task<DecimalValue> GetBalance(GrpcUserRequest request, ServerCallContext context)
     {
-        //todo: баланс юзера
-        return base.GetBalance(request, context);
+        var balance = await _balanceRepository.GetBalanceByUserIdAsync(new UserId(request.Id));
+        var result = new DecimalValue()
+        {
+            IsPositive = balance.Savings > 0,
+            IntegerPart = (long)Math.Floor(balance.Savings),
+            FractionPart = (int)(100.0m * (balance.Savings - Math.Floor(balance.Savings)))
+        };
+
+        return result;
     }
 }

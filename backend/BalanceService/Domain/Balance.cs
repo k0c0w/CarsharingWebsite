@@ -10,6 +10,7 @@ public class Balance
     public decimal Savings { get; private set; }
     public UserId UserId { get; init; }
     public User User { get; init; }
+    public IEnumerable<Transaction> Transactions { get; private set; }
 
     private Balance() {}
     
