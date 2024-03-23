@@ -73,7 +73,7 @@ class AxiosWrapper {
         const documentCreationResult = { successed: false, attachmentId: null }
 
         await this.s3ServiceAxios.post("/documents", requestBody, config)
-        .then(response =>{
+        .then(response => {
             attachmentCreationTrackingId = response.data.message;
         })
         .catch(() => {});
@@ -497,7 +497,7 @@ class AxiosWrapper {
         await this.s3ServiceAxios.post("/admin/attachments", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         })
-        .then(response =>{
+        .then(response => {
             attachmentCreationTrackingId = response.data.value;
         })
         .catch((err) => {
@@ -597,7 +597,7 @@ class AxiosWrapper {
                 response.data = r.data;
                 response.status = r.status;
             })
-            .catch(error =>{ 
+            .catch(error => { 
                 if(error.response) {
                     response.error = error.response.data.error ?? error.response.statusText;
                     response.status = error.response.status;

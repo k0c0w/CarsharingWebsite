@@ -27,7 +27,8 @@
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
       "react-hooks/exhaustive-deps": "off",
-      "import/no-unresolved": "off"
+      "import/no-unresolved": "off",
+      "react/no-unknown-property": "off"
   },
   "parserOptions": {
       "ecmaVersion": 2023

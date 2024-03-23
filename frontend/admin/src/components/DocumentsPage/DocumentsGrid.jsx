@@ -40,14 +40,14 @@ function DocumentsGrid({handleSwitch, handleSelect, rows}) {
                         {is_public && <Button
                             variant={'contained'}
                             style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.guid, false)}
+                            onClick={() => handleSwitch(params.row.guid, false)}
                         >
                             Public
                         </Button>}
                         {!is_public &&<Button
                             variant={'contained'}
                             style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.guid, true)}
+                            onClick={() => handleSwitch(params.row.guid, true)}
                         >
                             Private
                         </Button>}
@@ -60,8 +60,8 @@ function DocumentsGrid({handleSwitch, handleSelect, rows}) {
 
 
     //  ----- Оптимизировать -----  //
-    var _handleSelect = async (listId) => {
-        var result = []
+    let _handleSelect = async (listId) => {
+        let result = []
         listId.forEach(id => {
             rows.forEach( row => {
                 if (row.id === id) {
@@ -121,7 +121,7 @@ function DocumentsGrid({handleSwitch, handleSelect, rows}) {
                 }}
                 pageSizeOptions={[10, 25]}
                 checkboxSelection
-                onRowSelectionModelChange={(e)=>_handleSelect(e)}
+                onRowSelectionModelChange={(e) => _handleSelect(e)}
             />
         </Box>
     )

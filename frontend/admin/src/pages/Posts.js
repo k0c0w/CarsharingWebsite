@@ -3,8 +3,6 @@ import {PostTable} from "../components/PostsPage/PostTableManagment";
 import API from '../httpclient/axios_client'
 import { TableSearchField } from '../components/TableCommon';
 
-
-
 const attrs = [
     {
         value: 'Title',
@@ -39,7 +37,7 @@ export function PostMngmt() {
     }
 
     const loadData = async () => {
-        var result = await API.getPosts()
+        let result = await API.getPosts()
         if (result.error !== null)
             setPostsData(result.data);
     }

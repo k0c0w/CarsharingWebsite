@@ -21,7 +21,7 @@ export default function Index({user}) {
     const tariffs = useRef(null);
     const chat = useRef(null);
     const [tariffsData, setTariffsData] = useState([]);
-    useEffect(()=> {
+    useEffect(() => {
         async function fetchData() {
             const response = await API.tariffs();
             if(response.successed)

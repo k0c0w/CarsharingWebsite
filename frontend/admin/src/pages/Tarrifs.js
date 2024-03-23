@@ -48,7 +48,7 @@ function TarrifMngmt() {
     }
 
     const loadData = async () => {
-        var result = await API.getTariffs()
+        let result = await API.getTariffs()
     
         if (result.error !== null)
             setTariffsData(result.data);

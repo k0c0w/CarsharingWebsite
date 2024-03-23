@@ -1,11 +1,11 @@
 import './App.css';
-import React from 'react';
+import React, {useEffect, useState } from 'react';
 import Header from './Containers/Header';
 import Index  from "./Containers/Index";
 import Login from './Containers/Login';
 import PrivateRoute from './Containers/PrivateRoute';
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import {useEffect, useState } from 'react';
+
 import  BeforeTariffs from './Containers/Tariffs';
 import { Registration } from './Containers/Registration';
 import { Documents } from './Containers/Documents';

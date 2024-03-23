@@ -215,7 +215,7 @@ class AxiosWrapper {
         await this.s3ServiceAxios.post("/attachments", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         })
-        .then(response =>{
+        .then(response => {
             attachmentCreationTrackingId = response.data.value;
         })
         .catch((err) => {
@@ -313,7 +313,7 @@ class AxiosWrapper {
                 response.data = r.data;
                 response.status = r.status;
             })
-            .catch(error =>{ 
+            .catch(error => { 
                 if(error.response) {
                     response.error = error.response.data.error;
                     response.status = error.response.status;
@@ -345,8 +345,8 @@ class AxiosWrapper {
 
     _renameKeys(obj, keys) {
         
-        for (var key in keys){
-            for (var elem in obj) {
+        for (let key in keys){
+            for (let elem in obj) {
                 console.log(elem)
                 if (elem === key) {
                     this._renameKey(obj, elem, keys[key])

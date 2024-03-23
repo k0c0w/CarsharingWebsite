@@ -1,22 +1,13 @@
 import TextField from '@mui/material/TextField';
-import {Box, Button} from '@mui/material';
-import { FormControl, FormLabel } from '@mui/material';
+import {Box, Button, FormLabel } from '@mui/material';
 import {useTheme} from "@emotion/react";
 import {tokens} from "../theme";
-import { DataGrid } from '@mui/x-data-grid';
 import React, {useEffect, useState} from "react";
 import API from "../httpclient/axios_client";
 import { TableAddRefreshButtons } from '../components/TableCommon';
 import { Popup } from '../components/Popup';
 import { styleTextField } from "../styleComponents";
 import DocumentsGrid from "../components/DocumentsPage/DocumentsGrid";
-
-
-async function send() {
-    const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-    const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-}
-
 
 export default function Documents () {
     const theme = useTheme();
@@ -36,8 +27,7 @@ export default function Documents () {
     );
     // Закрытие popup'a
     const [display, setD] = useState('none');
-    const [selected, setSelected] = useState([]);
-
+    const [selected] = useState([]);
     
     useEffect(() => {
         loadDocumentData();
@@ -57,7 +47,7 @@ export default function Documents () {
             title: <DocumentFormTitle title='Добавить'/>,
             close: () => setD('none'),
             axiosRequest: (data) => API.sendDocument(data),
-            submit: <DocumentFormSubmit handler={send}/>,
+            submit: <DocumentFormSubmit/>,
             inputsModel: <DocumentForm/>,
         };
         setPopup(popup);
@@ -65,7 +55,6 @@ export default function Documents () {
     }
 
     const handleDelete = async (id) => {
-        debugger;
         const response = await API.deleteDocument(id);
         if(response.successed){
             onDelete(id);
@@ -78,7 +67,7 @@ export default function Documents () {
             title: <DocumentFormTitle title={'Изменить'}/>,
             close: () => setD('none'),
             submit: <DocumentFormSubmit></DocumentFormSubmit>,
-            axiosRequest: (body) => alert("Not implemented!"),
+            axiosRequest: () => alert("Not implemented!"),
             inputsModel: <DocumentForm isEdit={true} document={selected[0]}></DocumentForm>,
         };
         setPopup(popup);
@@ -119,7 +108,7 @@ export default function Documents () {
             {errorMessage && <h3 style={{color: 'red'}}>{errorMessage}</h3>}
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={() => loadDocumentData()} color={color}/>
 
-            <DocumentsGrid handleSwitch={handleSwitch} handleSelect={(selectedDocuments)=>setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>
+            <DocumentsGrid handleSwitch={handleSwitch} handleSelect={(selectedDocuments) => setSelectedDocuments(selectedDocuments)} rows={documents} ></DocumentsGrid>
 
             <Box style={{ display:display, color: color.grey[100] }}>
                 <Popup {...popup} />
@@ -132,7 +121,7 @@ export default function Documents () {
                             disabled={selectedDocuments.length !== 1}
                             variant={'contained'}
                             style={{ backgroundColor: (selectedDocuments.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickEdit()}
+                            onClick={() => handleClickEdit()}
                         >
                             Изменить
                         </Button>
@@ -146,7 +135,7 @@ export default function Documents () {
 
         </>
     )
-};
+}
 
 function DocumentForm() {
     const theme = useTheme();
