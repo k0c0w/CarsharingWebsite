@@ -1,12 +1,11 @@
-﻿using BalanceService.Domain.Abstractions.DataAccess;
-using BalanceService.Domain.ValueObjects;
-using Contracts;
+﻿using BalanceMicroservice.Clients;
+using BalanceService.Domain.Abstractions.DataAccess;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace BalanceService.GrpcServices;
 
-public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
+public class GrpcBalanceService : BalanceMicroservice.Clients.BalanceService.BalanceServiceBase
 {
     private readonly IBalanceRepository _balanceRepository;
     private readonly IUserRepository _userRepository;
@@ -18,9 +17,10 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
         _userRepository = userRepository;
     }
 
-    public override async Task<PrepareTransactionResult> PrepareTransaction(BalanceRequest request, ServerCallContext context)
+    public override Task<TransactionInfo> PrepareTransaction(BalanceChangeRequest request, ServerCallContext context)
     {
-        var result = new PrepareTransactionResult()
+        /* old one
+         *  var result = new PrepareTransactionResult()
         {
             IsSuccess = true,
             Message = string.Empty
@@ -34,11 +34,17 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
         result.IsSuccess = false;
         result.Message = InvalidGuid;
         return result;
+        */
+        //todo: подготовить транзакцию. проверить, что юзер существует
+        // заблокировать пользователя в таблице (inMemory, redis или mongo), связать с блокировкой некий Id транзакции, так же запомнить на сколько надо изменить баланс
+        // если пользователь уже заблокирован, то отвергнуть запрос либо ждать высвобождения ресурса
+        return base.PrepareTransaction(request, context);
     }
 
-    public override async Task<CommitTransactionResult> CommitTransaction(BalanceRequest request, ServerCallContext context)
+    public override Task<Result> CommitTransaction(Transaction request, ServerCallContext context)
     {
-        var result = new CommitTransactionResult()
+        /* old one 
+         *  var result = new CommitTransactionResult()
         {
             IsSuccess = true,
             Message = string.Empty
@@ -58,15 +64,31 @@ public class GrpcBalanceService : Contracts.BalanceService.BalanceServiceBase
         }
 
         return result;
+        */
+
+        // todo: по полученному id транзакции найти юзера 
+        // выполнить операцию и вернуть результат выполнения
+        return base.CommitTransaction(request, context);
     }
 
-    public override async Task<Empty> AbortTransaction(BalanceRequest request, ServerCallContext context)
+    public override Task<Empty> AbortTransaction(Transaction request, ServerCallContext context)
     {
-        var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
+        /* old
+         *  var balanceChange = (request.IsPositive ? 1 : -1) * (request.IntegerPart + request.FractionPart / 100m);
 
         await _balanceRepository.ChangeBalanceAsync(new UserId(request.UserId), -balanceChange,
             context.CancellationToken);
 
         return new Empty();
+        */
+        // todo: release юзера если не было комита или откат если комит был, естественно что id транзакции должен быть тем же что и последяя транзакция. 
+        // аборт комита можно сделать допустим в течение 30 секунд после него и если ресурс не заблокирован
+        return base.AbortTransaction(request, context); 
+    }
+
+    public override Task<DecimalValue> GetBalance(GrpcUserRequest request, ServerCallContext context)
+    {
+        //todo: баланс юзера
+        return base.GetBalance(request, context);
     }
 }

@@ -5,7 +5,7 @@ namespace Clients.DependecyInjectionExtensions;
 
 public static class ClientsServiceCollectionExtensions
 {
-    public static IServiceCollection AddBalanceServiceClients(this IServiceCollection services, string balanceMicroserviceAddress)
+    public static IServiceCollection AddBalanceServiceGrpcClients(this IServiceCollection services, string balanceMicroserviceAddress)
     {
         var uri = new Uri(balanceMicroserviceAddress);
 

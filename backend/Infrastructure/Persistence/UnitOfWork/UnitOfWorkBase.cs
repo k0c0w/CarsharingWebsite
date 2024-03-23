@@ -1,15 +1,19 @@
-﻿using Migrations.CarsharingApp;
+﻿using Domain.Repository;
+using Migrations.CarsharingApp;
 
 namespace Persistence.UnitOfWork;
 
-public abstract class CarsharingUnitOfWorkBase
+public class CarsharingUnitOfWork<TRepository> : IUnitOfWork<TRepository>
 {
     private readonly CarsharingContext _ctx;
 
-    protected CarsharingUnitOfWorkBase(CarsharingContext context)
+    public CarsharingUnitOfWork(TRepository repository, CarsharingContext context)
     {
+        Unit = repository;
         _ctx = context;
     }
+
+    public TRepository Unit { get; }
 
     public Task SaveChangesAsync()
         => _ctx.SaveChangesAsync();

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
-using Persistence.Chat.ChatEntites.SignalRModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -20,10 +19,9 @@ services.AddIdentityAuthorization()
 services.AddAutoMapper(typeof(Program).Assembly);
 
 services.RegisterChat()
-        .RegisterBuisnessLogicServices()
+        .RegisterBuisnessLogicServices(builder.Configuration)
+        .AddMediatorWithFeatures()
         .RegisterSwagger();
-
-services.AddMediatorWithFeatures();
 
 services.AddAuthenticationAndAuthorization(builder.Configuration);
 

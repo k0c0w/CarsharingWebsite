@@ -101,15 +101,3 @@ public class CarRepository : ICarRepository
             .SingleOrDefaultAsync(x => x.LicensePlate == lp);
     }
 }
-
-public class CarUnitOfWork : CarsharingUnitOfWorkBase, IUnitOfWork<ICarRepository>
-{
-    private readonly ICarRepository _carRepository;
-
-    public CarUnitOfWork(CarsharingContext context, ICarRepository carRepository) : base(context)
-    {
-        _carRepository = carRepository;
-    }
-
-    public ICarRepository Unit => _carRepository;
-}

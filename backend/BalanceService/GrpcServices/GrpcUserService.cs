@@ -1,13 +1,12 @@
 ﻿using AutoMapper;
+using BalanceMicroservice.Clients;
 using BalanceService.Domain;
 using BalanceService.Domain.Abstractions.DataAccess;
-using Contracts;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace BalanceService.GrpcServices;
 
-public class GrpcUserService : UserService.UserServiceBase
+public class GrpcUserService : UserManagementService.UserManagementServiceBase
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _userRepository;
@@ -64,8 +63,15 @@ public class GrpcUserService : UserService.UserServiceBase
         return result;
     }
 
-    public override Task<ShowAllReply> ShowAll(Empty request, ServerCallContext context)
+    public override Task<UserInfo> GetUserInfo(GrpcUserRequest request, ServerCallContext context)
     {
-        return base.ShowAll(request, context);
+        //todo:
+        return base.GetUserInfo(request, context);
+    }
+
+    public override Task<Result> UserExists(GrpcUserRequest request, ServerCallContext context)
+    {
+        //todo:
+        return base.UserExists(request, context);
     }
 }

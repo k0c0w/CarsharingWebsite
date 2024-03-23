@@ -1,5 +1,8 @@
 ﻿using Domain.Entities;
+using Domain.Repository;
 using Entities.Repository;
+using Migrations.CarsharingApp;
+using Persistence.UnitOfWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;

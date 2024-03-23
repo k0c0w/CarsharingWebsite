@@ -70,14 +70,3 @@ public class TariffRepository : ITariffRepository
         return tariffs;
     }
 }
-
-public class TariffUnitOfWork : CarsharingUnitOfWorkBase, IUnitOfWork<ITariffRepository>
-{
-    public ITariffRepository Unit { get; }
-
-
-    public TariffUnitOfWork(ITariffRepository tariffRepository, CarsharingContext context) : base(context)
-    {
-        Unit = tariffRepository;
-    }
-}
