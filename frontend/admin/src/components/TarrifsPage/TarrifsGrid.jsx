@@ -47,7 +47,7 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickInfo(params.row)}
+                            onClick={() => handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
@@ -72,14 +72,14 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                         {is_active && <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "green", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.id, false)}
+                            onClick={() => handleSwitch(params.row.id, false)}
                             >
                             On
                         </Button>}
                         {!is_active &&<Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "red", color: color.primary[900], marginRight: 'auto' }}
-                            onClick={()=>handleSwitch(params.row.id, true)}
+                            onClick={() => handleSwitch(params.row.id, true)}
                             >
                             Off
                         </Button>}
@@ -141,7 +141,7 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
                 checkboxSelection disableRowSelectionOnClick
                 columns={columns}
                 rows={rows}
-                onRowSelectionModelChange={(e)=>_handleSelect(e)}
+                onRowSelectionModelChange={(e) => _handleSelect(e)}
             />
         </Box>
     )

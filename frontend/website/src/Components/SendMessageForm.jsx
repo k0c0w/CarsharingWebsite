@@ -61,7 +61,7 @@ export function OccasionSendMessageForm({sendMessage}) {
         }
     }
 
-    async function onSendButtonClicked(e) {
+    async function onSendButtonClicked() {
         if (message == null && attachments.length == 0)
             return;
 

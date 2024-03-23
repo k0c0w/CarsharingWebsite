@@ -64,7 +64,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px'}}
-                            onClick={()=>handleClickInfo(params.row)}
+                            onClick={() => handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>                             
@@ -89,13 +89,13 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                         </select>
                         <Button id={`${id}_grant`}
                             variant={'contained'} style={{ backgroundColor:"#228b22", marginRight: '10px'}}
-                            onClick={()=>grantRole(params.row.id)}>
+                            onClick={() => grantRole(params.row.id)}>
                             Выдать
                         </Button>
                         <Button 
                             variant={'contained'} id={`${id}_revoke`}
                             style={{ backgroundColor: "#FF4500", color: color.primary[900]}}
-                            onClick={()=>revokeRole(params.row.id)}>
+                            onClick={() => revokeRole(params.row.id)}>
                             Убрать
                         </Button>
                         </>}
@@ -120,7 +120,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                         {!is_verified && <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: "orange", color: color.primary[900], marginLeft: 'auto' }}
-                            onClick={()=>handleVerify(params.row.id, false)}
+                            onClick={() => handleVerify(params.row.id, false)}
                             >
                             Verify info
                         </Button>}
@@ -180,7 +180,7 @@ function UserGrid({handleClickInfo, handleSelect, handleVerify, rows}) {
                 checkboxSelection disableRowSelectionOnClick
                 columns={columns}
                 rows={rows}
-                onRowSelectionModelChange={(e)=>_handleSelect(e)}
+                onRowSelectionModelChange={(e) => _handleSelect(e)}
             />
         </Box>
     )

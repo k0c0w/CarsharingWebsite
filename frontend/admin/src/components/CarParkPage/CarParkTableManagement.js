@@ -51,7 +51,7 @@ function CarParkTable({ refreshRows, carParkData }) {
     // );
 
     //открывают попап с нужным действием
-    var handleClickInfo = (/*model*/) => {
+    let handleClickInfo = (/*model*/) => {
         // const popup = {
         //     title: <CarParkViewInfoTitle></CarParkViewInfoTitle>,
         //     close: () => setD('none'),

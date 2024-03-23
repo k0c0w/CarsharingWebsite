@@ -30,7 +30,7 @@ function UserMngmt() {
     // Аттрибут для поиска 
     const [usersData, setUsersData] = useState([]);
     
-    var loadData = async () => {
+    let loadData = async () => {
         const result = await API.getUsers();
 
         if (result.successed)
@@ -59,7 +59,7 @@ function UserMngmt() {
         }
     }
 
-    useEffect(()=>{ 
+    useEffect(() => { 
         loadData()
     }, []);
 
@@ -70,7 +70,7 @@ function UserMngmt() {
             </h1>
             <TableSearchField data={usersData} attrs={attrs} defaultAttrName="UserName" setData={setUsersData}/>
             <div className='commandsList'>
-                <UserTable usersData={usersData} refreshRows={()=>loadData()} onVerified={onVerified} onEdit={onEdit}/>
+                <UserTable usersData={usersData} refreshRows={() => loadData()} onVerified={onVerified} onEdit={onEdit}/>
             </div>
         </>
     )

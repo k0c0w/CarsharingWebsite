@@ -12,9 +12,9 @@ export default function Occasions () {
     const [errorMessage, setErrorMessage] = useState();
 
     const completeOccasion = async (id) => {
-        var result = await API.completeOccasion(id);
+        let result = await API.completeOccasion(id);
         if (result.successed){
-            var _uncompletedOccasions = uncompletedOccasions.filter(function(item) {
+            let _uncompletedOccasions = uncompletedOccasions.filter(function(item) {
                             return item.id !== id;
                         })
             setUncompletedOccasions([..._uncompletedOccasions]);

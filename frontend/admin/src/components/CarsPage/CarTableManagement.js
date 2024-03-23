@@ -51,7 +51,7 @@ function CarTable({ refreshRows, carsData }) {
     );
 
     // открывают попап с нужным действием
-    var handleClickInfo = (model) => {
+    let handleClickInfo = (model) => {
         const popup = {
             title: <CarViewInfoTitle></CarViewInfoTitle>,
             close: () => setD('none'),
@@ -60,7 +60,7 @@ function CarTable({ refreshRows, carsData }) {
         setPopup(popup);
         setD('block');
     }
-    var handleClickAdd = () => {
+    let handleClickAdd = () => {
         const popup = {
             title: <CarFormTitle title='Добавить'></CarFormTitle>,
             close: () => setD('none'),
@@ -72,7 +72,7 @@ function CarTable({ refreshRows, carsData }) {
         console.log(selected[0]);
         setD('block');
     }
-    var handleClickChange = () => {
+    let handleClickChange = () => {
         const popup = {
             title: <CarFormTitle title='Изменить'></CarFormTitle>,
             close: () => setD('none'),

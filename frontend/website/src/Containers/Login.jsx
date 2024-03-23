@@ -1,10 +1,10 @@
 import Section from '../Components/Sections'
 import Container from '../Components/Container'
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import Form, { Input } from '../Components/formTools'
 import Bold from '../Components/TextTags'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useState, useRef } from 'react'
+
 import API from '../httpclient/axios_client'
 import { areValidLoginFields } from '../js/form-validators'
 import GoogleSignIn from '../Components/SignInButtons'
@@ -28,7 +28,6 @@ export default function Login ({setUser}) {
     setFormSummary("");
     setRequestSent(true);
     const response = await API.login(formRef.current);
-    debugger
     setRequestSent(false);
     if (response.status === 401) {
       const error = response.error;

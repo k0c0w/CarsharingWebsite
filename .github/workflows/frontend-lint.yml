@@ -11,7 +11,7 @@ on:
       - synchronize
       - reopened
 env:
-  NODE_VERSION: 16
+  NODE_VERSION: 20
 jobs:
   mainsite:
     name: Linting Main

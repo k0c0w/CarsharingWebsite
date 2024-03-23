@@ -39,7 +39,7 @@ const Header = () => {
           )}
         </IconButton>
         <IconButton>
-          <PersonOutlinedIcon onClick={()=>navigate("/login")} />
+          <PersonOutlinedIcon onClick={() => navigate("/login")} />
         </IconButton>
       </Box>
     </Box>

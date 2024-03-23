@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect , useState } from 'react';
 import Button from '@mui/material/Button';
 
 import InputBase from '@mui/material/InputBase';
@@ -8,17 +8,17 @@ import '../../styles/car-page.css';
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
-import { useState } from 'react';
+
 import API from '../../httpclient/axios_client';
 
 
 
-var handleSubmit = (e) => {
-    var inputs = e.target.parentNode.getElementsByTagName('input')
-    var result = {};
+let handleSubmit = (e) => {
+    let inputs = e.target.parentNode.getElementsByTagName('input')
+    let result = {};
 
     Array.from(inputs).forEach(element => {
-        var name = element?.name ?? "not exist";
+        let name = element?.name ?? "not exist";
         result[name] = element?.value ?? "not exist";
     });
 
@@ -31,8 +31,8 @@ export function CarForm({carModel}) {
     const color = tokens(theme.palette.mode);
     const [tarrifs, setTarrifs] = useState([]);
     
-    var loadTarrifs = async () => { 
-        var tarrifs = await API.getTariffs();
+    let loadTarrifs = async () => { 
+        let tarrifs = await API.getTariffs();
 
         setTarrifs(tarrifs.data);
     };

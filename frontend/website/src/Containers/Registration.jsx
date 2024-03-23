@@ -6,9 +6,9 @@ import "../css/form.css";
 import "../css/text.css";
 import API from "../httpclient/axios_client"
 import { areValidRegistrationFields } from "../js/form-validators";
-import { useRef } from "react";
+import { useRef , useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+
 import {getVMErrors} from "../js/common_functions.js";
 
 

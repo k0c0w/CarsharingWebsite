@@ -68,7 +68,7 @@ function App() {
   const { auth, setAuth } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const authorize = () => API.isAdmin().then(r => {
       if(r.successed){
         const roles = r?.data?.roles;
