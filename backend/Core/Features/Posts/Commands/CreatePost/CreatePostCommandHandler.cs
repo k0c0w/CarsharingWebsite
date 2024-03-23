@@ -29,12 +29,13 @@ public class CreatePostCommandHandler: ICommandHandler<CreatePostCommand, int>
 
         try
         {
-            var postId = await _postRepository.AddAsync(post).ConfigureAwait(false);
-            return new Ok<int>(postId);
+            await _postRepository.AddAsync(post);
+
+            return new Ok<int>(post.Id);
         }
         catch (Exception ex)
         {
-            _logger.Log(LogLevel.Error, ex.Message, ex);
+            _logger.Log(LogLevel.Error,"Exception: {ex}", ex);
 
             return new Error<int>("Could not create post!");
         }

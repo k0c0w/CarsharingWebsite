@@ -14,12 +14,10 @@ public class OccasionRepository : IOccasionRepository
         _ctx = context;
     }
 
-    public async Task<Guid> AddAsync(Occassion entity)
+    public async Task AddAsync(Occassion entity)
     {
         await _ctx.Occasions.AddAsync(entity);
         await _ctx.SaveChangesAsync();
-
-        return entity.Id;
     }
 
     public Task<IEnumerable<Occassion>> GetBatchAsync(int? offset = null, int? limit = null)

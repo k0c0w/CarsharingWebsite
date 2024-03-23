@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using BalanceMicroservice.Clients;
 using BalanceService.Domain;
 using BalanceService.Domain.ValueObjects;
-using Contracts;
 
 namespace BalanceService.Helpers.MappingProfiles;
 

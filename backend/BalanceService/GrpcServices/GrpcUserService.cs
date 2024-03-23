@@ -36,7 +36,7 @@ public class GrpcUserService : UserManagementService.UserManagementServiceBase
             result.Message = e.Message;
         }
 
-        var users = (await _userRepository.GetAllAsync(context.CancellationToken)).ToArray();
+        (await _userRepository.GetAllAsync(context.CancellationToken)).ToArray();
         
         return result;
     }

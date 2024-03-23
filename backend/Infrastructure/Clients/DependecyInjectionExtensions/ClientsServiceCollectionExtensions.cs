@@ -24,7 +24,6 @@ public static class ClientsServiceCollectionExtensions
 
     public static IServiceCollection AddS3Client(this IServiceCollection services, IConfiguration configuration)
     {
-
-        return services;
+        throw new NotImplementedException("Implement registry of s3 client");
     }
 }

@@ -8,7 +8,7 @@ namespace Carsharing.Persistence.GoogleAPI
     {
         public static async Task<GetTokenResult?> GetTokenAsync(string code, string appId, string appSecret, string redirectUri)
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new ())
             {
 #pragma warning disable S1075 // URIs should not be hardcoded    
                 const string url = "https://accounts.google.com/o/oauth2/token";
@@ -37,7 +37,7 @@ namespace Carsharing.Persistence.GoogleAPI
 
         public static async Task<GetUserResult?> GetUserAsync(string accessToken, string tokenId)
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = new())
             {
 #pragma warning disable S1075 // URIs should not be hardcoded    
                 var url = "https://www.googleapis.com/oauth2/v1/userinfo";
@@ -59,19 +59,19 @@ namespace Carsharing.Persistence.GoogleAPI
 
     public record GetTokenResult
     {
-        public string access_token { get; set; } = String.Empty;
+        public string access_token { get; set; } = string.Empty;
         public int expires_in { get; set; }
-        public string scope { get; set; } = String.Empty;
-        public string token_type { get; set; } = String.Empty;
-        public string id_token { get; set; } = String.Empty;
+        public string scope { get; set; } = string.Empty;
+        public string token_type { get; set; } = string.Empty;
+        public string id_token { get; set; } = string.Empty;
     }
 
     public record GetUserResult
     {
-        public string id { get; set; } = String.Empty;
-        public string email { get; set; } = String.Empty;
+        public string id { get; set; } = string.Empty;
+        public string email { get; set; } = string.Empty;
         public bool verified_email { get; set; }
-        public string name { get; set; } = String.Empty;
+        public string name { get; set; } = string.Empty;
         public DateTime birthday { get; set; } = DateTime.UtcNow;
         public string given_name { get; set; } = String.Empty;
         public string family_name { get; set; } = String.Empty;

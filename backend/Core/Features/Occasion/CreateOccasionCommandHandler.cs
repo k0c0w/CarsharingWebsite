@@ -40,20 +40,23 @@ public class CreateOccasionCommandHandler : ICommandHandler<CreateOccasionComman
                 Topic = request.OccasionInfo.Topic,
             };
 
-            var createdId = await _occasionRepository.AddAsync(occasion);
+            await _occasionRepository.AddAsync(occasion);
+            var createdId = occasion.Id;
+
 
             await _messageProducer.SendMessageAsync(new OccasionStatusChangeDto()
             {
                 ChangeType = OccasionStatusChange.Created,
                 OccasionId = createdId,
                 IssuerId = request.IssuerId,
-            });
+            },
+            cancellationToken);
 
             return new Ok<Guid>(createdId);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Error: {ex}", ex);
             return new Error<Guid>();
         }
     }

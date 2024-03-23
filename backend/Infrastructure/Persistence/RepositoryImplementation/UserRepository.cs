@@ -1,33 +1,51 @@
 ﻿using Domain.Entities;
+using Domain.Repository;
 using Entities.Repository;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Migrations.CarsharingApp;
 
 namespace Persistence.RepositoryImplementation;
 
 public class UserRepository : IUserRepository
 {
-    public Task<string> AddAsync(User entity)
+    private readonly CarsharingContext _ctx;
+
+    public UserRepository(CarsharingContext context)
     {
-        throw new NotImplementedException();
+        _ctx = context;
     }
 
-    public Task<IEnumerable<User>> GetBatchAsync(int? offset = null, int? limit = null)
+    public async Task AddAsync(User entity)
     {
-        throw new NotImplementedException();
+        await _ctx.Users.AddAsync(entity);
+    }
+
+    public async Task<IEnumerable<User>> GetBatchAsync(int? offset = null, int? limit = null)
+    {
+        IQueryable<User> users = _ctx.Users.AsNoTracking();
+
+        if (offset.HasValue)
+            users=users.Skip(offset.Value);
+        if (limit.HasValue)
+            users = users.Take(limit.Value);
+
+        return await users
+            .Include(x => x.UserInfo)
+            .ToArrayAsync();
     }
 
     public Task<User?> GetByIdAsync(string primaryKey)
     {
-        throw new NotImplementedException();
+        return _ctx.Users
+            .Include(x => x.UserInfo)
+            .SingleOrDefaultAsync(x => x.Id == primaryKey);
     }
 
     public Task<UserInfo?> GetUserInfoByUserIdAsync(string userId)
     {
-        throw new NotImplementedException();
+        return _ctx.UserInfos
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.UserId == userId);
     }
 
     public Task RemoveByIdAsync(string primaryKey)
@@ -36,6 +54,11 @@ public class UserRepository : IUserRepository
     }
 
     public Task UpdateAsync(User entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task IRepository<User, string>.AddAsync(User entity)
     {
         throw new NotImplementedException();
     }

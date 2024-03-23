@@ -48,6 +48,7 @@ message Result {
 message TransactionInfo {
     Transaction transaction = 1;
     bool is_success_reply = 2;
+    string message = 3;
 }
 
 message Transaction {

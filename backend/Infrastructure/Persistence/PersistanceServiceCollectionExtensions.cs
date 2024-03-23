@@ -28,8 +28,8 @@ public static class PersistanceServiceCollectionExtensions
 
 
         services.AddScoped<IUnitOfWork<ITariffRepository>, CarsharingUnitOfWork<ITariffRepository>>();
-        services.AddScoped<IUnitOfWork<ISubscriptionRepository>, SubscriptionUnitOfWork>();
-        services.AddScoped<IUnitOfWork<ICarRepository>, CarUnitOfWork>();
+        services.AddScoped<IUnitOfWork<ISubscriptionRepository>, CarsharingUnitOfWork<ISubscriptionRepository>>();
+        services.AddScoped<IUnitOfWork<ICarRepository>, CarsharingUnitOfWork<ICarRepository>>();
 
         return services;
     }

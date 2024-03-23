@@ -1,9 +1,6 @@
 using BalanceService.GrpcServices;
 using BalanceService.Helpers.Extensions.ServiceRegistration;
 using BalanceService.Infrastructure.Persistence;
-using Contracts;
-using Grpc.Net.Client;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +16,7 @@ builder.Services.AddRepositories();
 
 var app = builder.Build();
 
+/*
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -73,7 +71,7 @@ if (app.Environment.IsDevelopment())
             return new { Request = request, Result = reply };
         });
 }
-
+*/
 app.MapGrpcService<GrpcBalanceService>();
 app.MapGrpcService<GrpcUserService>();
 app.UseHttpsRedirection();

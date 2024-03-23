@@ -10,4 +10,6 @@ public interface ISubscriptionRepository : IRepository<Subscription, int>
 
 
     public Task<IEnumerable<Subscription>> GetSubscriptionsByCarIdAsync(int carId);
+
+    public Task RemoveAsync(Subscription subscription);
 }

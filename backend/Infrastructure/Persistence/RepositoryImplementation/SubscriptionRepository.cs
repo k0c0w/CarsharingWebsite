@@ -1,52 +1,81 @@
 ﻿using Domain.Entities;
-using Domain.Repository;
+using Entities.Exceptions;
 using Entities.Repository;
+using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
-using Persistence.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Persistence.RepositoryImplementation;
 
 public class SubscriptionRepository : ISubscriptionRepository
 {
+    private readonly CarsharingContext _ctx;
 
-
-    public Task<int> AddAsync(Subscription entity)
+    public SubscriptionRepository(CarsharingContext context)
     {
-        throw new NotImplementedException();
+        _ctx = context;
     }
 
-    public Task<IEnumerable<Subscription>> GetActiveSubscriptionsByCarIdAsync(int carId)
+    public async Task AddAsync(Subscription entity)
     {
-        throw new NotImplementedException();
+        await _ctx.AddAsync(entity);
     }
 
-    public Task<IEnumerable<Subscription>> GetBatchAsync(int? offset = null, int? limit = null)
+    public async Task<IEnumerable<Subscription>> GetActiveSubscriptionsByCarIdAsync(int carId)
     {
-        throw new NotImplementedException();
+        return await
+            _ctx.Subscriptions
+            .AsNoTracking()
+            .Where(x => x.CarId == carId)
+            .Where(x => x.IsActive)
+            .ToArrayAsync();
+    }
+
+    public async Task<IEnumerable<Subscription>> GetBatchAsync(int? offset = null, int? limit = null)
+    {
+        IQueryable<Subscription> subs = _ctx.Subscriptions.AsNoTracking();
+
+        if (offset.HasValue)
+            subs = subs.Skip(offset.Value);
+
+        if (limit.HasValue)
+            subs = subs.Take(limit.Value);
+
+        return await subs.ToArrayAsync();
     }
 
     public Task<Subscription?> GetByIdAsync(int primaryKey)
     {
-        throw new NotImplementedException();
+        return _ctx.Subscriptions
+            .SingleOrDefaultAsync(x => x.SubscriptionId == primaryKey);
     }
 
-    public Task<IEnumerable<Subscription>> GetSubscriptionsByCarIdAsync(int carId)
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsByCarIdAsync(int carId)
     {
-        throw new NotImplementedException();
+        return await _ctx.Subscriptions
+           .AsNoTracking()
+           .Where(x => x.CarId == carId)
+           .ToArrayAsync();
     }
 
-    public Task RemoveByIdAsync(int primaryKey)
+    public Task RemoveAsync(Subscription subscription)
     {
-        throw new NotImplementedException();
+        _ctx.Subscriptions.Remove(subscription);
+
+        return Task.CompletedTask;
+    }
+
+    public async Task RemoveByIdAsync(int primaryKey)
+    {
+        var sub = await GetByIdAsync(primaryKey) ?? throw new NotFoundException("Subscription was not found.");
+
+        _ctx.Subscriptions.Remove(sub);
     }
 
     public Task UpdateAsync(Subscription entity)
     {
-        throw new NotImplementedException();
+        _ctx.Subscriptions.Update(entity);
+
+        return Task.CompletedTask;
     }
 }

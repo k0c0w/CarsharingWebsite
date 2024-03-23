@@ -1,4 +1,5 @@
-﻿using Contracts;
+﻿using BalanceMicroservice.Clients;
+using Contracts;
 using Microsoft.Extensions.Logging;
 using Services;
 using Shared.Results;
@@ -8,12 +9,14 @@ namespace Persistence.Services;
 
 public class BalanceService : IBalanceService
 {
-    private readonly Contracts.BalanceService.BalanceServiceClient _balanceServiceClient;
+    private readonly BalanceMicroservice.Clients.BalanceService.BalanceServiceClient _balanceServiceClient;
     private readonly ILogger<BalanceService> _logger;
 
-    private BalanceRequest? _balanceChangeRequest;
+    private BalanceChangeRequest? _balanceChangeRequest;
 
-    public BalanceService(Contracts.BalanceService.BalanceServiceClient balanceServiceClient, ILogger<BalanceService> logger)
+    private Transaction? _transaction;
+
+    public BalanceService(BalanceMicroservice.Clients.BalanceService.BalanceServiceClient balanceServiceClient, ILogger<BalanceService> logger)
     {
         _balanceServiceClient = balanceServiceClient;
         _logger = logger;
@@ -23,7 +26,7 @@ public class BalanceService : IBalanceService
     {
         try
         {
-            var reply = await _balanceServiceClient.CommitTransactionAsync(_balanceChangeRequest);
+            var reply = await _balanceServiceClient.CommitTransactionAsync(_transaction);
 
             if (!reply.IsSuccess)
             {
@@ -53,21 +56,26 @@ public class BalanceService : IBalanceService
         var positiveChange = balanceChange > 0;
         balanceChange = Math.Abs(balanceChange);
         var integerPart = decimal.ToInt64(balanceChange);
-        var request = new BalanceRequest()
+
+        var request = new BalanceChangeRequest()
         {
             UserId = userId,
-            IsPositive = positiveChange,
-            IntegerPart = integerPart,
-            FractionPart = decimal.ToInt32((balanceChange - integerPart) * 100),
+            BalanceChange = new DecimalValue()
+            {
+                IsPositive = positiveChange,
+                IntegerPart = integerPart,
+                FractionPart = decimal.ToInt32((balanceChange - integerPart) * 100),
+            }
         };
 
         try
         {
             var reply = await _balanceServiceClient.PrepareTransactionAsync(request);
 
-            if (reply.IsSuccess)
+            if (reply.IsSuccessReply)
             {
                 _balanceChangeRequest = request;
+                _transaction = reply.Transaction;
 
                 return Result.SuccessResult;
             }
@@ -89,7 +97,10 @@ public class BalanceService : IBalanceService
     {
         try
         {
-            await _balanceServiceClient.AbortTransactionAsync(_balanceChangeRequest);
+            await _balanceServiceClient.AbortTransactionAsync(_transaction);
+
+            _transaction = default;
+            _balanceChangeRequest = default;
 
             return Result.SuccessResult;
         }
@@ -98,5 +109,6 @@ public class BalanceService : IBalanceService
             _logger.LogError(ex, "Error while aborting balance change transaction.");
             return Result.ErrorResult;
         }
+
     }
 }

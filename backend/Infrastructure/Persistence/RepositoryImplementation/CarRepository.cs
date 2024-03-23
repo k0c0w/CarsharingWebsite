@@ -64,10 +64,7 @@ public class CarRepository : ICarRepository
 
     public async Task RemoveByIdAsync(int primaryKey)
     {
-        var car = await GetByIdAsync(primaryKey);
-
-        if (car == null)
-            throw new NotFoundException("Car does not exist.", typeof(Car));
+        var car = await GetByIdAsync(primaryKey) ?? throw new NotFoundException("Car does not exist.", typeof(Car));
 
         await RemoveAsync(car);
     }
