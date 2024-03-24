@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minioconsumer-deployment
+  labels:
+    app: minioconsumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minioconsumer
+  template:
+    metadata:
+      labels:
+        env: prod
+        app: minioconsumer
+    spec:
+      containers:
+        - name: minioconsumer
+          image: valentine1907/minioconsumers:v1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+              name: minio-api
+          env:
+          - name: ASPNETCORE_ENVIRONMENT
+            value: Development
+          - name: ASPNETCORE_URLS
+            value: https://+443
+          - name: ASPNETCORE_HTTPS_PORT
+            value: "443"
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+            value: "/https/aspnetapp.pfx"
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+            value: "password12345"
+          - name: MinioS3__AccessKey
+            value: minioadmin
+          - name: MinioS3__SecretKey
+            value: minioadmin
+          - name: MinioS3__Timeout
+            value: "5000"
+          - name: MinioS3__Endpoint
+            value: minio-service:9000
+          # - name: Redis__Connection
+          #   value: ""
+          # - name: MongoDbSettings__Connection
+          #   value: ""
+          # - name: MongoDbSettings__User
+          #   value: ""
+          # - name: MongoDbSettings__Password
+          #   value: ""
+          
+          
+        
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: minioconsumer-service
+  labels:
+    app: minioconsumer
+spec:
+  selector:
+    app: minioconsumer
+  ports:
+  - name: minioconsumer-port
+    protocol: TCP
+    port: 7125
+    targetPort: 80
+  type: LoadBalancer

@@ -68,10 +68,12 @@ public class AccountController : ControllerBase
         var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
         await _carsharingContext.UserInfos.AddAsync(userInfo);
         await _carsharingContext.SaveChangesAsync();
+
         
         await _userManager.AddToRoleAsync(user, Role.User.ToString());
         await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, user.Id));
         
+
         var claims = await _userManager.GetClaimsAsync(user);
         var token = _jwtGenerator.CreateToken(user: user, claims: claims);
         

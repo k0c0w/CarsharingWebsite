@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chatconsumer-deployment
+  labels:
+    app: chatconsumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chatconsumer
+  template:
+    metadata:
+      labels:
+        env: prod
+        app: chatconsumer
+    spec:
+      containers:
+        - name: backend
+          image: valentine1907/chatconsumer:v1
+
+          env:
+          - name: RabbitMqConfig__Username
+            value: chatConsumer          
+          - name: RabbitMqConfig__Password
+            value: Passw0rd
+          - name: RabbitMqConfig__Hostname
+            value: rabbitmq-service
+          - name: RabbitMqConfig__Port
+            value: "5672"
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Path
+            value: /https/aspnetapp.pfx
+          - name: ASPNETCORE_Kestrel__Certificates__Default__Password
+            value: "password12345"
+          - name: ConnectionStrings__DefaultConnection
+            value: User ID=postgres;Password=P@ssw0rd;Host=postgress-service;Port=5432;Database=Carsharing;
+          
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: chatconsumer-service
+  labels:
+    app: chatconsumer
+spec:
+  selector:
+    app: chatconsumer
+  ports:
+   - port: 7126
+  type: LoadBalancer

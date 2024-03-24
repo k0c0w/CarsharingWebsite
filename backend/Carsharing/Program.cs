@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
+using Persistence.Chat.ChatEntites.SignalRModels;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-services.AddDatabase(builder.Configuration)
-        .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+ services.AddDatabase(builder.Configuration)
+         .AddMassTransitWithRabbitMQProvider(builder.Configuration);
+
 
 services.AddIdentityAuthorization()
         .AddControllers();
@@ -22,6 +24,8 @@ services.RegisterChat()
         .RegisterBuisnessLogicServices(builder.Configuration)
         .AddMediatorWithFeatures()
         .RegisterSwagger();
+
+services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 services.AddAuthenticationAndAuthorization(builder.Configuration);
 
@@ -42,8 +46,10 @@ services.Configure<ApiBehaviorOptions>(o =>
     services.AddCors(options =>
     {
         var configuration = builder.Configuration;
+
         var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
         var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
+
 
         options.AddPolicy("DevFrontEnds",
             builder =>
@@ -74,7 +80,10 @@ app.MapHub<ChatHub>("/chat");
 app.MapHub<OccasionsSupportChatHub>("/occasion_chat");
 
 
-await migrateDatabaseTask;
+await migrateDatabaseTask;  
+Console.WriteLine(builder.Configuration["RabbitMqConfig:HostName"]);
+
+
 app.Run();
 
 

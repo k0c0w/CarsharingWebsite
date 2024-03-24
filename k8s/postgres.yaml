@@ -1,0 +1,45 @@
+apiVersion: apps/v1 
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgressDB
+spec:
+  selector:
+    matchLabels:
+      app: postgresDB
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: postgresDB
+    spec:
+      containers:
+      - image: postgres:latest
+        name: postgres-db
+        env:
+          - name: POSTGRES_DB
+            value: Carsharing
+          - name: POSTGRES_USER
+            value: "postgres"
+          - name: POSTGRES_PASSWORD
+            value: "P@ssw0rd"
+        ports:
+        - containerPort: 5402
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    app: postgresDB
+spec:
+  ports:
+    - port: 5402
+      targetPort: 5402
+  selector:
+    app: postgresDB
+  clusterIP: None

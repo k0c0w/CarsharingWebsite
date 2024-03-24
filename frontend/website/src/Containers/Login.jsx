@@ -28,6 +28,7 @@ export default function Login ({setUser}) {
     setFormSummary("");
     setRequestSent(true);
     const response = await API.login(formRef.current);
+    debugger
     setRequestSent(false);
     if (response.status === 401) {
       const error = response.error;

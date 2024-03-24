@@ -41,6 +41,8 @@ public static class IServiceCollectionExtensions
                         .Get<RabbitMqConfig>()!
                         .FullHostname);
                 cfg.ConfigureEndpoints(ctx);
+
+
             });
 
             config.AddConsumer<OccasionStatusChangeConsumer>();
