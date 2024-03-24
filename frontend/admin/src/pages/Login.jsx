@@ -73,7 +73,7 @@ export default function Login() {
                     type="password"
                     ></StyledTextField>
                 <Button
-                    onClick={(e)=>handleSubmit(e)}
+                    onClick={(e) => handleSubmit(e)}
                     style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
                     >
                     Войти
@@ -83,7 +83,7 @@ export default function Login() {
             }
             { isAuth() &&
             <Button
-                onClick={()=>
+                onClick={() =>
                     {
                         setAuth( { roles:[], isAuthorized:false  } )
                         API.logout() 

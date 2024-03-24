@@ -22,7 +22,7 @@ public class GetAvailableCarsByModelQueryHandler : IQueryHandler<GetAvailableCar
     public async Task<Result<IEnumerable<CarDto>>> Handle(GetAvailableCarsByModelQuery request, CancellationToken cancellationToken)
     {
         var cars = await _ctx.Cars.Where(x => x.CarModelId == request.ModelId)
-            .Where(x => !x.IsTaken && !x.HasToBeNonActive)
+            .Where(x => !(x.IsTaken || x.HasToBeNonActive || x.Prebooked))
             .ToListAsync(cancellationToken: cancellationToken);
         var result = _mapper.Map<List<Car>, IEnumerable<CarDto>>(cars);
         

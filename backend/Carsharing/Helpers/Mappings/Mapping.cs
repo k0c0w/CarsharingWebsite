@@ -40,7 +40,7 @@ namespace Carsharing.Helpers.Mappings
 
             CreateMap<Tariff, AdminTariffDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TariffId))
-                .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.Price));
+                .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.PricePerMinute));
 
             CreateMap<TariffVM, AdminTariffDto>().ReverseMap();
 
@@ -117,7 +117,7 @@ namespace Carsharing.Helpers.Mappings
                         .MapFrom(carModel => carModel.Tariff!.MaxMileage))
                 .ForMember(dest => dest.Price,
                     source => source
-                        .MapFrom(carModel => carModel.Tariff!.Price));
+                        .MapFrom(carModel => carModel.Tariff!.PricePerMinute));
         
             CreateMap<Car, FreeCarDto>()
                 .ForMember(dest => dest.CarId,

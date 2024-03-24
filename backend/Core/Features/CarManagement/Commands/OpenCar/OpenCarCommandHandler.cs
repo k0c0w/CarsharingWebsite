@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Migrations.CarsharingApp;
+﻿using Domain.Repository;
+using Entities.Repository;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -7,21 +7,22 @@ namespace Features.CarManagement.Commands.OpenCar;
 
 public class OpenCarCommandHandler : ICommandHandler<OpenCarCommand>
 {
-    private readonly CarsharingContext _ctx;
+    private readonly IUnitOfWork<ICarRepository> _carRepository;
 
-    public OpenCarCommandHandler(CarsharingContext ctx)
+    public OpenCarCommandHandler(IUnitOfWork<ICarRepository> carRepository)
     {
-        _ctx = ctx;
+        _carRepository = carRepository;
     }
 
     public async Task<Result> Handle(OpenCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FirstOrDefaultAsync(x => x.LicensePlate == request.LicensePlate);
+        var car = await _carRepository.Unit.GetByLiciensePlateAsync(request.LicensePlate);
         if (car is null)
             return new Error(new NullReferenceException().Message);
 
         car.IsOpened = true;
-        await _ctx.SaveChangesAsync(cancellationToken);
+
+        await _carRepository.SaveChangesAsync();
         return Result.SuccessResult;
     }
 }

@@ -17,8 +17,9 @@ public class TariffRepository : ITariffRepository
 
     public async Task<Tariff?> GetByIdAsync(int primaryKey)
     {
-        var single = await _ctx.Tariffs.SingleAsync(x => x.TariffId == primaryKey);
-        return single;
+        return await _ctx.Tariffs
+            .AsNoTracking()
+            .SingleAsync(x => x.TariffId == primaryKey);
     }
 
     public async Task<IEnumerable<Tariff>> GetBatchAsync(int? offset = default, int? limit = default)
@@ -30,41 +31,35 @@ public class TariffRepository : ITariffRepository
         if (limit != null)
             messages = messages.Take(limit.Value);
 
-        return await messages.ToArrayAsync();
+        return await messages
+            .AsNoTracking()
+            .ToArrayAsync();
     }
 
-    public async Task<int> AddAsync(Tariff entity)
+    public async Task AddAsync(Tariff entity)
     {
-        var elem = await _ctx.Tariffs.AddAsync(entity);
-        await _ctx.SaveChangesAsync();
-        return elem.Entity.TariffId;
+        await _ctx.Tariffs.AddAsync(entity);
     }
 
-    public async Task UpdateAsync(Tariff entity)
+    public Task UpdateAsync(Tariff entity)
     {
-        await _ctx.Tariffs
-            .Where(e=>e.TariffId == entity.TariffId)
-            .ExecuteUpdateAsync(setPropCalls => setPropCalls
-                .SetProperty(tariff => tariff.Description, e => entity.Description)
-                .SetProperty(tariff => tariff.Name, e => entity.Name)
-                .SetProperty(tariff => tariff.ImageUrl, e => entity.ImageUrl)
-                .SetProperty(tariff => tariff.Price, e => entity.Price)
-                .SetProperty(tariff => tariff.IsActive, e => entity.IsActive)
-                .SetProperty(tariff => tariff.MaxMileage, e => entity.MaxMileage));
+        _ctx.Tariffs.Update(entity);
+
+        return Task.CompletedTask;
     }
 
     public async Task RemoveByIdAsync(int primaryKey)
     {
-        var effectedRows = await _ctx.Tariffs.Where(x => x.TariffId == primaryKey).ExecuteDeleteAsync();
+        var tariff = await GetByIdAsync(primaryKey) ?? throw new NotFoundException($"Tariff was not found: {primaryKey}", typeof(Tariff));
 
-        if (effectedRows == 0)
-            throw new NotFoundException($"Tariff was not found: {primaryKey}", typeof(Tariff));
+        _ctx.Tariffs.Remove(tariff);
     }
 
     public async Task<IEnumerable<Tariff>> GetAllActiveAsync()
     {
-        var tariffs = await _ctx.Tariffs.Where(x => x.IsActive).ToArrayAsync();
-
-        return tariffs;
+        return await _ctx.Tariffs
+            .AsNoTracking()
+            .Where(x => x.IsActive)
+            .ToArrayAsync(); ;
     }
 }

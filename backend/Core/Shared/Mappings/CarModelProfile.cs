@@ -19,7 +19,7 @@ public class CarModelProfile : Profile
                     .MapFrom(carModel => carModel.Tariff!.MaxMileage))
             .ForMember(dest => dest.Price,
                 source => source
-                    .MapFrom(carModel => carModel.Tariff!.Price));
+                    .MapFrom(carModel => carModel.Tariff!.PricePerMinute));
         
         CreateMap<Car, FreeCarDto>()
             .ForMember(dest => dest.CarId,

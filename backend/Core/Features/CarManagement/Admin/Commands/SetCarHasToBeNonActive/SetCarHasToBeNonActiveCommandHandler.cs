@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Migrations.CarsharingApp;
+﻿using Domain.Repository;
+using Entities.Repository;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -7,17 +7,22 @@ namespace Features.CarManagement.Admin.Commands.SetCarHasToBeNonActive;
 
 public class SetCarHasToBeNonActiveCommandHandler : ICommandHandler<SetCarHasToBeNonActiveCommand>
 {
-    private CarsharingContext _ctx;
+    private readonly IUnitOfWork<ICarRepository> _carRepository;
 
-    public SetCarHasToBeNonActiveCommandHandler(CarsharingContext ctx) => _ctx = ctx;
+    public SetCarHasToBeNonActiveCommandHandler(IUnitOfWork<ICarRepository> carRepository) => _carRepository = carRepository;
 
     public async Task<Result> Handle(SetCarHasToBeNonActiveCommand request, CancellationToken cancellationToken)
     {
-        var requestedCar = await _ctx.Cars.FindAsync(request.Id);
-        if (requestedCar == null || requestedCar.IsTaken || requestedCar.HasToBeNonActive)
-            return new Error();
+        var requestedCar = await _carRepository.Unit.GetByIdAsync(request.Id);
+
+        if (requestedCar == null)
+            return new Error("Car was not found.");
+
         requestedCar.HasToBeNonActive = true;
-        await _ctx.SaveChangesAsync();
-        return new Ok();
+        await _carRepository.Unit.UpdateAsync(requestedCar);
+
+        await _carRepository.SaveChangesAsync();
+
+        return Result.SuccessResult;
     }
 }

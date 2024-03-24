@@ -1,21 +1,21 @@
-import React, { useRef } from 'react';
+import React, { useRef , useState } from 'react';
 import Button from '@mui/material/Button';
 import '../../styles/car-page.css';
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import { styleTextField } from '../../styleComponents';
-import { useState } from 'react';
+
 import API from '../../httpclient/axios_client';
 import { Box } from '@mui/material';
 
 
 
-var handleSubmit = (e) => {
-    var inputs = e.target.parentNode.getElementsByTagName('input')
-    var result = {};
+let handleSubmit = (e) => {
+    let inputs = e.target.parentNode.getElementsByTagName('input')
+    let result = {};
 
     Array.from(inputs).forEach(element => {
-        var name = element?.name ?? "not exist";
+        let name = element?.name ?? "not exist";
         result[name] = element?.value ?? "not exist";
     });
 
@@ -140,7 +140,7 @@ export function EditUserForm ({user, saveCallback}){
                 <input {...commonStyle} placeholder={'Почта'} name='email' defaultValue={user?.email} type={'email'} required/>
                 <input {...commonStyle} required
                     placeholder={'Дата рождения'} name='birthdate' defaultValue={user?.birthdate} type={'date'}/>
-                {!editSent && <Button onClick={()=>onSaveButtonClick(user.id, formRef, setEditSent, setError, () => saveCallback(user.id))}>Сохранить</Button>}            
+                {!editSent && <Button onClick={() => onSaveButtonClick(user.id, formRef, setEditSent, setError, () => saveCallback(user.id))}>Сохранить</Button>}            
             </form>
             <Box>
                 <label style={{color:color.primary[100] }}>
@@ -158,7 +158,7 @@ export function EditUserForm ({user, saveCallback}){
                     <input ref={moneyRef} style={{width:"inherit"}}
                         label="Сумма в рублях" placeholder={'рубли'} type='number'
                     />
-                    {!moneySent && <Button {...commonStyle} onClick={() => onMoneyButtonClick(user.id, selectRef, moneyRef, setMoneySent, setError, () =>{saveCallback(user.id); changeBalance();})}>
+                    {!moneySent && <Button {...commonStyle} onClick={() => onMoneyButtonClick(user.id, selectRef, moneyRef, setMoneySent, setError, () => {saveCallback(user.id); changeBalance();})}>
                         Выполнить запрос</Button>}
                 </label>
             </Box>

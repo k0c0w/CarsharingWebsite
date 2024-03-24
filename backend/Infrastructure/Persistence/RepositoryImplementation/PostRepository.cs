@@ -15,12 +15,10 @@ public class NotUnitOfWorkPostRepository : IPostRepository
         _context = carsharingContext;
     }
 
-    public async Task<int> AddAsync(Post entity)
+    public async Task AddAsync(Post entity)
     {
         await _context.AddAsync(entity);
         await _context.SaveChangesAsync();
-
-        return entity.Id;
     }
 
     public async Task<IEnumerable<Post>> GetBatchAsync(int? offset = null, int? limit = null)

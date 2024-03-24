@@ -11,7 +11,7 @@ function SideNavBar({isAuthorized, routes, handlePath, path }) {
                 {routes.map((nav) => (
                     <Link key={nav?.name} style={{ color:(path===nav?.path ? "white" : "") }} 
                         to={nav?.path} 
-                        onClick={()=>{handlePath(nav?.path)}}> {nav?.name} </Link>
+                        onClick={() => {handlePath(nav?.path)}}> {nav?.name} </Link>
                 ))}
             </div>
         </div>

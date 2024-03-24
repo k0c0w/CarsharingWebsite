@@ -1,5 +1,4 @@
 ﻿using Domain.Entities;
-using Entities.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Migrations.Chat;
 using Persistence.Chat;
@@ -16,11 +15,11 @@ public class MessageRepository : IMessageRepository
         _ctx = context;
     }
 
-    public Task<Guid> AddAsync(Message entity)
+    public Task AddAsync(Message entity)
     {
         _ctx.Add(entity);
 
-        return Task.FromResult(entity.Id);
+        return Task.CompletedTask;
     }
 
     public async Task<IEnumerable<Message>> GetBatchAsync(int? offset = default, int? limit = default)

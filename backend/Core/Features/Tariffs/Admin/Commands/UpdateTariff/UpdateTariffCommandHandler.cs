@@ -37,7 +37,7 @@ public class UpdateTariffCommandHandler : ICommandHandler<UpdateTariffCommand>
             tariff.Description = source.Description;
 
         if (source.PriceInRubles != null)
-            tariff.Price = source.PriceInRubles.Value;
+            tariff.PricePerMinute = source.PriceInRubles.Value;
 
         tariff.MaxMileage ??= source.MaxMileage;
     }

@@ -92,7 +92,7 @@ export function PostTable({ postData, /*refreshRows,*/ onDelete }) {
         <>
             
              {/*<TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>*/}
-            <PostGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={postData}></PostGrid>
+            <PostGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={postData}></PostGrid>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>
@@ -101,7 +101,7 @@ export function PostTable({ postData, /*refreshRows,*/ onDelete }) {
                             disabled={selected.length !== 1}
                             variant={'contained'}
                             style={{ backgroundColor: (selected.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickEdit()}
+                            onClick={() => handleClickEdit()}
                         >
                             Изменить
                         </Button>

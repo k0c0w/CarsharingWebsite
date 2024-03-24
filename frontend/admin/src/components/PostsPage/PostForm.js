@@ -6,12 +6,12 @@ import { styleTextField } from '../../styleComponents';
 import Button from "@mui/material/Button";
 
 
-var handleSubmit = (e) => {
-    var inputs = e.target.parentNode.getElementsByTagName('input')
-    var result = {};
+let handleSubmit = (e) => {
+    let inputs = e.target.parentNode.getElementsByTagName('input')
+    let result = {};
 
     Array.from(inputs).forEach(element => {
-        var name = element?.name ?? "not exist";
+        let name = element?.name ?? "not exist";
         result[name] = element?.value ?? "not exist";
     });
 

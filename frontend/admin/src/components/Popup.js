@@ -59,11 +59,11 @@ export const Popup = ({ close, inputsModel = "",
                     style={{ backgroundColor: color.grey[100], color: color.grey[900] }}
                     onClick={(e) => {
                         e.preventDefault(); 
-                        sendForm(ref, (e)=> axiosRequest(e));
+                        sendForm(ref, (e) => axiosRequest(e));
                         }}>
                         {buttonTitle}
                 </Button> }
-                <label className="close" htmlFor="callback" style={{ color: colorAlt }} onClick={()=>close()}>+</label>
+                <label className="close" htmlFor="callback" style={{ color: colorAlt }} onClick={() => close()}>+</label>
             </div>
         </div>
     )

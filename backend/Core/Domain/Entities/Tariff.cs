@@ -11,11 +11,15 @@ public class Tariff
 
     public string Description { get; set; } = null!;
 
-    public decimal Price { get; set; }
+    public decimal PricePerMinute { get; set; }
     
     public int? MaxMileage { get; set; }
     
     public bool IsActive { get; set; }
+
+    public long MinAllowedMinutes { get; set; }
+
+    public long MaxAllowedMinutes { get; set; }
 
     public string ImageUrl { get; set; } = null!;
 }

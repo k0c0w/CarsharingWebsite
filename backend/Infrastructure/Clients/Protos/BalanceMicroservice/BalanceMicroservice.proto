@@ -1,0 +1,66 @@
+﻿syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "BalanceMicroservice.Clients";
+package BalanceMicroservice;
+
+service BalanceService {
+    // Prepare
+    rpc PrepareTransaction (BalanceChangeRequest) returns (TransactionInfo);
+    // Commit
+    rpc CommitTransaction (Transaction) returns (Result);
+    // Abort
+    rpc AbortTransaction (Transaction) returns (google.protobuf.Empty);
+
+    // returns balance of existing user
+    rpc GetBalance (GrpcUserRequest) returns (DecimalValue);
+}
+
+service UserManagementService {
+    // creates new user
+    rpc AddUser (GrpcUserRequest) returns (Result);
+
+    // deletes existing user
+    rpc RemoveUser (GrpcUserRequest) returns (Result);
+
+    // returns info about known user
+    rpc GetUserInfo(GrpcUserRequest) returns (UserInfo);
+
+    // checks if user exists 
+    rpc UserExists(GrpcUserRequest) returns (Result);
+}
+
+message GrpcUserRequest {
+    string id = 1;
+}
+
+message DecimalValue {
+	bool is_positive = 1;
+    int64 integer_part = 2;
+    int32 fraction_part = 3;
+}
+
+message Result {
+    bool is_success = 1;
+    string message = 2;
+}
+
+message TransactionInfo {
+    Transaction transaction = 1;
+    bool is_success_reply = 2;
+    string message = 3;
+}
+
+message Transaction {
+    string id = 1;
+}
+
+message BalanceChangeRequest {
+    string user_id = 1;
+    DecimalValue balance_change=2;
+}
+
+message UserInfo {
+    string user_id = 1;
+    DecimalValue balance = 2;
+}

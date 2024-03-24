@@ -100,7 +100,7 @@ public static class ServiceCollectionExtensions
                                 Id = "Bearer"
                             }
                         },
-                        new string[] {}
+                        Array.Empty<string>()
                     }
                 });
             });

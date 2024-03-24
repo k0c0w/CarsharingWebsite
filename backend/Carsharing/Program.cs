@@ -21,10 +21,11 @@ services.AddIdentityAuthorization()
 services.AddAutoMapper(typeof(Program).Assembly);
 
 services.RegisterChat()
-        .RegisterBuisnessLogicServices()
+        .RegisterBuisnessLogicServices(builder.Configuration)
+        .AddMediatorWithFeatures()
         .RegisterSwagger();
 
-services.AddMediatorWithFeatures();
+services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 services.AddAuthenticationAndAuthorization(builder.Configuration);
 

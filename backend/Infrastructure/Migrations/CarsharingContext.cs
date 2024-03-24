@@ -43,8 +43,8 @@ public class CarsharingContext : IdentityDbContext<User>
 
         builder.Entity<Tariff>()
             .ToTable(t =>
-                t.HasCheckConstraint($"CK_{nameof(Tariff)}_{nameof(Tariff.Price)}",
-                    $"\"{nameof(Tariff.Price)}\" > 0"));
+                t.HasCheckConstraint($"CK_{nameof(Tariff)}_{nameof(Tariff.PricePerMinute)}",
+                    $"\"{nameof(Tariff.PricePerMinute)}\" > 0"));
 
         builder.ApplyConfiguration(new UserConfiguration());
         builder.ApplyConfiguration(new UserInfoConfiguration());

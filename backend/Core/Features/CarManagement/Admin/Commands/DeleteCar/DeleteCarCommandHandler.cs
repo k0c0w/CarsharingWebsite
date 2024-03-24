@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Migrations.CarsharingApp;
+﻿using Domain.Repository;
+using Entities.Repository;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -7,28 +7,37 @@ namespace Features.CarManagement.Admin.Commands.DeleteCar;
 
 public class DeleteCarCommandHandler : ICommandHandler<DeleteCarCommand>
 {
-    private readonly CarsharingContext _ctx;
+    private readonly ICarRepository _carRepository;
+    private readonly ISubscriptionRepository _subscriptionReposiotry;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public DeleteCarCommandHandler(CarsharingContext ctx)
+    public DeleteCarCommandHandler(ICarRepository carRepository, ISubscriptionRepository subscriptionRepository, IUnitOfWork unitOfWork)
     {
-        _ctx = ctx;
+        _carRepository = carRepository;
+        _subscriptionReposiotry = subscriptionRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result> Handle(DeleteCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FirstAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
-        var bindSubs = await _ctx.Subscriptions.Where(x => x.CarId == request.Id)
-            .ToListAsync(cancellationToken: cancellationToken);
+        var car = await _carRepository.GetByIdAsync(request.Id);
 
-        _ctx.Subscriptions.UpdateRange(bindSubs.Select(x =>
+        if (car == null)
+            return new Error("Car was not found.");
+
+        var activeSubs = await _subscriptionReposiotry.GetSubscriptionsByCarIdAsync(car!.Id);
+        foreach(var sub in activeSubs)
         {
-            x.CarId = null;
-            return x;
-        }));
+            sub.CarId = null;
+            sub.IsActive = false;
 
-        _ctx.Cars.Remove(car);
-        await _ctx.SaveChangesAsync(cancellationToken);
+            await _subscriptionReposiotry.UpdateAsync(sub);
+        }
 
-        return new Ok();
+        await _carRepository.RemoveAsync(car);
+
+        await _unitOfWork.SaveChangesAsync();
+
+        return Result.SuccessResult;
     }
 }

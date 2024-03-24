@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.FileProviders;
-using Migrations.CarsharingApp;
+﻿using Domain.Repository;
+using Entities.Repository;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -7,17 +7,20 @@ namespace Features.CarManagement.Commands.ReleaseCar;
 
 public class ReleaseCarCommandHandler: ICommandHandler<ReleaseCarCommand>
 {
-    private readonly CarsharingContext _ctx;
+    private readonly IUnitOfWork<ICarRepository> _carRepository;
 
-    public ReleaseCarCommandHandler(CarsharingContext ctx) => _ctx = ctx;
+    public ReleaseCarCommandHandler(IUnitOfWork<ICarRepository> carRepository) => _carRepository = carRepository;
     
     public async Task<Result> Handle(ReleaseCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _ctx.Cars.FindAsync(request.CarId);
+        var car = await _carRepository.Unit.GetByIdAsync(request.CarId);
         if (car != null)
         {
             car.IsOpened = false;
-            await _ctx.SaveChangesAsync(cancellationToken);
+            car.IsTaken = false;
+            car.Prebooked = false;
+
+            await _carRepository.SaveChangesAsync();
         }
         
         return Result.SuccessResult; 

@@ -6,7 +6,7 @@ public interface IRepository<TEntity, TPrimaryKey>
 
     Task<IEnumerable<TEntity>> GetBatchAsync(int? offset = default, int? limit = default);
 
-    Task<TPrimaryKey> AddAsync(TEntity entity);
+    Task AddAsync(TEntity entity);
 
     Task UpdateAsync(TEntity entity);
 

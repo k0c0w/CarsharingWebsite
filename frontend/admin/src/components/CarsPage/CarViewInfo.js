@@ -9,8 +9,8 @@ export function CarViewInfo({ carModel }) {
     const [tariff, setTariff] = useState({});
     const color = tokens(theme.palette.mode);
 
-    var getTariff = async () => {
-        var result = await API.getTariffById(carModel.tariff_id);
+    let getTariff = async () => {
+        let result = await API.getTariffById(carModel.tariff_id);
         if (result.successed !== true)
             alert(result.error);
         setTariff(result.data);

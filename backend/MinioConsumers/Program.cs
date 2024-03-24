@@ -11,10 +11,7 @@ services.AddServices();
 services.AddInfrastructure(configuration);
 services.AddBackgroundWorkers();
 
-
-
 services.AddCors(options =>
-
 {
     var configuration = builder.Configuration;
     var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
@@ -29,7 +26,6 @@ services.AddCors(options =>
                 .SetIsOriginAllowed(origin => true)
     );
 });
-
 
 var app = builder.Build();
 
