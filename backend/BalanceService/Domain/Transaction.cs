@@ -23,6 +23,8 @@ public class Transaction
     public long IntegerPart { get; set; }
     public int FractionPart { get; set; }
 
+    public bool Commited { get; set; }
+
     public Transaction()
     {
         Id = new TransactionId(Guid.NewGuid().ToString());

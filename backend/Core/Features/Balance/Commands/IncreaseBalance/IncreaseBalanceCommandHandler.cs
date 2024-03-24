@@ -1,4 +1,5 @@
 ﻿using Migrations.CarsharingApp;
+using Services;
 using Shared.CQRS;
 using Shared.Results;
 
@@ -6,20 +7,18 @@ namespace Features.Balance.Commands.IncreaseBalance;
 
 public class IncreaseBalanceCommandHandler : ICommandHandler<IncreaseBalanceCommand>
 {
-    private readonly CarsharingContext _context;
+    private readonly IBalanceService _balanceService;
 
-    public IncreaseBalanceCommandHandler(CarsharingContext context)
+    public IncreaseBalanceCommandHandler(IBalanceService balanceService)
     {
-        _context = context;
+        _balanceService = balanceService;
     }
 
     public async Task<Result> Handle(IncreaseBalanceCommand request, CancellationToken cancellationToken)
     {
-        var user =  _context.UserInfos.First(x => x.UserId == request.UserId);
-        user.Balance += request.Value;
-        user.Verified = false;
-        _context.UserInfos.Update(user);
-        await _context.SaveChangesAsync(cancellationToken);
+        await _balanceService.PrepareBalanceChangeAsync(request.UserId, Math.Abs(request.Value));
+        await _balanceService.CommitAsync();
+
         return Result.SuccessResult;
     }
 }

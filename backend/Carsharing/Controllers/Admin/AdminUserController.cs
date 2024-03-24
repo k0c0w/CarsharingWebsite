@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers;
 using Carsharing.ViewModels.Admin.UserInfo;
-using Features.Balance.Commands.DecreaseBalance;
 using Features.Balance.Commands.IncreaseBalance;
 using Features.Users.Commands.EditUser;
 using Features.Users.Queries.GetAllInfo;
@@ -114,23 +113,6 @@ public class AdminUserController : ControllerBase
             });
     }
 
-    [HttpPost("{id:required}/BalanceDecrease")]
-    public async Task<IActionResult> DecreaseBalance([FromRoute] string id, [FromBody] decimal val)
-    {
-        if (val <= 0) return BadRequest();
-        var commandResult = await _mediator.Send(new DecreaseBalanceCommand(id, val));
-
-
-        return commandResult.IsSuccess
-            ? new JsonResult(new
-            {
-                result = $"Success, your Balance increased on {val}"
-            })
-            : new JsonResult(new
-            {
-                result = "Не удалось пополнить баланс"
-            });
-    }
 
     [HttpPost("{id:required}/GrantRole/{role:required}")]
     public async Task<IActionResult> GrantRole([FromRoute] string role, [FromRoute] string id)

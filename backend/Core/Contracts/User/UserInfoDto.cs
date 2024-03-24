@@ -18,5 +18,5 @@ public class UserInfoDto
     
     public string? Phone { get; init; }
     
-    public decimal Balance { get; init; }
+    public decimal Balance { get; set; }
 }

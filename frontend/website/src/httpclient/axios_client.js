@@ -7,7 +7,7 @@ function delay(ms) {
   }
 
 class AxiosWrapper {
-    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
+    constructor(url = process.env.REACT_APP_WEBSITE_API_URL ?? "https://localhost:7129/api") {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -15,7 +15,7 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL,
+                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL ?? "https://localhost:7129",
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,

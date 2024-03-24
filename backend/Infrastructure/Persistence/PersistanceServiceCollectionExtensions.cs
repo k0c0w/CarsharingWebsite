@@ -18,6 +18,7 @@ public static class PersistanceServiceCollectionExtensions
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITariffRepository, TariffRepository>();
         services.AddScoped<IOccasionRepository, OccasionRepository>();
+        services.AddScoped<ICarRepository, CarRepository>();
         return services;
     }
 
@@ -30,6 +31,7 @@ public static class PersistanceServiceCollectionExtensions
         services.AddScoped<IUnitOfWork<ITariffRepository>, CarsharingUnitOfWork<ITariffRepository>>();
         services.AddScoped<IUnitOfWork<ISubscriptionRepository>, CarsharingUnitOfWork<ISubscriptionRepository>>();
         services.AddScoped<IUnitOfWork<ICarRepository>, CarsharingUnitOfWork<ICarRepository>>();
+        services.AddScoped<IUnitOfWork<IUserRepository>, CarsharingUnitOfWork<IUserRepository>>();
 
         return services;
     }

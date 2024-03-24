@@ -82,7 +82,6 @@ public class GrpcBalanceService : BalanceMicroservice.Clients.BalanceService.Bal
         }
         
         var userId = transaction.Balance.UserId;
-        _transactionMemory.RemoveTransaction(userId);
         
         try
         {
@@ -95,6 +94,10 @@ public class GrpcBalanceService : BalanceMicroservice.Clients.BalanceService.Bal
         {
             result.Message = e.Message;
             return result;
+        }
+        finally
+        {
+            _transactionMemory.RemoveTransaction(userId);
         }
 
         result.IsSuccess = true;
@@ -112,24 +115,26 @@ public class GrpcBalanceService : BalanceMicroservice.Clients.BalanceService.Bal
         var userId = transaction.Balance.UserId;
         _transactionMemory.RemoveTransaction(userId);
         
-        var balanceChange = (transaction.IsPositive ? 1 : -1) * (transaction.IntegerPart + transaction.FractionPart / 100m);
+        if (transaction.Commited)
+        {
+            var balanceChange = (transaction.IsPositive ? 1 : -1) * (transaction.IntegerPart + transaction.FractionPart / 100m);
 
-        await _balanceRepository.ChangeBalanceAsync(userId, -balanceChange,
-            context.CancellationToken);
-
+            await _balanceRepository.ChangeBalanceAsync(userId, -balanceChange,
+                context.CancellationToken);
+        }
+       
         return new Empty();
-        // todo: release юзера если не было комита или откат если комит был, естественно что id транзакции должен быть тем же что и последяя транзакция. 
-        // аборт комита можно сделать допустим в течение 30 секунд после него и если ресурс не заблокирован
     }
 
     public override async Task<DecimalValue> GetBalance(GrpcUserRequest request, ServerCallContext context)
     {
         var balance = await _balanceRepository.GetBalanceByUserIdAsync(new UserId(request.Id));
+        var integerPart = decimal.ToInt64(balance.Savings);
         var result = new DecimalValue()
         {
             IsPositive = balance.Savings > 0,
-            IntegerPart = (long)Math.Floor(balance.Savings),
-            FractionPart = (int)(100.0m * (balance.Savings - Math.Floor(balance.Savings)))
+            IntegerPart = integerPart,
+            FractionPart = decimal.ToInt32(100.0m * (balance.Savings - integerPart))
         };
 
         return result;

@@ -102,10 +102,7 @@ public class BookCarService : IBookCarService
         try
         {
             var car = await _carRepositoryUoW.Unit.GetByIdAsync(_lockedCar.Value);
-            if (car == null || car.Prebooked)
-                return new Error("Car is already busy.");
-
-            car.Prebooked = false;
+            car!.Prebooked = false;
             car.IsTaken = true;
             await _carRepositoryUoW.Unit.UpdateAsync(car);
 

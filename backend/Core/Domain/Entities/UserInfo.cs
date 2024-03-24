@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Domain.Entities;
@@ -11,6 +12,8 @@ public class UserInfo
     public string? PassportType { get; set; }
     public string? Passport { get; set; }
     public int? DriverLicense { get; set; }
+
+    [NotMapped]
     public decimal Balance { get; set; }
     public string? UserId { get; set; }
     public bool Verified { get; set; }

@@ -1,6 +1,5 @@
-using System.Collections.Concurrent;
 using BalanceMicroservice.Clients;
-using BalanceService.Domain.ValueObjects;
+using BalanceService;
 using BalanceService.GrpcServices;
 using BalanceService.Helpers.Extensions.ServiceRegistration;
 using BalanceService.Infrastructure.Persistence;
@@ -96,27 +95,27 @@ if (app.Environment.IsDevelopment())
         });
 }
 
-
 app.MapGrpcService<GrpcBalanceService>();
 app.MapGrpcService<GrpcUserService>();
 app.UseHttpsRedirection();
 
+await TryMigrateDatabaseAsync(app);
 app.Run();
 
-
-public class TransactionMemory
+static async Task TryMigrateDatabaseAsync(WebApplication app)
 {
-    private readonly ConcurrentDictionary<UserId, TransactionId> _dictionary = new ();
-
-    public bool AddTransaction(UserId userId, TransactionId transactionId) =>
-        _dictionary.TryAdd(userId, transactionId);
-
-    public void RemoveTransaction(UserId userId) =>
-        _dictionary.Remove(userId, out var _);
-
-    public TransactionId? Find(UserId userId)
+    try
     {
-        _dictionary.TryGetValue(userId, out var transactionId);
-        return transactionId;
+        await using var scope = app.Services.CreateAsyncScope();
+        var sp = scope.ServiceProvider;
+
+        await using var db = sp.GetRequiredService<BalanceContext>();
+
+        await db.Database.MigrateAsync();
+    }
+    catch (Exception e)
+    {
+        app.Logger.LogError(e, "Error while migrating the database");
+        Environment.Exit(-1);
     }
 }

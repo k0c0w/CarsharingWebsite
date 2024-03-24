@@ -55,7 +55,9 @@ public class UserRepository : IUserRepository
 
     public Task UpdateAsync(User entity)
     {
-        throw new NotImplementedException();
+        _ctx.Users.Update(entity);
+
+        return Task.CompletedTask;
     }
 
     Task IRepository<User, string>.AddAsync(User entity)

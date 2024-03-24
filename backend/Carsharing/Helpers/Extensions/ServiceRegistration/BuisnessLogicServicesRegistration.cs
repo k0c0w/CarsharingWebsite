@@ -16,6 +16,7 @@ public static class BuisnessLogicServicesRegistrationExtension
         services.AddScoped<IBookCarService, BookCarService>();
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IBalanceService, BalanceService>();
+        services.AddScoped<IUserBalanceCreatorService, UserBalanceCreator>();
 
         services.AddBalanceServiceGrpcClients(configuration["KnownHosts:BackendHosts:BalanceMicroservice"]!);
 

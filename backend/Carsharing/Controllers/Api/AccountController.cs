@@ -16,6 +16,9 @@ using Domain.Common;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Persistence.Chat.ChatEntites.Dtos;
 using Shared.Results;
+using MediatR;
+using Features.Users.Commands.CreateUser;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Carsharing.Controllers;
 
@@ -30,6 +33,7 @@ public class AccountController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly IJwtGenerator _jwtGenerator;
     private readonly IMapper _mapper;
+    private readonly IMediator _meadiator;
 
     public AccountController(
         CarsharingContext carsharingContext,
@@ -37,7 +41,8 @@ public class AccountController : ControllerBase
         IMapper mapper,
         SignInManager<User> signInManager,
         IConfiguration configuration,
-        IJwtGenerator jwtGenerator)
+        IJwtGenerator jwtGenerator,
+        IMediator mediator)
     {
         _mapper = mapper;
         _configuration = configuration;
@@ -45,37 +50,25 @@ public class AccountController : ControllerBase
         _userManager = userManager;
         _signInManager = signInManager;
         _carsharingContext = carsharingContext;
+        _meadiator = mediator;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> RegisterUser(RegistrationVm vm)
     {
+        var result = await _meadiator.Send(new CreateUserCommand()
+        {
+            Email = vm.Email,
+            Birthdate = vm.Birthdate,
+            LastName = vm.Surname!,
+            Name = vm.Name!,
+            Password = vm.Password,
+        });
 
-        var client = await _userManager.FindByEmailAsync(vm.Email);
-        if (client != null)
-            return BadRequest(new {error=new ErrorsVM{ Code = (int)ErrorCode.ServiceError, Messages = new [] {"Не возможно создать пользователя."}}});
+        if (!result.IsSuccess)
+            return BadRequest(new { error = new ErrorsVM { Code = (int)ErrorCode.ServiceError, Messages = new[] { result.ErrorMessage! } } });
 
-        var user = new User { Email = vm.Email, LastName = vm.Surname, FirstName = vm.Name, UserName = $"{DateTime.Now:MMddyyyyHHssmm}"};
-        var resultUserCreate = await _userManager.CreateAsync(user, vm.Password);
-
-        if (!resultUserCreate.Succeeded)
-            return BadRequest( new {error= new ErrorsVM
-                {
-                    Code = (int)ErrorCode.ServiceError,
-                    Messages = resultUserCreate.Errors.Select(x => x.Description)
-                }});
-
-        var userInfo = new UserInfo { BirthDay = vm.Birthdate, UserId = user.Id};
-        await _carsharingContext.UserInfos.AddAsync(userInfo);
-        await _carsharingContext.SaveChangesAsync();
-        
-        await _userManager.AddToRoleAsync(user, Role.User.ToString());
-        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, user.Id));
-        
-        var claims = await _userManager.GetClaimsAsync(user);
-        var token = _jwtGenerator.CreateToken(user: user, claims: claims);
-        
-        return new JsonResult(new ResponseBearerTokenVm(token));
+        return Created("/", default);
     }
     
     [HttpPost("login")]

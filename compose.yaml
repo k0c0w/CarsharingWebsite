@@ -72,20 +72,19 @@ services:
     ports:
       - ${FRONT_ADMIN_PORTS}
   db:
-    container_name: database
+    container_name: drive_database
     image: postgres:latest
     environment:
       POSTGRES_DB: Carsharing
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - postgredb-data:/var/lib/postgresql/data
     ports:
       - ${DB_PORTS}
   
   rabbitmq:
-    container_name: rabbitmq
+    container_name: drive_rabbitmq
     image: rabbitmq:3-alpine
     env_file:
       - .env
@@ -160,3 +159,6 @@ services:
     volumes:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+
+volumes:
+  postgredb-data:

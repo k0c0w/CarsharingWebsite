@@ -28,7 +28,7 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
         var rentInfo = request.RentCarInfo;
 
         var tariff = await _carRepository.GetRelatedTariffAsync(rentInfo.CarId);
-        var totalPrice = tariff!.PricePerMinute * request.RentCarInfo.Days;
+        var totalPrice = -tariff!.PricePerMinute * request.RentCarInfo.Days;
         var userId = rentInfo.PotentialRenterUserId!;
 
         var subscription = new Subscription()
