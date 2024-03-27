@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/Components/appbar.dart';
+import 'package:mobileapp/Components/bottom_button.dart';
 
 void main() {
   runApp(const DriveApp());
@@ -36,6 +37,7 @@ class MainPage extends StatelessWidget {
     return Scaffold(
       // пример внедрения AppBar
       appBar: DriveAppBar(title: "Главная"),
+      body: BottomButton(title: "Сохранить", onPressed: () {print("object");},),
     );
   }
 }

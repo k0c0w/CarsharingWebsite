@@ -14,6 +14,7 @@ class DriveTextStyles {
     ///todo: must be w500 with another font
     fontWeight: FontWeight.w400,
     //todo: import custom font to package
+    // https://api.flutter.dev/flutter/painting/TextStyle-class.html
     fontFamily: 'Orbitron',
     letterSpacing: 2,
   );
