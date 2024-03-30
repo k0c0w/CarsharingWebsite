@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/Components/appbar.dart';
 import 'package:mobileapp/Components/bottom_button.dart';
+import 'package:mobileapp/Components/form_input_subpage.dart';
 
 void main() {
   runApp(const DriveApp());
@@ -17,7 +18,8 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //just for example
-      home: MainPage(),
+      home: DrivePhoneNumberInputSubpage(
+      onSavePressed: (val) {},),
       routes: {
         '/home': (context) => throw UnimplementedError("Implement page"),
         '/profile': (context) => throw UnimplementedError("Implement page"),
