@@ -18,8 +18,14 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //just for example
-      home: DrivePhoneNumberInputSubpage(
-      onSavePressed: (val) {},),
+      home: DriveDateInputSubpage (
+        inputTitle: "DAte",
+        hintText: "date",
+        onSavePressed: (val){
+          print(val);
+        },
+        initialValue: DateTime(2014),
+),
       routes: {
         '/home': (context) => throw UnimplementedError("Implement page"),
         '/profile': (context) => throw UnimplementedError("Implement page"),
@@ -32,14 +38,3 @@ class DriveApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // пример внедрения AppBar
-      appBar: DriveAppBar(title: "Главная"),
-      body: BottomButton(title: "Сохранить", onPressed: () {print("object");},),
-    );
-  }
-}
