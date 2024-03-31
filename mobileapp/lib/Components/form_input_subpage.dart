@@ -6,32 +6,222 @@ import 'package:mobileapp/Components/appbar.dart';
 import 'package:mobileapp/Components/bottom_button.dart';
 import 'package:mobileapp/Components/styles.dart';
 
-class DrivePhoneNumberInputSubpage extends StatefulWidget {
-  final void Function(String) onSavePressed;
+class DriveDateInputSubpage extends _InputSubpageBase {
+  final void Function(DateTime) onSavePressed;
+  final DateTime? initialValue;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
 
+  const DriveDateInputSubpage({
+    super.key,
+    required super.hintText,
+    required super.inputTitle,
+    required this.onSavePressed,
+    this.initialValue,
+    this.firstDate,
+    this.lastDate,
+  });
+
+  @override
+  State<StatefulWidget> createState()
+    => _DriveDateInputSubpageState(
+        inputName: inputTitle,
+        hintText: hintText,
+        onSavePressed: onSavePressed,
+        initialDate: initialValue,
+    );
+}
+
+class _DriveDateInputSubpageState extends _InputSubpageState<DriveDateInputSubpage> {
+  static const int _centuryInDays = 100 * 365;
+  final void Function(DateTime) onSavePressed;
+  final DateTime? initialDate;
+  var _firstDate = DateTime.fromMillisecondsSinceEpoch(0);
+  var _lastDate = DateTime.fromMillisecondsSinceEpoch(0)
+      .add(const Duration(days: _centuryInDays));
+  
+  DateTime? _pickedDate;
+
+  _DriveDateInputSubpageState({
+    required super.inputName,
+    required super.hintText,
+    required this.onSavePressed,
+    this.initialDate,
+    DateTime? firstDate,
+    DateTime? lastDate,
+  }):super(initialValue: initialDate?.toString().split(" ")[0]) {
+    if (firstDate != null) {
+      _firstDate = firstDate;
+      _lastDate = firstDate.add(const Duration(days: _centuryInDays));
+    }
+
+    if (lastDate != null) {
+      _lastDate = lastDate;
+    }
+
+    if (_firstDate.compareTo(_lastDate) > 0) {
+      throw ArgumentError("Last date can not be less than first date.");
+    }
+  }
+
+  @override
+  void _changeState() {
+    ///this state can only be modified in _selectDate
+  }
+
+  @override
+  bool _inputValidator() {
+    var pickedDate = _pickedDate;
+
+    return pickedDate != null
+        && (pickedDate.compareTo(_lastDate) <= 0)
+        && (pickedDate.compareTo(_firstDate) >= 0);
+  }
+
+  @override
+  void _onSavePressedInternal() {
+    var pickedDate = _pickedDate;
+    if (pickedDate != null) {
+      onSavePressed(pickedDate);
+    }
+  }
+
+  @override
+  StatefulWidget get _textField => _constructPureTextField(
+    filled: true,
+    prefixIcon: const Icon(Icons.calendar_today),
+    readOnly: true,
+    onTap: () {_selectDate();},
+  );
+
+  Future<void> _selectDate() async {
+    var pickedDate = await showDatePicker(
+        context: context,
+        initialDate: initialDate ?? DateTime.now(),
+        firstDate: _firstDate,
+        lastDate: _lastDate,
+    );
+
+    if (pickedDate == null) {
+      return;
+    }
+
+    setState(() {
+      _textEditingController.text = pickedDate.toString().split(" ")[0];
+      _pickedDate = pickedDate;
+    });
+  }
+}
+
+class DrivePhoneNumberInputSubpage extends _TextBasedInputSubpage {
   const DrivePhoneNumberInputSubpage({
     super.key,
-
-    required this.onSavePressed,
+    required super.hintText,
+    required super.inputTitle,
+    required super.onSavePressed,
+    super.initialValue,
   });
 
   @override
   State<StatefulWidget> createState()
     => _DrivePhoneNumberInputSubpageState(
-
+      hintText: hintText,
+      inputName: inputTitle,
+      onSavePressed: onSavePressed,
+      initialValue: initialValue,
     );
 }
 
-class _DrivePhoneNumberInputSubpageState extends State<DrivePhoneNumberInputSubpage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(children: [
-        InternationalPhoneNumberInput(onInputChanged: (p) {}),
-      ],),
-    );
+class _DrivePhoneNumberInputSubpageState extends _TextBasedInputSubpageState<DrivePhoneNumberInputSubpage> {
+  static final RegExp _validNumberFormat = RegExp(r"^\+7\d{10}$");
+  
+  var _phoneNumber = PhoneNumber();
+
+  _DrivePhoneNumberInputSubpageState({
+    required super.inputName,
+    required super.hintText,
+    required super.onSavePressed,
+    super.initialValue,
+  });
+
+  bool _isValidPhoneNumber(PhoneNumber phoneNumber) {
+    var phoneNumberStr = phoneNumber.phoneNumber;
+    return phoneNumberStr != null && _validNumberFormat.hasMatch(phoneNumberStr);;
   }
 
+  void _onInputChanged(PhoneNumber phoneNumber) {
+    if (_phoneNumber != phoneNumber) {
+    setState(() {
+      _phoneNumber = phoneNumber;
+    });
+    }
+  }
+
+  @override
+  void _changeState() {
+    /// the state is changed in _onInputChanged
+  }
+
+  @override
+  bool _inputValidator() => _isValidPhoneNumber(_phoneNumber);
+
+  @override
+  void _onSavePressedInternal() {
+    var phoneNumber = _phoneNumber;
+    if (_isValidPhoneNumber(phoneNumber)) {
+      onSavePressed(phoneNumber.phoneNumber!);
+    }
+  }
+
+  @override
+  void initState() {
+    tryInitState();
+  }
+
+  void tryInitState() async {
+    if (initialValue != null) {
+      try{
+        var pn = await PhoneNumber.getRegionInfoFromPhoneNumber(initialValue!);
+        setState(() {
+          _textEditingController.text = pn.parseNumber();
+          _phoneNumber = pn;
+        });
+      }
+      catch(e) {
+      }
+    }
+  }
+
+  @override
+  StatefulWidget get _textField => InternationalPhoneNumberInput(
+    initialValue: _phoneNumber,
+    /// formatted russian number length
+    maxLength: 13,
+    onInputChanged: _onInputChanged,
+    selectorTextStyle: DriveTextStyles.userInput,
+    textStyle: DriveTextStyles.userInput,
+    inputDecoration: InputDecoration(
+      hintStyle: DriveTextStyles.inputLabel,
+      hintText: hintText,
+      focusedBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: DriveColors.lightBlueColor),
+      ),
+      enabledBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: DriveColors.darkGreyColor),
+      ),
+    ),
+    ignoreBlank: false,
+    countries: const [
+      /// Russia
+      "RU"
+    ],
+    selectorConfig: const SelectorConfig(
+      setSelectorButtonAsPrefixIcon: true,
+      showFlags: false,
+      selectorType: PhoneInputSelectorType.DROPDOWN,
+    ),
+    cursorColor: DriveColors.lightBlueColor,
+  );
 }
 
 class DriveNumberInputSubpage extends _InputSubpageBase {
@@ -103,6 +293,7 @@ class _DriveNumberInputSubpageState extends _InputSubpageState<DriveNumberInputS
 
 class DriveEmailInputSubpage extends _TextBasedInputSubpage {
   const DriveEmailInputSubpage({
+    super.key,
     required super.hintText,
     required super.inputTitle,
     required super.onSavePressed,
@@ -244,7 +435,7 @@ abstract class _InputSubpageState<T extends StatefulWidget> extends State<T> {
   @protected
   StatefulWidget get _textField;
 
-  final String? hintText;
+  final String hintText;
   final String inputName;
   final String? initialValue;
 
@@ -265,6 +456,7 @@ abstract class _InputSubpageState<T extends StatefulWidget> extends State<T> {
     TextInputType? textInputType,
     void Function()? onTap,
     List<TextInputFormatter>? inputFormatters,
+    Icon? prefixIcon,
   }) {
 
     return TextField (
@@ -273,12 +465,14 @@ abstract class _InputSubpageState<T extends StatefulWidget> extends State<T> {
         hintText: hintText,
         hintStyle: DriveTextStyles.inputLabel,
         filled: filled,
+        prefixIcon: prefixIcon,
         focusedBorder: const UnderlineInputBorder(
             borderSide: BorderSide(color: DriveColors.lightBlueColor),
         ),
         enabledBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: DriveColors.darkGreyColor),
         ),
+        fillColor: Colors.white10,
       ),
       keyboardType: textInputType ?? TextInputType.text,
       style: style ?? DriveTextStyles.userInput,
