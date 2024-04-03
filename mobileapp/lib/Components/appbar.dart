@@ -4,7 +4,7 @@ import 'package:mobileapp/Components/styles.dart';
 const _ellipticalRadius = Radius.elliptical(50, 20);
 
 class DriveAppBar extends AppBar {
-  DriveAppBar({required String title})
+  DriveAppBar({super.key, required String title})
       : super(
           title: Text(
             title.toUpperCase(),

@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:mobileapp/Components/drawer.dart';
 import 'package:mobileapp/Pages/pages_list.dart';
 
+import 'Components/appbar.dart';
+import 'Components/bottom_button.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -37,3 +40,14 @@ class DriveApp extends StatelessWidget {
   }
 }
 
+class MainPage extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // пример внедрения AppBar
+      appBar: DriveAppBar(title: "Главная"),
+      body: BottomButton(title: "Сохранить", onPressed: () {print("object");},),
+    );
+  }
+}
