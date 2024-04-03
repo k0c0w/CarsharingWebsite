@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Components/appbar.dart';
-import 'package:mobileapp/Components/bottom_button.dart';
-import 'package:mobileapp/Components/form_input_subpage.dart';
+import 'package:flutter/services.dart';
+import 'package:mobileapp/Components/drawer.dart';
+import 'package:mobileapp/Pages/pages_list.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp]);
   runApp(const DriveApp());
 }
 
@@ -18,21 +21,17 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //just for example
-      home: DriveDateInputSubpage (
-        inputTitle: "DAte",
-        hintText: "date",
-        onSavePressed: (val){
-          print(val);
-        },
-        initialValue: DateTime(2014),
-),
+      home: Scaffold(
+        drawer: DriveDrawer(),
+
+      ),
       routes: {
-        '/home': (context) => throw UnimplementedError("Implement page"),
-        '/profile': (context) => throw UnimplementedError("Implement page"),
-        '/subscriptions': (context) => throw UnimplementedError("Implement page"),
-        '/payment': (context) => throw UnimplementedError("Implement page"),
-        '/enter': (context) => throw UnimplementedError("Implement page"),
-        '/register': (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.home : (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.profile: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.userSubscriptions: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.login: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.registration: (context) => throw UnimplementedError("Implement page"),
       }
     );
   }
