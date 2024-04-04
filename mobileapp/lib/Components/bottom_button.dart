@@ -28,7 +28,7 @@ class BottomButton extends StatelessWidget {
               ),
               onPressed: onPressed,
               child: Text(
-                 title,
+                title,
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.normal,
