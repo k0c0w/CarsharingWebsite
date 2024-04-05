@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'Components/appbar.dart';
 import 'Components/styles.dart';
-
-const List<Widget> fruits = <Widget>[
-  Text('Apple'),
-  Text('Banana'),
-  Text('Orange')
-];
 
 class Subscriptions extends StatelessWidget {
   const Subscriptions({super.key});
@@ -21,11 +17,12 @@ class Subscriptions extends StatelessWidget {
 
     return Scaffold(
       appBar: DriveAppBar(title: "Subscriptions"),
-      body: Column(
+      body: const Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           divider,
           Center(child:SubscriptionToggleButton()),
+          SubscriptionList()
         ],
       ),
     );
@@ -46,59 +43,16 @@ class Balance extends StatelessWidget {
   }
 }
 
-class InformationTable extends StatelessWidget {
-  const InformationTable({super.key});
-
-  static createInformationField (String name, String value, { bool isError = false }) {
-    return Container(margin:  const EdgeInsets.only(left: 20.0, right: 20.0), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(name, style: DriveTextStyles.inputLabel),
-        Text(value, style: isError ? DriveTextStyles.errorLabel : DriveTextStyles.userInput),
-      ],
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    const divider = Divider(
-      height: 30,
-      thickness: 0.4,
-      indent: 20,
-      endIndent: 20,
-    );
-
-    return Column(
-        children: [
-          createInformationField("Номер телефона", "+ 7 (800) 555 35 35"),
-          divider,
-          createInformationField("Почта", "example@mail.ru"),
-          divider,
-          createInformationField("Имя", "Василий"),
-          divider,
-          createInformationField("Фамилия", "Пупкин"),
-          divider,
-          createInformationField("Отчество", "?", isError: true),
-          divider,
-          createInformationField("Дата рождения", "27.02.2024"),
-          divider,
-          createInformationField("Паспорт", "92 17 181511"),
-          divider,
-          createInformationField("ВУ", "5643-47820732"),
-        ]
-    );
-  }
-}
-
 class SubscriptionToggleButton extends StatefulWidget {
-  SubscriptionToggleButton({super.key});
+  const SubscriptionToggleButton({super.key});
 
   @override
-  _SubscriptionToggleButton createState() => _SubscriptionToggleButton();
+  State<SubscriptionToggleButton> createState() => _SubscriptionToggleButton();
 }
 
 class _SubscriptionToggleButton extends State<SubscriptionToggleButton> {
   List<bool> isSelected = [
-    false, false
+    true, false
   ];
 
   changeButtonState(int index) {
@@ -121,5 +75,89 @@ class _SubscriptionToggleButton extends State<SubscriptionToggleButton> {
       ),
       children: const [Text("АКТИВНЫЕ"), Text("ИСТОРИЯ")],
     );
+  }
+}
+
+
+class SubscriptionList extends StatelessWidget {
+  const SubscriptionList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+        children: [
+          SubscriptionCard(name: "Toyota Camry", description: "A 720 СУ 160 рус",),
+        ]
+    );
+  }
+}
+
+class SubscriptionCard extends StatelessWidget{
+  const SubscriptionCard({super.key, required this.name, required this.description});
+  final String name;
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: SizedBox(width: 400, child: Card(
+          margin: const EdgeInsets.all(7.0),
+          shadowColor: const Color.fromRGBO(200, 200, 200, 1),
+          color: const Color.fromRGBO(255, 255, 255, 1),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              SizedBox(
+                  width: 180,
+                  height: 50,
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(name, style: GoogleFonts.orbitron(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                        Text(description, style: GoogleFonts.orbitron(
+                            color: Colors.grey,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold)),
+                      ])),
+              SubscriptionCardButtons(),
+            ],
+          ),
+        ),
+        ));
+  }
+}
+
+class SubscriptionCardButtons extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Row(
+        children: [
+          TextButton(
+            style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black)),
+            child: const ImageIcon(AssetImage("./assets/raketa.png")),
+            onPressed: () {
+              /* ... */
+            },
+          ),
+          TextButton(
+            style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black)),
+            child: ImageIcon(AssetImage("./assets/trooba.png")),
+            onPressed: () {
+              /* ... */
+            },
+          ),
+          TextButton(
+            style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black)),
+            child: const ImageIcon(AssetImage("./assets/key.png")),
+            onPressed: () {
+              /* ... */
+            },
+          ),
+    ]);
   }
 }
