@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobileapp/Pages/pages_list.dart';
-import 'Components/bottom_button.dart';
-import 'Pages/profile.dart';
+import 'package:mobileapp/ui/components/drawer.dart';
+import 'package:mobileapp/ui/pages/pages_list.dart';
+import 'package:mobileapp/ui/pages/subscriptions.dart';
+import 'ui/components/bottom_button.dart';
+import 'ui/pages/profile.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,11 +24,13 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //just for example
-      home: ProfilePageWidget.create(),
+      home: Scaffold(
+        drawer: DriveDrawer(),
+      ),
       routes: {
         DriveRoutes.home : (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.profile: (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.userSubscriptions: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.profile: (_) => ProfilePageWidget.create(),
+        DriveRoutes.userSubscriptions: (_) => SubscriptionsPageWidget.create(),
         DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),
         DriveRoutes.login: (context) => throw UnimplementedError("Implement page"),
         DriveRoutes.registration: (context) => throw UnimplementedError("Implement page"),

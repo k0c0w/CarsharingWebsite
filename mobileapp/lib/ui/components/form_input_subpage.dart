@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:mobileapp/Components/appbar.dart';
-import 'package:mobileapp/Components/bottom_button.dart';
-import 'package:mobileapp/Components/styles.dart';
+import 'package:mobileapp/ui/components/appbar.dart';
+import 'package:mobileapp/ui/components/bottom_button.dart';
+import 'package:mobileapp/ui/components/styles.dart';
 
 class DriveDateInputSubpage extends _InputSubpageBase {
   final void Function(DateTime) onSavePressed;

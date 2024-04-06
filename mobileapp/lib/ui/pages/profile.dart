@@ -145,7 +145,7 @@ class _ViewModel extends ChangeNotifier {
 }
 
 class ProfilePageWidget extends StatelessWidget {
-  const ProfilePageWidget();
+  const ProfilePageWidget({super.key});
 
   static Widget create() {
     return ChangeNotifierProvider(

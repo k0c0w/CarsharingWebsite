@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Components/styles.dart';
+import 'package:mobileapp/ui/components/styles.dart';
 
 const _ellipticalRadius = Radius.elliptical(50, 20);
 

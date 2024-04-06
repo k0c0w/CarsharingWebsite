@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Components/styles.dart';
-import 'package:mobileapp/Pages/pages_list.dart';
+import 'package:mobileapp/ui/components/styles.dart';
+import 'package:mobileapp/ui/pages/pages_list.dart';
 
 const _drawerLeftGapProportion = 0.065;
 

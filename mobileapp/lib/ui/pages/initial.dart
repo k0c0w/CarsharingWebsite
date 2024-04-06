@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/Components/styles.dart';
+import 'package:mobileapp/ui/components/styles.dart';
 
 class InitialPage extends StatefulWidget {
   const InitialPage({super.key});
