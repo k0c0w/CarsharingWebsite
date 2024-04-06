@@ -20,22 +20,22 @@ public class CreateDocumentCommandHandler : IRequestHandler<CreateDocumentComman
     {
         var trackingId = await _operations.CreateNewOperationAsync(request.UserId, MetadataSchemas.Schemas[typeof(DocumentMetadata)]);
 
-            var metadata = new DocumentMetadata(trackingId, default)
-            {
-                IsPublic = !request.IsPrivate,
-                CreationDateTimeUtc = DateTime.UtcNow,
-                Annotation = request.AnnotationToFile,
-                LinkedMetadataCount = 1
-            };
-            if (request.File is null)
-            {
-                await _metadataSaver.UploadFileAsync(trackingId, metadata);
-            }
-            else
-            {
-                if (await _metadataSaver.UploadFileAsync(trackingId, metadata, request.File))
-                    await _metadataSaver.CommitOperationAsync(trackingId);
-            }
+        var metadata = new DocumentMetadata(trackingId, default)
+        {
+            IsPublic = !request.IsPrivate,
+            CreationDateTimeUtc = DateTime.UtcNow,
+            Annotation = request.AnnotationToFile,
+            LinkedMetadataCount = 1
+        };
+        if (request.File is null)
+        {
+            await _metadataSaver.UploadFileAsync(trackingId, metadata);
+        }
+        else
+        {
+            if (await _metadataSaver.UploadFileAsync(trackingId, metadata, request.File))
+                await _metadataSaver.CommitOperationAsync(trackingId);
+        }
 
         return new HttpResponse(trackingId.ToString());
     }

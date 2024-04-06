@@ -88,9 +88,10 @@ public class ProfileController : ControllerBase
             : BadRequest(queryResult.ErrorMessage); 
     }
 
-    [HttpPut("PersonalInfo/Edit")]
+    [HttpPost("PersonalInfo/Edit")]
     public async Task<IActionResult> Edit([FromBody] EditUserVm userVm)
     {
+        Console.WriteLine("Попал в edit");
         var commandResult = await _mediator.Send(new EditUserCommand(User.GetId(),
             _mapper.Map<EditUserVm, EditUserDto>(userVm)));
 

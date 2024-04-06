@@ -11,7 +11,6 @@ using UserManagementServiceClient = BalanceMicroservice.Clients.UserManagementSe
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddGrpc();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);

@@ -12,12 +12,24 @@ public class CreateTariffCommand : ICommand
 
     public int? MaxMileage { get; }
 
+    public long MinAllowedMinutes { get; }
 
-    public CreateTariffCommand(string tariffName, decimal? priceInRubles = default, string? description = default, int? maxMileage = default)
+    public long MaxAllowedMinutes { get; }
+
+
+    public CreateTariffCommand(
+        string tariffName, 
+        decimal? priceInRubles = default,
+        string? description = default,
+        int? maxMileage = default, 
+        long minAllowedMinutes = 5,
+        long maxAllowedMinutes = 24 * 60)
     {
         Name = tariffName;
         Description = description;
         PriceInRubles = priceInRubles;
         MaxMileage = maxMileage;
+        MinAllowedMinutes = minAllowedMinutes;
+        MaxAllowedMinutes = maxAllowedMinutes;
     }
 }

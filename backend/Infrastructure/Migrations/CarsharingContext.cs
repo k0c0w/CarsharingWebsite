@@ -13,7 +13,11 @@ public class CarsharingContext : IdentityDbContext<User>
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
-    
+
+    public virtual DbSet<Message> Messages { get; set; }
+
+    public virtual DbSet<OccasionMessage> OccasionMessages { get; set; }
+
     public virtual DbSet<CarModel> CarModels { get; set; }
 
     public virtual DbSet<Car> Cars { get; set; }

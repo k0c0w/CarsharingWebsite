@@ -35,7 +35,22 @@ public class EditUserCommandHandler : ICommandHandler<EditUserCommand>
             UserValidation.CheckUserBirthday(user.UserInfo, request.EditUserDto.BirthDay);
             UserValidation.CheckUserPassport(user.UserInfo, request.EditUserDto!.Passport!);
             UserValidation.CheckUserPassportType(user.UserInfo, request.EditUserDto!.PassportType!);
-            user.UserInfo.Verified = false;
+
+            var userInfo = user.UserInfo;
+            var userEditDto = request.EditUserDto;
+            {
+                userInfo.PassportType = userEditDto.PassportType;
+                userInfo.Passport = userEditDto.Passport;
+                userInfo.BirthDay = userEditDto.BirthDay;
+                userInfo.DriverLicense = userEditDto.DriverLicense;
+                userInfo.Verified = false;
+                user.FirstName = userEditDto.FirstName;
+                user.LastName = userEditDto.LastName;
+
+                //_context.Users.Update(user);
+                _context.UserInfos.Update(userInfo);
+            }
+
             await _context.SaveChangesAsync(cancellationToken);
             return Result.SuccessResult;
         }

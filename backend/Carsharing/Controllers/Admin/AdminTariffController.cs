@@ -39,7 +39,7 @@ public class AdminTariffController : ControllerBase
     [HttpPost("[action]")]
     public async Task<IActionResult> Create([FromBody] CreateTariffVM vm)
     {
-        var createTariffResult = await _mediatr.Send(new CreateTariffCommand(vm.Name, vm.Price, vm.Description, vm.MaxMillage));
+        var createTariffResult = await _mediatr.Send(new CreateTariffCommand(vm.Name, vm.PricePerMinute, vm.Description, vm.MaxMillage, minAllowedMinutes: vm.MinRentMinutes, maxAllowedMinutes: vm.MaxRentMinutes));
 
         if (!createTariffResult.IsSuccess)
             return this.BadRequestWithErrorMessage(createTariffResult.ErrorMessage);
@@ -63,7 +63,7 @@ public class AdminTariffController : ControllerBase
     [HttpPut("edit/{id:int}")]
     public async Task<IActionResult> EditTariff([FromRoute] int id, [FromBody] CreateTariffVM edit)
     {
-        var updateResult = await _mediatr.Send(new UpdateTariffCommand(id, edit.Name, edit.Description, edit.Price, edit.MaxMillage));
+        var updateResult = await _mediatr.Send(new UpdateTariffCommand(id, edit.Name, edit.Description, edit.PricePerMinute, edit.MaxMillage));
         
         if (updateResult)
             return NoContent();

@@ -28,6 +28,7 @@ namespace Carsharing.Controllers.Admin
             _signInManager = signInManager;
             _jwtGenerator = jwtGenerator;
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginVM vm)
         {

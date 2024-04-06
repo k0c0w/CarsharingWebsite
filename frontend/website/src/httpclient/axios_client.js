@@ -136,8 +136,15 @@ class AxiosWrapper {
         return await this._get('/Account/PersonalInfo');
     }
 
-    async editPersonalInfo(form) {
-        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    async editPersonalInfo({email, firstName, secondName, passport, driverLicense, birthDate}) {
+        return await this._post('/Account/PersonalInfo/Edit', {
+            surname: secondName,
+            name: firstName,
+            email: email,
+            birthdate: birthDate,
+            passport: passport,
+            license: driverLicense,
+        });
     }
 
     async profile() {
