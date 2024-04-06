@@ -29,7 +29,13 @@ class DriveDrawer extends StatelessWidget {
               padding: EdgeInsets.only(left: 5, bottom: 5),
               child: const Text(
                 "Drive",
-                style: DrawerStyles.bottomText,
+                style: TextStyle(
+                    color: DriveColors.deepBlueColor,
+                    fontSize: 27,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: "Orbitron",
+                    letterSpacing: 5
+                ),
               ),
             ),
           ],
@@ -100,7 +106,16 @@ class _DrawerListItem extends StatelessWidget {
           height:  screenSize.height * 0.05075,
           padding: EdgeInsets.only(left: screenSize.width * _drawerLeftGapProportion),
           alignment: Alignment.centerLeft,
-          child: Text(title, style: DrawerStyles.listItem,),
+          child: Text(
+            title,
+            style: const  TextStyle(
+              color: DriveColors.blackColor,
+              letterSpacing: 2,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Open Sans',
+              fontSize: 13,
+              overflow: TextOverflow.clip,
+            ),),
         ),
       ),
     );
@@ -132,11 +147,30 @@ class _DrawerLeadItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(fio.toUpperCase(), style: DrawerStyles.headerMain,),
+              Text(
+              fio.toUpperCase(),
+              style: const TextStyle(
+                  color: DriveColors.blackColor,
+                  letterSpacing: 2,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Open Sans',
+                  fontSize: 15,
+                  overflow: TextOverflow.clip,
+                ),
+              ),
               const Padding(
                 padding: EdgeInsets.only(top: 7),
-                child: Text("Аккаунт не подтвержден", style: DrawerStyles.headerSubtitle,),
-              ),
+                child: Text(
+                  "Аккаунт не подтвержден",
+                  style:  TextStyle(
+                    color: DriveColors.darkGreyColor,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'Open Sans',
+                    fontSize: 13,
+                    overflow: TextOverflow.clip,
+                  ),
+                ),
+              )
             ],
           ),
         ),

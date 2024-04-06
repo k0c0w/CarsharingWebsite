@@ -48,42 +48,6 @@ class DriveTextStyles {
   );
 }
 
-class DrawerStyles {
-  static const listItem = TextStyle(
-    color: DriveColors.blackColor,
-    letterSpacing: 2,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Open Sans',
-    fontSize: 13,
-    overflow: TextOverflow.clip,
-  );
-
-  static const headerMain = TextStyle(
-    color: DriveColors.blackColor,
-    letterSpacing: 2,
-    fontWeight: FontWeight.w600,
-    fontFamily: 'Open Sans',
-    fontSize: 15,
-    overflow: TextOverflow.clip,
-  );
-
-  static const headerSubtitle = TextStyle(
-    color: DriveColors.darkGreyColor,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'Open Sans',
-    fontSize: 13,
-    overflow: TextOverflow.clip,
-  );
-
-  static const bottomText = TextStyle(
-      color: DriveColors.deepBlueColor,
-      fontSize: 27,
-      fontWeight: FontWeight.w800,
-      fontFamily: "Orbitron",
-      letterSpacing: 5
-  );
-}
-
 class CommentaryStyles {
   static const greyBigComment = TextStyle(
     color: Colors.black26,

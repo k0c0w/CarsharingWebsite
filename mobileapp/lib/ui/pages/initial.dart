@@ -1,33 +1,43 @@
+import 'dart:async';
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:mobileapp/ui/components/styles.dart';
+import 'package:mobileapp/ui/pages/pages_list.dart';
+import 'package:provider/provider.dart';
+import '../../domain/services/auth_service.dart';
 
-class InitialPage extends StatefulWidget {
-  const InitialPage({super.key});
+class _ViewModel {
+  final _authService = AuthService();
+  BuildContext context;
 
-  @override
-  State<StatefulWidget> createState() => _InitialPage();
+  _ViewModel(this.context){
+    _resolveActions();
+  }
+
+  Future<void> _resolveActions() async {
+    final isAuthorizedUser = await _authService.checkAuth();
+    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.login;
+
+    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+  }
 }
 
-class _InitialPage extends State<InitialPage> {
+class InitialPageWidget extends StatelessWidget {
+  const InitialPageWidget({super.key});
+
+  static Widget create() {
+    return Provider(
+        create: (context) => _ViewModel(context),
+        lazy: false,
+        child: const InitialPageWidget(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            "D",
-            style: TextStyle(
-              color: DriveColors.deepBlueColor,
-              fontWeight: FontWeight.w500,
-              fontSize: 26,
-            ),)
-        ],
+      body: Center(
+        child: CircularProgressIndicator(strokeCap: StrokeCap.square,),
       ),
     );
   }
