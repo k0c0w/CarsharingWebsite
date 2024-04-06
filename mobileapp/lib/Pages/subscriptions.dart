@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'Components/appbar.dart';
-import 'Components/styles.dart';
+import '../Components/appbar.dart';
+import '../Components/styles.dart';
 
 class Subscriptions extends StatelessWidget {
   const Subscriptions({super.key});

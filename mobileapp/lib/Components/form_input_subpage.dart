@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mobileapp/Components/appbar.dart';
 import 'package:mobileapp/Components/bottom_button.dart';
@@ -8,7 +9,7 @@ import 'package:mobileapp/Components/styles.dart';
 
 class DriveDateInputSubpage extends _InputSubpageBase {
   final void Function(DateTime) onSavePressed;
-  final DateTime? initialValue;
+  final String? initialValue;
   final DateTime? firstDate;
   final DateTime? lastDate;
 
@@ -23,13 +24,16 @@ class DriveDateInputSubpage extends _InputSubpageBase {
   });
 
   @override
-  State<StatefulWidget> createState()
-    => _DriveDateInputSubpageState(
-        inputName: inputTitle,
-        hintText: hintText,
-        onSavePressed: onSavePressed,
-        initialDate: initialValue,
+  State<StatefulWidget> createState() {
+    return _DriveDateInputSubpageState(
+      inputName: inputTitle,
+      hintText: hintText,
+      onSavePressed: onSavePressed,
+      initialDate: initialValue == null ? null : DateFormat("dd.MM.yyyy").tryParse(initialValue!),
+      firstDate: firstDate,
+      lastDate: lastDate,
     );
+  }
 }
 
 class _DriveDateInputSubpageState extends _InputSubpageState<DriveDateInputSubpage> {
@@ -523,7 +527,11 @@ abstract class _InputSubpageState<T extends StatefulWidget> extends State<T> {
             ),
             BottomButton(
                 title: "CОХРАНИТЬ",
-                onPressed: _inputValidator() ? _onSavePressedInternal : null,
+                onPressed: _inputValidator() ? () {
+                  FocusScope.of(context).unfocus();
+                  _onSavePressedInternal();
+                }
+                : null,
             ),
           ],
         ),

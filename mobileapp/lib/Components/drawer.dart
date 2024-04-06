@@ -27,9 +27,9 @@ class DriveDrawer extends StatelessWidget {
             Container(
               alignment: Alignment.bottomLeft,
               padding: EdgeInsets.only(left: 5, bottom: 5),
-              child: Text(
+              child: const Text(
                 "Drive",
-                style: DriveTextStyles.drawerBottomText,
+                style: DrawerStyles.bottomText,
               ),
             ),
           ],
@@ -100,7 +100,7 @@ class _DrawerListItem extends StatelessWidget {
           height:  screenSize.height * 0.05075,
           padding: EdgeInsets.only(left: screenSize.width * _drawerLeftGapProportion),
           alignment: Alignment.centerLeft,
-          child: Text(title, style: DriveTextStyles.drawerListItem,),
+          child: Text(title, style: DrawerStyles.listItem,),
         ),
       ),
     );
@@ -132,10 +132,10 @@ class _DrawerLeadItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(fio.toUpperCase(), style: DriveTextStyles.drawerHeaderMain,),
+              Text(fio.toUpperCase(), style: DrawerStyles.headerMain,),
               const Padding(
                 padding: EdgeInsets.only(top: 7),
-                child: Text("Аккаунт не подтвержден", style: DriveTextStyles.drawerHeaderSubtitle,),
+                child: Text("Аккаунт не подтвержден", style: DrawerStyles.headerSubtitle,),
               ),
             ],
           ),
