@@ -43,6 +43,7 @@ namespace Clients.S3ServiceClient
                 return new WebCallResult<UploadFileResult>(new ArgumentError<UploadFileResult>($"Unsupported Content-Type: {contentType}"));
 
             var requestPath = $"files/{bucketName}";
+            Console.WriteLine($"request path: {requestPath}");
             var requestContent = new MultipartFormDataContent();
             {
                 var streamContent = new StreamContent(bytes);

@@ -135,7 +135,7 @@ services:
       - MinioS3__AccessKey=minioadmin
       - MinioS3__SecretKey=minioadmin
       - MinioS3__Timeout=5000
-      - MinioS3__Endpoint=http://host.docker.internal:9090
+      - MinioS3__Endpoint=minio:9000
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+443;http://+80
       - ASPNETCORE_HTTPS_PORT=443
@@ -150,12 +150,17 @@ services:
   minio:
     image: minio/minio
     container_name: arch_minio
+    hostname: minio
     ports:
-      - "9090:9000"
-      - "9091:9091"
+      - 9000:9000
+      - 9091:9091
+    volumes:
+      - ./volume_minio:/data
     environment:
       MINIO_ROOT_USER: k0c0w
       MINIO_ROOT_PASSWORD: P@ssw0rd
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
     command: server --console-address ":9091" /data/
     
   pmdb:

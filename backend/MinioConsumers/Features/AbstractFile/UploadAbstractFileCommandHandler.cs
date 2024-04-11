@@ -24,8 +24,7 @@ public class UploadAbstractFileCommandHandler : IRequestHandler<UploadAbstractFi
                 await _s3Service.CreateBucketAsync(file.BucketName);
             await _s3Service.PutFileInBucketAsync(file);
 
-            return new HttpResponse(code: System.Net.HttpStatusCode.OK);
-
+            return new HttpResponse(code: System.Net.HttpStatusCode.OK, message: $"{file.BucketName}/{file.Name}");
         }
         catch(Exception ex) 
         {

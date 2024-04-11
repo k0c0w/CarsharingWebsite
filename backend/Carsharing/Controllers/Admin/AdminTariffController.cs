@@ -88,7 +88,7 @@ public class AdminTariffController : ControllerBase
         var getTariffResult = await _mediatr.Send(new GetTariffsQuery(id));
 
         if (getTariffResult)
-            return new JsonResult(_mapper.Map<TariffVM>(getTariffResult.Value));
+            return new JsonResult(getTariffResult.Value.Select(_mapper.Map<TariffVM>));
 
         return this.BadRequestWithErrorMessage(getTariffResult.ErrorMessage);
     }
