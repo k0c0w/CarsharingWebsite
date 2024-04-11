@@ -4,9 +4,11 @@ import SendMessageForm, {OccasionSendMessageForm} from '../Components/SendMessag
 import MessageContainer, {OccasionMessageContainer } from "../Components/MessageContainer";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
+import { AuthData } from '../Components/Auth/AuthWrapper';
 
 export default function PopupChat () {
-    const [hiding, setHideFlag] = useState(false);
+    const { user } = AuthData();
+    const [hiding, setHideFlag] = useState(true);
     const [iHaveOpenOccasion, setIHaveOpenOccasion] = useState(null);
     const [myOccasionId, setMyOccasionId] = useState(null);
     const [occasionTypes, setOccasionTypes] = useState([]);
@@ -73,7 +75,7 @@ export default function PopupChat () {
                 </div>
                 {!hiding && iHaveOpenOccasion != null &&
                 <>
-                    {!iHaveOpenOccasion && !occasionCreationRequestSent &&
+                    {user.isAuthenticated && !iHaveOpenOccasion && !occasionCreationRequestSent &&
                         <div className="dropdown">
                             <button className="dropbtn">Происшествие</button>
                             <div className="dropdown-content">
@@ -84,14 +86,16 @@ export default function PopupChat () {
                         </div>
                     }
                     {!iHaveOpenOccasion && <DefaultSupportChat/>}
-                    {iHaveOpenOccasion && <OccasionChat occasionId={myOccasionId} onCloseOccasionRecieved={onCloseOccasionRecieved}/>}
+                    {user.isAuthenticated && iHaveOpenOccasion && 
+                        <OccasionChat occasionId={myOccasionId} onCloseOccasionRecieved={onCloseOccasionRecieved}/>}
                 </>}
             </div>
         </div>
-        );
+                    );
 }
 
 function OccasionChat({occasionId, onCloseOccasionRecieved}) {
+    const { getToken } = AuthData();
     const [connection, setConnection] = useState();
     const [messages, setMessages] = useState([]);
 
@@ -142,7 +146,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
     async function createHubConnection() {
         const con = new HubConnectionBuilder()
           .withUrl(process.env.REACT_APP_WEBSITE_OCCASION_CHAT_URL , { 
-            accessTokenFactory: () => localStorage.getItem("token") 
+            accessTokenFactory: getToken, 
         })
           .configureLogging(LogLevel.Information)
           .withAutomaticReconnect()
@@ -181,6 +185,7 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
 }
 
 function DefaultSupportChat() {
+    const { getToken } = AuthData();
     const [connection, setConnection] = useState();
     const [messages, setMessages] = useState([]);
     const [connectedRoomId, setConnectedRoomId] = useState();
@@ -194,7 +199,7 @@ function DefaultSupportChat() {
     const joinRoom = async () => {
       try {
         const connection = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: () => localStorage.getItem("token") })
+          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: getToken })
           .configureLogging(LogLevel.Information)
           .withAutomaticReconnect()
           .build();
