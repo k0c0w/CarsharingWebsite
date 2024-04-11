@@ -12,12 +12,8 @@ export const AuthWrapper = ({children}) => {
      const navigate = useNavigate();
      const [ user, setUser ] = useState({ isAuthenticated: false })
 
-     const login = (username, password) => {
-        return API.login(username, password)
-        .then((response) => {
-            if (response.successed)
-                setUser({ isAuthenticated: true})}
-        );
+     const login = () => {
+        setUser({ isAuthenticated: true});
      }
 
      const logout = () => {

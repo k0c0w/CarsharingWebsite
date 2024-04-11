@@ -107,8 +107,11 @@ class AxiosWrapper {
         return await this._get(`/information/news`);
     }
 
-    async login(form) {
-        let response = await this._post(`/account/login/`, this._getModelFromForm(form));
+    async login(login, password) {
+        let response = await this._post(`/account/login/`, {
+            email: login,
+            password: password,
+        });
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
