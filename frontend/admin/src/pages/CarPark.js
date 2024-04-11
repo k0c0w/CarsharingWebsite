@@ -60,7 +60,7 @@ function CarParkMngmt() {
     return (
         <>
             <h1>
-                Автопарк
+                Автопарк (not working)
             </h1>
             <TableSearchField data={carParkData} attrs={attrs} defaultAttrName="LicensePlate" setData={setCarParkData}/>
             <div className='commandsList'>
