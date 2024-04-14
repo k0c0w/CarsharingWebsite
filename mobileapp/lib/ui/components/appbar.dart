@@ -22,3 +22,22 @@ class DriveAppBar extends AppBar {
           )
   );
 }
+
+class DriveLoginAppBar extends AppBar {
+  DriveLoginAppBar({super.key, required String title})
+      : super(
+      title: Text(
+        title.toUpperCase(),
+        style: DriveTextStyles.appBarTitle,
+      ),
+      centerTitle: true,
+      backgroundColor: DriveColors.lightBlueColor,
+      foregroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+              bottomLeft: _ellipticalRadius,
+              bottomRight: _ellipticalRadius
+          )
+      )
+  );
+}

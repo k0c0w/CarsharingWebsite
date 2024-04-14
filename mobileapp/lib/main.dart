@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/pages/initial.dart';
+import 'package:mobileapp/ui/pages/login.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
+import 'package:mobileapp/ui/pages/register.dart';
 import 'package:mobileapp/ui/pages/subscriptions.dart';
 import 'ui/pages/profile.dart';
 
@@ -31,8 +33,8 @@ class DriveApp extends StatelessWidget {
         DriveRoutes.profile: (_) => ProfilePageWidget.create(),
         DriveRoutes.userSubscriptions: (_) => SubscriptionsPageWidget.create(),
         DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.login: (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.registration: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.login: (context) => LoginPageWidget.create(),
+        DriveRoutes.registration: (context) => RegisterPageWidget.create(),
       },
     );
   }
