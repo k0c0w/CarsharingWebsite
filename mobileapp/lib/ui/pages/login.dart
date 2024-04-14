@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
+import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:provider/provider.dart';
 
 class _ViewModelState {
@@ -24,40 +25,46 @@ class _ViewModel extends ChangeNotifier {
   Future<void> onLoginPressed(String name) async {
     notifyListeners();
   }
+
+  Future<void> tryAuthorize(BuildContext context) async {
+    Navigator.restorablePushNamedAndRemoveUntil(context, DriveRoutes.home, (route) => false);
+  }
 }
 
 class LoginPageWidget extends StatelessWidget {
   const LoginPageWidget({Key? key});
 
-  static Widget create() {
-    return ChangeNotifierProvider(
-        create: (_) => _ViewModel(),
-        child: const LoginPageWidget()
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final _viewModel = Provider.of<_ViewModel>(context);
-    void _goToRegisterWidget() {
-        //переход на страничку создания аккаунта
-    }
+    return ChangeNotifierProvider(
+        create: (_) => _ViewModel(),
+        child: const _View()
+    );
+  }
+}
+
+class _View extends StatelessWidget {
+  const _View();
+
+  @override
+  Widget build(BuildContext context){
+    final _viewModel = context.read<_ViewModel>();
 
     return Scaffold(
       appBar: DriveLoginAppBar(title: "ЛОГИН"),
       body: SafeArea(
-        minimum: EdgeInsets.symmetric(horizontal: 20),
+        minimum: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Spacer(),
+            const Spacer(),
             FormInputSubpage(
               label: 'Почта',
               onChanged: (value) {
                 _viewModel.state.email = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             FormInputSubpage(
               label: 'Пароль',
               obscureText: true,
@@ -65,15 +72,15 @@ class LoginPageWidget extends StatelessWidget {
                 _viewModel.state.password = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 _viewModel.onLoginPressed('Login');
               },
-              child: Text('Войти'),
+              child: const Text('Войти'),
             ),
-            Spacer(),
-            CreateAccountButton(onPressed: _goToRegisterWidget),
+            const Spacer(),
+            CreateAccountButton(onPressed: () => _viewModel.tryAuthorize(context)),
           ],
         ),
       ),
@@ -90,7 +97,7 @@ class CreateAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: onPressed,
-      child: Text('Нет аккаунта? Создайте!'),
+      child: const Text('Нет аккаунта? Создайте!'),
     );
   }
 }
@@ -113,7 +120,7 @@ class FormInputSubpage extends StatelessWidget {
     return TextFormField(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       obscureText: obscureText,
       onChanged: onChanged,

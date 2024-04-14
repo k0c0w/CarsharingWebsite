@@ -26,12 +26,17 @@ class _ViewModel extends ChangeNotifier {
 class SubscriptionsPageWidget extends StatelessWidget {
   const SubscriptionsPageWidget({super.key});
 
-  static Widget create() {
+  @override
+  Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (_) => _ViewModel(),
-        child: const SubscriptionsPageWidget()
+        child: const _View()
     );
   }
+}
+
+class _View extends StatelessWidget {
+  const _View();
 
   @override
   Widget build(BuildContext context) {

@@ -32,15 +32,20 @@ class _ViewModel extends ChangeNotifier {
 class RegisterPageWidget extends StatelessWidget {
   const RegisterPageWidget({Key? key});
 
-  static Widget create() {
-    return ChangeNotifierProvider(
-        create: (_) => _ViewModel(),
-        child: const RegisterPageWidget()
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+        create: (_) => _ViewModel(),
+        child: const _View()
+    );
+  }
+}
+
+class _View extends StatelessWidget {
+  const _View();
+
+  @override
+  Widget build(BuildContext context){
     final _viewModel = Provider.of<_ViewModel>(context);
 
     return Scaffold(
@@ -57,7 +62,7 @@ class RegisterPageWidget extends StatelessWidget {
                 _viewModel.state.email = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             FormInputSubpage(
               label: 'Пароль',
               obscureText: true,
@@ -65,7 +70,7 @@ class RegisterPageWidget extends StatelessWidget {
                 _viewModel.state.password = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             FormInputSubpage(
               label: 'Подтвердите пароль',
               obscureText: true,
@@ -73,14 +78,14 @@ class RegisterPageWidget extends StatelessWidget {
                 _viewModel.state.password = value;
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 _viewModel.onLoginPressed('Register');
               },
               child: Text('Создать'),
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),

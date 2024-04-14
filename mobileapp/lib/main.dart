@@ -27,14 +27,14 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: DriveColors.lightBlueColor),
       ),
-      home: InitialPageWidget.create(),
+      home: const InitialPageWidget(),
       routes: {
         DriveRoutes.home : (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.profile: (_) => ProfilePageWidget.create(),
-        DriveRoutes.userSubscriptions: (_) => SubscriptionsPageWidget.create(),
+        DriveRoutes.profile: (_) => const ProfilePageWidget(),
+        DriveRoutes.userSubscriptions: (_) => const SubscriptionsPageWidget(),
         DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),
-        DriveRoutes.login: (context) => LoginPageWidget.create(),
-        DriveRoutes.registration: (context) => RegisterPageWidget.create(),
+        DriveRoutes.login: (context) => const LoginPageWidget(),
+        DriveRoutes.registration: (context) => const RegisterPageWidget(),
       },
     );
   }

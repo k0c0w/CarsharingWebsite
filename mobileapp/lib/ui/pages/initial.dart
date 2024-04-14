@@ -16,7 +16,7 @@ class _ViewModel {
 
   Future<void> _resolveActions() async {
     final isAuthorizedUser = await _authService.checkAuth();
-    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.registration;
+    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.login;
 
     Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
   }
@@ -25,13 +25,18 @@ class _ViewModel {
 class InitialPageWidget extends StatelessWidget {
   const InitialPageWidget({super.key});
 
-  static Widget create() {
+  @override
+  Widget build(BuildContext context) {
     return Provider(
-        create: (context) => _ViewModel(context),
-        lazy: false,
-        child: const InitialPageWidget(),
+      create: (context) => _ViewModel(context),
+      lazy: false,
+      child: const _View(),
     );
   }
+}
+
+class _View extends StatelessWidget {
+  const _View();
 
   @override
   Widget build(BuildContext context) {
@@ -41,4 +46,5 @@ class InitialPageWidget extends StatelessWidget {
       ),
     );
   }
+
 }
