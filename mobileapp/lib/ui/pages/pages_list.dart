@@ -5,5 +5,6 @@ class DriveRoutes {
   static const String payment = "/payment";
   static const String registration = "/register";
   static const String login = "/login";
+  static const String unathorizedHome = "/unauthorized_home";
   static const String support = "/support";
 }

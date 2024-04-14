@@ -6,6 +6,7 @@ import 'package:mobileapp/ui/pages/login.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:mobileapp/ui/pages/register.dart';
 import 'package:mobileapp/ui/pages/subscriptions.dart';
+import 'package:mobileapp/ui/pages/unathorized_home_page.dart';
 import 'ui/pages/profile.dart';
 
 void main() {
@@ -30,6 +31,7 @@ class DriveApp extends StatelessWidget {
       home: const InitialPageWidget(),
       routes: {
         DriveRoutes.home : (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),
         DriveRoutes.profile: (_) => const ProfilePageWidget(),
         DriveRoutes.userSubscriptions: (_) => const SubscriptionsPageWidget(),
         DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),

@@ -3,6 +3,8 @@ import 'package:mobileapp/ui/components/appbar.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:provider/provider.dart';
 
+import '../components/bottom_button.dart';
+
 class _ViewModelState {
   String? email;
   String? password;
@@ -32,23 +34,25 @@ class _ViewModel extends ChangeNotifier {
 }
 
 class LoginPageWidget extends StatelessWidget {
-  const LoginPageWidget({Key? key});
+  const LoginPageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
         create: (_) => _ViewModel(),
-        child: const _View()
+        lazy: false,
+        child: const _View(),
     );
   }
 }
 
 class _View extends StatelessWidget {
+
   const _View();
 
   @override
   Widget build(BuildContext context){
-    final _viewModel = context.read<_ViewModel>();
+    final viewModel = context.read<_ViewModel>();
 
     return Scaffold(
       appBar: DriveLoginAppBar(title: "ЛОГИН"),
@@ -61,7 +65,7 @@ class _View extends StatelessWidget {
             FormInputSubpage(
               label: 'Почта',
               onChanged: (value) {
-                _viewModel.state.email = value;
+                viewModel.state.email = value;
               },
             ),
             const SizedBox(height: 20),
@@ -69,18 +73,17 @@ class _View extends StatelessWidget {
               label: 'Пароль',
               obscureText: true,
               onChanged: (value) {
-                _viewModel.state.password = value;
+                viewModel.state.password = value;
               },
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                _viewModel.onLoginPressed('Login');
+                viewModel.onLoginPressed('Login');
               },
               child: const Text('Войти'),
             ),
             const Spacer(),
-            CreateAccountButton(onPressed: () => _viewModel.tryAuthorize(context)),
           ],
         ),
       ),
@@ -101,7 +104,6 @@ class CreateAccountButton extends StatelessWidget {
     );
   }
 }
-
 
 class FormInputSubpage extends StatelessWidget {
   final String label;

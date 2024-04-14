@@ -16,7 +16,7 @@ class _ViewModel {
 
   Future<void> _resolveActions() async {
     final isAuthorizedUser = await _authService.checkAuth();
-    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.login;
+    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.unathorizedHome;
 
     Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
   }
