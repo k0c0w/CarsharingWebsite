@@ -8,14 +8,19 @@ namespace Carsharing.ChatHub;
 public class ChatMessageConsumer : IConsumer<ChatMessageDto>
 {
     private readonly IMessageUnitOfWork _messageUoW;
-    public ChatMessageConsumer(IMessageUnitOfWork messageUnitOfWork) 
+    private readonly ILogger<ChatMessageConsumer> _logger;
+
+    public ChatMessageConsumer(IMessageUnitOfWork messageUnitOfWork, ILogger<ChatMessageConsumer> logger) 
     {
+        _logger = logger;
         _messageUoW = messageUnitOfWork;
     }
 
     public async Task Consume(ConsumeContext<ChatMessageDto> context)
     {
         var messageDto = context.Message;
+
+        _logger.LogInformation("Got new message {message}", messageDto.Text);
 
         var message = new Message()
         {
@@ -26,7 +31,7 @@ public class ChatMessageConsumer : IConsumer<ChatMessageDto>
             IsFromManager = messageDto.IsAuthorManager,
         };
 
-        await _messageUoW.MessageRepository.AddAsync(message).ConfigureAwait(false);
-        await _messageUoW.SaveChangesAsync().ConfigureAwait(false);
+        await _messageUoW.MessageRepository.AddAsync(message);
+        await _messageUoW.SaveChangesAsync();
     }
 }

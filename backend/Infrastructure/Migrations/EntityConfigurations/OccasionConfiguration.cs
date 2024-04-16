@@ -17,8 +17,8 @@ internal class OccasionConfiguration : IEntityTypeConfiguration<Occassion>
 
         builder
             .HasOne<User>()
-            .WithOne()
-            .HasForeignKey<Occassion>(x => x.IssuerId);
+            .WithMany()
+            .HasForeignKey(x => x.IssuerId);
     }
 }
 

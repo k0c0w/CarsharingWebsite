@@ -25,7 +25,7 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
       - RabbitMqConfig__Username=k0c0w
-      - RabbitMqConfig__Password=P@sw0rd
+      - RabbitMqConfig__Password=passw0rd
       - RabbitMqConfig__Hostname=host.docker.internal
       - RabbitMqConfig__Port=5673
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
@@ -53,7 +53,7 @@ services:
       - Authorization__Google__AppId =${GOOGLE_APP_ID}
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
       - RabbitMqConfig__Username=k0c0w
-      - RabbitMqConfig__Password=P@ssw0rd
+      - RabbitMqConfig__Password=passw0rd
       - RabbitMqConfig__Hostname=host.docker.internal
       - RabbitMqConfig__Port=5673
     depends_on:
@@ -109,13 +109,13 @@ services:
   
   rabbitmq:
     container_name: arch_rabbitmq
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3.10.6-management-alpine
     ports:
       - 15673:15672
       - 5673:5672
     environment:
       RABBITMQ_DEFAULT_USER: k0c0w
-      RABBITMQ_DEFAULT_PASS: P@ssw0rd
+      RABBITMQ_DEFAULT_PASS: passw0rd
 
   s3service:
     container_name: arch_s3service

@@ -3,7 +3,6 @@ using Features.Occasion.Inputs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Entities.Entities;
 using Shared;
 
@@ -23,7 +22,7 @@ public class OccasionsController : ControllerBase
     [HttpGet("my")]
     public async Task<IActionResult> GetMyOpenedOccasionAsync() 
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetId();
 
         var getMyOccasionQuery = new GetOpenedUserOccasionQuery(userId);
 
@@ -43,7 +42,7 @@ public class OccasionsController : ControllerBase
     [HttpPost("")]
     public async Task<IActionResult> OpenNewOccasionAsync([FromBody] CreateOccasionDto occasionInfo)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.GetId();
 
         if (!Guid.TryParse(userId, out Guid issuerId))
             return BadRequest();

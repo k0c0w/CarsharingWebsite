@@ -40,12 +40,10 @@ export default function PopupChat () {
         async function fetchOccasion(){
             const response = await API.loadMyOccasion();
             if (response?.successed){
-                if (response.openedOccasionId){
-                    setIHaveOpenOccasion(true);
+                const iHaveOpenOccasion = response.openedOccasionId != null;
+                setIHaveOpenOccasion(iHaveOpenOccasion);
+                if (iHaveOpenOccasion){
                     setMyOccasionId(response.openedOccasionId);
-                }
-                else{
-                    setIHaveOpenOccasion(false);
                 }
             }
         }
