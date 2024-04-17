@@ -54,7 +54,7 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
                     Name = tariff.Name,
                     MaxMileage = tariff.MaxMileage,
                     PriceInRubles = tariff.PricePerMinute,
-                    Image = $"/tariffs/{tariff.Name}.png"
+                    Image = tariff.ImageUrl
             })
             .ToArray();
 }
