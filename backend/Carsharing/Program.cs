@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
+using Migrations.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -39,31 +40,31 @@ services.Configure<ApiBehaviorOptions>(o =>
 });
 
 
-    services.AddCors(options =>
-    {
-        var configuration = builder.Configuration;
-        var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
-        var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
+services.AddCors(options =>
+{
+    var configuration = builder.Configuration;
+    var mainFront = configuration["KnownHosts:FrontendHosts:Main"]!;
+    var adminFront = configuration["KnownHosts:FrontendHosts:Admin"]!;
 
-        options.AddPolicy("DevFrontEnds",
-            builder =>
-                builder.WithOrigins(mainFront, adminFront)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials()
-                    .SetIsOriginAllowed(origin => true)
-        );
-    });
+    options.AddPolicy("DevFrontEnds",
+        builder =>
+            builder.WithOrigins(mainFront, adminFront)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+                .SetIsOriginAllowed(origin => true)
+    );
+});
 
 
-var app = builder.Build(); 
+var app = builder.Build();
 var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
 
 
 
-    app.UseSwagger()
-       .UseSwaggerUI()
-       .UseCors("DevFrontEnds");
+app.UseSwagger()
+   .UseSwaggerUI()
+   .UseCors("DevFrontEnds");
 
 app.UseHttpsRedirection();
 app.UseAuthentication()
@@ -87,7 +88,6 @@ static async Task TryMigrateDatabaseAsync(WebApplication app)
         var sp = scope.ServiceProvider;
 
         await using var db = sp.GetRequiredService<CarsharingContext>();
-
         await db.Database.MigrateAsync();
     }
     catch (Exception e)

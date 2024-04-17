@@ -144,17 +144,11 @@ public class AdminCarController : ControllerBase
 
     private static Contracts.File IFormFileToStream(IFormFile formFile)
     {
-        Contracts.File file;
-
-        var _stream = formFile.OpenReadStream();
-        var memoryStream = new MemoryStream();
-
-        file = new Contracts.File()
+       return new Contracts.File()
         {
             Name = formFile.FileName,
-            Content = _stream
-        };
-
-        return file;
+            Content = formFile.OpenReadStream(),
+            ContentType = formFile.ContentType,
+       };
     }
 }

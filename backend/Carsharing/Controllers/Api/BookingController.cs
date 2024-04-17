@@ -1,3 +1,4 @@
+using Carsharing.Helpers;
 using Carsharing.ViewModels;
 using Contracts;
 using Features.CarBooking.Commands.BookCar;
@@ -28,16 +29,17 @@ public class BookingController : ControllerBase
             End = bookingInfo.EndDate,
             Start = bookingInfo.StartDate,
             CarId = bookingInfo.CarId,
-            TariffId = bookingInfo.TariffId
+            TariffId = bookingInfo.TariffId,
         }));
         return commandResult
             ? new JsonResult(new
             {
                 result = "Car is successfuly booked"
             })
-            : new JsonResult(new
+            : BadRequest(new
             {
-                result = commandResult.ErrorMessage
+                code = ErrorCode.ServiceError,
+                error = commandResult.ErrorMessage
             });
     }
 }

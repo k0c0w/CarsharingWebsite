@@ -10,6 +10,10 @@ using Features.Utils;
 using FluentValidation;
 using MediatR;
 using Carsharing.Consumers;
+using Features.CarBooking.Commands.BookCar;
+using Shared.Results;
+using Features.Tariffs.Admin;
+using Features.Tariffs.Admin.Commands.CreateTariff;
 
 namespace Carsharing;
 
@@ -65,6 +69,11 @@ public static class IServiceCollectionExtensions
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(AssemblyReference.Assembly));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehavior<,>));
+        {
+            services.AddScoped(typeof(IPipelineBehavior<BookCarCommand, Result>), typeof(BookCarValidationBehavior));
+            services.AddScoped(typeof(IPipelineBehavior<CreateTariffCommand, Result>), typeof(CreateTariffValidationBehavior));
+        }
         services.AddValidatorsFromAssembly(AssemblyReference.Assembly, includeInternalTypes: true);
 
         return services;

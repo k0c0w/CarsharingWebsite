@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import IndexAbout from "../Components/Index/IndexAbout";
 import IndexChat from "../Components/Index/IndexChat";
 import IndexTariffs from "../Components/Index/IndexTariffs";
-import { GreetingSection} from "../Components/Sections"
-import {DocumentTitle} from "../DocumentTitle"
+import { GreetingSection } from "../Components/Sections"
+import { DocumentTitle } from "../DocumentTitle"
 import  API  from "../httpclient/axios_client";
 import "../css/common.css";
 
@@ -17,17 +17,17 @@ function scrollTo({ref, hash}) {
 }
 
 
-export default function Index({user}) {
+export default function Index() {
     const tariffs = useRef(null);
     const chat = useRef(null);
     const [tariffsData, setTariffsData] = useState([]);
+
     useEffect(() => {
-        async function fetchData() {
+        (async () => {
             const response = await API.tariffs();
             if(response.successed)
                 setTariffsData(response.data);
-        }
-        fetchData();
+        })();
     }, []);
 
     return <>
@@ -40,6 +40,6 @@ export default function Index({user}) {
         </GreetingSection>
         <IndexAbout/>
         <IndexTariffs ref={tariffs} tariffs={tariffsData}/>
-        <IndexChat user={user} ref = {chat}/>
+        <IndexChat ref = {chat}/>
         </>;
 }

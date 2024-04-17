@@ -1,8 +1,7 @@
-﻿using Domain.Entities;
-using Entities.Entities;
+﻿using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Migrations.Chat;
-using Persistence.Chat.ChatEntites.SignalRModels;
 using Persistence.Chat.ChatEntites.SignalRModels.Shared;
 
 namespace Persistence.RepositoryImplementation;
@@ -10,16 +9,21 @@ namespace Persistence.RepositoryImplementation;
 public class OccasionMessageRepository
 {
     private readonly ChatContext _ctx;
+    private readonly ILogger<OccasionMessageRepository> _logger;
 
-    public OccasionMessageRepository(ChatContext context)
+    public OccasionMessageRepository(ChatContext context, ILogger<OccasionMessageRepository> logger)
     {
         _ctx = context;
+        _logger = logger;
     }
 
     public async Task<Guid> AddAsync(OccasionMessage entity)
     {
         _ctx.Add(entity);
         await _ctx.SaveChangesAsync();
+
+        _logger.LogInformation("Saved message {message}", entity.Text);
+
         return entity.Id;
     }
 
@@ -32,7 +36,7 @@ public class OccasionMessageRepository
         if (limit != null)
             messages = messages.Skip(limit.Value);
 
-        return await messages.ToArrayAsync().ConfigureAwait(false);
+        return await messages.ToArrayAsync();
     }
 
     public Task<OccasionMessage?> GetByIdAsync(Guid primaryKey)
@@ -78,5 +82,4 @@ public class OccasionMessageRepository
             })
           .ToArray();
     }
-
 }

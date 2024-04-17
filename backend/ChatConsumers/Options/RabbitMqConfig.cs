@@ -1,4 +1,6 @@
-﻿namespace ChatConsumers.Options;
+﻿using System.Web;
+
+namespace ChatConsumers.Options;
 
 public class RabbitMqConfig
 {
@@ -9,5 +11,5 @@ public class RabbitMqConfig
     public string Hostname { get; set; } = default!;
     public int Port { get; set; }
 
-    public string FullHostname => $"amqp://{Username}:{Password}@{Hostname}:{Port}";
+    public string FullHostname => $"amqp://{HttpUtility.UrlEncode(Username)}:{HttpUtility.UrlEncode(Password)}@{Hostname}:{Port}";
 }

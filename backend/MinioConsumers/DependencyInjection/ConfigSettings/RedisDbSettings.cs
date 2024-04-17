@@ -1,5 +1,5 @@
 ﻿namespace MinioConsumer.DependencyInjection.ConfigSettings;
-public class RedisDbSettings
+public record RedisDbSettings
 {
     public string Host { get; set; }
 

@@ -82,19 +82,12 @@ namespace Carsharing.Helpers.Mappings
                     DriverLicense = src.DriverLicense
                 }));
 
-            CreateMap<EditUserVM, EditUserDto>()
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
-                .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name))
-                .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.Birthdate))
-                .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.Surname));
-
 
             CreateMap<EditUserVm, EditUserDto>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.BirthDay))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
                 .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.DriverLicense));

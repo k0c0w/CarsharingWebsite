@@ -1,18 +1,8 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
-// import Table from '@mui/material/Table';
-// import TableBody from '@mui/material/TableBody';
-// import TableCell from '@mui/material/TableCell';
-// import TableContainer from '@mui/material/TableContainer';
-// import TableHead from '@mui/material/TableHead';
-// import TableRow from '@mui/material/TableRow';
-// import Paper from '@mui/material/Paper';
 import { useTheme, Box } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { tokens } from '../../theme';
-
-
-
 
 
 function CarParkGrid({handleClickInfo, handleSelect, rows}) {
@@ -131,5 +121,3 @@ function CarParkGrid({handleClickInfo, handleSelect, rows}) {
 }
 
 export default CarParkGrid;
-
-

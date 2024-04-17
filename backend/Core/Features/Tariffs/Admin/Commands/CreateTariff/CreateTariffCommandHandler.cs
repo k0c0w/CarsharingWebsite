@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Repository;
 using Entities.Repository;
 using Shared.CQRS;
 using Shared.Results;
@@ -7,11 +8,11 @@ namespace Features.Tariffs.Admin;
 
 public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
 {
-    private readonly ITariffRepository _tariffs;
+    private readonly IUnitOfWork<ITariffRepository> _tariffsUoW;
 
-    public CreateTariffCommandHandler(ITariffRepository tariffs) 
+    public CreateTariffCommandHandler(IUnitOfWork<ITariffRepository> tariffsUoW) 
     {
-        _tariffs = tariffs;
+        _tariffsUoW = tariffsUoW;
     }
 
     public async Task<Result> Handle(CreateTariffCommand command, CancellationToken cancellationToken)
@@ -24,9 +25,13 @@ public class CreateTariffCommandHandler : ICommandHandler<CreateTariffCommand>
             MaxMileage = command.MaxMileage,
             PricePerMinute = command.PriceInRubles ?? 1000,
             IsActive = false,
+            MinAllowedMinutes = command.MinAllowedMinutes,
+            MaxAllowedMinutes = command.MaxAllowedMinutes,
         };
 
-        await _tariffs.AddAsync(newTariff).ConfigureAwait(false);
+        await _tariffsUoW.Unit.AddAsync(newTariff);
+        await _tariffsUoW.SaveChangesAsync();
+
         return Result.SuccessResult;
     }
 }

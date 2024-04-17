@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
             configuration.WithCredentials(
                 builderConfiguration["MinioS3:AccessKey"]!,
                 builderConfiguration["MinioS3:SecretKey"]!);
+            Console.WriteLine(builderConfiguration["MinioS3:Endpoint"]);
         });
 
         services.AddScoped<IS3Service, S3Service>();
@@ -42,6 +43,7 @@ public static class ServiceCollectionExtensions
         {
             var settings = new RedisDbSettings();
             configuration.GetSection(nameof(RedisDbSettings)).Bind(settings);
+
             return ConnectionMultiplexer.Connect(settings.ConnectionUrl);
         });
 

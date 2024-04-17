@@ -13,7 +13,7 @@ const attrs = [
     },
     {
         value: 'Price',
-        label: 'Цена (p.)',
+        label: 'Цена (p./мин)',
         labelHelper: "Ценe"
     },
     {

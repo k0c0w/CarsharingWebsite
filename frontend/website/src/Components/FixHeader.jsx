@@ -9,7 +9,7 @@ function fixHeader() {
     }
 }
 
-export default function FixHeader(){
+export default function WithFixedHeader(){
     useEffect(() => {fixHeader()}, []);
     return <Outlet/>;
 }
