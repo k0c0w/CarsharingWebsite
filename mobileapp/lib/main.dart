@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
+import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/pages/initial.dart';
 import 'package:mobileapp/ui/pages/login.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
+import 'package:mobileapp/ui/pages/payment.dart';
 import 'package:mobileapp/ui/pages/register.dart';
 import 'package:mobileapp/ui/pages/subscriptions.dart';
 import 'package:mobileapp/ui/pages/unathorized_home_page.dart';
@@ -30,11 +32,13 @@ class DriveApp extends StatelessWidget {
       ),
       home: const InitialPageWidget(),
       routes: {
-        DriveRoutes.home : (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.home : (context) => const Scaffold(
+          drawer: const DriveDrawer(),
+        ),
         DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),
         DriveRoutes.profile: (_) => const ProfilePageWidget(),
         DriveRoutes.userSubscriptions: (_) => const SubscriptionsPageWidget(),
-        DriveRoutes.payment: (context) => throw UnimplementedError("Implement page"),
+        DriveRoutes.payment: (_) => const PaymentPageWidget(),
         DriveRoutes.login: (context) => const LoginPageWidget(),
         DriveRoutes.registration: (context) => const RegisterPageWidget(),
       },
