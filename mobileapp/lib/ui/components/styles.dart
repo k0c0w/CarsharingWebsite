@@ -8,10 +8,14 @@ class DriveColors {
   static const lightBlueColor = Color.fromRGBO(16, 181, 220, 1);
   /// #757C7E 100%
   static const darkGreyColor = Color.fromRGBO(117, 124, 126, 1);
+
+  static const lightGreyColor = Color.fromRGBO(153, 154, 154, 1);
+
   /// #191818 100%
   static const blackColor = Color.fromRGBO(25, 25, 24, 1);
 
   static const deepBlueColor = Color.fromRGBO(0, 122, 174, 1);
+  static const darkBlueColor = Color.fromRGBO(5, 59, 74, 1);
   static const brightRedColor = Color.fromRGBO(248, 91, 91, 1);
 }
 

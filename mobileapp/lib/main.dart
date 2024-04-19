@@ -4,6 +4,7 @@ import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/pages/initial.dart';
 import 'package:mobileapp/ui/pages/login.dart';
+import 'package:mobileapp/ui/pages/home/modal_page.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:mobileapp/ui/pages/payment.dart';
 import 'package:mobileapp/ui/pages/register.dart';
@@ -32,9 +33,7 @@ class DriveApp extends StatelessWidget {
       ),
       home: const InitialPageWidget(),
       routes: {
-        DriveRoutes.home : (context) => const Scaffold(
-          drawer: const DriveDrawer(),
-        ),
+        DriveRoutes.home : (_) => const HomePage(),
         DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),
         DriveRoutes.profile: (_) => const ProfilePageWidget(),
         DriveRoutes.userSubscriptions: (_) => const SubscriptionsPageWidget(),
