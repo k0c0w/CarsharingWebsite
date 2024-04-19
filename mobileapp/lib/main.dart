@@ -31,7 +31,7 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: DriveColors.lightBlueColor),
       ),
-      home: const InitialPageWidget(),
+      home: InitialPageWidget(),
       routes: {
         DriveRoutes.home : (_) => const HomePage(),
         DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),

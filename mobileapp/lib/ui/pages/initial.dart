@@ -1,34 +1,52 @@
 import 'dart:async';
-import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
-import 'package:provider/provider.dart';
-import '../../domain/services/auth_service.dart';
 
-class _ViewModel {
-  final _authService = AuthService();
-  BuildContext context;
+enum _ViewCubitState {
+  authorized,
+  notAuthorized,
+  undefined,
+}
 
-  _ViewModel(this.context){
-    _resolveActions();
+class _ViewCubit extends Cubit<_ViewCubitState> {
+  final AuthBloc authBloc;
+  late final StreamSubscription<AuthState> authBlocSubscription;
+
+  _ViewCubit(this.authBloc) : super(_ViewCubitState.undefined) {
+    _onState(authBloc.state);
+    authBlocSubscription = authBloc.stream.listen(_onState);
+
+    authBloc.add(AuthCheckStatusEvent());
   }
 
-  Future<void> _resolveActions() async {
-    final isAuthorizedUser = await _authService.checkAuth();
-    final route = isAuthorizedUser ? DriveRoutes.home : DriveRoutes.unathorizedHome;
+  void _onState(AuthState state) {
+    if (state is AuthAuthorizedState) {
+      emit(_ViewCubitState.authorized);
+    } else if (state is AuthUnauthorizedState) {
+      emit(_ViewCubitState.notAuthorized);
+    }
+  }
 
-    Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
+  @override
+  Future<void> close() {
+    authBlocSubscription.cancel();
+    return super.close();
   }
 }
 
 class InitialPageWidget extends StatelessWidget {
-  const InitialPageWidget({super.key});
+  final AuthBloc _authBloc = AuthBloc(AuthCheckStatusInProgressState());
+
+  InitialPageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (context) => _ViewModel(context),
+    return BlocProvider<_ViewCubit>(
+      create: (context) => _ViewCubit(_authBloc),
       lazy: false,
       child: const _View(),
     );
@@ -38,13 +56,21 @@ class InitialPageWidget extends StatelessWidget {
 class _View extends StatelessWidget {
   const _View();
 
+  void _onCubitStateChange(BuildContext context, _ViewCubitState state) {
+    final route = state == _ViewCubitState.authorized ? DriveRoutes.home : DriveRoutes.unathorizedHome;
+    Navigator.of(context).pushReplacementNamed(route);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: CircularProgressIndicator(strokeCap: StrokeCap.square,),
+    return BlocListener<_ViewCubit, _ViewCubitState>(
+      listenWhen: (_, current) => current != _ViewCubitState.undefined,
+      listener: _onCubitStateChange,
+      child: const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(strokeCap: StrokeCap.square,),
+        ),
       ),
     );
   }
-
 }
