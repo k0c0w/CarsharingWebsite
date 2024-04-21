@@ -32,51 +32,84 @@ class DriveHomePageAppBar extends AppBar {
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
-      title:_Menu(openDrawer: openDrawer,),
+      title:Menu(openDrawer: openDrawer,),
   );
 }
 
-class _Menu extends StatelessWidget {
+class Menu extends StatefulWidget {
   final void Function() openDrawer;
-  _Menu({required this.openDrawer});
+  Menu({required this.openDrawer});
 
-  final List<DropdownMenuItem> dropdownMenu = [DropdownMenuItem(child:Text("TRAVEL"), value: 0,)];
+  @override
+  _Menu createState() => _Menu();
+
+}
+
+class _Menu extends State<Menu> {
+  var selectedDropDownItemValue = 0;
+
+  final List<DropdownMenuItem> dropdownMenu = [
+    DropdownMenuItem(child:Text("TRAVEL", textAlign: TextAlign.center,), value: 0,),
+    DropdownMenuItem(child:Text("ITEM 1", textAlign: TextAlign.center,), value: 1,)
+  ];
+
+  onChange (value) =>
+    setState((){
+      selectedDropDownItemValue = value;
+    });
 
   @override
   Widget build(BuildContext context) {
     return ButtonBar(
       alignment: MainAxisAlignment.spaceBetween,
       children: [
-        // open drawer button
         SizedBox(
           width: 48,
           height: 48,
-          child: ElevatedButton(onPressed: openDrawer, child: Icon(Icons.abc)),
+          child: RawMaterialButton(
+            onPressed: widget.openDrawer,
+            elevation: 2.0,
+            fillColor: Colors.white,
+            padding: const EdgeInsets.all(10.0),
+            shape: const CircleBorder(),
+            child: const Icon(Icons.menu, size: 24.0, color: DriveColors.darkBlueColor,),
+          ),
         ),
 
         // select tariff
         Container(
-          color: Colors.white,
+          decoration:  BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.white,),
           width: 150,
+          padding: const EdgeInsets.all(10.0),
           height: 48,
           child: DropdownButtonHideUnderline(
-            child: DropdownButton(
-              iconSize: 0.0,
-              items: dropdownMenu,
-              value: 0,
-              onChanged: (value) {
-              },
-              alignment: Alignment.centerRight,
-            ),
+            child: Center(
+              child: DropdownButton(
+                iconSize: 0.0,
+                isExpanded: true, // не знаю как сделать посередине
+                items: dropdownMenu,
+                value: selectedDropDownItemValue,
+                borderRadius: BorderRadius.circular(10),
+                onChanged: onChange,
+                alignment: AlignmentDirectional.center,
+            ),)
           )
         ),
 
-        // open chat
         SizedBox(
           width: 48,
           height: 48,
-          child: ElevatedButton(onPressed: () {}, child: const Icon(Icons.chat_bubble_outline)),
-        ),
+          child: RawMaterialButton(
+            onPressed: () {},
+            elevation: 2.0,
+            fillColor: Colors.white,
+            padding: const EdgeInsets.all(10.0),
+            shape: const CircleBorder(),
+            child: const Icon(Icons.chat_bubble_outline_outlined, size: 24.0, color: DriveColors.darkBlueColor,),
+          ),
+        )
       ],
     );
   }
