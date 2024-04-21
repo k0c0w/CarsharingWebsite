@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/domain/api_clients/api_client_exceptions.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
+import 'package:mobileapp/domain/providers/session_data_provider.dart';
 
 import '../../api_clients/auth_client.dart';
-import '../../data_providers/session_data_provider.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _sessionDataProvider = SessionDataProvider();
@@ -79,7 +79,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     //todo : check if token is outdated
     final isAuth = token != null;
 
-    final newState = isAuth ? AuthAuthorizedState() : AuthUnauthorizedState();
+    final newState = true ? AuthAuthorizedState() : AuthUnauthorizedState();
     emit(newState);
   }
 }

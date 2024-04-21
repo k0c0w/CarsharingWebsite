@@ -82,7 +82,7 @@ class _RentCarDescription extends StatelessWidget {
           ],
         ),
         Container(
-          margin: EdgeInsets.only(top: 20, bottom: 20),
+          margin: const EdgeInsets.only(top: 20, bottom: 20),
           child: Text(
             "АКПП, люкс автомобиль на 4 человека. Новый саолн и мультимедиа, детские кресла.",
             style: GoogleFonts.openSans(

@@ -55,7 +55,7 @@ class _View extends StatelessWidget {
     final viewModel = context.read<_ViewModel>();
 
     return Scaffold(
-      appBar: DriveLoginAppBar(title: "ЛОГИН"),
+      appBar: DriveAppBar(title: "ЛОГИН"),
       body: SafeArea(
         minimum: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(

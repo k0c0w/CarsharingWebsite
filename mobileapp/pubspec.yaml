@@ -41,6 +41,9 @@ dependencies:
   google_fonts: ^6.2.1
   #transparent
   transparent_image: ^2.0.1
+  #map
+  yandex_mapkit: ^4.0.2
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:

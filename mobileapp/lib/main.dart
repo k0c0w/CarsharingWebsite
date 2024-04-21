@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
-import 'package:mobileapp/ui/components/drawer.dart';
-import 'package:mobileapp/ui/pages/initial.dart';
+import 'package:mobileapp/ui/pages/home/home_page.dart';
 import 'package:mobileapp/ui/pages/login.dart';
 import 'package:mobileapp/ui/pages/home/modal_page.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
@@ -31,7 +30,7 @@ class DriveApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: DriveColors.lightBlueColor),
       ),
-      home: InitialPageWidget(),
+      home: HomePageWidget(),
       routes: {
         DriveRoutes.home : (_) => const HomePage(),
         DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),
