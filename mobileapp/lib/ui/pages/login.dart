@@ -1,35 +1,103 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
+import 'package:mobileapp/main.dart';
+import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
+import 'package:mobileapp/ui/components/bottom_button.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:provider/provider.dart';
 
-import '../components/bottom_button.dart';
 
-class _ViewModelState {
-  String? email;
-  String? password;
+class _ViewCubitState {
+  final String login;
+  final String password;
+  final bool requestSent;
+  final String error;
 
-
-  _ViewModelState({
-    required this.email,
+  const _ViewCubitState({
     required this.password,
+    required this.requestSent,
+    required this.login,
+    required this.error,
   });
+
+  _ViewCubitState copyWith({
+    String? login,
+    String? password,
+    bool? requestSent,
+    String? error,
+  }) {
+    return _ViewCubitState(
+      login: login ?? this.login,
+      password: password ?? this.password,
+      requestSent: requestSent ?? this.requestSent,
+      error: error ?? this.error,
+    );
+  }
 }
 
-class _ViewModel extends ChangeNotifier {
-  final _state = _ViewModelState(
-      email: "",
-      password: ""
-  );
+class _ViewCubit extends Cubit<_ViewCubitState> {
+  final AuthBloc authBloc;
+  final BuildContext buildContext;
+  late final StreamSubscription<AuthState> authBlocSubscription;
 
-  _ViewModelState get state => _state;
-
-  Future<void> onLoginPressed(String name) async {
-    notifyListeners();
+  _ViewCubit(this.authBloc, this.buildContext)
+      : super(const _ViewCubitState(
+      password: "",
+      requestSent: false,
+      login: "",
+      error: ""
+  )) {
+    _onState(authBloc.state);
+    authBlocSubscription = authBloc.stream.listen(_onState);
   }
 
-  Future<void> tryAuthorize(BuildContext context) async {
-    Navigator.restorablePushNamedAndRemoveUntil(context, DriveRoutes.home, (route) => false);
+  void _navigateToHome() => Navigator.restorablePushNamedAndRemoveUntil(buildContext, DriveRoutes.home, (route) => false);
+
+  void _onState(AuthState state) {
+    final cubitState = this.state;
+    if (state is AuthAuthorizedState) {
+      _navigateToHome();
+    } else if (state is AuthFailureState) {
+      emit(cubitState.copyWith(password: "", requestSent: false, error: state.error));
+    } else if (state is AuthInProgressState) {
+      emit(cubitState.copyWith(requestSent: true));
+    }
+  }
+
+  void changeLogin(String login) {
+    emit(state.copyWith(login: login.trim()));
+  }
+
+  void changePassword(String password) {
+    emit(state.copyWith(password: password.trim()));
+  }
+
+  void onLoginPressed() {
+    final state = this.state;
+
+    if (state.login.isEmpty) {
+      emit(state.copyWith(error: "Введите логин."));
+      return;
+    }
+
+    if (state.password.isEmpty) {
+      emit(state.copyWith(error: "Введите пароль."));
+      return;
+    }
+
+    authBloc.add(AuthLoginEvent(login: state.login, password: state.password));
+  }
+
+  @override
+  Future<void> close() {
+    authBlocSubscription.cancel();
+    return super.close();
   }
 }
 
@@ -38,21 +106,23 @@ class LoginPageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (_) => _ViewModel(),
-        lazy: false,
-        child: const _View(),
+    return BlocProvider<_ViewCubit>(
+      create: (context) => _ViewCubit(getIt<AuthBloc>(), context),
+      child: const _View(),
     );
   }
 }
 
 class _View extends StatelessWidget {
+  static const _emailAllowedSymbols = r"[a-zA-Z0-9.!#$%&'*+\-/=?^_`{|}~\\(),:;<>@\[\]\w]";
 
   const _View();
 
   @override
-  Widget build(BuildContext context){
-    final viewModel = context.read<_ViewModel>();
+  Widget build(BuildContext context) {
+    final cubit = context.read<_ViewCubit>();
+    final loginRequestSent = context.select((_ViewCubit cubit) =>
+    cubit.state.requestSent);
 
     return Scaffold(
       appBar: DriveAppBar(title: "ЛОГИН"),
@@ -62,28 +132,42 @@ class _View extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Spacer(),
-            FormInputSubpage(
-              label: 'Почта',
-              onChanged: (value) {
-                viewModel.state.email = value;
-              },
+            TextFormField(
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(_emailAllowedSymbols)),
+              ],
+              decoration: InputDecoration(
+                labelText: "Почта",
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: DriveColors.lightBlueColor,
+                    )
+                ),
+                disabledBorder: const UnderlineInputBorder(),
+                enabled: !loginRequestSent,
+              ),
+              onChanged: cubit.changeLogin,
             ),
             const SizedBox(height: 20),
-            FormInputSubpage(
-              label: 'Пароль',
+            TextFormField(
               obscureText: true,
-              onChanged: (value) {
-                viewModel.state.password = value;
-              },
+              decoration: InputDecoration(
+                labelText: "Пароль",
+                enabledBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: DriveColors.lightBlueColor,
+                    )
+                ),
+                disabledBorder: const UnderlineInputBorder(),
+                enabled: !loginRequestSent,
+              ),
+              onChanged: cubit.changePassword,
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                viewModel.onLoginPressed('Login');
-              },
-              child: const Text('Войти'),
+            BottomButton(
+              title: "ВОЙТИ",
+              onPressed: loginRequestSent ? null : cubit.onLoginPressed,
             ),
-            const Spacer(),
           ],
         ),
       ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
+import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
+import 'package:mobileapp/main.dart';
 import 'package:provider/provider.dart';
 import '../Components/appbar.dart';
 import '../Components/form_input_subpage.dart';
@@ -163,15 +166,15 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: DriveAppBar(title: "ПРОФИЛЬ"),
-      body: const SafeArea(
+      body: SafeArea(
         minimum: EdgeInsets.symmetric(horizontal: 20),
         child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _BalanceWidget(),
-              _PersonalInformationTableWidget(),
-              _PersonalDataConfirmationLabelWidget(),
-              Spacer(),
+              const _BalanceWidget(),
+              const _PersonalInformationTableWidget(),
+              const _PersonalDataConfirmationLabelWidget(),
+              const Spacer(),
               _AppLogoutButton(),
             ]),
       ),
@@ -188,12 +191,17 @@ class _PersonalDataConfirmationLabelWidget extends StatelessWidget {
 }
 
 class _AppLogoutButton extends StatelessWidget {
-  const _AppLogoutButton();
+  final AuthBloc authBloc = getIt<AuthBloc>();
+  _AppLogoutButton();
   @override
   Widget build(BuildContext context) {
-    return const TextButton(
+    return  TextButton(
       onPressed: null,
-      child: Text("ВЫХОД", style: DriveTextStyles.userInput),
+      child: InkWell(
+        child: Text("ВЫХОД", style: DriveTextStyles.userInput),
+        onTap: () => authBloc.add(AuthLogoutEvent(context)),
+      )
+      
     );
   }
 }
@@ -236,13 +244,15 @@ class _PersonalInformationTableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: Column(
-          children: [
-            _ContactsSectionWidget(),
-            _HumanInfoSectionWidget(),
-            _DocumentSectionWidget(),
-          ]
-      )
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _ContactsSectionWidget(),
+              _HumanInfoSectionWidget(),
+              _DocumentSectionWidget(),
+            ]
+          )
+        )
     );
   }
 }

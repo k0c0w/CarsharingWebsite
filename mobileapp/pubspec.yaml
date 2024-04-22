@@ -44,6 +44,7 @@ dependencies:
   #map
   yandex_mapkit: ^4.0.2
   geolocator: ^9.0.2
+  get_it: ^7.7.0
 
 dev_dependencies:
   flutter_test:

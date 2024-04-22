@@ -7,4 +7,5 @@ class DriveRoutes {
   static const String login = "/login";
   static const String unathorizedHome = "/unauthorized_home";
   static const String support = "/support";
+  static const String appLoader = "/app_loader";
 }

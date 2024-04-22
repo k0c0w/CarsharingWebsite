@@ -1,10 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:mobileapp/domain/entities/location/geopoint.dart';
 import 'package:mobileapp/domain/providers/location_provider.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:mobileapp/ui/components/drawer.dart';
+import 'package:mobileapp/ui/pages/home/modal_page.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 
@@ -76,6 +76,7 @@ class _ViewState extends State<_View> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
         child: Scaffold(
           key: scaffoldKey,
@@ -88,6 +89,8 @@ class _ViewState extends State<_View> {
                 child: YandexMap(
                   onMapCreated: (controller) {
                     mapControllerCompleter.complete(controller);
+                    //todo delete
+                    showModalBottomSheet(context: context, builder: HomePageRentModalWidget().build);
                   },
                 ),
               )
