@@ -3,14 +3,13 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
-import 'package:mobileapp/domain/bloc/pages/profile_page/events.dart';
-import 'package:mobileapp/domain/bloc/pages/profile_page/map_models.dart';
-import 'package:mobileapp/domain/bloc/pages/profile_page/states.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
+import 'package:mobileapp/bloc/pages/profile_page/events.dart';
+import 'package:mobileapp/bloc/pages/profile_page/map_models.dart';
+import 'package:mobileapp/bloc/pages/profile_page/states.dart';
 import 'package:mobileapp/domain/entities/profile/profile.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
-import 'package:intl/intl.dart';
 
 class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
   final BuildContext buildContext;

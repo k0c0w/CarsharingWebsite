@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/pages/home/home_page.dart';
 import 'package:mobileapp/ui/pages/initial.dart';

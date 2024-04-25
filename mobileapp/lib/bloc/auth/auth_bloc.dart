@@ -1,9 +1,9 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
+import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/domain/api_clients/api_client_exceptions.dart';
 import 'package:mobileapp/domain/api_clients/auth_client.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
-import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
