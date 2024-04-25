@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
@@ -6,7 +5,7 @@ import 'package:mobileapp/ui/components/bottom_button.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class _RentTitle extends StatelessWidget {
-  const _RentTitle({super.key});
+  const _RentTitle();
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class _RentTitle extends StatelessWidget {
 }
 
 class _RentCarDescriptionCarName extends StatelessWidget {
-  _RentCarDescriptionCarName({super.key});
+  _RentCarDescriptionCarName();
 
   final TextStyle _style = GoogleFonts.openSans(
     textStyle: const TextStyle(
@@ -51,7 +50,7 @@ class _RentCarDescriptionCarName extends StatelessWidget {
 }
 
 class _RentCarDescriptionImage extends StatelessWidget {
-  const _RentCarDescriptionImage({super.key});
+  const _RentCarDescriptionImage();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +66,7 @@ class _RentCarDescriptionImage extends StatelessWidget {
 }
 
 class _RentCarDescription extends StatelessWidget {
-  const _RentCarDescription({super.key});
+  const _RentCarDescription();
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +102,7 @@ class _RentCarDescription extends StatelessWidget {
 }
 
 class _RentDateForm extends StatelessWidget {
-  const _RentDateForm({super.key});
+  const _RentDateForm();
 
   Widget _createElevatedButton(void Function() function, Color background, Size size, String text) {
     return ElevatedButton(
@@ -170,7 +169,7 @@ class HomePageRentModalWidget extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
+      child: const Column(
         children: [
           _RentTitle(),
           _RentCarDescription(),
@@ -188,7 +187,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ElevatedButton(
-        child: Center(child: Text("Dora"),),
+        child: const Center(child: Text("Dora"),),
         onPressed: () {
           showModalBottomSheet(
             context: context,

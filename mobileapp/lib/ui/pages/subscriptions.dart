@@ -1,9 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/domain/entities/car.dart';
+import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:provider/provider.dart';
-import '../Components/appbar.dart';
 
 
 enum _SelectedPage {
@@ -82,7 +81,7 @@ class _SubscriptionToggleButtons extends StatelessWidget {
 }
 
 class _CarList extends StatelessWidget {
-  const _CarList({super.key});
+  const _CarList();
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +112,7 @@ class _HistoryList extends StatelessWidget {
 }
 
 class _SubscriptionList extends StatelessWidget {
-  const _SubscriptionList({super.key});
+  const _SubscriptionList();
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +182,7 @@ class _HistoryCard extends _CarCardBase {
 }
 
 class _SubscriptionCard extends _CarCardBase {
-  const _SubscriptionCard({super.key, required super.name, required super.description});
+  const _SubscriptionCard({required super.name, required super.description});
 
   @override
   Widget rightCardWidget() => _SubscriptionCardButtons();
@@ -203,7 +202,7 @@ class _SubscriptionCardButtons extends StatelessWidget {
           ),
           TextButton(
             style: const ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.black)),
-            child:  ImageIcon(AssetImage("./assets/trooba.png")),
+            child:  const ImageIcon(AssetImage("./assets/trooba.png")),
             onPressed: () {
               /* ... */
             },

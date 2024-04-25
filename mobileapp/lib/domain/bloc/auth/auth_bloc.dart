@@ -1,15 +1,10 @@
-
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/domain/api_clients/api_client_exceptions.dart';
 import 'package:mobileapp/domain/api_clients/auth_client.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
-import 'package:mobileapp/ui/Components/styles.dart';
-import 'package:mobileapp/ui/pages/pages_list.dart';
-
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _sessionDataProvider = SessionDataProvider();
@@ -71,10 +66,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try{
       await _sessionDataProvider.deleteJwtToken();
       emit(AuthUnauthorizedState());
-
-      //todo: add consumer on material app to handle this
-      Navigator.restorablePushNamedAndRemoveUntil(event.buildContext, DriveRoutes.appLoader,
-              (route) => false);
     }
     catch (e) {
       emit(AuthFailureState(error: "Произшла ошибка при выходе. Сессия не была удалена!"));
@@ -82,7 +73,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onStatusCheck(event, emit) async {
-    await _sessionDataProvider.deleteJwtToken();
     final token = await _sessionDataProvider.getJwtToken();
     //todo : check if token is outdated
     final isAuth = token != null;

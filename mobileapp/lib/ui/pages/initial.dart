@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/domain/bloc/auth/auth_bloc_states.dart';
+import 'package:mobileapp/ui/components/center_circular_progress_indicator.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 
 enum _ViewCubitState {
@@ -67,9 +68,7 @@ class _View extends StatelessWidget {
       listenWhen: (_, current) => current != _ViewCubitState.undefined,
       listener: _onCubitStateChange,
       child: const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(strokeCap: StrokeCap.square,),
-        ),
+        body: CenterCircularProgressIndicator()
       ),
     );
   }

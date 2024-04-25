@@ -7,7 +7,6 @@ import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/pages/home/modal_page.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
-
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
 

@@ -10,8 +10,6 @@ import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
-import 'package:provider/provider.dart';
-
 
 class _ViewCubitState {
   final String login;
@@ -178,7 +176,7 @@ class _View extends StatelessWidget {
 class CreateAccountButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const CreateAccountButton({Key? key, required this.onPressed}) : super(key: key);
+  const CreateAccountButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -195,11 +193,11 @@ class FormInputSubpage extends StatelessWidget {
   final ValueChanged<String> onChanged;
 
   const FormInputSubpage({
-    Key? key,
+    super.key,
     required this.label,
     this.obscureText = false,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -1,12 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
+import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
-
-import '../Components/styles.dart';
-import '../components/card_form.dart';
+import 'package:mobileapp/ui/components/card_form.dart';
 
 
 class PaymentPageWidget extends StatelessWidget {
@@ -98,7 +96,7 @@ class _MainViewWidget extends StatelessWidget {
         enabled: isEnabled,
       ),
       const _MainViewErrorLabel(),
-      BottomButton(title: "ОПЛАТИТЬ"),
+      const BottomButton(title: "ОПЛАТИТЬ"),
     ],
     );
   }

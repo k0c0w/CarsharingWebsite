@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
-
 abstract class AuthEvent {}
 
 class AuthCheckStatusEvent implements AuthEvent {}
 
 
 class AuthLogoutEvent implements AuthEvent {
-  BuildContext buildContext;
-  AuthLogoutEvent(this.buildContext);
+  AuthLogoutEvent();
 }
 
 class AuthLoginEvent implements AuthEvent {

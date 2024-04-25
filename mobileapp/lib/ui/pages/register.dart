@@ -138,14 +138,14 @@ class _View extends StatelessWidget {
             if (viewModel.state.errorText != null)
               Text(
                 viewModel.state.errorText!,
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 viewModel.onRegisterPressed();
               },
-              child: Text('Создать'),
+              child: const Text('Создать'),
             ),
             const Spacer(),
           ],
