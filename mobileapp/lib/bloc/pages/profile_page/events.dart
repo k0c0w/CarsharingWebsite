@@ -11,5 +11,5 @@ sealed class ProfilePageBlocEvent with _$ProfilePageBlocEvent {
   const factory ProfilePageBlocEvent.ageChanged(DateTime birthDate) = ProfilePageBirthdateChangedEvent;
   const factory ProfilePageBlocEvent.emailChanged(String email) = ProfilePageEmailChangedEvent;
   const factory ProfilePageBlocEvent.passportChanged(String passport) = ProfilePagePassportChangedEvent;
-  const factory ProfilePageBlocEvent.driverLicenseChanged(String passport) = ProfilePageDriverLicenseChangedEvent;
+  const factory ProfilePageBlocEvent.driverLicenseChanged(String license) = ProfilePageDriverLicenseChangedEvent;
 }

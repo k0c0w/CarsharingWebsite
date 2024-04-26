@@ -20,27 +20,27 @@ mixin _$ProfilePageBlocStateLoadedMapModelProperty {
   String get error => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  _$ProfilePageBlocStateLoadedMapModelPropertyCopyWith<
-          _ProfilePageBlocStateLoadedMapModelProperty>
+  $ProfilePageBlocStateLoadedMapModelPropertyCopyWith<
+          ProfilePageBlocStateLoadedMapModelProperty>
       get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
-  factory _$ProfilePageBlocStateLoadedMapModelPropertyCopyWith(
-          _ProfilePageBlocStateLoadedMapModelProperty value,
-          $Res Function(_ProfilePageBlocStateLoadedMapModelProperty) then) =
-      __$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
-          _ProfilePageBlocStateLoadedMapModelProperty>;
+abstract class $ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
+  factory $ProfilePageBlocStateLoadedMapModelPropertyCopyWith(
+          ProfilePageBlocStateLoadedMapModelProperty value,
+          $Res Function(ProfilePageBlocStateLoadedMapModelProperty) then) =
+      _$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
+          ProfilePageBlocStateLoadedMapModelProperty>;
   @useResult
   $Res call({String text, String error});
 }
 
 /// @nodoc
-class __$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
-        $Val extends _ProfilePageBlocStateLoadedMapModelProperty>
-    implements _$ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
-  __$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl(
+class _$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
+        $Val extends ProfilePageBlocStateLoadedMapModelProperty>
+    implements $ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
+  _$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl(
       this._value, this._then);
 
   // ignore: unused_field
@@ -68,27 +68,26 @@ class __$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<$Res>
-    implements _$ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
-  factory _$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith(
-          _$_ProfilePageBlocStateLoadedMapModelPropertyImpl value,
-          $Res Function(_$_ProfilePageBlocStateLoadedMapModelPropertyImpl)
+abstract class _$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<$Res>
+    implements $ProfilePageBlocStateLoadedMapModelPropertyCopyWith<$Res> {
+  factory _$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith(
+          _$ProfilePageBlocStateLoadedMapModelPropertyImpl value,
+          $Res Function(_$ProfilePageBlocStateLoadedMapModelPropertyImpl)
               then) =
-      __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>;
+      __$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String text, String error});
 }
 
 /// @nodoc
-class __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>
-    extends __$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
-        _$_ProfilePageBlocStateLoadedMapModelPropertyImpl>
-    implements
-        _$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<$Res> {
-  __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl(
-      _$_ProfilePageBlocStateLoadedMapModelPropertyImpl _value,
-      $Res Function(_$_ProfilePageBlocStateLoadedMapModelPropertyImpl) _then)
+class __$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>
+    extends _$ProfilePageBlocStateLoadedMapModelPropertyCopyWithImpl<$Res,
+        _$ProfilePageBlocStateLoadedMapModelPropertyImpl>
+    implements _$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<$Res> {
+  __$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl(
+      _$ProfilePageBlocStateLoadedMapModelPropertyImpl _value,
+      $Res Function(_$ProfilePageBlocStateLoadedMapModelPropertyImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -97,7 +96,7 @@ class __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>
     Object? text = null,
     Object? error = null,
   }) {
-    return _then(_$_ProfilePageBlocStateLoadedMapModelPropertyImpl(
+    return _then(_$ProfilePageBlocStateLoadedMapModelPropertyImpl(
       text: null == text
           ? _value.text
           : text // ignore: cast_nullable_to_non_nullable
@@ -112,26 +111,27 @@ class __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ProfilePageBlocStateLoadedMapModelPropertyImpl
-    implements __ProfilePageBlocStateLoadedMapModelProperty {
-  const _$_ProfilePageBlocStateLoadedMapModelPropertyImpl(
-      {required this.text, required this.error});
+class _$ProfilePageBlocStateLoadedMapModelPropertyImpl
+    implements _ProfilePageBlocStateLoadedMapModelProperty {
+  const _$ProfilePageBlocStateLoadedMapModelPropertyImpl(
+      {required this.text, this.error = ""});
 
   @override
   final String text;
   @override
+  @JsonKey()
   final String error;
 
   @override
   String toString() {
-    return '_ProfilePageBlocStateLoadedMapModelProperty(text: $text, error: $error)';
+    return 'ProfilePageBlocStateLoadedMapModelProperty(text: $text, error: $error)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ProfilePageBlocStateLoadedMapModelPropertyImpl &&
+            other is _$ProfilePageBlocStateLoadedMapModelPropertyImpl &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.error, error) || other.error == error));
   }
@@ -142,19 +142,19 @@ class _$_ProfilePageBlocStateLoadedMapModelPropertyImpl
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<
-          _$_ProfilePageBlocStateLoadedMapModelPropertyImpl>
+  _$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<
+          _$ProfilePageBlocStateLoadedMapModelPropertyImpl>
       get copyWith =>
-          __$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<
-                  _$_ProfilePageBlocStateLoadedMapModelPropertyImpl>(
+          __$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWithImpl<
+                  _$ProfilePageBlocStateLoadedMapModelPropertyImpl>(
               this, _$identity);
 }
 
-abstract class __ProfilePageBlocStateLoadedMapModelProperty
-    implements _ProfilePageBlocStateLoadedMapModelProperty {
-  const factory __ProfilePageBlocStateLoadedMapModelProperty(
-          {required final String text, required final String error}) =
-      _$_ProfilePageBlocStateLoadedMapModelPropertyImpl;
+abstract class _ProfilePageBlocStateLoadedMapModelProperty
+    implements ProfilePageBlocStateLoadedMapModelProperty {
+  const factory _ProfilePageBlocStateLoadedMapModelProperty(
+      {required final String text,
+      final String error}) = _$ProfilePageBlocStateLoadedMapModelPropertyImpl;
 
   @override
   String get text;
@@ -162,118 +162,7 @@ abstract class __ProfilePageBlocStateLoadedMapModelProperty
   String get error;
   @override
   @JsonKey(ignore: true)
-  _$$_ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<
-          _$_ProfilePageBlocStateLoadedMapModelPropertyImpl>
+  _$$ProfilePageBlocStateLoadedMapModelPropertyImplCopyWith<
+          _$ProfilePageBlocStateLoadedMapModelPropertyImpl>
       get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-mixin _$ProfilePageBlocStateLoadedMapModel {
-  _ProfilePageBlocStateLoadedMapModelProperty get name =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get secondName =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get age =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get email =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get passport =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get driverLicense =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get balance =>
-      throw _privateConstructorUsedError;
-  _ProfilePageBlocStateLoadedMapModelProperty get accountStatus =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-
-class _$ProfilePageBlocStateLoadedMapModelImpl
-    implements _ProfilePageBlocStateLoadedMapModel {
-  const _$ProfilePageBlocStateLoadedMapModelImpl(
-      {required this.name,
-      required this.secondName,
-      required this.age,
-      required this.email,
-      required this.passport,
-      required this.driverLicense,
-      required this.balance,
-      required this.accountStatus});
-
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty name;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty secondName;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty age;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty email;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty passport;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty driverLicense;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty balance;
-  @override
-  final _ProfilePageBlocStateLoadedMapModelProperty accountStatus;
-
-  @override
-  String toString() {
-    return 'ProfilePageBlocStateLoadedMapModel(name: $name, secondName: $secondName, age: $age, email: $email, passport: $passport, driverLicense: $driverLicense, balance: $balance, accountStatus: $accountStatus)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ProfilePageBlocStateLoadedMapModelImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.secondName, secondName) ||
-                other.secondName == secondName) &&
-            (identical(other.age, age) || other.age == age) &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.passport, passport) ||
-                other.passport == passport) &&
-            (identical(other.driverLicense, driverLicense) ||
-                other.driverLicense == driverLicense) &&
-            (identical(other.balance, balance) || other.balance == balance) &&
-            (identical(other.accountStatus, accountStatus) ||
-                other.accountStatus == accountStatus));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, name, secondName, age, email,
-      passport, driverLicense, balance, accountStatus);
-}
-
-abstract class _ProfilePageBlocStateLoadedMapModel
-    implements ProfilePageBlocStateLoadedMapModel {
-  const factory _ProfilePageBlocStateLoadedMapModel(
-      {required final _ProfilePageBlocStateLoadedMapModelProperty name,
-      required final _ProfilePageBlocStateLoadedMapModelProperty secondName,
-      required final _ProfilePageBlocStateLoadedMapModelProperty age,
-      required final _ProfilePageBlocStateLoadedMapModelProperty email,
-      required final _ProfilePageBlocStateLoadedMapModelProperty passport,
-      required final _ProfilePageBlocStateLoadedMapModelProperty driverLicense,
-      required final _ProfilePageBlocStateLoadedMapModelProperty balance,
-      required final _ProfilePageBlocStateLoadedMapModelProperty
-          accountStatus}) = _$ProfilePageBlocStateLoadedMapModelImpl;
-
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get name;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get secondName;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get age;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get email;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get passport;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get driverLicense;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get balance;
-  @override
-  _ProfilePageBlocStateLoadedMapModelProperty get accountStatus;
 }

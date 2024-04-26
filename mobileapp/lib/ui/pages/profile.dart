@@ -46,7 +46,6 @@ class _View extends StatelessWidget {
           const _BalanceWidget(),
           const _PersonalInformationTableWidget(),
           const _PersonalDataConfirmationLabelWidget(),
-          const Spacer(),
           _AppLogoutButton(),
         ]
     );
@@ -121,8 +120,7 @@ class _PersonalInformationTableWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: SingleChildScrollView(
+    return Flexible(
             child: Column(
                 children: [
                   _PhoneInput(),
@@ -140,7 +138,6 @@ class _PersonalInformationTableWidget extends StatelessWidget {
                   _LicenseInput(),
                 ]
             )
-        )
     );
   }
 }
@@ -186,6 +183,7 @@ class _EmailInput extends StatelessWidget {
           return InformationFieldWithLabel(
               name: eMailLabel,
               value: model.text,
+              error: model.error,
               onTap: () =>
                   Navigator.of(ctx).push(MaterialPageRoute(builder:
                       (routeContext) => DriveEmailInputSubpage(
@@ -225,6 +223,7 @@ class _NameInput extends StatelessWidget {
           return InformationFieldWithLabel(
             name: nameLabel,
             value: model.text,
+            error: model.error,
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(builder:
                   (ctx) => DriveTextInputSubpage(
@@ -262,6 +261,7 @@ class _SecondNameInput extends StatelessWidget {
         return InformationFieldWithLabel(
             name: secondNameLabel,
             value: model.text,
+            error: model.error,
             onTap: () =>
                 Navigator.of(context).push(MaterialPageRoute(builder:
                     (ctx) => DriveTextInputSubpage(
@@ -297,6 +297,7 @@ class _BirthDateInput extends StatelessWidget {
           return InformationFieldWithLabel(
             name: birthDateLabel,
             value: model.text,
+            error: model.error,
             onTap: () =>
                 Navigator.of(context).push(MaterialPageRoute(builder:
                     (ctx) =>
@@ -336,6 +337,7 @@ class _PassportInput extends StatelessWidget {
           return InformationFieldWithLabel(
             name: passportLabel,
             value: model.text,
+            error: model.error,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(builder:
                 (ctx) => DriveTextInputSubpage(
               hintText: passportLabel,
@@ -370,6 +372,7 @@ class _LicenseInput extends StatelessWidget {
           return InformationFieldWithLabel(
             name: driverLicenceLabel,
             value: model.text,
+            error: model.error,
             onTap: () => Navigator.of(context).push(MaterialPageRoute(
                 builder: (ctx) => DriveEmailInputSubpage(
                   hintText: driverLicenceLabel,

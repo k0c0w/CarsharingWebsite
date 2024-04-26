@@ -25,7 +25,7 @@ mixin _$ProfilePageBlocEvent {
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -37,7 +37,7 @@ mixin _$ProfilePageBlocEvent {
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -49,7 +49,7 @@ mixin _$ProfilePageBlocEvent {
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -165,7 +165,7 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return load();
   }
@@ -180,7 +180,7 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return load?.call();
   }
@@ -195,7 +195,7 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (load != null) {
@@ -312,7 +312,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return exitPressed();
   }
@@ -327,7 +327,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return exitPressed?.call();
   }
@@ -342,7 +342,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (exitPressed != null) {
@@ -488,7 +488,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return nameChanged(name);
   }
@@ -503,7 +503,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return nameChanged?.call(name);
   }
@@ -518,7 +518,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (nameChanged != null) {
@@ -673,7 +673,7 @@ class _$ProfilePageSecondNameChangedEventImpl
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return secondNameChanged(secondName);
   }
@@ -688,7 +688,7 @@ class _$ProfilePageSecondNameChangedEventImpl
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return secondNameChanged?.call(secondName);
   }
@@ -703,7 +703,7 @@ class _$ProfilePageSecondNameChangedEventImpl
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (secondNameChanged != null) {
@@ -860,7 +860,7 @@ class _$ProfilePageBirthdateChangedEventImpl
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return ageChanged(birthDate);
   }
@@ -875,7 +875,7 @@ class _$ProfilePageBirthdateChangedEventImpl
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return ageChanged?.call(birthDate);
   }
@@ -890,7 +890,7 @@ class _$ProfilePageBirthdateChangedEventImpl
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (ageChanged != null) {
@@ -1046,7 +1046,7 @@ class _$ProfilePageEmailChangedEventImpl
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return emailChanged(email);
   }
@@ -1061,7 +1061,7 @@ class _$ProfilePageEmailChangedEventImpl
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return emailChanged?.call(email);
   }
@@ -1076,7 +1076,7 @@ class _$ProfilePageEmailChangedEventImpl
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (emailChanged != null) {
@@ -1232,7 +1232,7 @@ class _$ProfilePagePassportChangedEventImpl
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
     return passportChanged(passport);
   }
@@ -1247,7 +1247,7 @@ class _$ProfilePagePassportChangedEventImpl
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
     return passportChanged?.call(passport);
   }
@@ -1262,7 +1262,7 @@ class _$ProfilePagePassportChangedEventImpl
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (passportChanged != null) {
@@ -1347,7 +1347,7 @@ abstract class _$$ProfilePageDriverLicenseChangedEventImplCopyWith<$Res> {
           $Res Function(_$ProfilePageDriverLicenseChangedEventImpl) then) =
       __$$ProfilePageDriverLicenseChangedEventImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String passport});
+  $Res call({String license});
 }
 
 /// @nodoc
@@ -1363,12 +1363,12 @@ class __$$ProfilePageDriverLicenseChangedEventImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? passport = null,
+    Object? license = null,
   }) {
     return _then(_$ProfilePageDriverLicenseChangedEventImpl(
-      null == passport
-          ? _value.passport
-          : passport // ignore: cast_nullable_to_non_nullable
+      null == license
+          ? _value.license
+          : license // ignore: cast_nullable_to_non_nullable
               as String,
     ));
   }
@@ -1378,14 +1378,14 @@ class __$$ProfilePageDriverLicenseChangedEventImplCopyWithImpl<$Res>
 
 class _$ProfilePageDriverLicenseChangedEventImpl
     implements ProfilePageDriverLicenseChangedEvent {
-  const _$ProfilePageDriverLicenseChangedEventImpl(this.passport);
+  const _$ProfilePageDriverLicenseChangedEventImpl(this.license);
 
   @override
-  final String passport;
+  final String license;
 
   @override
   String toString() {
-    return 'ProfilePageBlocEvent.driverLicenseChanged(passport: $passport)';
+    return 'ProfilePageBlocEvent.driverLicenseChanged(license: $license)';
   }
 
   @override
@@ -1393,12 +1393,11 @@ class _$ProfilePageDriverLicenseChangedEventImpl
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ProfilePageDriverLicenseChangedEventImpl &&
-            (identical(other.passport, passport) ||
-                other.passport == passport));
+            (identical(other.license, license) || other.license == license));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, passport);
+  int get hashCode => Object.hash(runtimeType, license);
 
   @JsonKey(ignore: true)
   @override
@@ -1418,9 +1417,9 @@ class _$ProfilePageDriverLicenseChangedEventImpl
     required TResult Function(DateTime birthDate) ageChanged,
     required TResult Function(String email) emailChanged,
     required TResult Function(String passport) passportChanged,
-    required TResult Function(String passport) driverLicenseChanged,
+    required TResult Function(String license) driverLicenseChanged,
   }) {
-    return driverLicenseChanged(passport);
+    return driverLicenseChanged(license);
   }
 
   @override
@@ -1433,9 +1432,9 @@ class _$ProfilePageDriverLicenseChangedEventImpl
     TResult? Function(DateTime birthDate)? ageChanged,
     TResult? Function(String email)? emailChanged,
     TResult? Function(String passport)? passportChanged,
-    TResult? Function(String passport)? driverLicenseChanged,
+    TResult? Function(String license)? driverLicenseChanged,
   }) {
-    return driverLicenseChanged?.call(passport);
+    return driverLicenseChanged?.call(license);
   }
 
   @override
@@ -1448,11 +1447,11 @@ class _$ProfilePageDriverLicenseChangedEventImpl
     TResult Function(DateTime birthDate)? ageChanged,
     TResult Function(String email)? emailChanged,
     TResult Function(String passport)? passportChanged,
-    TResult Function(String passport)? driverLicenseChanged,
+    TResult Function(String license)? driverLicenseChanged,
     required TResult orElse(),
   }) {
     if (driverLicenseChanged != null) {
-      return driverLicenseChanged(passport);
+      return driverLicenseChanged(license);
     }
     return orElse();
   }
@@ -1517,10 +1516,10 @@ class _$ProfilePageDriverLicenseChangedEventImpl
 
 abstract class ProfilePageDriverLicenseChangedEvent
     implements ProfilePageBlocEvent {
-  const factory ProfilePageDriverLicenseChangedEvent(final String passport) =
+  const factory ProfilePageDriverLicenseChangedEvent(final String license) =
       _$ProfilePageDriverLicenseChangedEventImpl;
 
-  String get passport;
+  String get license;
   @JsonKey(ignore: true)
   _$$ProfilePageDriverLicenseChangedEventImplCopyWith<
           _$ProfilePageDriverLicenseChangedEventImpl>

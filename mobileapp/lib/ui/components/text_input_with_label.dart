@@ -3,8 +3,8 @@ import 'package:mobileapp/ui/Components/styles.dart';
 
 class InformationFieldWithLabel extends StatelessWidget {
   final String name;
-  final String? value;
-  final bool isError;
+  final String value;
+  final String? error;
   final void Function() onTap;
 
   const InformationFieldWithLabel({
@@ -12,11 +12,22 @@ class InformationFieldWithLabel extends StatelessWidget {
     required this.name,
     required this.onTap,
     required this.value,
-    this.isError = false
+    this.error
   });
 
   @override
   Widget build(BuildContext context) {
+
+    final dataColumn = <Widget>[Text(value, style: DriveTextStyles.userInput)];
+    if (error != null && error!.isNotEmpty) {
+      dataColumn.add(Text(error!,
+        style: const TextStyle(
+            fontSize: 10,
+            color: DriveColors.brightRedColor
+        ),
+      ));
+    }
+
     return InkWell(
       onTap: onTap,
       child: Row(
@@ -27,10 +38,14 @@ class InformationFieldWithLabel extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(value ?? "", style: isError ? DriveTextStyles.errorLabel : DriveTextStyles.userInput),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: dataColumn
+              ),
               const Icon(Icons.arrow_right, color: Colors.black87, opticalSize: 0.2,),
             ],
-          )
+          ),
         ],
       ),
     );

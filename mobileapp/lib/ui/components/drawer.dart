@@ -1,5 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/bloc/pages/drawer/bloc.dart';
+import 'package:mobileapp/bloc/pages/drawer/events.dart';
+import 'package:mobileapp/bloc/pages/drawer/states.dart';
 import 'package:mobileapp/ui/components/styles.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 
@@ -10,6 +13,32 @@ class DriveDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider<DrawerBloc>(
+      create: (_) {
+        final bloc = DrawerBloc();
+        bloc.add(const DrawerBlocEvent.load());
+        return bloc;
+      },
+      lazy: false,
+      child: const _View(),
+    );
+  }
+}
+
+class _View extends StatelessWidget {
+
+  const _View();
+
+  @override
+  Widget build(BuildContext context) {
+    final state = context.select((DrawerBloc bloc) => bloc.state);
+    var fio = "";
+    var confirmedTitle = "";
+    if (state is DrawerBlocLoadedState){
+      fio = state.nameAndSecondName;
+      confirmedTitle = state.accountConfirmedTitle;
+    }
+
     return Drawer(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
       child: Container(
@@ -19,14 +48,14 @@ class DriveDrawer extends StatelessWidget {
           children:
           [
             /// to profile
-            _DrawerLeadItem(fio: "Якупов Артур Булатович",),
+            _DrawerLeadItem(fio: fio,profileConfirmedTitle: confirmedTitle,),
             /// list of other pages
             _DrawerPageList(),
             const Spacer(),
             /// Drive label
             Container(
               alignment: Alignment.bottomLeft,
-              padding: EdgeInsets.only(left: 5, bottom: 5),
+              padding: const EdgeInsets.only(left: 5, bottom: 5),
               child: const Text(
                 "Drive",
                 style: TextStyle(
@@ -119,14 +148,14 @@ class _DrawerListItem extends StatelessWidget {
         ),
       ),
     );
-
   }
 }
 
 class _DrawerLeadItem extends StatelessWidget {
   final String fio;
+  final String profileConfirmedTitle;
 
-  const _DrawerLeadItem({required this.fio});
+  const _DrawerLeadItem({required this.fio, required this.profileConfirmedTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -158,11 +187,11 @@ class _DrawerLeadItem extends StatelessWidget {
                   overflow: TextOverflow.clip,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 7),
+              Padding(
+                padding: const EdgeInsets.only(top: 7),
                 child: Text(
-                  "Аккаунт не подтвержден",
-                  style:  TextStyle(
+                  profileConfirmedTitle,
+                  style: const TextStyle(
                     color: DriveColors.darkGreyColor,
                     fontWeight: FontWeight.w400,
                     fontFamily: 'Open Sans',
