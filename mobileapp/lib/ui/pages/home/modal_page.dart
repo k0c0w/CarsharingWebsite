@@ -1,7 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
+import 'package:mobileapp/bloc/pages/home_page/events.dart';
+import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
+import 'package:mobileapp/ui/components/home_page_date_input.dart';
+import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class _RentTitle extends StatelessWidget {
@@ -101,100 +108,133 @@ class _RentCarDescription extends StatelessWidget {
   }
 }
 
-class _RentDateForm extends StatelessWidget {
-  const _RentDateForm();
+class _RentDateFormState extends State<_RentDateForm> {
+  final _formKey = GlobalKey<FormState>();
+  DateTime? _firstDate;
+  DateTime? _secondDate;
 
-  Widget _createElevatedButton(void Function() function, Color background, Size size, String text) {
-    return ElevatedButton(
-      onPressed: function,
-      style: ElevatedButton.styleFrom(
-        fixedSize: size,
-        alignment: Alignment.center,
-        backgroundColor: background,
-      ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(
-                  overflow: TextOverflow.clip,
-                  color: Colors.white,
-                  letterSpacing: 5,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w500,
-                ),
-            )
-        )
-    );
+  _RentDateFormState();
+
+
+  String? _dateInputValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return  "Поле обязательно";
+    }
+
+    return null;
   }
 
-  void onStartButtonPressed(context) {
-    showDatePicker(context: context, firstDate: DateTime(2014), lastDate: DateTime(2014));
-  }
+  Future<void> _onPressed(BuildContext context) async {
+    final firstDateIsLessThanSecond = _firstDate != null && _secondDate != null
+        && _firstDate!.compareTo(_secondDate!) <= 0;
 
-  void onEndButtonPressed(context) {
-    showDatePicker(context: context, firstDate: DateTime(2014), lastDate: DateTime(2014));
+    if (_formKey.currentState!.validate() && firstDateIsLessThanSecond) {
+      final bloc = context.read<HomePageBloc>();
+      bloc.add(HomePageBlocEvent.tryBook(_firstDate!, _secondDate!));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final buttonSize = Size(size.width * 0.4027, size.height * 0.0675);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _createElevatedButton(
-            () => onStartButtonPressed(context),
-            DriveColors.darkBlueColor,
-            buttonSize,
-            "Начало аренды"
-        ),
-        _createElevatedButton(
-            () => onEndButtonPressed(context),
-            DriveColors.deepBlueColor,
-            buttonSize,
-            "Конец аренды"
-        ),
-      ],
+    final isTryingToRentCar = context.read<HomePageBloc>().state is HomePageBlocRentingState;
+    final isButtonEnabled = !isTryingToRentCar && _firstDate != null && _secondDate != null;
+
+    return Form(
+        key: _formKey,
+        child: Expanded(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                      decoration: const BoxDecoration(
+                        color: DriveColors.darkBlueColor,
+                        border: Border.fromBorderSide(BorderSide.none),
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                      ),
+                      height: buttonSize.height,
+                      width: buttonSize.width,
+                      child: HomePageDateFromInput(
+                        labelText: "Начало аренды",
+                        firstDate: DateTime(2014),
+                        lastDate: DateTime(2034),
+                        initialDate: _firstDate,
+                        validator: _dateInputValidator,
+                        afterDateTimeSet: (date) => setState(() {
+                          _firstDate = date;
+                        }),
+                      )
+                  ),
+                  Container(
+                      decoration: const BoxDecoration(
+                        color: DriveColors.deepBlueColor,
+                        border: Border.fromBorderSide(BorderSide.none),
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                      ),
+                      height: buttonSize.height,
+                      width: buttonSize.width,
+                      child: HomePageDateFromInput(
+                        labelText: "Конец аренды",
+                        firstDate: DateTime(2014),
+                        lastDate: DateTime(2034),
+                        initialDate: _secondDate,
+                        validator: _dateInputValidator,
+                        afterDateTimeSet: (date) => setState(() {
+                          _secondDate = date;
+                        }),
+                      ),
+                  ),
+                ],
+              ),
+              BottomButton(
+                title: "АРЕНДОВАТЬ",
+                onPressed: isButtonEnabled ? () => _onPressed(context) : null,
+              ),
+            ],
+          ),
+        )
     );
   }
 }
 
-class HomePageRentModalWidget extends StatelessWidget {
-  const HomePageRentModalWidget({super.key});
+class _RentDateForm extends StatefulWidget {
+  _RentDateForm();
+
+  @override
+  State<StatefulWidget> createState() => _RentDateFormState();
+}
+
+class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: const Column(
+      child: Column(
         children: [
           _RentTitle(),
           _RentCarDescription(),
           _RentDateForm(),
-          BottomButton(title: "АРЕНДОВАТЬ"),
         ],
       ),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+
+class HomePageRentModalWidget extends StatelessWidget {
+  final HomePageBloc injectableBloc;
+  const HomePageRentModalWidget({super.key, required this.injectableBloc});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ElevatedButton(
-        child: const Center(child: Text("Dora"),),
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            builder: const HomePageRentModalWidget().build,
-          );
-        },
-      ),
+    return Provider(
+      create: (_) => injectableBloc,
+      lazy: false,
+      child: _View(),
     );
   }
 }

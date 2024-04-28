@@ -12,6 +12,7 @@ import 'package:mobileapp/domain/entities/profile/profile.dart';
 import 'package:mobileapp/domain/results.dart';
 import 'package:mobileapp/domain/use_cases/profile_cases.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
+import 'package:mobileapp/utils/date_formatter.dart';
 
 class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
   final BuildContext buildContext;
@@ -93,7 +94,7 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
       }
   }
 
-  static DateFormat formatter = DateFormat("dd.MM.yyyy");
+
   Future<void> _onAgeChanged(ProfilePageBirthdateChangedEvent event, emitter)
   async {
     final birthDateUpdateResult = await UpdateProfileBirthDateUseCase()(event.birthDate);
@@ -105,7 +106,7 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
             model.age.copyWith(error: error),
         Ok(:final value) =>
             model.age.copyWith(
-                text: formatter.format(value), error: ""),
+                text: DateTimeFormat.toStringFormatter.format(value), error: ""),
       };
       emitter(state);
     }

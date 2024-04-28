@@ -2,11 +2,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:mobileapp/domain/entities/location/geopoint.dart';
 
 class LocationProvider {
-  final defaultLocation = const MoscowLocationGeoPoint();
+  final defaultLocation = GeoPoint.moscowLocationGeoPoint;
 
   Future<GeoPoint> getCurrentLocation() {
     return Geolocator.getCurrentPosition().then((value) {
-      return GeoPoint(lat: value.latitude, long: value.longitude);
+      return GeoPoint(value.latitude, value.longitude);
     }).catchError(
           (_) => defaultLocation,
     );

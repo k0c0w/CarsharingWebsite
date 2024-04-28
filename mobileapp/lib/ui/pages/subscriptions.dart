@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobileapp/domain/entities/car.dart';
+import 'package:mobileapp/domain/entities/car/car.dart';
+import 'package:mobileapp/domain/entities/location/geopoint.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:provider/provider.dart';
 
@@ -19,7 +20,7 @@ class _ViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Car> activeCars = [Car(model: "Camry 3.5", brand: "Toyota", licensePlate: "A 720 СУ 160 рус")];
+  List<Car> activeCars = [Car(model: "Camry 3.5", brand: "Toyota", licensePlate: "A 720 СУ 160 рус", id: 1, carModelDescription: 'Ура ура', location: GeoPoint.moscowLocationGeoPoint)];
 }
 
 class SubscriptionsPageWidget extends StatelessWidget {

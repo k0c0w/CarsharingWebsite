@@ -6,6 +6,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
 import 'package:mobileapp/ui/components/styles.dart';
+import 'package:mobileapp/utils/date_formatter.dart';
 
 class DriveDateInputSubpage extends _InputSubpageBase {
   final void Function(DateTime) onSavePressed;
@@ -29,7 +30,7 @@ class DriveDateInputSubpage extends _InputSubpageBase {
       inputName: inputTitle,
       hintText: hintText,
       onSavePressed: onSavePressed,
-      initialDate: initialValue == null ? null : DateFormat("dd.MM.yyyy").tryParse(initialValue!),
+      initialDate: initialValue == null ? null : DateTimeFormat.toStringFormatter.tryParse(initialValue!),
       firstDate: firstDate,
       lastDate: lastDate,
     );
