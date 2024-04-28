@@ -1,11 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
-import 'package:mobileapp/bloc/login/state.dart';
+import 'package:mobileapp/bloc/pages/login/state.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 
 class LoginPageCubit extends Cubit<LoginPageCubitState> {

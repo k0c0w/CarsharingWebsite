@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc.dart';
-import 'package:mobileapp/bloc/login/cubit.dart';
+import 'package:mobileapp/bloc/pages/login/cubit.dart';
 import 'package:mobileapp/main.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/appbar.dart';

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
-import 'package:mobileapp/bloc/initial/cubit.dart';
-import 'package:mobileapp/bloc/initial/state.dart';
+import 'package:mobileapp/bloc/pages/initial/cubit.dart';
+import 'package:mobileapp/bloc/pages/initial/state.dart';
 import 'package:mobileapp/ui/components/center_circular_progress_indicator.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 
