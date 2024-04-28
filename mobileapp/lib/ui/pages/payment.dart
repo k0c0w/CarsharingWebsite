@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobileapp/bloc/payment/bloc.dart';
-import 'package:mobileapp/bloc/payment/events.dart';
-import 'package:mobileapp/bloc/payment/state.dart';
+import 'package:mobileapp/bloc/pages/payment/bloc.dart';
+import 'package:mobileapp/bloc/pages/payment/events.dart';
+import 'package:mobileapp/bloc/pages/payment/state.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';

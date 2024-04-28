@@ -70,7 +70,6 @@ class _TariffListState extends State<_TariffList> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomePageBloc, HomePageBlocState>(
-        buildWhen: (ctx, state) => state is HomePageBlocLoadedState,
         builder: (ctx, st) {
           final bloc = context.read<HomePageBloc>();
           late final int? selectedTariffIndex;

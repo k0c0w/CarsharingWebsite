@@ -111,7 +111,7 @@ class _ViewState extends State<_View> {
                 );
               }
             },
-            buildWhen: (ctx, state) => state is HomePageBlocLoadErrorState
+            buildWhen: (prev, state) => state is HomePageBlocLoadErrorState
               || state is HomePageBlocLoadingState || state is HomePageBlocLoadErrorState,
             builder: (ctx, state) {
               if (state is HomePageBlocLoadErrorState) {

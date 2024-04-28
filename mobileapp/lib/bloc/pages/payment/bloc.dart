@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
-import 'package:mobileapp/bloc/payment/events.dart';
-import 'package:mobileapp/bloc/payment/state.dart';
+import 'package:mobileapp/bloc/pages/payment/events.dart';
+import 'package:mobileapp/bloc/pages/payment/state.dart';
 
 class PaymentPageBloc extends Bloc<PaymentBlocPayEvent, PaymentPageState> {
   PaymentPageBloc(super.initialState) {

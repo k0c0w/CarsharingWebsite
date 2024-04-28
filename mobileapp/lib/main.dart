@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -12,7 +10,7 @@ import 'package:mobileapp/ui/pages/login.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:mobileapp/ui/pages/payment.dart';
 import 'package:mobileapp/ui/pages/register.dart';
-import 'package:mobileapp/ui/pages/subscriptions.dart';
+import 'package:mobileapp/ui/pages/subscriptions/subscription_page.dart';
 import 'package:mobileapp/ui/pages/unathorized_home_page.dart';
 import 'ui/pages/profile.dart';
 
