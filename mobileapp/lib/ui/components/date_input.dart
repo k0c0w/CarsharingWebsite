@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/utils/date_formatter.dart';
 
-class _HomePageDateFromInputState extends State<HomePageDateFromInput> {
+class _DateFromInputState extends State<DateFromInput> {
   final TextEditingController _textEditingController = TextEditingController();
   final DateTime firstDate;
   final DateTime lastDate;
@@ -11,7 +11,7 @@ class _HomePageDateFromInputState extends State<HomePageDateFromInput> {
   final void Function(DateTime)? afterDateSet;
   final String? Function(String?) validator;
 
-  _HomePageDateFromInputState({
+  _DateFromInputState({
     required this.firstDate,
     required this.lastDate,
     required this.labelText,
@@ -37,7 +37,7 @@ class _HomePageDateFromInputState extends State<HomePageDateFromInput> {
     final dateString = DateTimeFormat.toStringFormatter.format(date);
     _textEditingController.text = dateString;
 
-    if (afterDateSet != null && date != null) {
+    if (afterDateSet != null) {
       afterDateSet!(date);
     }
   }
@@ -70,7 +70,7 @@ class _HomePageDateFromInputState extends State<HomePageDateFromInput> {
   }
 }
 
-class HomePageDateFromInput extends StatefulWidget {
+class DateFromInput extends StatefulWidget {
   final String labelText;
   final DateTime firstDate;
   final DateTime lastDate;
@@ -78,7 +78,7 @@ class HomePageDateFromInput extends StatefulWidget {
   final String? Function(String?) validator;
   final void Function(DateTime)? afterDateTimeSet;
 
-  HomePageDateFromInput({
+  const DateFromInput({
     required this.labelText,
     required this.firstDate,
     required this.lastDate,
@@ -89,7 +89,7 @@ class HomePageDateFromInput extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() =>
-      _HomePageDateFromInputState(
+      _DateFromInputState(
           firstDate: firstDate,
           lastDate: lastDate,
           labelText: labelText,

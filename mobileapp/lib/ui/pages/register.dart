@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
 import 'package:provider/provider.dart';
-import 'login.dart';
 
 class _ViewModelState {
   String? email;
@@ -154,3 +153,31 @@ class _View extends StatelessWidget {
     );
   }
 }
+
+
+
+class FormInputSubpage extends StatelessWidget {
+  final String label;
+  final bool obscureText;
+  final ValueChanged<String> onChanged;
+
+  const FormInputSubpage({
+    super.key,
+    required this.label,
+    this.obscureText = false,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+      ),
+      obscureText: obscureText,
+      onChanged: onChanged,
+    );
+  }
+}
+

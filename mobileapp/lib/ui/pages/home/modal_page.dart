@@ -1,13 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
 import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
-import 'package:mobileapp/ui/components/home_page_date_input.dart';
+import 'package:mobileapp/ui/components/date_input.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -102,7 +100,6 @@ class _RentCarDescription extends StatelessWidget {
             ),
           ),
         )
-
       ],
     );
   }
@@ -114,7 +111,6 @@ class _RentDateFormState extends State<_RentDateForm> {
   DateTime? _secondDate;
 
   _RentDateFormState();
-
 
   String? _dateInputValidator(String? value) {
     if (value == null || value.isEmpty) {
@@ -157,7 +153,7 @@ class _RentDateFormState extends State<_RentDateForm> {
                       ),
                       height: buttonSize.height,
                       width: buttonSize.width,
-                      child: HomePageDateFromInput(
+                      child: DateFromInput(
                         labelText: "Начало аренды",
                         firstDate: DateTime(2014),
                         lastDate: DateTime(2034),
@@ -176,7 +172,7 @@ class _RentDateFormState extends State<_RentDateForm> {
                       ),
                       height: buttonSize.height,
                       width: buttonSize.width,
-                      child: HomePageDateFromInput(
+                      child: DateFromInput(
                         labelText: "Конец аренды",
                         firstDate: DateTime(2014),
                         lastDate: DateTime(2034),
@@ -215,8 +211,8 @@ class _View extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 30),
       child: Column(
         children: [
-          _RentTitle(),
-          _RentCarDescription(),
+          const _RentTitle(),
+          const _RentCarDescription(),
           _RentDateForm(),
         ],
       ),

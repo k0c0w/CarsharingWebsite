@@ -78,7 +78,8 @@ class _DrawerPageList extends StatelessWidget {
 
   void Function() createNavigateToRoute(BuildContext context, String route) {
     return () {
-      Navigator.pushNamed(context, route);
+      Navigator.of(context).pop();
+      Navigator.of(context).pushNamed(route);
     };
   }
 

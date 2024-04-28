@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
+import 'package:mobileapp/bloc/pages/home_page/events.dart';
+import 'package:mobileapp/bloc/pages/home_page/state.dart';
+import 'package:mobileapp/domain/entities/tariff/tariff.dart';
 import 'package:mobileapp/ui/components/styles.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -32,85 +37,110 @@ class DriveHomePageAppBar extends AppBar {
       automaticallyImplyLeading: false,
       backgroundColor: Colors.transparent,
       foregroundColor: Colors.white,
-      title:Menu(openDrawer: openDrawer,),
+      title:_Menu(openDrawer: openDrawer,),
   );
 }
 
-class Menu extends StatefulWidget {
+class _Menu extends StatelessWidget {
   final void Function() openDrawer;
-  Menu({required this.openDrawer});
 
-  @override
-  _Menu createState() => _Menu();
-
-}
-
-class _Menu extends State<Menu> {
-  var selectedDropDownItemValue = 0;
-
-  final List<DropdownMenuItem> dropdownMenu = [
-    DropdownMenuItem(child:Text("TRAVEL", textAlign: TextAlign.center,), value: 0,),
-    DropdownMenuItem(child:Text("ITEM 1", textAlign: TextAlign.center,), value: 1,)
-  ];
-
-  onChange (value) =>
-    setState((){
-      selectedDropDownItemValue = value;
-    });
+  const _Menu({required this.openDrawer});
 
   @override
   Widget build(BuildContext context) {
     return ButtonBar(
       alignment: MainAxisAlignment.spaceBetween,
       children: [
-        SizedBox(
-          width: 48,
-          height: 48,
-          child: RawMaterialButton(
-            onPressed: widget.openDrawer,
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(10.0),
-            shape: const CircleBorder(),
-            child: const Icon(Icons.menu, size: 24.0, color: DriveColors.darkBlueColor,),
-          ),
-        ),
-
-        // select tariff
-        Container(
-          decoration:  BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.white,),
-          width: 150,
-          padding: const EdgeInsets.all(10.0),
-          height: 48,
-          child: DropdownButtonHideUnderline(
-            child: Center(
-              child: DropdownButton(
-                iconSize: 0.0,
-                isExpanded: true, // не знаю как сделать посередине
-                items: dropdownMenu,
-                value: selectedDropDownItemValue,
-                borderRadius: BorderRadius.circular(10),
-                onChanged: onChange,
-                alignment: AlignmentDirectional.center,
-            ),)
-          )
-        ),
-
-        SizedBox(
-          width: 48,
-          height: 48,
-          child: RawMaterialButton(
-            onPressed: () {},
-            elevation: 2.0,
-            fillColor: Colors.white,
-            padding: const EdgeInsets.all(10.0),
-            shape: const CircleBorder(),
-            child: const Icon(Icons.chat_bubble_outline_outlined, size: 24.0, color: DriveColors.darkBlueColor,),
-          ),
-        )
+        _ButtonMenu(onClick:openDrawer, iconData: Icons.menu,),
+        _TariffList(),
+        _ButtonMenu(onClick:() {}, iconData: Icons.chat_bubble_outline_outlined,),
       ],
+    );
+  }
+}
+
+class _TariffList extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() => _TariffListState();
+}
+
+class _TariffListState extends State<_TariffList> {
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<HomePageBloc, HomePageBlocState>(
+        buildWhen: (ctx, state) => state is HomePageBlocLoadedState,
+        builder: (ctx, st) {
+          final bloc = context.read<HomePageBloc>();
+          late final int? selectedTariffIndex;
+          late final List<DropdownMenuItem> tariffsMenuItems;
+          if (st is HomePageBlocLoadedState) {
+            final state = st as HomePageBlocLoadedState;
+            selectedTariffIndex = state.selectedTariffIndex;
+            tariffsMenuItems = state.tariffs
+                .asMap()
+                .map((int i, Tariff tariff) => MapEntry(
+                i,
+                DropdownMenuItem(
+                    value: i,
+                    child: Text(
+                      tariff.name.toUpperCase(),
+                      textAlign: TextAlign.end,
+                    )
+                )
+            ))
+                .values
+                .toList();
+          } else {
+            selectedTariffIndex = null;
+            tariffsMenuItems = [];
+          }
+
+          return Container(
+              decoration:  BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,),
+              width: 150,
+              padding: const EdgeInsets.all(10.0),
+              height: 48,
+              child: DropdownButtonHideUnderline(
+                  child: Center(
+                    child: DropdownButton(
+                      iconSize: 0.0,
+                      isExpanded: true, // не знаю как сделать посередине
+                      items: tariffsMenuItems,
+                      value: selectedTariffIndex,
+                      borderRadius: BorderRadius.circular(10),
+                      onChanged: (value) => bloc.add(HomePageBlocEvent.selectAnotherTariff(value!)),
+                      alignment: AlignmentDirectional.center,
+                    ),
+                  )
+              )
+          );
+        }
+    );
+  }
+}
+
+class _ButtonMenu extends StatelessWidget {
+  final void Function() onClick;
+  final IconData iconData;
+  const _ButtonMenu({required this.onClick, required this.iconData});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 48,
+      height: 48,
+      child: RawMaterialButton(
+        onPressed: onClick,
+        elevation: 2.0,
+        fillColor: Colors.white,
+        padding: const EdgeInsets.all(10.0),
+        shape: const CircleBorder(),
+        child: Icon(iconData, size: 24.0, color: DriveColors.darkBlueColor,),
+      ),
     );
   }
 }

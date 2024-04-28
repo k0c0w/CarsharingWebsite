@@ -88,9 +88,6 @@ class _ViewState extends State<_View> {
 
   void _openDrawer () => scaffoldKey.currentState!.openDrawer();
 
-  void _onCarRentPressed(HomePageBloc bloc, DateTime startDate, DateTime endDate)
-    => bloc.add(HomePageBlocEvent.tryBook(startDate, endDate));
-
   @override
   Widget build(BuildContext context) {
 

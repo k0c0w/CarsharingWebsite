@@ -67,8 +67,12 @@ class HomePageBloc extends Bloc<HomePageBlocEvent, HomePageBlocState> {
   }
 
   Future<void> _selectAnotherTariff(int tariffIndex, emit) async {
-    emit(const HomePageBlocState.loading());
+    if (state is! HomePageBlocLoadedState) {
+      return;
+    }
     final oldState = (state as HomePageBlocLoadedState);
+    emit(const HomePageBlocState.loading());
+
 
     try {
       final cars = <Car>[
