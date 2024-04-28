@@ -9,7 +9,7 @@ import 'package:mobileapp/domain/providers/location_provider.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/components/error_page.dart';
-import 'package:mobileapp/ui/pages/home/modal_page.dart';
+import 'package:mobileapp/ui/pages/home/book_page.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:yandex_mapkit/yandex_mapkit.dart';
 
@@ -132,7 +132,7 @@ class _ViewState extends State<_View> {
                       //todo delete
                       showModalBottomSheet(
                           context: context,
-                          builder: HomePageRentModalWidget(injectableBloc: bloc,)
+                          builder: HomePageCarBookingWidget(injectableBloc: bloc,)
                               .build);
                     },
                   ),

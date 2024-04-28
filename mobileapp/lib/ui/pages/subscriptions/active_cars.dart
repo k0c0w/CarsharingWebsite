@@ -34,26 +34,29 @@ class _View extends StatelessWidget {
           final bloc = ctx.read<ActiveSubscriptionsPageBloc>();
           return switch (state) {
             ActiveSubscriptionsLoadedState(: final cars)
-            => ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: cars.length,
-                itemBuilder: (context, index) {
-                  final car = cars[index];
-                  final carId = car.id;
-                  final isOpened = car.isOpen;
+            => RefreshIndicator(
+              onRefresh: () async => bloc.add(const ActiveSubscriptionsEvent.load()),
+              child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+                  itemCount: cars.length,
+                  itemBuilder: (context, index) {
+                    final car = cars[index];
+                    final carId = car.id;
+                    final isOpened = car.isOpen;
 
-                  return SubscriptionCard(
-                      isOpened: isOpened,
-                      onEngineStart: () => bloc.add(ActiveSubscriptionsEvent.startEngine(carId)),
-                      onLightsUp: () => bloc.add(ActiveSubscriptionsEvent.turnLightsCar(carId)),
-                      onOpenOrCloseCar: isOpened ?
-                          () => bloc.add(ActiveSubscriptionsEvent.closeCar(carId))
-                          : () => bloc.add(ActiveSubscriptionsEvent.openCar(carId)),
-                      name: "${car.brand} ${car.model}",
-                      description: car.licensePlate
-                  );
-                }
+                    return SubscriptionCard(
+                        isOpened: isOpened,
+                        onEngineStart: () => bloc.add(ActiveSubscriptionsEvent.startEngine(carId)),
+                        onLightsUp: () => bloc.add(ActiveSubscriptionsEvent.turnLightsCar(carId)),
+                        onOpenOrCloseCar: isOpened ?
+                            () => bloc.add(ActiveSubscriptionsEvent.closeCar(carId))
+                            : () => bloc.add(ActiveSubscriptionsEvent.openCar(carId)),
+                        name: "${car.brand} ${car.model}",
+                        description: car.licensePlate
+                    );
+                  }
+              ),
             ),
             ActiveSubscriptionsLoadingState() => const CenterCircularProgressIndicator(),
             ActiveSubscriptionsLoadErrorState(:final error) => LoadPageErrorMessageAtCenter(

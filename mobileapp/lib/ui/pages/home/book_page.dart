@@ -5,6 +5,7 @@ import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
+import 'package:mobileapp/ui/components/confirmation_container.dart';
 import 'package:mobileapp/ui/components/date_input.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -120,6 +121,7 @@ class _RentDateFormState extends State<_RentDateForm> {
     return null;
   }
 
+
   Future<void> _onPressed(BuildContext context) async {
     final firstDateIsLessThanSecond = _firstDate != null && _secondDate != null
         && _firstDate!.compareTo(_secondDate!) <= 0;
@@ -197,7 +199,7 @@ class _RentDateFormState extends State<_RentDateForm> {
 }
 
 class _RentDateForm extends StatefulWidget {
-  _RentDateForm();
+  const _RentDateForm();
 
   @override
   State<StatefulWidget> createState() => _RentDateFormState();
@@ -209,10 +211,10 @@ class _View extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
+      child: const Column(
         children: [
-          const _RentTitle(),
-          const _RentCarDescription(),
+          _RentTitle(),
+          _RentCarDescription(),
           _RentDateForm(),
         ],
       ),
@@ -221,9 +223,9 @@ class _View extends StatelessWidget {
 }
 
 
-class HomePageRentModalWidget extends StatelessWidget {
+class HomePageCarBookingWidget extends StatelessWidget {
   final HomePageBloc injectableBloc;
-  const HomePageRentModalWidget({super.key, required this.injectableBloc});
+  const HomePageCarBookingWidget({super.key, required this.injectableBloc});
 
   @override
   Widget build(BuildContext context) {
