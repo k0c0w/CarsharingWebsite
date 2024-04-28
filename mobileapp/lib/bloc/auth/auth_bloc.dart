@@ -2,13 +2,13 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
-import 'package:mobileapp/domain/api_clients/api_client_exceptions.dart';
-import 'package:mobileapp/domain/api_clients/auth_client.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
+import 'package:mobileapp/domain/results.dart';
+import 'package:mobileapp/domain/use_cases/auth_cases.dart';
+import 'package:mobileapp/main.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final _sessionDataProvider = SessionDataProvider();
-  final _authApiClient = AuthApiClient();
+  final _sessionDataProvider = getIt<SessionDataProvider>();
 
   AuthBloc(super.initialState) {
     on<AuthEvent>(_dispatchEvent, transformer: sequential());
@@ -32,33 +32,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       return;
     }
 
-    try {
-      final token = await _authApiClient.auth(event.login, event.password);
-
-      await _sessionDataProvider.setJwtToken(token);
-
+    final getTokenResult = await SignInUserUseCase()(event.login, event.password);
+    if(getTokenResult is Error<String>) {
+      emit(AuthFailureState(error:getTokenResult.error));
+    } else if (getTokenResult is Ok<String>) {
+      await _sessionDataProvider.setJwtToken(getTokenResult.value);
       emit(AuthAuthorizedState());
-    }
-    on ApiClientException catch(e) {
-      String errorMessage;
-
-      switch(e.type) {
-        case ApiClientExceptionType.network:
-          errorMessage = "Сервер не доступен. Проверьте подключение к интернету.";
-          break;
-        case ApiClientExceptionType.auth:
-          errorMessage = "Не верный логин или пароль.";
-          break;
-        case ApiClientExceptionType.sessionExpired:
-        case ApiClientExceptionType.other:
-          errorMessage = "Произошла ошибка во время выполнения запроса. Повторите попытку.";
-          break;
-      }
-
-      emit(AuthFailureState(error: errorMessage));
-    }
-    catch (e) {
-      emit(AuthFailureState(error: "Произошла неизвестная ошибка. Повторите попытку."));
     }
   }
 
@@ -74,10 +53,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onStatusCheck(event, emit) async {
     final token = await _sessionDataProvider.getJwtToken();
-    //todo : check if token is outdated
-    final isAuth = token != null;
 
-    final newState = isAuth ? AuthAuthorizedState() : AuthUnauthorizedState();
-    emit(newState);
+    if (token == null) {
+      emit(AuthUnauthorizedState());
+      return;
+    }
+
+    final validateSessionResult = await ValidateSessionUseCase()();
+    if (validateSessionResult is Ok<bool> && validateSessionResult.value) {
+      emit(AuthAuthorizedState());
+      return;
+    }
+
+    emit(AuthUnauthorizedState());
   }
 }

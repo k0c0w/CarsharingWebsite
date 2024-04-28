@@ -20,25 +20,18 @@ mixin _$DrawerBlocEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() load,
     required TResult Function() error,
-    required TResult Function(
-            String name, String secondName, bool profileConfirmed)
-        loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? load,
     TResult? Function()? error,
-    TResult? Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? load,
     TResult Function()? error,
-    TResult Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -46,21 +39,18 @@ mixin _$DrawerBlocEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(DrawerBlocLoadEvent value) load,
     required TResult Function(DrawerBlocErrorEvent value) error,
-    required TResult Function(DrawerBlocLoadedEvent value) loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DrawerBlocLoadEvent value)? load,
     TResult? Function(DrawerBlocErrorEvent value)? error,
-    TResult? Function(DrawerBlocLoadedEvent value)? loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DrawerBlocLoadEvent value)? load,
     TResult Function(DrawerBlocErrorEvent value)? error,
-    TResult Function(DrawerBlocLoadedEvent value)? loaded,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -125,9 +115,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() load,
     required TResult Function() error,
-    required TResult Function(
-            String name, String secondName, bool profileConfirmed)
-        loaded,
   }) {
     return load();
   }
@@ -137,8 +124,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? load,
     TResult? Function()? error,
-    TResult? Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
   }) {
     return load?.call();
   }
@@ -148,8 +133,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? load,
     TResult Function()? error,
-    TResult Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
     required TResult orElse(),
   }) {
     if (load != null) {
@@ -163,7 +146,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(DrawerBlocLoadEvent value) load,
     required TResult Function(DrawerBlocErrorEvent value) error,
-    required TResult Function(DrawerBlocLoadedEvent value) loaded,
   }) {
     return load(this);
   }
@@ -173,7 +155,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DrawerBlocLoadEvent value)? load,
     TResult? Function(DrawerBlocErrorEvent value)? error,
-    TResult? Function(DrawerBlocLoadedEvent value)? loaded,
   }) {
     return load?.call(this);
   }
@@ -183,7 +164,6 @@ class _$DrawerBlocLoadEventImpl implements DrawerBlocLoadEvent {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DrawerBlocLoadEvent value)? load,
     TResult Function(DrawerBlocErrorEvent value)? error,
-    TResult Function(DrawerBlocLoadedEvent value)? loaded,
     required TResult orElse(),
   }) {
     if (load != null) {
@@ -238,9 +218,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() load,
     required TResult Function() error,
-    required TResult Function(
-            String name, String secondName, bool profileConfirmed)
-        loaded,
   }) {
     return error();
   }
@@ -250,8 +227,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? load,
     TResult? Function()? error,
-    TResult? Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
   }) {
     return error?.call();
   }
@@ -261,8 +236,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? load,
     TResult Function()? error,
-    TResult Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -276,7 +249,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(DrawerBlocLoadEvent value) load,
     required TResult Function(DrawerBlocErrorEvent value) error,
-    required TResult Function(DrawerBlocLoadedEvent value) loaded,
   }) {
     return error(this);
   }
@@ -286,7 +258,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(DrawerBlocLoadEvent value)? load,
     TResult? Function(DrawerBlocErrorEvent value)? error,
-    TResult? Function(DrawerBlocLoadedEvent value)? loaded,
   }) {
     return error?.call(this);
   }
@@ -296,7 +267,6 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(DrawerBlocLoadEvent value)? load,
     TResult Function(DrawerBlocErrorEvent value)? error,
-    TResult Function(DrawerBlocLoadedEvent value)? loaded,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -308,174 +278,4 @@ class _$DrawerBlocErrorEventImpl implements DrawerBlocErrorEvent {
 
 abstract class DrawerBlocErrorEvent implements DrawerBlocEvent {
   const factory DrawerBlocErrorEvent() = _$DrawerBlocErrorEventImpl;
-}
-
-/// @nodoc
-abstract class _$$DrawerBlocLoadedEventImplCopyWith<$Res> {
-  factory _$$DrawerBlocLoadedEventImplCopyWith(
-          _$DrawerBlocLoadedEventImpl value,
-          $Res Function(_$DrawerBlocLoadedEventImpl) then) =
-      __$$DrawerBlocLoadedEventImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String name, String secondName, bool profileConfirmed});
-}
-
-/// @nodoc
-class __$$DrawerBlocLoadedEventImplCopyWithImpl<$Res>
-    extends _$DrawerBlocEventCopyWithImpl<$Res, _$DrawerBlocLoadedEventImpl>
-    implements _$$DrawerBlocLoadedEventImplCopyWith<$Res> {
-  __$$DrawerBlocLoadedEventImplCopyWithImpl(_$DrawerBlocLoadedEventImpl _value,
-      $Res Function(_$DrawerBlocLoadedEventImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? name = null,
-    Object? secondName = null,
-    Object? profileConfirmed = null,
-  }) {
-    return _then(_$DrawerBlocLoadedEventImpl(
-      null == name
-          ? _value.name
-          : name // ignore: cast_nullable_to_non_nullable
-              as String,
-      null == secondName
-          ? _value.secondName
-          : secondName // ignore: cast_nullable_to_non_nullable
-              as String,
-      null == profileConfirmed
-          ? _value.profileConfirmed
-          : profileConfirmed // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$DrawerBlocLoadedEventImpl implements DrawerBlocLoadedEvent {
-  const _$DrawerBlocLoadedEventImpl(
-      this.name, this.secondName, this.profileConfirmed);
-
-  @override
-  final String name;
-  @override
-  final String secondName;
-  @override
-  final bool profileConfirmed;
-
-  @override
-  String toString() {
-    return 'DrawerBlocEvent.loaded(name: $name, secondName: $secondName, profileConfirmed: $profileConfirmed)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DrawerBlocLoadedEventImpl &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.secondName, secondName) ||
-                other.secondName == secondName) &&
-            (identical(other.profileConfirmed, profileConfirmed) ||
-                other.profileConfirmed == profileConfirmed));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, name, secondName, profileConfirmed);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DrawerBlocLoadedEventImplCopyWith<_$DrawerBlocLoadedEventImpl>
-      get copyWith => __$$DrawerBlocLoadedEventImplCopyWithImpl<
-          _$DrawerBlocLoadedEventImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function() load,
-    required TResult Function() error,
-    required TResult Function(
-            String name, String secondName, bool profileConfirmed)
-        loaded,
-  }) {
-    return loaded(name, secondName, profileConfirmed);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
-    TResult? Function()? error,
-    TResult? Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
-  }) {
-    return loaded?.call(name, secondName, profileConfirmed);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
-    TResult Function()? error,
-    TResult Function(String name, String secondName, bool profileConfirmed)?
-        loaded,
-    required TResult orElse(),
-  }) {
-    if (loaded != null) {
-      return loaded(name, secondName, profileConfirmed);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(DrawerBlocLoadEvent value) load,
-    required TResult Function(DrawerBlocErrorEvent value) error,
-    required TResult Function(DrawerBlocLoadedEvent value) loaded,
-  }) {
-    return loaded(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(DrawerBlocLoadEvent value)? load,
-    TResult? Function(DrawerBlocErrorEvent value)? error,
-    TResult? Function(DrawerBlocLoadedEvent value)? loaded,
-  }) {
-    return loaded?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(DrawerBlocLoadEvent value)? load,
-    TResult Function(DrawerBlocErrorEvent value)? error,
-    TResult Function(DrawerBlocLoadedEvent value)? loaded,
-    required TResult orElse(),
-  }) {
-    if (loaded != null) {
-      return loaded(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class DrawerBlocLoadedEvent implements DrawerBlocEvent {
-  const factory DrawerBlocLoadedEvent(
-      final String name,
-      final String secondName,
-      final bool profileConfirmed) = _$DrawerBlocLoadedEventImpl;
-
-  String get name;
-  String get secondName;
-  bool get profileConfirmed;
-  @JsonKey(ignore: true)
-  _$$DrawerBlocLoadedEventImplCopyWith<_$DrawerBlocLoadedEventImpl>
-      get copyWith => throw _privateConstructorUsedError;
 }

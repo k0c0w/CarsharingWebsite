@@ -5,7 +5,9 @@ class _Keys {
 }
 
 class SessionDataProvider {
-  static const _secureStorage = FlutterSecureStorage();
+  final FlutterSecureStorage _secureStorage;
+  
+  SessionDataProvider(this._secureStorage);
 
   Future<String?> getJwtToken() async {
     return _secureStorage.read(key: _Keys.token);

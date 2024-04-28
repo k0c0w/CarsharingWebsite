@@ -6,5 +6,4 @@ part 'events.freezed.dart';
 sealed class DrawerBlocEvent with _$DrawerBlocEvent {
   const factory DrawerBlocEvent.load() = DrawerBlocLoadEvent;
   const factory DrawerBlocEvent.error() = DrawerBlocErrorEvent;
-  const factory DrawerBlocEvent.loaded(String name, String secondName, bool profileConfirmed) = DrawerBlocLoadedEvent;
 }

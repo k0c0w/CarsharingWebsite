@@ -1,9 +1,8 @@
 import 'package:mobileapp/domain/entities/profile/profile.dart';
-import 'package:mobileapp/domain/providers/session_data_provider.dart';
 import 'package:mobileapp/domain/results.dart';
+import 'package:mobileapp/domain/use_cases/base.dart';
 
-class GetProfileUseCase {
-  final SessionDataProvider sessionDataProvider = SessionDataProvider();
+class GetProfileUseCase extends UseCase<Profile> {
 
   Future<Result<Profile>> call() async {
     final profile = Profile(
@@ -11,50 +10,50 @@ class GetProfileUseCase {
       secondName: "Якупов",
       email: "example@example.com",
       birthDate: DateTime(1990, 2, 4),
-      balance: 0,
-      isConfirmed: false,
+      balance: 150.55,
+      isConfirmed: true,
     );
 
     return Ok(profile);
   }
 }
 
-class UpdateProfileNameUseCase {
+class UpdateProfileNameUseCase extends UseCase<String> {
 
   Future<Result<String>> call(String name) async {
     return Ok<String>("Марсель");
   }
 }
 
-class UpdateProfileSecondNameUseCase {
+class UpdateProfileSecondNameUseCase extends UseCase<String> {
 
   Future<Result<String>> call(String secondName) async {
     return Ok<String>("Хамитов");
   }
 }
 
-class UpdateProfileEmailUseCase {
+class UpdateProfileEmailUseCase extends UseCase<String> {
 
   Future<Result<String>> call(String email) async {
     return Ok<String>("example2@mail.ru");
   }
 }
 
-class UpdateProfileBirthDateUseCase {
+class UpdateProfileBirthDateUseCase extends UseCase<String> {
 
   Future<Result<DateTime>> call(DateTime birthDate) async {
     return Ok<DateTime>(DateTime(1993, 2, 28));
   }
 }
 
-class UpdatePassportUseCase {
+class UpdatePassportUseCase extends UseCase<String> {
 
   Future<Result<String>> call(String passport) async {
     return Ok<String>("9218232029");
   }
 }
 
-class UpdateLicenseUseCase {
+class UpdateLicenseUseCase  extends UseCase<String> {
 
   Future<Result<String>> call(String license) async {
     return Ok<String>("2345352232");

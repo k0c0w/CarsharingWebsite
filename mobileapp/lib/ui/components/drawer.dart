@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/pages/drawer/bloc.dart';
 import 'package:mobileapp/bloc/pages/drawer/events.dart';
 import 'package:mobileapp/bloc/pages/drawer/states.dart';
+import 'package:mobileapp/domain/providers/user_info_provider.dart';
+import 'package:mobileapp/main.dart';
 import 'package:mobileapp/ui/components/styles.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
 
@@ -15,7 +17,7 @@ class DriveDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<DrawerBloc>(
       create: (_) {
-        final bloc = DrawerBloc();
+        final bloc = DrawerBloc(getIt<DrawerUserInfoDataProvider>());
         bloc.add(const DrawerBlocEvent.load());
         return bloc;
       },
