@@ -11,7 +11,8 @@ public static class AuthenticationAndAuthorizationRegistration
     internal static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.Configure<JwtOptions>(
-            configuration.GetSection(JwtOptions.Jwt));
+            configuration.GetSection(JwtOptions.Jwt))
+            .AddAuthorization();
 
         serviceCollection.AddTransient<IJwtGenerator, JwtGenerator>();
 

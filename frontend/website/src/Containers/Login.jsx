@@ -9,9 +9,10 @@ import API from '../httpclient/axios_client'
 import { areValidLoginFields } from '../js/form-validators'
 import GoogleSignIn from '../Components/SignInButtons'
 import "../css/form.css";
+import { AuthData } from '../Components/Auth/AuthWrapper'
 
-
-export default function Login ({setUser}) {
+export default function Login () {
+  const { login } = AuthData();
   const [errors, setErrors] = useState({})
   const [formSummary, setFormSummary] = useState();
   const [requestSent, setRequestSent] = useState(false);
@@ -27,7 +28,7 @@ export default function Login ({setUser}) {
 
     setFormSummary("");
     setRequestSent(true);
-    const response = await API.login(formRef.current);
+    const response = await API.login(loginRef.current.value, passwordRef.current.value);
     setRequestSent(false);
     if (response.status === 401) {
       const error = response.error;
@@ -40,7 +41,7 @@ export default function Login ({setUser}) {
         setErrors({login: error.errors?.Email[0], password: error.errors?.Password[0]})
     }
     else{
-      setUser(true);
+      login();
       const urlParams = new URLSearchParams(location.search);
       const returnUri = urlParams.get('return_uri');
       if(returnUri)

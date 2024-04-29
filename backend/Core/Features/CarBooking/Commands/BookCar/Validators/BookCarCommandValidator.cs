@@ -1,26 +1,27 @@
 ﻿using Contracts;
 using Entities.Repository;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace Features.CarBooking.Commands.BookCar.Validators;
 
 public class BookCarCommandValidator : AbstractValidator<BookCarCommand>
 {
     private readonly ICarRepository _carRepository;
+    private readonly ILogger<BookCarCommandValidator> _logger;
 
-    public BookCarCommandValidator(ICarRepository carRepository)
+    public BookCarCommandValidator(ICarRepository carRepository, ILogger<BookCarCommandValidator> logger)
     {
         _carRepository = carRepository;
+        _logger = logger;
 
         RuleFor(x => x.RentCarInfo)
             .NotNull()
-            .Must(x => x.TariffId > 0)
-            .WithMessage("Wrong tariff id.")
-            .MustAsync((x, ct) => carRepository.ExistsByIdAsync(x.CarId))
-            .WithMessage("Car does not exist.")
-            .Must(x => x.Start <= x.End)
-            .MustAsync((x, ct) => AreCorrectDateBoundsAsync(x))
-            .WithMessage("Wrong date bounds.");
+            //.MustAsync(async (x, ct) => await carRepository.ExistsByIdAsync(x.CarId))
+            //.WithMessage("Car does not exist.")
+            .Must(rentCrInfo => rentCrInfo.Start <= rentCrInfo.End)
+            //.MustAsync(async (x, _) => await IsInTariffRentTimeBoundsAsync(x))
+            .WithMessage("Wrong date bounds");
 
         RuleFor(x => x.RentCarInfo.PotentialRenterUserId)
             .NotNull()
@@ -28,15 +29,16 @@ public class BookCarCommandValidator : AbstractValidator<BookCarCommand>
             .WithMessage("Provide renter user id");
     }
 
-    private async Task<bool> AreCorrectDateBoundsAsync(RentCarDto rentCarDto)
+    private async Task<bool> IsInTariffRentTimeBoundsAsync(RentCarDto rentCarDto)
     {
-        var tariff = await _carRepository.GetRelatedTariffAsync(rentCarDto.CarId);
+        var relatedTariff = await _carRepository.GetRelatedTariffAsync(rentCarDto.CarId);
+        var rentMinutes = (rentCarDto.End - rentCarDto.Start).TotalSeconds / 60;
 
-        if (tariff == null)
-            return false;
+        var isInTariffRentTimeBounds = relatedTariff != null && relatedTariff!.MinAllowedMinutes <= rentMinutes && rentMinutes <= relatedTariff!.MaxAllowedMinutes;
 
-        var requestedRentMinutes = (rentCarDto.End - rentCarDto.Start).TotalMinutes;
+        if (!isInTariffRentTimeBounds)
+            _logger.LogInformation("Wrong rent time  {time}", rentMinutes);
 
-        return requestedRentMinutes >= tariff.MinAllowedMinutes && requestedRentMinutes <= tariff.MaxAllowedMinutes;
+        return isInTariffRentTimeBounds;
     }
 }

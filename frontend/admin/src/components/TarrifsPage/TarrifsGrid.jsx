@@ -23,12 +23,22 @@ function TarrifsGrid({handleClickInfo, handleSelect,handleSwitch, rows=[]}) {
         },
         {
             field: 'price',
-            headerName: 'Price',
+            headerName: 'Price per minute',
             flex: 1,
         },
         {
             field: 'max_millage',
             headerName: 'Max millage',
+            flex: 1,
+        },
+        {
+            field: 'min_rent_minutes',
+            headerName: 'Min rent minutes',
+            flex: 1,
+        },
+        {
+            field: 'max_rent_minutes',
+            headerName: 'Max rent minutes',
             flex: 1,
         },
         {

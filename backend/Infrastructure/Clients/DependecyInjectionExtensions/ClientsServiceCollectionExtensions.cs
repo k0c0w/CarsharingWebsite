@@ -9,14 +9,30 @@ public static class ClientsServiceCollectionExtensions
     {
         var uri = new Uri(balanceMicroserviceAddress);
 
-        services.AddGrpcClient<BalanceMicroservice.Clients.BalanceService.BalanceServiceClient>(o =>
+        var grpcCLientConfig = services.AddGrpcClient<BalanceMicroservice.Clients.BalanceService.BalanceServiceClient>(o =>
         {
             o.Address = uri;
+        })
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+            return handler;
         });
 
         services.AddGrpcClient<BalanceMicroservice.Clients.UserManagementService.UserManagementServiceClient>(o =>
         {
             o.Address = uri;
+        })
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            var handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+            return handler;
         });
 
         return services;

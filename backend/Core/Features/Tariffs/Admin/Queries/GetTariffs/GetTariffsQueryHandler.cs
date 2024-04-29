@@ -28,14 +28,14 @@ public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable
                 if (request.TariffId < 1)
                     return _emptyResponse;
 
-                var tariff = await _tariffRepository.GetByIdAsync(request.TariffId!.Value).ConfigureAwait(false);
+                var tariff = await _tariffRepository.GetByIdAsync(request.TariffId!.Value);
                 if (tariff == null)
                     return _emptyResponse;
 
                 tariffs = new[] { tariff }; 
             }
             else
-                tariffs = await _tariffRepository.GetBatchAsync().ConfigureAwait(false);
+                tariffs = await _tariffRepository.GetBatchAsync();
 
             return new Ok<IEnumerable<AdminTariffDto>>(MapTariffs(tariffs));
         }
@@ -54,7 +54,7 @@ public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable
                     Name = tariff.Name,
                     MaxMileage = tariff.MaxMileage,
                     PriceInRubles = tariff.PricePerMinute,
-                    Image = $"/tariffs/{tariff.Name}.png",
+                    Image = tariff.ImageUrl,
                     IsActive = tariff.IsActive,
             })
             .ToArray();

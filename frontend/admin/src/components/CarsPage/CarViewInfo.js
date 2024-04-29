@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { tokens } from '../../theme';
 import { useTheme } from '@emotion/react';
 import API from "../../httpclient/axios_client";
@@ -9,14 +9,16 @@ export function CarViewInfo({ carModel }) {
     const [tariff, setTariff] = useState({});
     const color = tokens(theme.palette.mode);
 
-    let getTariff = async () => {
-        let result = await API.getTariffById(carModel.tariff_id);
-        if (result.successed !== true)
-            alert(result.error);
-        setTariff(result.data);
-    } 
+    
 
-    getTariff();
+    useEffect(() => {
+        (async () => {
+            const result = await API.getTariffById(carModel.tariff_id);
+            if (result.successed !== true)
+                alert(result.error);
+            setTariff(result.data);
+        })();
+    }, []);
 
     return (
         <>
@@ -31,8 +33,6 @@ export function CarViewInfo({ carModel }) {
                 <div>{carModel.description}</div>
                 <h4>Тариф:</h4>
                 <div>{tariff?.name}</div>
-                
-            
             </div>
         </>
     )
@@ -40,7 +40,6 @@ export function CarViewInfo({ carModel }) {
 export function CarViewInfoTitle({title="Информация"}) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
 
     return (
         <h3 style={{ color: color.grey[100] }}>{title}</h3>

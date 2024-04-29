@@ -11,10 +11,7 @@ Future<void> main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp]);
 
-
   await registerServicesAtGetIt(getIt);
-
-
 
   runApp(const DriveApp());
 }

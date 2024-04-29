@@ -20,7 +20,7 @@ class AxiosWrapper {
             },
             withCredentials: true,
         }
-        this.token = localStorage.getItem("token");
+        this.token = sessionStorage.getItem("token");
         this.axiosInstance = axios.create(options);
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
@@ -107,16 +107,20 @@ class AxiosWrapper {
         return await this._get(`/information/news`);
     }
 
-    async login(form) {
-        let response = await this._post(`/account/login/`, this._getModelFromForm(form));
+    async login(login, password) {
+        let response = await this._post(`/account/login/`, {
+            email: login,
+            password: password,
+        });
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
-        localStorage.setItem("token", this.token)
+        sessionStorage.setItem("token", this.token);
         return response
     }
 
     async logout() {
+        sessionStorage.removeItem("token");
         return await this._post(`/account/logout/`);
     }
 
@@ -136,8 +140,15 @@ class AxiosWrapper {
         return await this._get('/Account/PersonalInfo');
     }
 
-    async editPersonalInfo(form) {
-        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    async editPersonalInfo({email, firstName, secondName, passport, driverLicense, birthDate}) {
+        return await this._post('/Account/PersonalInfo/Edit', {
+            surname: secondName,
+            name: firstName,
+            email: email,
+            birthdate: birthDate,
+            passport: passport,
+            license: driverLicense,
+        });
     }
 
     async profile() {

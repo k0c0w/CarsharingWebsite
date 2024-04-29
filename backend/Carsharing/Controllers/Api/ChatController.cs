@@ -25,7 +25,6 @@ public class ChatController : ControllerBase
 
     [Route("{userId}/history")]
     [HttpGet]
-    [Authorize]
     public async Task<IActionResult> GetChatHistoryWithUserAsync([FromRoute] string userId, [FromQuery] int limit = 100, [FromQuery] int offset = 0)
     {
         var currentUserId = User.GetId();
@@ -50,7 +49,6 @@ public class ChatController : ControllerBase
     }
 
     [Route("rooms")]
-    [Authorize(Roles = nameof(Role.Manager))]
     [HttpGet]
     public IActionResult GetAllRooms()
     {

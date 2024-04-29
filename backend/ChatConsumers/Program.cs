@@ -24,6 +24,10 @@ builder.Services.AddMassTransit(config =>
             .GetSection(nameof(RabbitMqConfig))
             .Get<RabbitMqConfig>()!
             .FullHostname);
+        Console.WriteLine(builder.Configuration
+            .GetSection(nameof(RabbitMqConfig))
+            .Get<RabbitMqConfig>()!
+            .FullHostname);
     });
 });
 builder.Services.AddScoped<IMessageUnitOfWork, ChatUnitOfWork>();

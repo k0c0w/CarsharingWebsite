@@ -27,6 +27,6 @@ public class OccasionMessageConsumer : IConsumer<OccasionChatMessageDto>
             IsFromManager = messageDto.IsAuthorManager,
         };
 
-        await _occasionMessageRepository.AddAsync(message).ConfigureAwait(false);
+        await _occasionMessageRepository.AddAsync(message);
     }
 }

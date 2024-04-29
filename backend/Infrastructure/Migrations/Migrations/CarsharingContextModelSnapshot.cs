@@ -122,6 +122,35 @@ namespace Entities.Migrations
                     b.ToTable("WebsiteDocuments");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFromManager")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("TopicAuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("Domain.Entities.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -337,6 +366,41 @@ namespace Entities.Migrations
                     b.ToTable("UserInfos");
                 });
 
+            modelBuilder.Entity("Entities.Entities.OccasionMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("Attachment")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFromManager")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("OccasionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Time")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("TopicAuthorId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OccasionMessages");
+                });
+
             modelBuilder.Entity("Entities.Entities.OccasionType", b =>
                 {
                     b.Property<int>("Id")
@@ -396,8 +460,7 @@ namespace Entities.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IssuerId")
-                        .IsUnique();
+                    b.HasIndex("IssuerId");
 
                     b.ToTable("Occasions");
                 });
@@ -638,8 +701,8 @@ namespace Entities.Migrations
             modelBuilder.Entity("Entities.Entities.Occassion", b =>
                 {
                     b.HasOne("Domain.Entities.User", null)
-                        .WithOne()
-                        .HasForeignKey("Entities.Entities.Occassion", "IssuerId")
+                        .WithMany()
+                        .HasForeignKey("IssuerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

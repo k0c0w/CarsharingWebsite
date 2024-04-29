@@ -1,0 +1,10 @@
+mutation {
+  editProfile(userVm: {
+    birthDay:""
+    driverLicense: 12
+    email: "example@email.com"
+    firstName: ""
+    lastName: ""
+    passport: ""
+  })
+}
