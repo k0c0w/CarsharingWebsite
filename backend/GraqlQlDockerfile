@@ -1,7 +1,9 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 81
+EXPOSE 2376
 EXPOSE 1446
+
+ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
@@ -15,7 +17,6 @@ COPY ["Infrastructure/Clients/Clients.csproj", "Infrastructure/Clients/"]
 COPY ["Infrastructure/Migrations/Migrations.csproj", "Infrastructure/Migrations/"]
 COPY ["Infrastructure/Persistence/Persistence.csproj", "Infrastructure/Persistence/"]
 COPY ["Carsharing/Carsharing.csproj", "Carsharing/"]
-RUN dotnet restore "GraphQL.API/GraphQL.API.csproj"
 COPY . .
 WORKDIR "/src/GraphQL.API"
 RUN dotnet build "GraphQL.API.csproj" -c Release -o /app/build

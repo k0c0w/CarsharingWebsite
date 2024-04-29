@@ -27,12 +27,8 @@ services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-	app.UseSwagger();
-	app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -40,9 +36,8 @@ app.UseAuthentication()
 	.UseAuthorization();
 
 app.UseRouting();
-app.UseEndpoints(endpoint =>
-{
-	endpoint.MapGraphQL();
-});
+
+app.MapGet("/", () => "Hello World!");
+app.MapGraphQL("/graphql");
 
 app.Run();
