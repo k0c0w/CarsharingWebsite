@@ -1,0 +1,11 @@
+query {
+  carModelsByTariff(id: 1) {
+    description
+    id
+    brand
+    model
+    description
+    tariffId
+    url
+  }
+}
