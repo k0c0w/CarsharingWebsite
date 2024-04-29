@@ -1,7 +1,7 @@
 ﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 2376
-EXPOSE 1446
+EXPOSE 80
+EXPOSE 443
 
 ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
 

@@ -75,8 +75,8 @@ services:
       - KnownHosts__BackendHosts__FileService=http://host.docker.internal:7127
       - KnownHosts__BackendHosts__BalanceMicroservice=https://host.docker.internal:6552
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+1446;http://+2376
-      - ASPNETCORE_HTTPS_PORT=1446
+      - ASPNETCORE_URLS=https://+443;http://+80
+      - ASPNETCORE_HTTPS_PORT=443
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
       - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
@@ -89,8 +89,8 @@ services:
       - rabbitmq
       - balance_service
     ports:
-      - "2376:2376"
-      - "1446:1446"
+      - 5082:80
+      - 7061:443
   
   website:
     build: ./frontend/website
