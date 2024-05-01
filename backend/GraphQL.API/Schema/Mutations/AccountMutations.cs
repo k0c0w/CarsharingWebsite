@@ -47,7 +47,7 @@ public partial class Mutations
 		
 		if (!resultSignIn.Succeeded)
 			throw new GraphQLException("Login or password is not correct.");
-
+    
 		var claims = await userManager.GetClaimsAsync(user);
 		var token = jwtGenerator.CreateToken(user: user, claims: claims);
 

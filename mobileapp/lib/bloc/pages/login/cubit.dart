@@ -30,7 +30,7 @@ class LoginPageCubit extends Cubit<LoginPageCubitState> {
     if (state is AuthAuthorizedState) {
       _navigateToHome();
     } else if (state is AuthFailureState) {
-      emit(cubitState.copyWith(password: "", requestSent: false, error: state.error));
+      emit(cubitState.copyWith(requestSent: false, error: "Ошибка авторизации."));
     } else if (state is AuthInProgressState) {
       emit(cubitState.copyWith(requestSent: true));
     }
@@ -58,6 +58,7 @@ class LoginPageCubit extends Cubit<LoginPageCubitState> {
     }
 
     authBloc.add(AuthLoginEvent(login: state.login, password: state.password));
+    emit(state.copyWith(requestSent: true));
   }
 
   @override

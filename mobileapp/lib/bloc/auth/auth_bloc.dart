@@ -31,8 +31,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthFailureState(error: "Сначала заполните оба поля."));
       return;
     }
-
-    final getTokenResult = await SignInUserUseCase()(event.login, event.password);
+    final useCase = SignInUserUseCase();
+    final getTokenResult = await useCase(event.login, event.password);
     if(getTokenResult is Error<String>) {
       emit(AuthFailureState(error:getTokenResult.error));
     } else if (getTokenResult is Ok<String>) {

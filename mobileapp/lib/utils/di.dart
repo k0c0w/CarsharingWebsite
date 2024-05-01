@@ -5,6 +5,7 @@ import 'package:mobileapp/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
 import 'package:mobileapp/domain/providers/user_info_provider.dart';
+import 'package:mobileapp/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> registerServicesAtGetIt(GetIt getIt) async {
@@ -16,24 +17,27 @@ Future<void> registerServicesAtGetIt(GetIt getIt) async {
 
   getIt.registerSingleton(AuthBloc(AuthCheckStatusInProgressState()));
 
-  _registerGraphQLClient(getIt);
+  getIt.registerSingleton<GraphQLClient>(getGraphQLClient(getIt<SessionDataProvider>()));
+
 
   await getIt.allReady();
 }
 
-void _registerGraphQLClient(GetIt getIt) {
+final graphQLClientFactory = getGraphQLClient(getIt<SessionDataProvider>());
+
+GraphQLClient getGraphQLClient(SessionDataProvider sessionDataProvider) {
   final HttpLink httpLink = HttpLink(
-    'https://api.github.com/graphql',
+    'http://192.168.0.20:5082/graphql/',
   );
 
   final AuthLink authLink = AuthLink(
       getToken: () async {
-        final jwtToken = await getIt<SessionDataProvider>().getJwtToken();
+        final jwtToken = await sessionDataProvider.getJwtToken();
         return 'Bearer $jwtToken';
       }
   );
 
   final Link link = authLink.concat(httpLink);
 
-  getIt.registerSingleton(GraphQLClient(link: link, cache: GraphQLCache()));
+  return GraphQLClient(link: link, cache: GraphQLCache());
 }
