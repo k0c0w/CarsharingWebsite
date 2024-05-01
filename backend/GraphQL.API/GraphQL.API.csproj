@@ -9,7 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="HotChocolate.AspNetCore" Version="14.0.0-p.93" />
-        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="14.0.0-p.93" />
+        <PackageReference Include="HotChocolate.AspNetCore.Authorization" Version="13.9.0" />
         <PackageReference Include="MediatR" Version="12.2.0" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />

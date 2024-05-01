@@ -1,9 +1,8 @@
-﻿using System.Security.Claims;
-using Features.Occasion;
+﻿using Features.Occasion;
+using GraphQL.API.Helpers.Extensions;
 using HotChocolate.Authorization;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 
 namespace GraphQL.API.Schema.Queries;
 
@@ -12,9 +11,9 @@ public partial class Queries
 	[Authorize]
 	public async Task<Guid> GetMyOpenedOccasionAsync(
 		[FromServices] IMediator mediator,
-		ClaimsPrincipal claimsPrincipal) 
+		[Service] IHttpContextAccessor httpContextAccessor) 
 	{
-		var userId = claimsPrincipal.GetId();
+		var userId = httpContextAccessor.GetUserId();
 
 		var getMyOccasionQuery = new GetOpenedUserOccasionQuery(userId);
 
