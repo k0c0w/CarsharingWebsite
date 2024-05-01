@@ -31,6 +31,8 @@ class _View extends StatelessWidget {
     final cubit = context.read<LoginPageCubit>();
     final loginRequestSent = context.select((LoginPageCubit cubit) =>
     cubit.state.requestSent);
+    final error = context.select((LoginPageCubit cubit) =>
+    cubit.state.error);
 
     return Scaffold(
       appBar: DriveAppBar(title: "ЛОГИН"),
@@ -72,6 +74,7 @@ class _View extends StatelessWidget {
               onChanged: cubit.changePassword,
             ),
             const SizedBox(height: 20),
+            Text(error, style: DriveTextStyles.errorLabel,),
             BottomButton(
               title: "ВОЙТИ",
               onPressed: loginRequestSent ? null : cubit.onLoginPressed,
