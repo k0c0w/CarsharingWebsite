@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Carsharing.Forms;
 
-public class RegistrationVm : LoginVM
+public class RegistrationVm
 {
     private const string invalidSymbols = @"^[^$&+,:;=?@#|<>.-^*)(%!\""/№_}\[\]{{~]*$";
     
@@ -32,5 +32,14 @@ public class RegistrationVm : LoginVM
     [JsonPropertyName("accept")]
     public string? Accept { get; set; }
 
-    [ValidateNever] public string AcceptMustBe => "on";
+    protected const string required = "Поле обязательно.";
+    [Required(ErrorMessage = required)]
+    [EmailAddress(ErrorMessage = "Не верный формат почты")]
+    [JsonPropertyName("email")]
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = required)]
+    [MinLength(6, ErrorMessage = "Используйте пароль длиной в 6 символов и более.")]
+    [JsonPropertyName("password")]
+    public string Password { get; set; } = string.Empty;
 }
