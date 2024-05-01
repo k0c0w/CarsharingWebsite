@@ -36,8 +36,6 @@ app.UseAuthentication()
 	.UseAuthorization();
 
 app.UseRouting();
-
-app.MapGet("/", () => "Hello World!");
 app.MapGraphQL("/graphql");
 
 app.Run();
