@@ -7,10 +7,10 @@ using Features.Balance.Commands.IncreaseBalance;
 using Features.CarManagement;
 using Features.Users.Commands.ChangePassword;
 using Features.Users.Commands.EditUser;
+using GraphQL.API.Helpers.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
 
 namespace GraphQL.API.Schema.Mutations;
 
@@ -20,9 +20,9 @@ public partial class Mutations
 	[GraphQLName("increaseBalance")]
 	public async Task<string> IncreaseBalance(decimal val, 
 		[FromServices] IMediator mediator, 
-		ClaimsPrincipal claimsPrincipal)
+		[Service] IHttpContextAccessor httpContextAccessor)
 	{
-		var commandResult = await mediator.Send(new IncreaseBalanceCommand(claimsPrincipal.GetId(), val));
+		var commandResult = await mediator.Send(new IncreaseBalanceCommand(httpContextAccessor.GetUserId(), val));
 
 		return commandResult.IsSuccess
 			? $"Success, your Balance increased on {val}"
@@ -54,10 +54,10 @@ public partial class Mutations
 	public async Task<bool> EditProfile(EditUserVm userVm,
 		[FromServices] IMediator mediator, 
 		[FromServices] IMapper mapper,
-		ClaimsPrincipal claimsPrincipal)
+		[Service] IHttpContextAccessor httpContextAccessor)
 	{
 		Console.WriteLine("Попал в edit");
-		var commandResult = await mediator.Send(new EditUserCommand(claimsPrincipal.GetId(),
+		var commandResult = await mediator.Send(new EditUserCommand(httpContextAccessor.GetUserId(),
 			mapper.Map<EditUserVm, EditUserDto>(userVm)));
 
 		return commandResult.IsSuccess
@@ -69,12 +69,11 @@ public partial class Mutations
 	[GraphQLName("changePassword")]
 	public async Task<bool> ChangePassword(
 		ChangePasswordVM change,
-		[FromServices] IMediator mediator, 
-		ClaimsPrincipal claimsPrincipal
-		)
+		[FromServices] IMediator mediator,
+		[Service] IHttpContextAccessor httpContextAccessor)
 	{
 		var commandResult =
-			await mediator.Send(new ChangePasswordCommand(claimsPrincipal.GetId(), change!.OldPassword!, change!.Password!));
+			await mediator.Send(new ChangePasswordCommand(httpContextAccessor.GetUserId(), change!.OldPassword!, change!.Password!));
 		var info = commandResult.Value;
 
 		return commandResult.IsSuccess && info?.Success is true

@@ -7,7 +7,7 @@ namespace GraphQL.API.Schema.Queries;
 
 public partial class Queries
 {
-	public async Task<IEnumerable<TariffDto>> GetTariff([FromServices] IMediator mediator)
+	public async Task<IEnumerable<TariffDto>> GetTariffs([FromServices] IMediator mediator)
 	{
 		var tariffsResult = await mediator.Send(new GetActiveTariffsQuery());
 		

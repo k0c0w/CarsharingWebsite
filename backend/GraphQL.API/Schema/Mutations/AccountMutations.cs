@@ -38,10 +38,7 @@ public partial class Mutations
 		[FromServices] IJwtGenerator jwtGenerator, 
 		[FromBody] LoginVM vm)
 	{
-		var user = await userManager.FindByEmailAsync(vm.Email);
-
-		if (user == null)
-			throw new GraphQLException("User not found.");
+		var user = await userManager.FindByEmailAsync(vm.Email) ?? throw new GraphQLException("User not found.");
 
 		var resultSignIn = await signInManager.CheckPasswordSignInAsync(user, vm.Password, false);
 		

@@ -91,12 +91,11 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.DriverLicense));
-            
-            CreateMap<BookingVM, RentCarDto>() 
+
+            CreateMap<BookingVM, RentCarDto>()
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndDate))
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId))
-                .ForMember(dest => dest.TariffId, opt => opt.MapFrom(src => src.TariffId));
+                .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId));
             
             // 
             CreateMap<CarModel, CarModelDto>();

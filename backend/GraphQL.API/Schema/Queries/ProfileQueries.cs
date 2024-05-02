@@ -1,20 +1,23 @@
-﻿using System.Security.Claims;
-using Carsharing.ViewModels.Profile;
+﻿using Carsharing.ViewModels.Profile;
 using Features.Users.Queries.GetPersonalInfo;
 using Features.Users.Queries.GetProfileInfo;
+using HotChocolate.Authorization;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
+using GraphQL.API.Helpers.Extensions;
 
 namespace GraphQL.API.Schema.Queries;
 
 public partial class Queries
 {
-	[Authorize]
-	public async Task<ProfileInfoVM> GetProfile([FromServices] IMediator mediator, ClaimsPrincipal claimsPrincipal)
+
+	[Authorize]	
+	public async Task<ProfileInfoVM> GetProfile(
+		[FromServices] IMediator mediator, 
+		[Service] IHttpContextAccessor httpContextAccessor)
 	{
-		var queryResult = await mediator.Send(new GetProfileInfoQuery(claimsPrincipal.GetId()));
+		var userId = httpContextAccessor.GetUserId();
+		var queryResult = await mediator.Send(new GetProfileInfoQuery(userId));
 		var info = queryResult.Value;
 		
 		return queryResult.IsSuccess
@@ -38,9 +41,12 @@ public partial class Queries
 	}
 	
 	[Authorize]
-	public async Task<PersonalInfoVM> GetPersonalInfo([FromServices] IMediator mediator, ClaimsPrincipal claimsPrincipal)
+	public async Task<PersonalInfoVM> GetPersonalInfo(
+		[FromServices] IMediator mediator, 
+		[Service] IHttpContextAccessor httpContextAccessor)
 	{
-		var queryResult = await mediator.Send(new GetPersonalInfoQuery(claimsPrincipal.GetId()));
+		var userId = httpContextAccessor.GetUserId();
+		var queryResult = await mediator.Send(new GetPersonalInfoQuery(userId));
 		var info = queryResult.Value;
 		
 		return queryResult.IsSuccess && info is not null

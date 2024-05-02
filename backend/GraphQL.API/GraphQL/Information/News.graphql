@@ -1,8 +1,0 @@
-query {
-  news{
-   id
-   title
-   body
-   createdAt
-  }
-}
