@@ -23,7 +23,6 @@ public partial class Mutations
 			End = bookingInfo.EndDate,
 			Start = bookingInfo.StartDate,
 			CarId = bookingInfo.CarId,
-			TariffId = bookingInfo.TariffId,
 		}));;
 		
 		return commandResult

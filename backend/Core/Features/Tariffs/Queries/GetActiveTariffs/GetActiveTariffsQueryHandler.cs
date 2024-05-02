@@ -8,7 +8,7 @@ namespace Features.Tariffs;
 
 public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery, IEnumerable<TariffDto>>
 {
-    private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new Ok<IEnumerable<TariffDto>>(Array.Empty<TariffDto>());
+    private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new (Array.Empty<TariffDto>());
 
     private readonly ITariffRepository _tariffRepository;
 
@@ -45,7 +45,7 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
         }
     }
 
-    private TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
+    private static TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
         => tariffs
             .Select(tariff => new TariffDto()
             {

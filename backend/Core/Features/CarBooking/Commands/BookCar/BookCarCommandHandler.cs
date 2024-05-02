@@ -32,8 +32,6 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
 
     public async Task<Result> Handle(BookCarCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Got rent request");
-
         var rentInfo = request.RentCarInfo;
 
         var tariff = await _carRepository.GetRelatedTariffAsync(rentInfo.CarId);
