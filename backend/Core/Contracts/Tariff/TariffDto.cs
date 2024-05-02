@@ -13,4 +13,8 @@ public class TariffDto
     public int? MaxMileage { get; init; }
     
     public string? Image { get; init; }
+    
+    public long MaxBookMinutes { get; init; }
+
+    public long MinBookMinutes { get; init; }
 }
