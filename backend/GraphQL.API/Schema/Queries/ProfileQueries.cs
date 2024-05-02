@@ -27,8 +27,12 @@ public partial class Queries
 				{
 					Balance = info!.PersonalInfo!.Balance,
 					Email = info.PersonalInfo.Email,
-					FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}"
-				},
+					FullName = $"{info.PersonalInfo.FirstName} {info.PersonalInfo.LastName}",
+					Name = info.PersonalInfo.FirstName,
+                    SecondName = info.PersonalInfo.LastName,
+					BirthDate = info.PersonalInfo.BirthDate,
+					IsConfirmed = info.PersonalInfo.Confirmed
+                },
 				BookedCars = info.CurrentlyBookedCars!.Select(x => new ProfileCarVM
 				{
 					Id = x.Id,

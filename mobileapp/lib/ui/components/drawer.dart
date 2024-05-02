@@ -80,7 +80,7 @@ class _DrawerPageList extends StatelessWidget {
 
   void Function() createNavigateToRoute(BuildContext context, String route) {
     return () {
-      Navigator.of(context).pop();
+      Navigator.of(context).popUntil((route) => route.settings.name == DriveRoutes.home);
       Navigator.of(context).pushNamed(route);
     };
   }

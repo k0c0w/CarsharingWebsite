@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
+import 'package:mobileapp/domain/providers/user_info_provider.dart';
 import 'package:mobileapp/domain/results.dart';
 import 'package:mobileapp/domain/use_cases/auth_cases.dart';
 import 'package:mobileapp/main.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _sessionDataProvider = getIt<SessionDataProvider>();
+  final _userDataProvider = getIt<DrawerUserInfoDataProvider>();
 
   AuthBloc(super.initialState) {
     on<AuthEvent>(_dispatchEvent, transformer: sequential());
@@ -44,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogout(AuthLogoutEvent event, emit) async {
     try{
       await _sessionDataProvider.deleteJwtToken();
+      await _userDataProvider.deleteUserInfo();
       emit(AuthUnauthorizedState());
     }
     catch (e) {

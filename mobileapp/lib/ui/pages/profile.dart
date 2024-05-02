@@ -40,15 +40,20 @@ class _View extends StatelessWidget {
   const _View();
 
   Widget _build(BuildContext context)
-    => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const _BalanceWidget(),
-          const _PersonalInformationTableWidget(),
-          const _PersonalDataConfirmationLabelWidget(),
-          _AppLogoutButton(),
-        ]
-    );
+  => GestureDetector(
+    onHorizontalDragEnd: (_) => context
+        .read<ProfilePageBloc>()
+        .add(const ProfilePageBlocEvent.load(allowCache: false)),
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const _BalanceWidget(),
+            const _PersonalInformationTableWidget(),
+            const _PersonalDataConfirmationLabelWidget(),
+            _AppLogoutButton(),
+          ]
+      )
+  );
 
   @override
   Widget build(BuildContext context) {

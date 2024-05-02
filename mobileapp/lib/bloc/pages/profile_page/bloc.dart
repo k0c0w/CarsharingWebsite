@@ -29,10 +29,10 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
     on<ProfilePageLoadEvent>(_loadProfileInfo, transformer: droppable());
   }
 
-  Future<void> _loadProfileInfo(event, emitter) async {
+  Future<void> _loadProfileInfo(ProfilePageLoadEvent event, emitter) async {
     emitter(const ProfilePageBlocState.loading());
 
-    final profileResult = await GetProfileUseCase()();
+    final profileResult = await GetProfileUseCase()(allowCached: event.allowCache);
 
     if (profileResult is Error) {
       emitter(const ProfilePageBlocState.loadError("Что-то пошло не так..."));

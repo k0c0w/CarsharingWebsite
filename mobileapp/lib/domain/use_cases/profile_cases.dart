@@ -1,18 +1,79 @@
+import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:mobileapp/domain/entities/profile/profile.dart';
+import 'package:mobileapp/domain/providers/user_info_provider.dart';
 import 'package:mobileapp/domain/results.dart';
 import 'package:mobileapp/domain/use_cases/base.dart';
+import 'package:mobileapp/main.dart';
+import 'package:mobileapp/map_models/drawer_user.dart';
 
 class GetProfileUseCase extends UseCase<Profile> {
+  static const String _profileQuery = """
+  query {
+    profile {
+      userInfo {
+        email
+        secondName
+        name
+        birthDate
+        balance
+        isConfirmed
+      }
+    }
+  }
+  """;
 
-  Future<Result<Profile>> call() async {
+  static const String _personalInfoQuery = """
+  query {
+    personalInfo {
+      passport
+      driverLicense
+    }
+  }
+  """;
+
+  final _drawerUserInfoProvider = getIt<DrawerUserInfoDataProvider>();
+
+  Future<Result<Profile>> call({bool allowCached = true}) async {
+    final fetchPolicy = allowCached ? FetchPolicy.cacheAndNetwork : FetchPolicy.noCache;
+    final profileQueryOptions = QueryOptions(document: gql(_profileQuery), fetchPolicy: fetchPolicy);
+    final personalInfoQueryOptions = QueryOptions(document: gql(_personalInfoQuery), fetchPolicy: fetchPolicy);
+
+    final profileQueryResult = await withTimeOut(graphQlClient.query(profileQueryOptions));
+    if (profileQueryResult.hasException || isUnexecuted(profileQueryResult)) {
+      return tryDispatchError(profileQueryResult);
+    }
+
+    final personalInfoQueryResult = await withTimeOut(graphQlClient.query(personalInfoQueryOptions));
+    if (personalInfoQueryResult.hasException || isUnexecuted(personalInfoQueryResult)) {
+      return tryDispatchError(personalInfoQueryResult);
+    }
+
+    final profileMap = profileQueryResult.data!["profile"]["userInfo"];
+    final personalInfoMap = personalInfoQueryResult.data!["personalInfo"];
+
     final profile = Profile(
-      name: "Василий",
-      secondName: "Якупов",
-      email: "example@example.com",
-      birthDate: DateTime(1990, 2, 4),
-      balance: 150.55,
-      isConfirmed: true,
+        name: profileMap["name"],
+        secondName: profileMap["secondName"],
+        email: profileMap["email"],
+        balance: profileMap["balance"].toDouble(),
+        birthDate: DateTime.parse(profileMap["birthDate"]),
+        isConfirmed: profileMap["isConfirmed"],
+        driverLicense: personalInfoMap["driverLicense"]?.toString(),
+        passport: personalInfoMap["passport"]
     );
+
+    if (!allowCached) {
+      try{
+        final newUserInfo = DrawerUserInfo(
+            name: profile.name,
+            secondName: profile.secondName,
+            isConfirmed: profile.isConfirmed);
+        await _drawerUserInfoProvider.saveUserInfo(newUserInfo);
+      }
+      catch (e){
+
+      }
+    }
 
     return Ok(profile);
   }

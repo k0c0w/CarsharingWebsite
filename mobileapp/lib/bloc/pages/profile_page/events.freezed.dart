@@ -18,7 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$ProfilePageBlocEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -30,7 +30,7 @@ mixin _$ProfilePageBlocEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -42,7 +42,7 @@ mixin _$ProfilePageBlocEvent {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -124,6 +124,8 @@ abstract class _$$ProfilePageLoadEventImplCopyWith<$Res> {
   factory _$$ProfilePageLoadEventImplCopyWith(_$ProfilePageLoadEventImpl value,
           $Res Function(_$ProfilePageLoadEventImpl) then) =
       __$$ProfilePageLoadEventImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({bool allowCache});
 }
 
 /// @nodoc
@@ -133,32 +135,59 @@ class __$$ProfilePageLoadEventImplCopyWithImpl<$Res>
   __$$ProfilePageLoadEventImplCopyWithImpl(_$ProfilePageLoadEventImpl _value,
       $Res Function(_$ProfilePageLoadEventImpl) _then)
       : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? allowCache = null,
+  }) {
+    return _then(_$ProfilePageLoadEventImpl(
+      allowCache: null == allowCache
+          ? _value.allowCache
+          : allowCache // ignore: cast_nullable_to_non_nullable
+              as bool,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
-  const _$ProfilePageLoadEventImpl();
+  const _$ProfilePageLoadEventImpl({this.allowCache = true});
+
+  @override
+  @JsonKey()
+  final bool allowCache;
 
   @override
   String toString() {
-    return 'ProfilePageBlocEvent.load()';
+    return 'ProfilePageBlocEvent.load(allowCache: $allowCache)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ProfilePageLoadEventImpl);
+            other is _$ProfilePageLoadEventImpl &&
+            (identical(other.allowCache, allowCache) ||
+                other.allowCache == allowCache));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, allowCache);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProfilePageLoadEventImplCopyWith<_$ProfilePageLoadEventImpl>
+      get copyWith =>
+          __$$ProfilePageLoadEventImplCopyWithImpl<_$ProfilePageLoadEventImpl>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -167,13 +196,13 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     required TResult Function(String passport) passportChanged,
     required TResult Function(String license) driverLicenseChanged,
   }) {
-    return load();
+    return load(allowCache);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -182,13 +211,13 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     TResult? Function(String passport)? passportChanged,
     TResult? Function(String license)? driverLicenseChanged,
   }) {
-    return load?.call();
+    return load?.call(allowCache);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -199,7 +228,7 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
     required TResult orElse(),
   }) {
     if (load != null) {
-      return load();
+      return load(allowCache);
     }
     return orElse();
   }
@@ -263,7 +292,13 @@ class _$ProfilePageLoadEventImpl implements ProfilePageLoadEvent {
 }
 
 abstract class ProfilePageLoadEvent implements ProfilePageBlocEvent {
-  const factory ProfilePageLoadEvent() = _$ProfilePageLoadEventImpl;
+  const factory ProfilePageLoadEvent({final bool allowCache}) =
+      _$ProfilePageLoadEventImpl;
+
+  bool get allowCache;
+  @JsonKey(ignore: true)
+  _$$ProfilePageLoadEventImplCopyWith<_$ProfilePageLoadEventImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -305,7 +340,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -320,7 +355,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -335,7 +370,7 @@ class _$ProfilePageExitEventImpl implements ProfilePageExitEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -481,7 +516,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -496,7 +531,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -511,7 +546,7 @@ class _$ProfilePageNameChangedEventImpl implements ProfilePageNameChangedEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -666,7 +701,7 @@ class _$ProfilePageSecondNameChangedEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -681,7 +716,7 @@ class _$ProfilePageSecondNameChangedEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -696,7 +731,7 @@ class _$ProfilePageSecondNameChangedEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -853,7 +888,7 @@ class _$ProfilePageBirthdateChangedEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -868,7 +903,7 @@ class _$ProfilePageBirthdateChangedEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -883,7 +918,7 @@ class _$ProfilePageBirthdateChangedEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -1039,7 +1074,7 @@ class _$ProfilePageEmailChangedEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -1054,7 +1089,7 @@ class _$ProfilePageEmailChangedEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -1069,7 +1104,7 @@ class _$ProfilePageEmailChangedEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -1225,7 +1260,7 @@ class _$ProfilePagePassportChangedEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -1240,7 +1275,7 @@ class _$ProfilePagePassportChangedEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -1255,7 +1290,7 @@ class _$ProfilePagePassportChangedEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,
@@ -1410,7 +1445,7 @@ class _$ProfilePageDriverLicenseChangedEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function() load,
+    required TResult Function(bool allowCache) load,
     required TResult Function() exitPressed,
     required TResult Function(String name) nameChanged,
     required TResult Function(String secondName) secondNameChanged,
@@ -1425,7 +1460,7 @@ class _$ProfilePageDriverLicenseChangedEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function()? load,
+    TResult? Function(bool allowCache)? load,
     TResult? Function()? exitPressed,
     TResult? Function(String name)? nameChanged,
     TResult? Function(String secondName)? secondNameChanged,
@@ -1440,7 +1475,7 @@ class _$ProfilePageDriverLicenseChangedEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function()? load,
+    TResult Function(bool allowCache)? load,
     TResult Function()? exitPressed,
     TResult Function(String name)? nameChanged,
     TResult Function(String secondName)? secondNameChanged,

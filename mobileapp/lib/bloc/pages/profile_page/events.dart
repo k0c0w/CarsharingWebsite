@@ -4,7 +4,7 @@ part 'events.freezed.dart';
 
 @freezed
 sealed class ProfilePageBlocEvent with _$ProfilePageBlocEvent {
-  const factory ProfilePageBlocEvent.load() = ProfilePageLoadEvent;
+  const factory ProfilePageBlocEvent.load({@Default(true) bool allowCache}) = ProfilePageLoadEvent;
   const factory ProfilePageBlocEvent.exitPressed() = ProfilePageExitEvent;
   const factory ProfilePageBlocEvent.nameChanged(String name) = ProfilePageNameChangedEvent;
   const factory ProfilePageBlocEvent.secondNameChanged(String secondName) = ProfilePageSecondNameChangedEvent;

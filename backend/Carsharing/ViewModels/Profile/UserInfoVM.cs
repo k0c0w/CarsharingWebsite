@@ -12,4 +12,16 @@ public record UserInfoVM
     
     [JsonPropertyName("balance")]
     public decimal Balance { get; init; }
+
+    [JsonPropertyName("first_name")]
+    public string? Name { get; init; }
+
+    [JsonPropertyName("second_name")]
+    public string? SecondName { get; init; }
+
+    [JsonPropertyName("birthdate")]
+    public DateTime? BirthDate { get; init; }
+
+    [JsonPropertyName("confirmed")]
+    public bool IsConfirmed { get; init; }
 }

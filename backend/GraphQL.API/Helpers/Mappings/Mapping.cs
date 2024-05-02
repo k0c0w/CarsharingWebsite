@@ -63,6 +63,7 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.UserInfo.DriverLicense))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
+                .ForMember(dest => dest.Confirmed, opt => opt.MapFrom(src => src.UserInfo.Verified))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
 

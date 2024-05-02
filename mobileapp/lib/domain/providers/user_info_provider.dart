@@ -24,4 +24,8 @@ class DrawerUserInfoDataProvider {
   Future<void> saveUserInfo(DrawerUserInfo user) {
     return _sharedPreferences.setString(_Keys.user, json.encode(user.toJson()));
   }
+
+  Future<void> deleteUserInfo() {
+    return _sharedPreferences.remove(_Keys.user);
+  }
 }
