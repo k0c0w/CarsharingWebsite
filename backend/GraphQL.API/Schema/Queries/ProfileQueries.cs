@@ -31,7 +31,8 @@ public partial class Queries
 				},
 				BookedCars = info.CurrentlyBookedCars!.Select(x => new ProfileCarVM
 				{
-					Name = x.Model,
+					Id = x.Id,
+					Name = $"{x.Brand} {x.Model}",
 					IsOpened = x.IsOpened,
 					LicensePlate = x.LicensePlate,
 					ImageUrl = x.ImageUrl

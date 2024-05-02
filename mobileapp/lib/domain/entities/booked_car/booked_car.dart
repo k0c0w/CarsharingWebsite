@@ -7,11 +7,10 @@ part 'booked_car.g.dart';
 class BookedCar with _$BookedCar {
 
   const factory BookedCar({
-    required int id,
-    required String model,
-    required String brand,
+    required String name,
     required String licensePlate,
-    required bool isOpen,
+    required bool isOpened,
+    required int id,
   }) = _BookedCar;
 
   factory BookedCar.fromJson(Map<String, Object?> json)

@@ -20,11 +20,10 @@ BookedCar _$BookedCarFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$BookedCar {
-  int get id => throw _privateConstructorUsedError;
-  String get model => throw _privateConstructorUsedError;
-  String get brand => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
   String get licensePlate => throw _privateConstructorUsedError;
-  bool get isOpen => throw _privateConstructorUsedError;
+  bool get isOpened => throw _privateConstructorUsedError;
+  int get id => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -37,8 +36,7 @@ abstract class $BookedCarCopyWith<$Res> {
   factory $BookedCarCopyWith(BookedCar value, $Res Function(BookedCar) then) =
       _$BookedCarCopyWithImpl<$Res, BookedCar>;
   @useResult
-  $Res call(
-      {int id, String model, String brand, String licensePlate, bool isOpen});
+  $Res call({String name, String licensePlate, bool isOpened, int id});
 }
 
 /// @nodoc
@@ -54,33 +52,28 @@ class _$BookedCarCopyWithImpl<$Res, $Val extends BookedCar>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
-    Object? model = null,
-    Object? brand = null,
+    Object? name = null,
     Object? licensePlate = null,
-    Object? isOpen = null,
+    Object? isOpened = null,
+    Object? id = null,
   }) {
     return _then(_value.copyWith(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      model: null == model
-          ? _value.model
-          : model // ignore: cast_nullable_to_non_nullable
-              as String,
-      brand: null == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
       licensePlate: null == licensePlate
           ? _value.licensePlate
           : licensePlate // ignore: cast_nullable_to_non_nullable
               as String,
-      isOpen: null == isOpen
-          ? _value.isOpen
-          : isOpen // ignore: cast_nullable_to_non_nullable
+      isOpened: null == isOpened
+          ? _value.isOpened
+          : isOpened // ignore: cast_nullable_to_non_nullable
               as bool,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -93,8 +86,7 @@ abstract class _$$BookedCarImplCopyWith<$Res>
       __$$BookedCarImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id, String model, String brand, String licensePlate, bool isOpen});
+  $Res call({String name, String licensePlate, bool isOpened, int id});
 }
 
 /// @nodoc
@@ -108,33 +100,28 @@ class __$$BookedCarImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = null,
-    Object? model = null,
-    Object? brand = null,
+    Object? name = null,
     Object? licensePlate = null,
-    Object? isOpen = null,
+    Object? isOpened = null,
+    Object? id = null,
   }) {
     return _then(_$BookedCarImpl(
-      id: null == id
-          ? _value.id
-          : id // ignore: cast_nullable_to_non_nullable
-              as int,
-      model: null == model
-          ? _value.model
-          : model // ignore: cast_nullable_to_non_nullable
-              as String,
-      brand: null == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
               as String,
       licensePlate: null == licensePlate
           ? _value.licensePlate
           : licensePlate // ignore: cast_nullable_to_non_nullable
               as String,
-      isOpen: null == isOpen
-          ? _value.isOpen
-          : isOpen // ignore: cast_nullable_to_non_nullable
+      isOpened: null == isOpened
+          ? _value.isOpened
+          : isOpened // ignore: cast_nullable_to_non_nullable
               as bool,
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -143,29 +130,26 @@ class __$$BookedCarImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$BookedCarImpl implements _BookedCar {
   const _$BookedCarImpl(
-      {required this.id,
-      required this.model,
-      required this.brand,
+      {required this.name,
       required this.licensePlate,
-      required this.isOpen});
+      required this.isOpened,
+      required this.id});
 
   factory _$BookedCarImpl.fromJson(Map<String, dynamic> json) =>
       _$$BookedCarImplFromJson(json);
 
   @override
-  final int id;
-  @override
-  final String model;
-  @override
-  final String brand;
+  final String name;
   @override
   final String licensePlate;
   @override
-  final bool isOpen;
+  final bool isOpened;
+  @override
+  final int id;
 
   @override
   String toString() {
-    return 'BookedCar(id: $id, model: $model, brand: $brand, licensePlate: $licensePlate, isOpen: $isOpen)';
+    return 'BookedCar(name: $name, licensePlate: $licensePlate, isOpened: $isOpened, id: $id)';
   }
 
   @override
@@ -173,18 +157,18 @@ class _$BookedCarImpl implements _BookedCar {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$BookedCarImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.model, model) || other.model == model) &&
-            (identical(other.brand, brand) || other.brand == brand) &&
+            (identical(other.name, name) || other.name == name) &&
             (identical(other.licensePlate, licensePlate) ||
                 other.licensePlate == licensePlate) &&
-            (identical(other.isOpen, isOpen) || other.isOpen == isOpen));
+            (identical(other.isOpened, isOpened) ||
+                other.isOpened == isOpened) &&
+            (identical(other.id, id) || other.id == id));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, model, brand, licensePlate, isOpen);
+      Object.hash(runtimeType, name, licensePlate, isOpened, id);
 
   @JsonKey(ignore: true)
   @override
@@ -202,25 +186,22 @@ class _$BookedCarImpl implements _BookedCar {
 
 abstract class _BookedCar implements BookedCar {
   const factory _BookedCar(
-      {required final int id,
-      required final String model,
-      required final String brand,
+      {required final String name,
       required final String licensePlate,
-      required final bool isOpen}) = _$BookedCarImpl;
+      required final bool isOpened,
+      required final int id}) = _$BookedCarImpl;
 
   factory _BookedCar.fromJson(Map<String, dynamic> json) =
       _$BookedCarImpl.fromJson;
 
   @override
-  int get id;
-  @override
-  String get model;
-  @override
-  String get brand;
+  String get name;
   @override
   String get licensePlate;
   @override
-  bool get isOpen;
+  bool get isOpened;
+  @override
+  int get id;
   @override
   @JsonKey(ignore: true)
   _$$BookedCarImplCopyWith<_$BookedCarImpl> get copyWith =>

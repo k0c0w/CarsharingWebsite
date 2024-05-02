@@ -1,9 +1,10 @@
-
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/pages/subscriptions_page/active/events.dart';
 import 'package:mobileapp/bloc/pages/subscriptions_page/active/state.dart';
 import 'package:mobileapp/domain/entities/booked_car/booked_car.dart';
+import 'package:mobileapp/domain/results.dart';
+import 'package:mobileapp/domain/use_cases/subscriptions_cases.dart';
 
 class ActiveSubscriptionsPageBloc
     extends Bloc<ActiveSubscriptionsEvent, ActiveSubscriptionsState> {
@@ -49,10 +50,13 @@ class ActiveSubscriptionsPageBloc
   Future<void> _onLoad(ActiveSubscriptionsLoadEvent event, emit) async {
     emit(const ActiveSubscriptionsState.loading());
     try{
-      //todo: загрузить список подписок
+      final bookedCars = await RetrieveSubscriptionsUseCase()();
+      if (bookedCars is Error<List<BookedCar>>) {
+        emit(const ActiveSubscriptionsState.loadError());
+        return;
+      }
 
-      final cars = [const BookedCar(id: 1, model: "Land", brand: "Cruiser", licensePlate: "А126ВУ", isOpen: false)];
-      emit(ActiveSubscriptionsState.loaded(cars: cars));
+      emit(ActiveSubscriptionsState.loaded(cars: (bookedCars as Ok<List<BookedCar>>).value));
     } catch(e) {
       emit(const ActiveSubscriptionsState.loadError());
     }

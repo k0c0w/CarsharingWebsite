@@ -9,10 +9,9 @@ class SubscriptionPageHistoryList extends StatelessWidget {
   Widget build(BuildContext context) {
     final cars = [const BookedCar(
         id: 2,
-        model: "Land Cruiser",
-        brand: "Toyota",
+        name: "Land Cruiser",
         licensePlate: "А 712 СУ 116 РУС",
-        isOpen: false)
+        isOpened: false)
     ];
 
     return ListView.builder(
@@ -22,7 +21,7 @@ class SubscriptionPageHistoryList extends StatelessWidget {
         itemBuilder: (context, index) {
           final car = cars[index];
           return HistoryCard(
-              name: "${car.brand} ${car.model}",
+              name: car.name,
               description: car.licensePlate
           );
         }

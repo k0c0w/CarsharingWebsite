@@ -56,7 +56,8 @@ class GetCarsByTariffUseCase extends UseCase<List<Car>> {
             "longitude": location.long,
             "latitude": location.lat,
             "radius": radiusInMeters,
-          }
+          },
+        fetchPolicy: FetchPolicy.noCache
       );
 
       final queryResult = await withTimeOut(graphQlClient.query(carModelQueryOptions));

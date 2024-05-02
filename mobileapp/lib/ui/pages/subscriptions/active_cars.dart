@@ -43,7 +43,7 @@ class _View extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final car = cars[index];
                     final carId = car.id;
-                    final isOpened = car.isOpen;
+                    final isOpened = car.isOpened;
 
                     return SubscriptionCard(
                         isOpened: isOpened,
@@ -52,7 +52,7 @@ class _View extends StatelessWidget {
                         onOpenOrCloseCar: isOpened ?
                             () => bloc.add(ActiveSubscriptionsEvent.closeCar(carId))
                             : () => bloc.add(ActiveSubscriptionsEvent.openCar(carId)),
-                        name: "${car.brand} ${car.model}",
+                        name: car.name,
                         description: car.licensePlate
                     );
                   }
