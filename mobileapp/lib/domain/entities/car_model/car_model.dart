@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobileapp/domain/entities/location/geopoint.dart';
 
 part 'car_model.freezed.dart';
 part 'car_model.g.dart';
@@ -12,7 +11,7 @@ class CarModel with _$CarModel {
     required String model,
     required String brand,
     required String description,
-    required GeoPoint url,
+    required String url,
   }) = _CarModel;
 
   factory CarModel.fromJson(Map<String, Object?> json)

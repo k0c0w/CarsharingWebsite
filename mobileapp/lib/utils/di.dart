@@ -29,7 +29,7 @@ final graphQLClientFactory = getGraphQLClient(getIt<SessionDataProvider>());
 
 GraphQLClient getGraphQLClient(SessionDataProvider sessionDataProvider) {
   final HttpLink httpLink = HttpLink(
-    'http://192.168.0.20:5082/graphql/',
+    'http://192.168.0.16:5082/graphql/',
   );
 
   final AuthLink authLink = AuthLink(

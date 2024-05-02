@@ -16,6 +16,16 @@ namespace Carsharing.Helpers.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<Tariff, TariffDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TariffId))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.MaxMileage, opt => opt.MapFrom(src => src.MaxMileage))
+                .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.PricePerMinute))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.MaxBookMinutes, opt => opt.MapFrom(src => src.MaxAllowedMinutes))
+                .ForMember(dest => dest.MinBookMinutes, opt => opt.MapFrom(src => src.MinAllowedMinutes));
+
             CreateMap<GetUserResult, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.email))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.given_name))
@@ -55,7 +65,7 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
-            
+
             // Controllers
             CreateMap<CarDto, AdminCarVM>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -96,7 +106,7 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndDate))
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartDate))
                 .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId));
-            
+
             // 
             CreateMap<CarModel, CarModelDto>();
 
@@ -110,20 +120,20 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.Price,
                     source => source
                         .MapFrom(carModel => carModel.Tariff!.PricePerMinute));
-        
+
             CreateMap<Car, FreeCarDto>()
                 .ForMember(dest => dest.CarId,
                     src => src
                         .MapFrom(car => car.Id))
                 .ForMember(dest => dest.Location,
                     src => src
-                        .MapFrom(car =>new GeoPoint(car.ParkingLatitude, car.ParkingLongitude)))
+                        .MapFrom(car => new GeoPoint(car.ParkingLatitude, car.ParkingLongitude)))
                 .ForMember(dest => dest.Plate,
                     src => src
                         .MapFrom(car => car.LicensePlate));
 
             CreateMap<Car, CarDto>();
-        
+
             CreateMap<CreateCarModelDto, CarModel>();
 
         }

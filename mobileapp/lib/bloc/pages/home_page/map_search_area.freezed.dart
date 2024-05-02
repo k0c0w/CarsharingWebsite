@@ -116,7 +116,7 @@ class __$$MapSearchAreaImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$MapSearchAreaImpl implements _MapSearchArea {
-  const _$MapSearchAreaImpl(this.anchorPoint, {this.radius = 20});
+  const _$MapSearchAreaImpl(this.anchorPoint, {this.radius = 500});
 
   @override
   final GeoPoint anchorPoint;

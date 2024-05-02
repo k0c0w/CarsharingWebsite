@@ -24,7 +24,7 @@ mixin _$CarModel {
   String get model => throw _privateConstructorUsedError;
   String get brand => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
-  GeoPoint get url => throw _privateConstructorUsedError;
+  String get url => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -38,9 +38,7 @@ abstract class $CarModelCopyWith<$Res> {
       _$CarModelCopyWithImpl<$Res, CarModel>;
   @useResult
   $Res call(
-      {int id, String model, String brand, String description, GeoPoint url});
-
-  $GeoPointCopyWith<$Res> get url;
+      {int id, String model, String brand, String description, String url});
 }
 
 /// @nodoc
@@ -82,16 +80,8 @@ class _$CarModelCopyWithImpl<$Res, $Val extends CarModel>
       url: null == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
-              as GeoPoint,
+              as String,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $GeoPointCopyWith<$Res> get url {
-    return $GeoPointCopyWith<$Res>(_value.url, (value) {
-      return _then(_value.copyWith(url: value) as $Val);
-    });
   }
 }
 
@@ -104,10 +94,7 @@ abstract class _$$CarModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id, String model, String brand, String description, GeoPoint url});
-
-  @override
-  $GeoPointCopyWith<$Res> get url;
+      {int id, String model, String brand, String description, String url});
 }
 
 /// @nodoc
@@ -147,7 +134,7 @@ class __$$CarModelImplCopyWithImpl<$Res>
       url: null == url
           ? _value.url
           : url // ignore: cast_nullable_to_non_nullable
-              as GeoPoint,
+              as String,
     ));
   }
 }
@@ -174,7 +161,7 @@ class _$CarModelImpl implements _CarModel {
   @override
   final String description;
   @override
-  final GeoPoint url;
+  final String url;
 
   @override
   String toString() {
@@ -219,7 +206,7 @@ abstract class _CarModel implements CarModel {
       required final String model,
       required final String brand,
       required final String description,
-      required final GeoPoint url}) = _$CarModelImpl;
+      required final String url}) = _$CarModelImpl;
 
   factory _CarModel.fromJson(Map<String, dynamic> json) =
       _$CarModelImpl.fromJson;
@@ -233,7 +220,7 @@ abstract class _CarModel implements CarModel {
   @override
   String get description;
   @override
-  GeoPoint get url;
+  String get url;
   @override
   @JsonKey(ignore: true)
   _$$CarModelImplCopyWith<_$CarModelImpl> get copyWith =>

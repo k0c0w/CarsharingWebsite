@@ -9,8 +9,8 @@ class Tariff with _$Tariff {
       int id,
       String name,
       double priceInRubles,
-      double maxBookMinutes,
-      double minBookMinutes,
+      int maxBookMinutes,
+      int minBookMinutes,
       ) = _Tariff;
 
   factory Tariff.fromJson(Map<String, Object?> json)

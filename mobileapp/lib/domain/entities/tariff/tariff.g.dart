@@ -10,8 +10,8 @@ _$TariffImpl _$$TariffImplFromJson(Map<String, dynamic> json) => _$TariffImpl(
       json['id'] as int,
       json['name'] as String,
       (json['priceInRubles'] as num).toDouble(),
-      (json['maxBookMinutes'] as num).toDouble(),
-      (json['minBookMinutes'] as num).toDouble(),
+      json['maxBookMinutes'] as int,
+      json['minBookMinutes'] as int,
     );
 
 Map<String, dynamic> _$$TariffImplToJson(_$TariffImpl instance) =>

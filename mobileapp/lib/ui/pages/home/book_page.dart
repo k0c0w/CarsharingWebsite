@@ -3,22 +3,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
 import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
+import 'package:mobileapp/domain/entities/car/car.dart';
+import 'package:mobileapp/domain/entities/car_model/car_model.dart';
+import 'package:mobileapp/domain/entities/tariff/tariff.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
-import 'package:mobileapp/ui/components/confirmation_container.dart';
 import 'package:mobileapp/ui/components/date_input.dart';
 import 'package:provider/provider.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class _RentTitle extends StatelessWidget {
-  const _RentTitle();
+  final Tariff tariff;
+  const _RentTitle({required this.tariff});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 20),
       child: Text(
-        "TRAVEL",
+        tariff.name.toUpperCase(),
         style: GoogleFonts.openSans(
           textStyle: const TextStyle(
             fontSize: 25,
@@ -33,7 +36,9 @@ class _RentTitle extends StatelessWidget {
 }
 
 class _RentCarDescriptionCarName extends StatelessWidget {
-  _RentCarDescriptionCarName();
+  final String brandTitle;
+  final String modelTitle;
+  _RentCarDescriptionCarName({required this.brandTitle, required this.modelTitle});
 
   final TextStyle _style = GoogleFonts.openSans(
     textStyle: const TextStyle(
@@ -48,15 +53,16 @@ class _RentCarDescriptionCarName extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Toyota", style: _style,),
-        Text("Crown", style: _style,)
+        Text(brandTitle, style: _style,),
+        Text(modelTitle, style: _style,)
       ],
     );
   }
 }
 
 class _RentCarDescriptionImage extends StatelessWidget {
-  const _RentCarDescriptionImage();
+  final String url;
+  const _RentCarDescriptionImage({required this.url});
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +72,14 @@ class _RentCarDescriptionImage extends StatelessWidget {
       width: size.width * 0.572,
       child: FadeInImage.memoryNetwork(
           placeholder: kTransparentImage,
-          image: "https://www.agscenter.ru/upload/resize_cache/iblock/68e/352_300_1/TOYOTA%20Crown.png"),
+          image: url),
     );
   }
 }
 
 class _RentCarDescription extends StatelessWidget {
-  const _RentCarDescription();
+  final CarModel carModel;
+  const _RentCarDescription({required this.carModel});
 
   @override
   Widget build(BuildContext context) {
@@ -82,14 +89,17 @@ class _RentCarDescription extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _RentCarDescriptionCarName(),
-            const _RentCarDescriptionImage(),
+            _RentCarDescriptionCarName(
+              brandTitle: carModel.brand,
+              modelTitle: carModel.model,
+            ),
+            _RentCarDescriptionImage(url: carModel.url),
           ],
         ),
         Container(
           margin: const EdgeInsets.only(top: 20, bottom: 20),
           child: Text(
-            "АКПП, люкс автомобиль на 4 человека. Новый саолн и мультимедиа, детские кресла.",
+            carModel.description,
             style: GoogleFonts.openSans(
                 textStyle: const TextStyle(
                   letterSpacing: 5,
@@ -107,11 +117,13 @@ class _RentCarDescription extends StatelessWidget {
 }
 
 class _RentDateFormState extends State<_RentDateForm> {
+  final DateTime minDate;
+  final DateTime maxDate;
   final _formKey = GlobalKey<FormState>();
   DateTime? _firstDate;
   DateTime? _secondDate;
 
-  _RentDateFormState();
+  _RentDateFormState({required this.minDate, required this.maxDate});
 
   String? _dateInputValidator(String? value) {
     if (value == null || value.isEmpty) {
@@ -127,6 +139,7 @@ class _RentDateFormState extends State<_RentDateForm> {
         && _firstDate!.compareTo(_secondDate!) <= 0;
 
     if (_formKey.currentState!.validate() && firstDateIsLessThanSecond) {
+      Navigator.of(context).pop();
       final bloc = context.read<HomePageBloc>();
       bloc.add(HomePageBlocEvent.tryBook(_firstDate!, _secondDate!));
     }
@@ -157,8 +170,8 @@ class _RentDateFormState extends State<_RentDateForm> {
                       width: buttonSize.width,
                       child: DateFromInput(
                         labelText: "Начало аренды",
-                        firstDate: DateTime(2014),
-                        lastDate: DateTime(2034),
+                        firstDate: minDate,
+                        lastDate: maxDate,
                         initialDate: _firstDate,
                         validator: _dateInputValidator,
                         afterDateTimeSet: (date) => setState(() {
@@ -176,8 +189,8 @@ class _RentDateFormState extends State<_RentDateForm> {
                       width: buttonSize.width,
                       child: DateFromInput(
                         labelText: "Конец аренды",
-                        firstDate: DateTime(2014),
-                        lastDate: DateTime(2034),
+                        firstDate: minDate,
+                        lastDate: maxDate,
                         initialDate: _secondDate,
                         validator: _dateInputValidator,
                         afterDateTimeSet: (date) => setState(() {
@@ -199,40 +212,54 @@ class _RentDateFormState extends State<_RentDateForm> {
 }
 
 class _RentDateForm extends StatefulWidget {
-  const _RentDateForm();
+  final DateTime minDate;
+  final DateTime maxDate;
+  const _RentDateForm({required this.maxDate, required this.minDate});
 
   @override
-  State<StatefulWidget> createState() => _RentDateFormState();
+  State<StatefulWidget> createState()
+  => _RentDateFormState(maxDate: maxDate, minDate: minDate);
 }
 
 class _View extends StatelessWidget {
+  final Car car;
+  final Tariff tariff;
+  const _View({required this.car, required this.tariff});
 
   @override
   Widget build(BuildContext context) {
+    final minDate = DateTime.now();
+    final maxDate = minDate.add(Duration(minutes: tariff.maxBookMinutes.toInt()));
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: const Column(
+      child: Column(
         children: [
-          _RentTitle(),
-          _RentCarDescription(),
-          _RentDateForm(),
+          _RentTitle(tariff: tariff,),
+          _RentCarDescription(carModel: car.model,),
+          _RentDateForm(minDate: minDate, maxDate: maxDate,),
         ],
       ),
     );
   }
 }
 
-
 class HomePageCarBookingWidget extends StatelessWidget {
+  final Car car;
+  final Tariff tariff;
   final HomePageBloc injectableBloc;
-  const HomePageCarBookingWidget({super.key, required this.injectableBloc});
+  const HomePageCarBookingWidget({
+    super.key,
+    required this.injectableBloc,
+    required this.car,
+    required this.tariff,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Provider(
       create: (_) => injectableBloc,
       lazy: false,
-      child: _View(),
+      child: _View(car: car, tariff: tariff),
     );
   }
 }

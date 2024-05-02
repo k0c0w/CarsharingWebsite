@@ -23,8 +23,8 @@ mixin _$Tariff {
   int get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   double get priceInRubles => throw _privateConstructorUsedError;
-  double get maxBookMinutes => throw _privateConstructorUsedError;
-  double get minBookMinutes => throw _privateConstructorUsedError;
+  int get maxBookMinutes => throw _privateConstructorUsedError;
+  int get minBookMinutes => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -40,8 +40,8 @@ abstract class $TariffCopyWith<$Res> {
       {int id,
       String name,
       double priceInRubles,
-      double maxBookMinutes,
-      double minBookMinutes});
+      int maxBookMinutes,
+      int minBookMinutes});
 }
 
 /// @nodoc
@@ -79,11 +79,11 @@ class _$TariffCopyWithImpl<$Res, $Val extends Tariff>
       maxBookMinutes: null == maxBookMinutes
           ? _value.maxBookMinutes
           : maxBookMinutes // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       minBookMinutes: null == minBookMinutes
           ? _value.minBookMinutes
           : minBookMinutes // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ) as $Val);
   }
 }
@@ -99,8 +99,8 @@ abstract class _$$TariffImplCopyWith<$Res> implements $TariffCopyWith<$Res> {
       {int id,
       String name,
       double priceInRubles,
-      double maxBookMinutes,
-      double minBookMinutes});
+      int maxBookMinutes,
+      int minBookMinutes});
 }
 
 /// @nodoc
@@ -136,11 +136,11 @@ class __$$TariffImplCopyWithImpl<$Res>
       null == maxBookMinutes
           ? _value.maxBookMinutes
           : maxBookMinutes // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
       null == minBookMinutes
           ? _value.minBookMinutes
           : minBookMinutes // ignore: cast_nullable_to_non_nullable
-              as double,
+              as int,
     ));
   }
 }
@@ -161,9 +161,9 @@ class _$TariffImpl implements _Tariff {
   @override
   final double priceInRubles;
   @override
-  final double maxBookMinutes;
+  final int maxBookMinutes;
   @override
-  final double minBookMinutes;
+  final int minBookMinutes;
 
   @override
   String toString() {
@@ -209,8 +209,8 @@ abstract class _Tariff implements Tariff {
       final int id,
       final String name,
       final double priceInRubles,
-      final double maxBookMinutes,
-      final double minBookMinutes) = _$TariffImpl;
+      final int maxBookMinutes,
+      final int minBookMinutes) = _$TariffImpl;
 
   factory _Tariff.fromJson(Map<String, dynamic> json) = _$TariffImpl.fromJson;
 
@@ -221,9 +221,9 @@ abstract class _Tariff implements Tariff {
   @override
   double get priceInRubles;
   @override
-  double get maxBookMinutes;
+  int get maxBookMinutes;
   @override
-  double get minBookMinutes;
+  int get minBookMinutes;
   @override
   @JsonKey(ignore: true)
   _$$TariffImplCopyWith<_$TariffImpl> get copyWith =>

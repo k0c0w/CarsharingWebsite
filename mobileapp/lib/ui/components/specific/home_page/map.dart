@@ -27,14 +27,7 @@ class _MapState extends State<MapWidget> {
 
   void _onMapCreated(YandexMapController controller, BuildContext context) async {
     mapControllerCompleter.complete(controller);
-
-    final position = await controller.getUserCameraPosition();
-    final positionTarget = position!.target;
-    final anchorPoint = GeoPoint(positionTarget.latitude, positionTarget.longitude);
-    final radius = 500.0;//position.zoom;
-    final searchArea = MapSearchArea(anchorPoint, radius: radius);
-
-    context.read<HomePageBloc>().add(HomePageBlocEvent.initialLoad(searchArea));
+    await _tryMoveToCurrentLocation();
   }
 
   void _onCameraPositionChanged(
@@ -49,7 +42,6 @@ class _MapState extends State<MapWidget> {
 
     final target = position.target;
     final geoPoint = GeoPoint(target.latitude, target.longitude);
-    final zoom = position.zoom;
     context.read<HomePageBloc>()
         .add(HomePageBlocEvent.changeAnchor(MapSearchArea(geoPoint)));
   }
@@ -65,7 +57,7 @@ class _MapState extends State<MapWidget> {
         onTap: (_, __) => onTap(car),
         icon: PlacemarkIcon.single(PlacemarkIconStyle(
             image: BitmapDescriptor.fromAssetImage('assets/car.png'),
-            scale: 2
+            scale: 0.1,
           )
         )
     );
@@ -73,7 +65,17 @@ class _MapState extends State<MapWidget> {
 
   void _openBookPage(Car car, BuildContext context) {
     final bloc = context.read<HomePageBloc>();
-    showModalBottomSheet(context: context, builder: HomePageCarBookingWidget(injectableBloc: bloc).build);
+    bloc.add(HomePageBlocEvent.selectCar(car.id));
+
+    final state = bloc.state as HomePageBlocLoadedState;
+    final tariff = state.tariffs[state.selectedTariffIndex!];
+    showModalBottomSheet(
+        context: context,
+        builder: HomePageCarBookingWidget(
+            tariff: tariff,
+            car: car,
+            injectableBloc: bloc
+        ).build);
   }
 
   List<PlacemarkMapObject> _carsToPlaceMarks(List<Car> cars, BuildContext context) {
@@ -82,25 +84,26 @@ class _MapState extends State<MapWidget> {
         .toList();
   }
 
-  Future<void> _initPermission() async {
-    if (!await locationProvider.checkPermission()) {
-      await locationProvider.requestPermission();
-    }
-    await _fetchCurrentLocation();
-  }
+  Future<void> _tryMoveToCurrentLocation() async {
+    final userGavePermission = await locationProvider.checkPermission();
+    final appHasPermission = userGavePermission || (await locationProvider.requestPermission());
 
-  Future<void> _fetchCurrentLocation() async {
-    GeoPoint location;
+    if (!appHasPermission) {
+      await _moveToLocation(locationProvider.defaultLocation);
+      return;
+    }
+
+    late final GeoPoint location;
     final defLocation = locationProvider.defaultLocation;
     try {
       location = await locationProvider.getCurrentLocation();
     } catch (_) {
       location = defLocation;
     }
-    _moveToCurrentLocation(location);
+    await _moveToLocation(location);
   }
 
-  Future<void> _moveToCurrentLocation(
+  Future<void> _moveToLocation(
       GeoPoint appLatLong,
       ) async {
     (await mapControllerCompleter.future).moveCamera(
@@ -109,20 +112,14 @@ class _MapState extends State<MapWidget> {
     );
   }
 
-  CameraPosition _createCameraPosition(GeoPoint point, [double zoom = 12])
+  CameraPosition _createCameraPosition(GeoPoint point, [double zoom = 25])
     => CameraPosition(
       target: Point(
         latitude: point.lat,
         longitude: point.long,
       ),
-      zoom: 12,
+      zoom: zoom,
     );
-
-  @override
-  void initState() {
-    super.initState();
-    _initPermission().ignore();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +128,7 @@ class _MapState extends State<MapWidget> {
       ||  prev is HomePageBlocLoadedState && current is HomePageBlocLoadedState
           && !listEquals(prev.cars, current.cars),
       builder: (ctx, state) {
-        final List<MapObject<dynamic>> carPlaceMarks =
+        final List<PlacemarkMapObject> carPlaceMarks =
           state is HomePageBlocLoadedState ? _carsToPlaceMarks(state.cars, ctx) : [];
 
         return YandexMap(

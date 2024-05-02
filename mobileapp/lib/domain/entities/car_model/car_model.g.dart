@@ -12,7 +12,7 @@ _$CarModelImpl _$$CarModelImplFromJson(Map<String, dynamic> json) =>
       model: json['model'] as String,
       brand: json['brand'] as String,
       description: json['description'] as String,
-      url: GeoPoint.fromJson(json['url'] as Map<String, dynamic>),
+      url: json['url'] as String,
     );
 
 Map<String, dynamic> _$$CarModelImplToJson(_$CarModelImpl instance) =>

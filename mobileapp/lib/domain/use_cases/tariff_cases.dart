@@ -28,11 +28,11 @@ class GetActiveTariffsUseCase extends UseCase<List<Tariff>> {
       return tryDispatchError(getTariffResult);
     }
 
-    final tariffsMap = getTariffResult.data!["tariffs"] as List<Map<String, dynamic>>;
+    final tariffsMap = getTariffResult.data!["tariffs"] as List;
 
     return Ok<List<Tariff>>(
       tariffsMap
-          .map((json) => Tariff.fromJson(json))
+          .map((json) => Tariff.fromJson(json as Map<String, dynamic>))
           .toList()
     );
   }

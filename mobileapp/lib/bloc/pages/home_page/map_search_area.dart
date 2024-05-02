@@ -8,7 +8,7 @@ class MapSearchArea with _$MapSearchArea {
   const factory MapSearchArea(
       GeoPoint anchorPoint,
       {
-        @Default(20)
+        @Default(500)
         double radius
       }
       ) = _MapSearchArea;

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
+import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
+import 'package:mobileapp/ui/components/center_circular_progress_indicator.dart';
 import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/components/error_page.dart';
 import 'package:mobileapp/ui/components/specific/home_page/map.dart';
@@ -14,7 +16,12 @@ class HomePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomePageBloc>(
-      create: (_) => HomePageBloc(const HomePageBlocState.loading()),
+      create: (_) {
+        final bloc = HomePageBloc(const HomePageBlocState.loading());
+        bloc.add(const HomePageBlocEvent.initialLoad());
+
+        return bloc;
+      },
       lazy: false,
       child: const _View(),
     );
@@ -48,28 +55,27 @@ class _ViewState extends State<_View> {
           body: BlocConsumer<HomePageBloc, HomePageBlocState>(
             listener: (ctx, state) {
               if (state is HomePageBlocRentingState) {
-                Navigator.of(context).pop();
+                ScaffoldMessenger.of(ctx).showSnackBar(
+                  const SnackBar(content: Text('Бронируем авто...')),
+                );
               } else if(state is HomePageBlocSuccessfulRentState) {
                 Navigator.of(ctx).pushNamed(DriveRoutes.userSubscriptions);
               } else if (state is HomePageBlocUnsuccessfulRentState) {
                 ScaffoldMessenger.of(ctx).showSnackBar(
-                  const SnackBar(content: Text('Аренда автомобиля не удалась.')),
+                  SnackBar(content: Text(state.error ?? 'Аренда автомобиля не удалась.')),
                 );
               }
             },
-            buildWhen: (prev, state) => state is HomePageBlocLoadErrorState
-              || state is HomePageBlocLoadingState || state is HomePageBlocLoadErrorState,
             builder: (ctx, state) {
               if (state is HomePageBlocLoadErrorState) {
                 return LoadPageErrorMessageAtCenter(
                   customErrorMessage: state.error,
-                  /*
-                  onRetryPressed: () => ctx
+                  onRetryPressed: () async => ctx
                       .read<HomePageBloc>()
-                      .add(HomePageBlocEvent.load),
-
-                   */
+                      .add(const HomePageBlocEvent.initialLoad()),
                 );
+              } else if (state is HomePageBlocLoadingState) {
+                return const CenterCircularProgressIndicator();
               }
 
               return const MapWidget();

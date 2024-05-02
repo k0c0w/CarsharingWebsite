@@ -5,7 +5,7 @@ import 'package:mobileapp/domain/use_cases/base.dart';
 class BookCarUseCase extends UseCase<bool> {
 
   static const String _bookCarMutation = """
-  mutation (\$carId: Int!, \$endDate: String, \$startDate: String){
+  mutation (\$carId: Int!, \$endDate: DateTime!, \$startDate: DateTime!){
     bookCar(bookingInfo: {
       carId: \$carId
       endDate: \$endDate

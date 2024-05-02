@@ -1,10 +1,6 @@
-
-import 'dart:isolate';
-
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:mobileapp/domain/results.dart';
 import 'package:mobileapp/domain/use_cases/base.dart';
-import 'package:mobileapp/utils/extensions.dart';
 
 class SignInUserUseCase extends UseCase<String> {
 
@@ -13,7 +9,6 @@ class SignInUserUseCase extends UseCase<String> {
     login(vm: {email: \$email, password: \$password})
   }
   """;
-
 
   Future<Result<String>> call(String login, String password) async {
 
@@ -42,6 +37,7 @@ class ValidateSessionUseCase extends UseCase<bool> {
         userInfo {
 	        fullName
         }
+      }  
     }
   """;
 
@@ -49,10 +45,7 @@ class ValidateSessionUseCase extends UseCase<bool> {
 
     final queryOptions = QueryOptions(document: gql(profileInfoQuery));
 
-    final queryResult = await graphQlClient.query(queryOptions)
-        .timeout(const Duration(seconds: 30), onTimeout: () {
-      return QueryResult.unexecuted;
-    });
+    final queryResult = await withTimeOut(graphQlClient.query(queryOptions));
 
     return Ok(!isUnexecuted(queryResult) && !queryResult.hasException);
   }

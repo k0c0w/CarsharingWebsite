@@ -20,7 +20,7 @@ class GetCarsByTariffUseCase extends UseCase<List<Car>> {
   """;
 
   static const String _getCarsQuery = """
-  query (\$carModelId: Int!, \$longitude: Float!, \$latitude: Float!, \$radius: Float!) {
+  query (\$carModelId: Int!, \$longitude: Decimal!, \$latitude: Decimal!, \$radius: Int!) {
     freeCars(carSearch: { 
     carModelId: \$carModelId, longitude: \$longitude, latitude: \$latitude, radius: \$radius}) {
       id
@@ -31,7 +31,7 @@ class GetCarsByTariffUseCase extends UseCase<List<Car>> {
   }
   """;
 
-  Future<Result<List<Car>>> call(int tariffId, GeoPoint location, {double radiusInMeters = 20.0}) async {
+  Future<Result<List<Car>>> call(int tariffId, GeoPoint location, {int radiusInMeters = 20}) async {
     final carModelsQueryOptions = QueryOptions(
         document: gql(_getCarModelsQuery),
         variables: {
@@ -42,8 +42,8 @@ class GetCarsByTariffUseCase extends UseCase<List<Car>> {
       return tryDispatchError(carModelsResult);
     }
 
-    final carModels = (carModelsResult.data!["carModelsByTariff"] as List<Map<String, dynamic>>)
-                      .map((json) => CarModel.fromJson(json))
+    final carModels = (carModelsResult.data!["carModelsByTariff"] as List)
+                      .map((json) => CarModel.fromJson(json as Map<String, dynamic>))
                       .toList();
 
     final freeCars = <Car>[];
@@ -65,8 +65,9 @@ class GetCarsByTariffUseCase extends UseCase<List<Car>> {
         continue;
       }
 
-      (queryResult.data!["freeCars"] as List<Map<String, dynamic>>)
-          .forEach((Map<String, dynamic> json) {
+      (queryResult.data!["freeCars"] as List)
+          .forEach((map) {
+              final json = map as Map<String, dynamic>;
               final car = Car(
                 id: json["id"],
                 model: carModel,

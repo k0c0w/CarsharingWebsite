@@ -1,4 +1,5 @@
-﻿using Contracts.Tariff;
+﻿using AutoMapper;
+using Contracts.Tariff;
 using Domain.Entities;
 using Entities.Repository;
 using Shared.CQRS;
@@ -11,9 +12,11 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
     private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new (Array.Empty<TariffDto>());
 
     private readonly ITariffRepository _tariffRepository;
+    private readonly IMapper _mapper;
 
-    public GetActiveTariffsQueryHandler(ITariffRepository tariffRepository)
+    public GetActiveTariffsQueryHandler(ITariffRepository tariffRepository, IMapper mapper)
     {
+        _mapper = mapper;
         _tariffRepository = tariffRepository;
     }
 
@@ -45,18 +48,8 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
         }
     }
 
-    private static TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
+    private TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
         => tariffs
-            .Select(tariff => new TariffDto()
-            {
-                    Id = tariff.TariffId,
-                    Description = tariff.Description,
-                    Name = tariff.Name,
-                    MaxMileage = tariff.MaxMileage,
-                    PriceInRubles = tariff.PricePerMinute,
-                    Image = tariff.ImageUrl,
-                    MaxBookMinutes = tariff.MinAllowedMinutes,
-                    MinBookMinutes = tariff.MaxAllowedMinutes,
-            })
+            .Select(x => _mapper.Map<Tariff, TariffDto>(x))
             .ToArray();
 }

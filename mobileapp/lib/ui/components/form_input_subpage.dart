@@ -1,7 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
 import 'package:mobileapp/ui/components/bottom_button.dart';
@@ -176,11 +175,6 @@ class _DrivePhoneNumberInputSubpageState extends _TextBasedInputSubpageState<Dri
     if (_isValidPhoneNumber(phoneNumber)) {
       onSavePressed(phoneNumber.phoneNumber!);
     }
-  }
-
-  @override
-  void initState() {
-    tryInitState();
   }
 
   void tryInitState() async {

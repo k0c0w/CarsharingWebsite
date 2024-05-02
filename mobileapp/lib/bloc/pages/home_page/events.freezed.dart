@@ -18,29 +18,32 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$HomePageBlocEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -52,6 +55,7 @@ mixin _$HomePageBlocEvent {
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -62,6 +66,7 @@ mixin _$HomePageBlocEvent {
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -72,6 +77,7 @@ mixin _$HomePageBlocEvent {
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -101,10 +107,6 @@ abstract class _$$HomePageBlocInitialLoadEventImplCopyWith<$Res> {
           _$HomePageBlocInitialLoadEventImpl value,
           $Res Function(_$HomePageBlocInitialLoadEventImpl) then) =
       __$$HomePageBlocInitialLoadEventImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({MapSearchArea searchParams});
-
-  $MapSearchAreaCopyWith<$Res> get searchParams;
 }
 
 /// @nodoc
@@ -116,99 +118,68 @@ class __$$HomePageBlocInitialLoadEventImplCopyWithImpl<$Res>
       _$HomePageBlocInitialLoadEventImpl _value,
       $Res Function(_$HomePageBlocInitialLoadEventImpl) _then)
       : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? searchParams = null,
-  }) {
-    return _then(_$HomePageBlocInitialLoadEventImpl(
-      null == searchParams
-          ? _value.searchParams
-          : searchParams // ignore: cast_nullable_to_non_nullable
-              as MapSearchArea,
-    ));
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $MapSearchAreaCopyWith<$Res> get searchParams {
-    return $MapSearchAreaCopyWith<$Res>(_value.searchParams, (value) {
-      return _then(_value.copyWith(searchParams: value));
-    });
-  }
 }
 
 /// @nodoc
 
 class _$HomePageBlocInitialLoadEventImpl
     implements HomePageBlocInitialLoadEvent {
-  const _$HomePageBlocInitialLoadEventImpl(this.searchParams);
-
-  @override
-  final MapSearchArea searchParams;
+  const _$HomePageBlocInitialLoadEventImpl();
 
   @override
   String toString() {
-    return 'HomePageBlocEvent.initialLoad(searchParams: $searchParams)';
+    return 'HomePageBlocEvent.initialLoad()';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HomePageBlocInitialLoadEventImpl &&
-            (identical(other.searchParams, searchParams) ||
-                other.searchParams == searchParams));
+            other is _$HomePageBlocInitialLoadEventImpl);
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, searchParams);
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$HomePageBlocInitialLoadEventImplCopyWith<
-          _$HomePageBlocInitialLoadEventImpl>
-      get copyWith => __$$HomePageBlocInitialLoadEventImplCopyWithImpl<
-          _$HomePageBlocInitialLoadEventImpl>(this, _$identity);
+  int get hashCode => runtimeType.hashCode;
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) {
-    return initialLoad(searchParams);
+    return initialLoad();
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) {
-    return initialLoad?.call(searchParams);
+    return initialLoad?.call();
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) {
     if (initialLoad != null) {
-      return initialLoad(searchParams);
+      return initialLoad();
     }
     return orElse();
   }
@@ -222,6 +193,7 @@ class _$HomePageBlocInitialLoadEventImpl
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) {
     return initialLoad(this);
   }
@@ -235,6 +207,7 @@ class _$HomePageBlocInitialLoadEventImpl
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) {
     return initialLoad?.call(this);
   }
@@ -248,6 +221,7 @@ class _$HomePageBlocInitialLoadEventImpl
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) {
     if (initialLoad != null) {
@@ -258,14 +232,8 @@ class _$HomePageBlocInitialLoadEventImpl
 }
 
 abstract class HomePageBlocInitialLoadEvent implements HomePageBlocEvent {
-  const factory HomePageBlocInitialLoadEvent(final MapSearchArea searchParams) =
+  const factory HomePageBlocInitialLoadEvent() =
       _$HomePageBlocInitialLoadEventImpl;
-
-  MapSearchArea get searchParams;
-  @JsonKey(ignore: true)
-  _$$HomePageBlocInitialLoadEventImplCopyWith<
-          _$HomePageBlocInitialLoadEventImpl>
-      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -336,11 +304,12 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) {
     return selectCar(carId);
   }
@@ -348,11 +317,12 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) {
     return selectCar?.call(carId);
   }
@@ -360,11 +330,12 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) {
     if (selectCar != null) {
@@ -382,6 +353,7 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) {
     return selectCar(this);
   }
@@ -395,6 +367,7 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) {
     return selectCar?.call(this);
   }
@@ -408,6 +381,7 @@ class _$HomePageBlocSelectCarEventImpl implements HomePageBlocSelectCarEvent {
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) {
     if (selectCar != null) {
@@ -504,11 +478,12 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) {
     return tryBook(startRent, endDate);
   }
@@ -516,11 +491,12 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) {
     return tryBook?.call(startRent, endDate);
   }
@@ -528,11 +504,12 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) {
     if (tryBook != null) {
@@ -550,6 +527,7 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) {
     return tryBook(this);
   }
@@ -563,6 +541,7 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) {
     return tryBook?.call(this);
   }
@@ -576,6 +555,7 @@ class _$HomePageBlocTryRentEventImpl implements HomePageBlocTryRentEvent {
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) {
     if (tryBook != null) {
@@ -668,11 +648,12 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) {
     return selectAnotherTariff(tariffIndex);
   }
@@ -680,11 +661,12 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) {
     return selectAnotherTariff?.call(tariffIndex);
   }
@@ -692,11 +674,12 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) {
     if (selectAnotherTariff != null) {
@@ -714,6 +697,7 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) {
     return selectAnotherTariff(this);
   }
@@ -727,6 +711,7 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) {
     return selectAnotherTariff?.call(this);
   }
@@ -740,6 +725,7 @@ class _$HomePageBlocSelectAnotherTariffEventImpl
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) {
     if (selectAnotherTariff != null) {
@@ -842,11 +828,12 @@ class _$HomePageBlocChangeAnchorEventImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(MapSearchArea searchParams) initialLoad,
+    required TResult Function() initialLoad,
     required TResult Function(int carId) selectCar,
     required TResult Function(DateTime startRent, DateTime endDate) tryBook,
     required TResult Function(int tariffIndex) selectAnotherTariff,
     required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
   }) {
     return changeAnchor(searchParams);
   }
@@ -854,11 +841,12 @@ class _$HomePageBlocChangeAnchorEventImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(MapSearchArea searchParams)? initialLoad,
+    TResult? Function()? initialLoad,
     TResult? Function(int carId)? selectCar,
     TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult? Function(int tariffIndex)? selectAnotherTariff,
     TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
   }) {
     return changeAnchor?.call(searchParams);
   }
@@ -866,11 +854,12 @@ class _$HomePageBlocChangeAnchorEventImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(MapSearchArea searchParams)? initialLoad,
+    TResult Function()? initialLoad,
     TResult Function(int carId)? selectCar,
     TResult Function(DateTime startRent, DateTime endDate)? tryBook,
     TResult Function(int tariffIndex)? selectAnotherTariff,
     TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
     required TResult orElse(),
   }) {
     if (changeAnchor != null) {
@@ -888,6 +877,7 @@ class _$HomePageBlocChangeAnchorEventImpl
     required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
         selectAnotherTariff,
     required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
   }) {
     return changeAnchor(this);
   }
@@ -901,6 +891,7 @@ class _$HomePageBlocChangeAnchorEventImpl
     TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
   }) {
     return changeAnchor?.call(this);
   }
@@ -914,6 +905,7 @@ class _$HomePageBlocChangeAnchorEventImpl
     TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
         selectAnotherTariff,
     TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
     required TResult orElse(),
   }) {
     if (changeAnchor != null) {
@@ -932,4 +924,139 @@ abstract class HomePageBlocChangeAnchorEvent implements HomePageBlocEvent {
   _$$HomePageBlocChangeAnchorEventImplCopyWith<
           _$HomePageBlocChangeAnchorEventImpl>
       get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$HomePageBlocRefreshPageEventImplCopyWith<$Res> {
+  factory _$$HomePageBlocRefreshPageEventImplCopyWith(
+          _$HomePageBlocRefreshPageEventImpl value,
+          $Res Function(_$HomePageBlocRefreshPageEventImpl) then) =
+      __$$HomePageBlocRefreshPageEventImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$HomePageBlocRefreshPageEventImplCopyWithImpl<$Res>
+    extends _$HomePageBlocEventCopyWithImpl<$Res,
+        _$HomePageBlocRefreshPageEventImpl>
+    implements _$$HomePageBlocRefreshPageEventImplCopyWith<$Res> {
+  __$$HomePageBlocRefreshPageEventImplCopyWithImpl(
+      _$HomePageBlocRefreshPageEventImpl _value,
+      $Res Function(_$HomePageBlocRefreshPageEventImpl) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+
+class _$HomePageBlocRefreshPageEventImpl
+    implements HomePageBlocRefreshPageEvent {
+  const _$HomePageBlocRefreshPageEventImpl();
+
+  @override
+  String toString() {
+    return 'HomePageBlocEvent.refreshPage()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$HomePageBlocRefreshPageEventImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initialLoad,
+    required TResult Function(int carId) selectCar,
+    required TResult Function(DateTime startRent, DateTime endDate) tryBook,
+    required TResult Function(int tariffIndex) selectAnotherTariff,
+    required TResult Function(MapSearchArea searchParams) changeAnchor,
+    required TResult Function() refreshPage,
+  }) {
+    return refreshPage();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initialLoad,
+    TResult? Function(int carId)? selectCar,
+    TResult? Function(DateTime startRent, DateTime endDate)? tryBook,
+    TResult? Function(int tariffIndex)? selectAnotherTariff,
+    TResult? Function(MapSearchArea searchParams)? changeAnchor,
+    TResult? Function()? refreshPage,
+  }) {
+    return refreshPage?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initialLoad,
+    TResult Function(int carId)? selectCar,
+    TResult Function(DateTime startRent, DateTime endDate)? tryBook,
+    TResult Function(int tariffIndex)? selectAnotherTariff,
+    TResult Function(MapSearchArea searchParams)? changeAnchor,
+    TResult Function()? refreshPage,
+    required TResult orElse(),
+  }) {
+    if (refreshPage != null) {
+      return refreshPage();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(HomePageBlocInitialLoadEvent value) initialLoad,
+    required TResult Function(HomePageBlocSelectCarEvent value) selectCar,
+    required TResult Function(HomePageBlocTryRentEvent value) tryBook,
+    required TResult Function(HomePageBlocSelectAnotherTariffEvent value)
+        selectAnotherTariff,
+    required TResult Function(HomePageBlocChangeAnchorEvent value) changeAnchor,
+    required TResult Function(HomePageBlocRefreshPageEvent value) refreshPage,
+  }) {
+    return refreshPage(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(HomePageBlocInitialLoadEvent value)? initialLoad,
+    TResult? Function(HomePageBlocSelectCarEvent value)? selectCar,
+    TResult? Function(HomePageBlocTryRentEvent value)? tryBook,
+    TResult? Function(HomePageBlocSelectAnotherTariffEvent value)?
+        selectAnotherTariff,
+    TResult? Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult? Function(HomePageBlocRefreshPageEvent value)? refreshPage,
+  }) {
+    return refreshPage?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(HomePageBlocInitialLoadEvent value)? initialLoad,
+    TResult Function(HomePageBlocSelectCarEvent value)? selectCar,
+    TResult Function(HomePageBlocTryRentEvent value)? tryBook,
+    TResult Function(HomePageBlocSelectAnotherTariffEvent value)?
+        selectAnotherTariff,
+    TResult Function(HomePageBlocChangeAnchorEvent value)? changeAnchor,
+    TResult Function(HomePageBlocRefreshPageEvent value)? refreshPage,
+    required TResult orElse(),
+  }) {
+    if (refreshPage != null) {
+      return refreshPage(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class HomePageBlocRefreshPageEvent implements HomePageBlocEvent {
+  const factory HomePageBlocRefreshPageEvent() =
+      _$HomePageBlocRefreshPageEventImpl;
 }
