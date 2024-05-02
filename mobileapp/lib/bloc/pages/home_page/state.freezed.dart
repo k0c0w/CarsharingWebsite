@@ -18,36 +18,48 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$HomePageBlocState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
@@ -117,9 +129,11 @@ abstract class _$$HomePageBlocLoadedStateImplCopyWith<$Res> {
   $Res call(
       {List<Car> cars,
       List<Tariff> tariffs,
-      int selectedTariffIndex,
-      int? selectedCarId,
-      bool requestSent});
+      MapSearchArea mapAnchor,
+      int? selectedTariffIndex,
+      int? selectedCarId});
+
+  $MapSearchAreaCopyWith<$Res> get mapAnchor;
 }
 
 /// @nodoc
@@ -136,9 +150,9 @@ class __$$HomePageBlocLoadedStateImplCopyWithImpl<$Res>
   $Res call({
     Object? cars = null,
     Object? tariffs = null,
-    Object? selectedTariffIndex = null,
+    Object? mapAnchor = null,
+    Object? selectedTariffIndex = freezed,
     Object? selectedCarId = freezed,
-    Object? requestSent = null,
   }) {
     return _then(_$HomePageBlocLoadedStateImpl(
       cars: null == cars
@@ -149,19 +163,27 @@ class __$$HomePageBlocLoadedStateImplCopyWithImpl<$Res>
           ? _value._tariffs
           : tariffs // ignore: cast_nullable_to_non_nullable
               as List<Tariff>,
-      selectedTariffIndex: null == selectedTariffIndex
+      mapAnchor: null == mapAnchor
+          ? _value.mapAnchor
+          : mapAnchor // ignore: cast_nullable_to_non_nullable
+              as MapSearchArea,
+      selectedTariffIndex: freezed == selectedTariffIndex
           ? _value.selectedTariffIndex
           : selectedTariffIndex // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       selectedCarId: freezed == selectedCarId
           ? _value.selectedCarId
           : selectedCarId // ignore: cast_nullable_to_non_nullable
               as int?,
-      requestSent: null == requestSent
-          ? _value.requestSent
-          : requestSent // ignore: cast_nullable_to_non_nullable
-              as bool,
     ));
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $MapSearchAreaCopyWith<$Res> get mapAnchor {
+    return $MapSearchAreaCopyWith<$Res>(_value.mapAnchor, (value) {
+      return _then(_value.copyWith(mapAnchor: value));
+    });
   }
 }
 
@@ -171,9 +193,9 @@ class _$HomePageBlocLoadedStateImpl implements HomePageBlocLoadedState {
   const _$HomePageBlocLoadedStateImpl(
       {required final List<Car> cars,
       required final List<Tariff> tariffs,
-      this.selectedTariffIndex = 0,
-      this.selectedCarId,
-      this.requestSent = false})
+      required this.mapAnchor,
+      required this.selectedTariffIndex,
+      this.selectedCarId})
       : _cars = cars,
         _tariffs = tariffs;
 
@@ -194,17 +216,15 @@ class _$HomePageBlocLoadedStateImpl implements HomePageBlocLoadedState {
   }
 
   @override
-  @JsonKey()
-  final int selectedTariffIndex;
+  final MapSearchArea mapAnchor;
+  @override
+  final int? selectedTariffIndex;
   @override
   final int? selectedCarId;
-  @override
-  @JsonKey()
-  final bool requestSent;
 
   @override
   String toString() {
-    return 'HomePageBlocState.loaded(cars: $cars, tariffs: $tariffs, selectedTariffIndex: $selectedTariffIndex, selectedCarId: $selectedCarId, requestSent: $requestSent)';
+    return 'HomePageBlocState.loaded(cars: $cars, tariffs: $tariffs, mapAnchor: $mapAnchor, selectedTariffIndex: $selectedTariffIndex, selectedCarId: $selectedCarId)';
   }
 
   @override
@@ -214,12 +234,12 @@ class _$HomePageBlocLoadedStateImpl implements HomePageBlocLoadedState {
             other is _$HomePageBlocLoadedStateImpl &&
             const DeepCollectionEquality().equals(other._cars, _cars) &&
             const DeepCollectionEquality().equals(other._tariffs, _tariffs) &&
+            (identical(other.mapAnchor, mapAnchor) ||
+                other.mapAnchor == mapAnchor) &&
             (identical(other.selectedTariffIndex, selectedTariffIndex) ||
                 other.selectedTariffIndex == selectedTariffIndex) &&
             (identical(other.selectedCarId, selectedCarId) ||
-                other.selectedCarId == selectedCarId) &&
-            (identical(other.requestSent, requestSent) ||
-                other.requestSent == requestSent));
+                other.selectedCarId == selectedCarId));
   }
 
   @override
@@ -227,9 +247,9 @@ class _$HomePageBlocLoadedStateImpl implements HomePageBlocLoadedState {
       runtimeType,
       const DeepCollectionEquality().hash(_cars),
       const DeepCollectionEquality().hash(_tariffs),
+      mapAnchor,
       selectedTariffIndex,
-      selectedCarId,
-      requestSent);
+      selectedCarId);
 
   @JsonKey(ignore: true)
   @override
@@ -241,51 +261,62 @@ class _$HomePageBlocLoadedStateImpl implements HomePageBlocLoadedState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
-    return loaded(
-        cars, tariffs, selectedTariffIndex, selectedCarId, requestSent);
+    return loaded(cars, tariffs, mapAnchor, selectedTariffIndex, selectedCarId);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
     return loaded?.call(
-        cars, tariffs, selectedTariffIndex, selectedCarId, requestSent);
+        cars, tariffs, mapAnchor, selectedTariffIndex, selectedCarId);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
   }) {
     if (loaded != null) {
       return loaded(
-          cars, tariffs, selectedTariffIndex, selectedCarId, requestSent);
+          cars, tariffs, mapAnchor, selectedTariffIndex, selectedCarId);
     }
     return orElse();
   }
@@ -341,15 +372,15 @@ abstract class HomePageBlocLoadedState implements HomePageBlocState {
   const factory HomePageBlocLoadedState(
       {required final List<Car> cars,
       required final List<Tariff> tariffs,
-      final int selectedTariffIndex,
-      final int? selectedCarId,
-      final bool requestSent}) = _$HomePageBlocLoadedStateImpl;
+      required final MapSearchArea mapAnchor,
+      required final int? selectedTariffIndex,
+      final int? selectedCarId}) = _$HomePageBlocLoadedStateImpl;
 
   List<Car> get cars;
   List<Tariff> get tariffs;
-  int get selectedTariffIndex;
+  MapSearchArea get mapAnchor;
+  int? get selectedTariffIndex;
   int? get selectedCarId;
-  bool get requestSent;
   @JsonKey(ignore: true)
   _$$HomePageBlocLoadedStateImplCopyWith<_$HomePageBlocLoadedStateImpl>
       get copyWith => throw _privateConstructorUsedError;
@@ -397,12 +428,16 @@ class _$HomePageBlocRentingStateImpl implements HomePageBlocRentingState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
@@ -412,12 +447,16 @@ class _$HomePageBlocRentingStateImpl implements HomePageBlocRentingState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
@@ -427,12 +466,16 @@ class _$HomePageBlocRentingStateImpl implements HomePageBlocRentingState {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
@@ -537,12 +580,16 @@ class _$HomePageBlocSuccessfulRentStateImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
@@ -552,12 +599,16 @@ class _$HomePageBlocSuccessfulRentStateImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
@@ -567,12 +618,16 @@ class _$HomePageBlocSuccessfulRentStateImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
@@ -641,6 +696,8 @@ abstract class _$$HomePageBlocUnsuccessfulRentStateImplCopyWith<$Res> {
           _$HomePageBlocUnsuccessfulRentStateImpl value,
           $Res Function(_$HomePageBlocUnsuccessfulRentStateImpl) then) =
       __$$HomePageBlocUnsuccessfulRentStateImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String? error});
 }
 
 /// @nodoc
@@ -652,74 +709,111 @@ class __$$HomePageBlocUnsuccessfulRentStateImplCopyWithImpl<$Res>
       _$HomePageBlocUnsuccessfulRentStateImpl _value,
       $Res Function(_$HomePageBlocUnsuccessfulRentStateImpl) _then)
       : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? error = freezed,
+  }) {
+    return _then(_$HomePageBlocUnsuccessfulRentStateImpl(
+      error: freezed == error
+          ? _value.error
+          : error // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
 }
 
 /// @nodoc
 
 class _$HomePageBlocUnsuccessfulRentStateImpl
     implements HomePageBlocUnsuccessfulRentState {
-  const _$HomePageBlocUnsuccessfulRentStateImpl();
+  const _$HomePageBlocUnsuccessfulRentStateImpl({this.error});
+
+  @override
+  final String? error;
 
   @override
   String toString() {
-    return 'HomePageBlocState.unsuccessfulRent()';
+    return 'HomePageBlocState.unsuccessfulRent(error: $error)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$HomePageBlocUnsuccessfulRentStateImpl);
+            other is _$HomePageBlocUnsuccessfulRentStateImpl &&
+            (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => runtimeType.hashCode;
+  int get hashCode => Object.hash(runtimeType, error);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$HomePageBlocUnsuccessfulRentStateImplCopyWith<
+          _$HomePageBlocUnsuccessfulRentStateImpl>
+      get copyWith => __$$HomePageBlocUnsuccessfulRentStateImplCopyWithImpl<
+          _$HomePageBlocUnsuccessfulRentStateImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
-    return unsuccessfulRent();
+    return unsuccessfulRent(error);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
-    return unsuccessfulRent?.call();
+    return unsuccessfulRent?.call(error);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
   }) {
     if (unsuccessfulRent != null) {
-      return unsuccessfulRent();
+      return unsuccessfulRent(error);
     }
     return orElse();
   }
@@ -772,8 +866,14 @@ class _$HomePageBlocUnsuccessfulRentStateImpl
 }
 
 abstract class HomePageBlocUnsuccessfulRentState implements HomePageBlocState {
-  const factory HomePageBlocUnsuccessfulRentState() =
+  const factory HomePageBlocUnsuccessfulRentState({final String? error}) =
       _$HomePageBlocUnsuccessfulRentStateImpl;
+
+  String? get error;
+  @JsonKey(ignore: true)
+  _$$HomePageBlocUnsuccessfulRentStateImplCopyWith<
+          _$HomePageBlocUnsuccessfulRentStateImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -844,12 +944,16 @@ class _$HomePageBlocLoadErrorStateImpl implements HomePageBlocLoadErrorState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
@@ -859,12 +963,16 @@ class _$HomePageBlocLoadErrorStateImpl implements HomePageBlocLoadErrorState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
@@ -874,12 +982,16 @@ class _$HomePageBlocLoadErrorStateImpl implements HomePageBlocLoadErrorState {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),
@@ -989,12 +1101,16 @@ class _$HomePageBlocLoadingStateImpl implements HomePageBlocLoadingState {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)
+    required TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)
         loaded,
     required TResult Function() renting,
     required TResult Function() successfulRent,
-    required TResult Function() unsuccessfulRent,
+    required TResult Function(String? error) unsuccessfulRent,
     required TResult Function(String? error) loadError,
     required TResult Function() loading,
   }) {
@@ -1004,12 +1120,16 @@ class _$HomePageBlocLoadingStateImpl implements HomePageBlocLoadingState {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult? Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult? Function()? renting,
     TResult? Function()? successfulRent,
-    TResult? Function()? unsuccessfulRent,
+    TResult? Function(String? error)? unsuccessfulRent,
     TResult? Function(String? error)? loadError,
     TResult? Function()? loading,
   }) {
@@ -1019,12 +1139,16 @@ class _$HomePageBlocLoadingStateImpl implements HomePageBlocLoadingState {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<Car> cars, List<Tariff> tariffs,
-            int selectedTariffIndex, int? selectedCarId, bool requestSent)?
+    TResult Function(
+            List<Car> cars,
+            List<Tariff> tariffs,
+            MapSearchArea mapAnchor,
+            int? selectedTariffIndex,
+            int? selectedCarId)?
         loaded,
     TResult Function()? renting,
     TResult Function()? successfulRent,
-    TResult Function()? unsuccessfulRent,
+    TResult Function(String? error)? unsuccessfulRent,
     TResult Function(String? error)? loadError,
     TResult Function()? loading,
     required TResult orElse(),

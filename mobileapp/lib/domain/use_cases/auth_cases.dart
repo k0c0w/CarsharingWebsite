@@ -54,13 +54,18 @@ class ValidateSessionUseCase extends UseCase<bool> {
       return QueryResult.unexecuted;
     });
 
-    return Ok(!isUnexecuted(queryResult) && queryResult.statusCode == 200);
+    return Ok(!isUnexecuted(queryResult) && !queryResult.hasException);
   }
 }
 
 class SignUpUseCase extends UseCase<bool> {
 
-  Future<Result<bool>> call() async {
+  Future<Result<bool>> call(
+      String email,
+      String firstName,
+      String secondName,
+      DateTime birthDate,
+      String password) async {
     return Ok(false);
   }
 }

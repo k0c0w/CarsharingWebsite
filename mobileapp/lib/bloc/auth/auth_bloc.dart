@@ -62,9 +62,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final validateSessionResult = await ValidateSessionUseCase()();
     if (validateSessionResult is Ok<bool> && validateSessionResult.value) {
       emit(AuthAuthorizedState());
-      return;
+    } else {
+      emit(AuthUnauthorizedState());
     }
-
-    emit(AuthUnauthorizedState());
   }
 }

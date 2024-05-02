@@ -5,7 +5,6 @@ import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/domain/entities/tariff/tariff.dart';
 import 'package:mobileapp/ui/components/styles.dart';
-import 'package:transparent_image/transparent_image.dart';
 
 const _ellipticalRadius = Radius.elliptical(50, 20);
 
@@ -59,13 +58,23 @@ class _Menu extends StatelessWidget {
   }
 }
 
-class _TariffList extends StatefulWidget {
+class _TariffList extends StatelessWidget {
 
-  @override
-  State<StatefulWidget> createState() => _TariffListState();
-}
-
-class _TariffListState extends State<_TariffList> {
+  List<DropdownMenuItem> _mapToItems(List<Tariff> tariffs)
+  => tariffs
+      .asMap()
+      .map((int i, Tariff tariff) => MapEntry(
+  i,
+  DropdownMenuItem(
+  value: i,
+  child: Text(
+  tariff.name.toUpperCase(),
+  textAlign: TextAlign.end,
+  )
+  )
+  ))
+      .values
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -75,22 +84,8 @@ class _TariffListState extends State<_TariffList> {
           late final int? selectedTariffIndex;
           late final List<DropdownMenuItem> tariffsMenuItems;
           if (st is HomePageBlocLoadedState) {
-            final state = st as HomePageBlocLoadedState;
-            selectedTariffIndex = state.selectedTariffIndex;
-            tariffsMenuItems = state.tariffs
-                .asMap()
-                .map((int i, Tariff tariff) => MapEntry(
-                i,
-                DropdownMenuItem(
-                    value: i,
-                    child: Text(
-                      tariff.name.toUpperCase(),
-                      textAlign: TextAlign.end,
-                    )
-                )
-            ))
-                .values
-                .toList();
+            selectedTariffIndex = st.selectedTariffIndex;
+            tariffsMenuItems = _mapToItems(st.tariffs);
           } else {
             selectedTariffIndex = null;
             tariffsMenuItems = [];

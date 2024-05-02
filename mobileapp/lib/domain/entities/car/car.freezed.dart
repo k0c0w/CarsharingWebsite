@@ -21,9 +21,7 @@ Car _$CarFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Car {
   int get id => throw _privateConstructorUsedError;
-  String get model => throw _privateConstructorUsedError;
-  String get brand => throw _privateConstructorUsedError;
-  String get carModelDescription => throw _privateConstructorUsedError;
+  CarModel get model => throw _privateConstructorUsedError;
   GeoPoint get location => throw _privateConstructorUsedError;
   String get licensePlate => throw _privateConstructorUsedError;
 
@@ -37,14 +35,9 @@ abstract class $CarCopyWith<$Res> {
   factory $CarCopyWith(Car value, $Res Function(Car) then) =
       _$CarCopyWithImpl<$Res, Car>;
   @useResult
-  $Res call(
-      {int id,
-      String model,
-      String brand,
-      String carModelDescription,
-      GeoPoint location,
-      String licensePlate});
+  $Res call({int id, CarModel model, GeoPoint location, String licensePlate});
 
+  $CarModelCopyWith<$Res> get model;
   $GeoPointCopyWith<$Res> get location;
 }
 
@@ -62,8 +55,6 @@ class _$CarCopyWithImpl<$Res, $Val extends Car> implements $CarCopyWith<$Res> {
   $Res call({
     Object? id = null,
     Object? model = null,
-    Object? brand = null,
-    Object? carModelDescription = null,
     Object? location = null,
     Object? licensePlate = null,
   }) {
@@ -75,15 +66,7 @@ class _$CarCopyWithImpl<$Res, $Val extends Car> implements $CarCopyWith<$Res> {
       model: null == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
-      brand: null == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
-              as String,
-      carModelDescription: null == carModelDescription
-          ? _value.carModelDescription
-          : carModelDescription // ignore: cast_nullable_to_non_nullable
-              as String,
+              as CarModel,
       location: null == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -93,6 +76,14 @@ class _$CarCopyWithImpl<$Res, $Val extends Car> implements $CarCopyWith<$Res> {
           : licensePlate // ignore: cast_nullable_to_non_nullable
               as String,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CarModelCopyWith<$Res> get model {
+    return $CarModelCopyWith<$Res>(_value.model, (value) {
+      return _then(_value.copyWith(model: value) as $Val);
+    });
   }
 
   @override
@@ -110,14 +101,10 @@ abstract class _$$CarImplCopyWith<$Res> implements $CarCopyWith<$Res> {
       __$$CarImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {int id,
-      String model,
-      String brand,
-      String carModelDescription,
-      GeoPoint location,
-      String licensePlate});
+  $Res call({int id, CarModel model, GeoPoint location, String licensePlate});
 
+  @override
+  $CarModelCopyWith<$Res> get model;
   @override
   $GeoPointCopyWith<$Res> get location;
 }
@@ -133,8 +120,6 @@ class __$$CarImplCopyWithImpl<$Res> extends _$CarCopyWithImpl<$Res, _$CarImpl>
   $Res call({
     Object? id = null,
     Object? model = null,
-    Object? brand = null,
-    Object? carModelDescription = null,
     Object? location = null,
     Object? licensePlate = null,
   }) {
@@ -146,15 +131,7 @@ class __$$CarImplCopyWithImpl<$Res> extends _$CarCopyWithImpl<$Res, _$CarImpl>
       model: null == model
           ? _value.model
           : model // ignore: cast_nullable_to_non_nullable
-              as String,
-      brand: null == brand
-          ? _value.brand
-          : brand // ignore: cast_nullable_to_non_nullable
-              as String,
-      carModelDescription: null == carModelDescription
-          ? _value.carModelDescription
-          : carModelDescription // ignore: cast_nullable_to_non_nullable
-              as String,
+              as CarModel,
       location: null == location
           ? _value.location
           : location // ignore: cast_nullable_to_non_nullable
@@ -173,8 +150,6 @@ class _$CarImpl implements _Car {
   const _$CarImpl(
       {required this.id,
       required this.model,
-      required this.brand,
-      required this.carModelDescription,
       required this.location,
       required this.licensePlate});
 
@@ -184,11 +159,7 @@ class _$CarImpl implements _Car {
   @override
   final int id;
   @override
-  final String model;
-  @override
-  final String brand;
-  @override
-  final String carModelDescription;
+  final CarModel model;
   @override
   final GeoPoint location;
   @override
@@ -196,7 +167,7 @@ class _$CarImpl implements _Car {
 
   @override
   String toString() {
-    return 'Car(id: $id, model: $model, brand: $brand, carModelDescription: $carModelDescription, location: $location, licensePlate: $licensePlate)';
+    return 'Car(id: $id, model: $model, location: $location, licensePlate: $licensePlate)';
   }
 
   @override
@@ -206,9 +177,6 @@ class _$CarImpl implements _Car {
             other is _$CarImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.model, model) || other.model == model) &&
-            (identical(other.brand, brand) || other.brand == brand) &&
-            (identical(other.carModelDescription, carModelDescription) ||
-                other.carModelDescription == carModelDescription) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.licensePlate, licensePlate) ||
@@ -217,8 +185,8 @@ class _$CarImpl implements _Car {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, model, brand,
-      carModelDescription, location, licensePlate);
+  int get hashCode =>
+      Object.hash(runtimeType, id, model, location, licensePlate);
 
   @JsonKey(ignore: true)
   @override
@@ -237,9 +205,7 @@ class _$CarImpl implements _Car {
 abstract class _Car implements Car {
   const factory _Car(
       {required final int id,
-      required final String model,
-      required final String brand,
-      required final String carModelDescription,
+      required final CarModel model,
       required final GeoPoint location,
       required final String licensePlate}) = _$CarImpl;
 
@@ -248,11 +214,7 @@ abstract class _Car implements Car {
   @override
   int get id;
   @override
-  String get model;
-  @override
-  String get brand;
-  @override
-  String get carModelDescription;
+  CarModel get model;
   @override
   GeoPoint get location;
   @override

@@ -8,7 +8,9 @@ class Tariff with _$Tariff {
   const factory Tariff(
       int id,
       String name,
-      double maxRentMinutes,
+      double priceInRubles,
+      double maxBookMinutes,
+      double minBookMinutes,
       ) = _Tariff;
 
   factory Tariff.fromJson(Map<String, Object?> json)

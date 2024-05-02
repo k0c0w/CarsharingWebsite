@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_states.dart';
+import 'package:mobileapp/domain/providers/location_provider.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
 import 'package:mobileapp/domain/providers/user_info_provider.dart';
 import 'package:mobileapp/main.dart';
@@ -14,6 +15,7 @@ Future<void> registerServicesAtGetIt(GetIt getIt) async {
 
   getIt.registerSingleton(SessionDataProvider(getIt<FlutterSecureStorage>()));
   getIt.registerSingleton(DrawerUserInfoDataProvider(getIt<SharedPreferences>()));
+  getIt.registerSingleton(LocationProvider());
 
   getIt.registerSingleton(AuthBloc(AuthCheckStatusInProgressState()));
 

@@ -1,17 +1,12 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mobileapp/bloc/pages/home_page/bloc.dart';
-import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
-import 'package:mobileapp/domain/entities/location/geopoint.dart';
-import 'package:mobileapp/domain/providers/location_provider.dart';
 import 'package:mobileapp/ui/Components/appbar.dart';
 import 'package:mobileapp/ui/components/drawer.dart';
 import 'package:mobileapp/ui/components/error_page.dart';
-import 'package:mobileapp/ui/pages/home/book_page.dart';
+import 'package:mobileapp/ui/components/specific/home_page/map.dart';
 import 'package:mobileapp/ui/pages/pages_list.dart';
-import 'package:yandex_mapkit/yandex_mapkit.dart';
 
 class HomePageWidget extends StatelessWidget {
   const HomePageWidget({super.key});
@@ -19,12 +14,7 @@ class HomePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomePageBloc>(
-      create: (context) {
-        final bloc = HomePageBloc(const HomePageBlocState.loading());
-        bloc.add(const HomePageBlocEvent.load());
-
-        return bloc;
-      },
+      create: (_) => HomePageBloc(const HomePageBlocState.loading()),
       lazy: false,
       child: const _View(),
     );
@@ -40,51 +30,7 @@ class _View extends StatefulWidget {
 class _ViewState extends State<_View> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final LocationProvider locationProvider = LocationProvider();
-  final mapControllerCompleter = Completer<YandexMapController>();
-
   _ViewState();
-
-  Future<void> _initPermission() async {
-    if (!await locationProvider.checkPermission()) {
-      await locationProvider.requestPermission();
-    }
-    await _fetchCurrentLocation();
-  }
-
-  Future<void> _fetchCurrentLocation() async {
-    GeoPoint location;
-    final defLocation = locationProvider.defaultLocation;
-    try {
-      location = await locationProvider.getCurrentLocation();
-    } catch (_) {
-      location = defLocation;
-    }
-    _moveToCurrentLocation(location);
-  }
-
-  Future<void> _moveToCurrentLocation(
-      GeoPoint appLatLong,
-      ) async {
-    (await mapControllerCompleter.future).moveCamera(
-      animation: const MapAnimation(type: MapAnimationType.linear, duration: 1),
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: Point(
-            latitude: appLatLong.lat,
-            longitude: appLatLong.long,
-          ),
-          zoom: 12,
-        ),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _initPermission().ignore();
-  }
 
   void _openDrawer () => scaffoldKey.currentState!.openDrawer();
 
@@ -117,34 +63,16 @@ class _ViewState extends State<_View> {
               if (state is HomePageBlocLoadErrorState) {
                 return LoadPageErrorMessageAtCenter(
                   customErrorMessage: state.error,
+                  /*
                   onRetryPressed: () => ctx
                       .read<HomePageBloc>()
-                      .add(const HomePageBlocEvent.load()),
+                      .add(HomePageBlocEvent.load),
+
+                   */
                 );
               }
 
-              final bloc = context.read<HomePageBloc>();
-              final screenWidgets = <Widget>[
-                Expanded(
-                  child: YandexMap(
-                    onMapCreated: (controller) {
-                      mapControllerCompleter.complete(controller);
-                      //todo delete
-                      showModalBottomSheet(
-                          context: context,
-                          builder: HomePageCarBookingWidget(injectableBloc: bloc,)
-                              .build);
-                    },
-                  ),
-                ),
-              ];
-              if (state is HomePageBlocLoadedState) {
-                //todo: add cars placemarks
-              }
-
-              return Column(
-                children: screenWidgets,
-              );
+              return const MapWidget();
             },
           )
         )
