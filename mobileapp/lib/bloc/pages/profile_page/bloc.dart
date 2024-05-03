@@ -48,6 +48,7 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
         secondName: ProfilePageBlocStateLoadedMapModelProperty(text:profile.secondName),
         driverLicense: ProfilePageBlocStateLoadedMapModelProperty(text:profile.driverLicense ?? ""),
         passport: ProfilePageBlocStateLoadedMapModelProperty(text:profile.passport ?? ""),
+        confirmed: profile.isConfirmed,
       );
 
       emitter(ProfilePageBlocState.loaded(mapModel));

@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mobileapp/domain/entities/profile/profile.dart';
+import 'package:mobileapp/utils/date_formatter.dart';
 
 part 'map_models.freezed.dart';
 
@@ -21,6 +23,8 @@ class ProfilePageBlocStateLoadedMapModel {
   ProfilePageBlocStateLoadedMapModelProperty driverLicense;
   ProfilePageBlocStateLoadedMapModelProperty balance;
   ProfilePageBlocStateLoadedMapModelProperty accountStatus;
+  bool _confirmed = false;
+
 
   ProfilePageBlocStateLoadedMapModel({
     required this.name,
@@ -31,7 +35,10 @@ class ProfilePageBlocStateLoadedMapModel {
     required this.driverLicense,
     required this.balance,
     required this.accountStatus,
-  });
+    bool confirmed = false,
+  }) {
+    _confirmed = confirmed;
+  }
 
   @override
   bool operator ==(Object other) => other is ProfilePageBlocStateLoadedMapModel
@@ -39,4 +46,17 @@ class ProfilePageBlocStateLoadedMapModel {
 
   @override
   int get hashCode =>0;
+
+  Profile toProfile() {
+    return Profile(
+      name: name.text,
+      secondName: secondName.text,
+      birthDate: DateTimeFormat.toStringFormatter.parse(age.text),
+      balance: double.parse(balance.text),
+      email: email.text,
+      passport: passport.text,
+      driverLicense: driverLicense.text,
+      isConfirmed: _confirmed,
+    );
+  }
 }
