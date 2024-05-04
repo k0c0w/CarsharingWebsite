@@ -1,22 +1,24 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mobileapp/ui/Components/styles.dart';
 
 class DriveTextFromField extends StatelessWidget {
   final bool enabled;
+  final bool obscureText;
+  final String label;
   final void Function(String) onChange;
   const DriveTextFromField({super.key,
     required this.enabled,
     required this.onChange,
-
+    required this.label,
+    this.obscureText = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      obscureText: true,
+      obscureText: obscureText,
       decoration: InputDecoration(
-        labelText: "Пароль",
+        labelText: label,
         enabledBorder: const UnderlineInputBorder(
             borderSide: BorderSide(
               color: DriveColors.lightBlueColor,

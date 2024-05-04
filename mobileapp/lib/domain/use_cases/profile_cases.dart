@@ -79,44 +79,151 @@ class GetProfileUseCase extends UseCase<Profile> {
   }
 }
 
-class UpdateProfileNameUseCase extends UseCase<String> {
+class UpdateProfileNameUseCase extends UpdateProfileUseCase {
 
-  Future<Result<String>> call(String name) async {
-    return Ok<String>("Марсель");
+  Future<Result<Profile>> call(String name, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["name"] = name;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(name: name));
   }
 }
 
-class UpdateProfileSecondNameUseCase extends UseCase<String> {
+class UpdateProfileSecondNameUseCase extends UpdateProfileUseCase {
 
-  Future<Result<String>> call(String secondName) async {
-    return Ok<String>("Хамитов");
+  Future<Result<Profile>> call(String secondName, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["secondName"] = secondName;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(secondName: secondName));
   }
 }
 
-class UpdateProfileEmailUseCase extends UseCase<String> {
+class UpdateProfileEmailUseCase extends UpdateProfileUseCase {
 
-  Future<Result<String>> call(String email) async {
-    return Ok<String>("example2@mail.ru");
+  Future<Result<Profile>> call(String email, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["email"] = email;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(email: email));
   }
 }
 
-class UpdateProfileBirthDateUseCase extends UseCase<String> {
+class UpdateProfileBirthDateUseCase extends UpdateProfileUseCase {
 
-  Future<Result<DateTime>> call(DateTime birthDate) async {
-    return Ok<DateTime>(DateTime(1993, 2, 28));
+  Future<Result<Profile>> call(DateTime birthDate, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["birthDate"] = birthDate;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(birthDate: birthDate));
   }
 }
 
-class UpdatePassportUseCase extends UseCase<String> {
+class UpdatePassportUseCase extends UpdateProfileUseCase {
 
-  Future<Result<String>> call(String passport) async {
-    return Ok<String>("9218232029");
+  Future<Result<Profile>> call(String passport, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["passport"] = passport;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(passport: passport));
   }
 }
 
-class UpdateLicenseUseCase  extends UseCase<String> {
+class UpdateLicenseUseCase  extends UpdateProfileUseCase {
 
-  Future<Result<String>> call(String license) async {
-    return Ok<String>("2345352232");
+  Future<Result<Profile>> call(String driverLicense, Profile profile) async {
+    final vars = _defaultVariables(profile);
+    vars["driverLicense"] = driverLicense;
+    final mutationOptions = MutationOptions(
+        document: gql(UpdateProfileUseCase.updateMutation),
+        variables: vars
+    );
+
+    final updateResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if(updateResult.hasException || isUnexecuted(updateResult) || didNotUpdate(updateResult)) {
+      return tryDispatchError(updateResult);
+    }
+
+    return Ok<Profile>(profile.copyWith(driverLicense: driverLicense));
   }
+}
+
+abstract class UpdateProfileUseCase extends UseCase<Profile> {
+  static const String updateMutation = """
+  mutation(\$email: String, 
+  \$name: String, \$secondName: String, \$birthDate: DateTime!, \$passport: String,
+  \$driverLicense: Int) {
+    editProfile(userVm: {
+      email: \$email,
+      firstName: \$name,
+      lastName: \$secondName,
+      birthDay: \$birthDate,
+      passport: \$passport,
+      driverLicense: \$driverLicense
+    })
+  }
+  """;
+
+  bool didNotUpdate(QueryResult<Object?> updateResult) => !updateResult.data!["editProfile"];
+
+  Map<String, dynamic> _defaultVariables(Profile profile)
+  => {
+    "email": profile.email,
+    "name": profile.name,
+    "secondName": profile.secondName,
+    "birthDate": profile.birthDate.toIso8601String(),
+    "passport": profile.passport,
+    "driverLicense": num.tryParse(profile.driverLicense ?? ""),
+  };
 }

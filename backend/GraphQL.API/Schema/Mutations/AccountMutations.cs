@@ -14,7 +14,7 @@ public partial class Mutations
 	[GraphQLName("registerUser")]
 	public async Task<bool> RegisterUser(
         [FromServices] IMediator mediator,
-        [FromBody]RegistrationVm vm)
+        RegistrationVm vm)
 	{
 		var result = await mediator.Send(new CreateUserCommand()
 		{

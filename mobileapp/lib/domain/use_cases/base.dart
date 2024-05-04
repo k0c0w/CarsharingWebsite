@@ -16,31 +16,11 @@ abstract class UseCase<TModel> {
 
     if (exception is NetworkException) {
       error = "Проблемы с интернетом.";
-    } else if (_containsUnauthorizedError(queryResult)) {
-      _authBloc.add(AuthLogoutEvent());
     } else if (isUnexecuted(queryResult)) {
       error = "Превышено допустимое время ожидания.";
     }
 
     return Error<TModel>(error);
-  }
-
-  bool _containsUnauthorizedError<T>(QueryResult<T> queryResult) {
-    final errors = queryResult.exception!.graphqlErrors;
-
-    for(var i = 0; i < errors.length; i++) {
-      final error = errors[i];
-      
-      if (error.extensions != null && error.extensions!.containsKey("code")) {
-        if (error.extensions!["code"] == "AUTH_NOT_AUTHORIZED") {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }
-
-    return false;
   }
 
   void logout() {

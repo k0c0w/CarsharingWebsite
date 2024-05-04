@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mobileapp/bloc/pages/profile_page/map_models.dart';
+import 'package:mobileapp/map_models/profile_map_model.dart';
 
 part 'states.freezed.dart';
 

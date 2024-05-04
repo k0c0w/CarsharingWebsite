@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc.dart';
 import 'package:mobileapp/bloc/auth/auth_bloc_events.dart';
 import 'package:mobileapp/bloc/pages/profile_page/events.dart';
-import 'package:mobileapp/bloc/pages/profile_page/map_models.dart';
+import 'package:mobileapp/map_models/profile_map_model.dart';
 import 'package:mobileapp/bloc/pages/profile_page/states.dart';
 import 'package:mobileapp/domain/entities/profile/profile.dart';
 import 'package:mobileapp/domain/results.dart';
@@ -42,7 +42,7 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
       final mapModel = ProfilePageBlocStateLoadedMapModel(
         accountStatus: ProfilePageBlocStateLoadedMapModelProperty(text: profile.isConfirmed ? "" : "Аккаунт не подтвержден!"),
         email: ProfilePageBlocStateLoadedMapModelProperty(text:profile.email),
-        age: ProfilePageBlocStateLoadedMapModelProperty(text: DateFormat('dd.MM.yyyy').format(profile.birthDate)),
+        age: ProfilePageBlocStateLoadedMapModelProperty(text: DateTimeFormat.toStringFormatter.format(profile.birthDate)),
         balance: ProfilePageBlocStateLoadedMapModelProperty(text:profile.balance.toString()),
         name: ProfilePageBlocStateLoadedMapModelProperty(text:profile.name),
         secondName: ProfilePageBlocStateLoadedMapModelProperty(text:profile.secondName),
@@ -63,104 +63,112 @@ class ProfilePageBloc extends Bloc<ProfilePageBlocEvent, ProfilePageBlocState> {
   }
 
   Future<void> _onNameChanged(ProfilePageNameChangedEvent event, emitter) async {
-    final nameUpdateResult = await UpdateProfileNameUseCase()(event.name);
-
     if(state is ProfilePageBlocStateLoaded) {
-      final model = (state as ProfilePageBlocStateLoaded).model;
+      final currState = state as ProfilePageBlocStateLoaded;
+      final model = currState.model;
+      final nameUpdateResult = await UpdateProfileNameUseCase()(event.name, model.toProfile());
       model.name = switch(nameUpdateResult) {
         Error(:final error) =>
             model.name.copyWith(error: error),
         Ok(:final value) =>
-            model.name.copyWith(text: value, error: ""),
+            model.name.copyWith(text: value.name, error: ""),
       };
 
-      emitter(state);
+      emitter(currState.copyWith(model: model));
     }
   }
 
   Future<void> _onSecondNameChanged(
       ProfilePageSecondNameChangedEvent event,
       emitter) async {
-      final secondNameUpdateResult = await UpdateProfileSecondNameUseCase()(event.secondName);
       if (state is ProfilePageBlocStateLoaded) {
-        final model = (state as ProfilePageBlocStateLoaded).model;
+        final currState = (state as ProfilePageBlocStateLoaded);
+        final model = currState.model;
+        final secondNameUpdateResult = await UpdateProfileSecondNameUseCase()(event.secondName, model.toProfile());
         model.secondName = switch(secondNameUpdateResult) {
           Error(:final error) =>
               model.secondName.copyWith(error: error),
           Ok(:final value) =>
               model.secondName.copyWith(
-                  text: value, error: ""),
+                  text: value.secondName, error: ""),
         };
-        emitter(state);
+
+        emitter(currState.copyWith(model: model));
       }
   }
 
 
   Future<void> _onAgeChanged(ProfilePageBirthdateChangedEvent event, emitter)
   async {
-    final birthDateUpdateResult = await UpdateProfileBirthDateUseCase()(event.birthDate);
-
     if(state is ProfilePageBlocStateLoaded) {
-      final model = (state as ProfilePageBlocStateLoaded).model;
+      final currState = state as ProfilePageBlocStateLoaded;
+      final model = currState.model;
+      final birthDateUpdateResult = await UpdateProfileBirthDateUseCase()(event.birthDate, model.toProfile());
       model.age = switch(birthDateUpdateResult) {
         Error(:final error) =>
             model.age.copyWith(error: error),
         Ok(:final value) =>
             model.age.copyWith(
-                text: DateTimeFormat.toStringFormatter.format(value), error: ""),
+                text: DateTimeFormat.toStringFormatter.format(value.birthDate), error: ""),
       };
-      emitter(state);
+
+      emitter(currState.copyWith(model: model));
     }
   }
 
   Future<void> _onEmailChanged(ProfilePageEmailChangedEvent event, emitter)
   async {
-    final emailUpdateResult = await UpdateProfileEmailUseCase()(event.email);
 
     if(state is ProfilePageBlocStateLoaded) {
-      final model = (state as ProfilePageBlocStateLoaded).model;
+      final currState = state as ProfilePageBlocStateLoaded;
+      final model = currState.model;
+      final emailUpdateResult = await UpdateProfileEmailUseCase()(event.email, model.toProfile());
+
       model.email = switch(emailUpdateResult) {
         Error(:final error) =>
             model.email.copyWith(error: error),
         Ok(:final value) =>
             model.email.copyWith(
-                text: value, error: ""),
+                text: value.email, error: ""),
       };
-      emitter(state);
+
+      emitter(currState.copyWith(model: model));
     }
   }
 
   Future<void> _onPassportChanged(ProfilePagePassportChangedEvent event, emitter)
   async {
-    final passportUpdateResult = await UpdateProfileEmailUseCase()(event.passport);
-
     if(state is ProfilePageBlocStateLoaded) {
-      final model = (state as ProfilePageBlocStateLoaded).model;
+      final currState = state as ProfilePageBlocStateLoaded;
+      final model = currState.model;
+      final passportUpdateResult = await UpdateProfileEmailUseCase()(event.passport, model.toProfile());
+
       model.passport = switch(passportUpdateResult) {
         Error(:final error) =>
             model.passport.copyWith(error: error),
         Ok(:final value) =>
             model.passport.copyWith(
-                text: value, error: ""),
+                text: value.passport ?? "", error: ""),
       };
-      emitter(state);
+      emitter(currState.copyWith(model: model));
     }
   }
 
   Future<void> _onDriverLicenseChanged(ProfilePageDriverLicenseChangedEvent event, emitter)
   async {
-    final licenseUpdateResult = await UpdateProfileEmailUseCase()(event.license);
-
     if(state is ProfilePageBlocStateLoaded) {
-      final model = (state as ProfilePageBlocStateLoaded).model;
+      final currState = state as ProfilePageBlocStateLoaded;
+      final model = currState.model;
+      final licenseUpdateResult = await UpdateProfileEmailUseCase()(event.license, model.toProfile());
+
       model.driverLicense = switch(licenseUpdateResult) {
         Error(:final error) =>
             model.driverLicense.copyWith(error: error),
         Ok(:final value) =>
             model.driverLicense.copyWith(
-                text: value, error: ""),
+                text: value.driverLicense?.toString() ?? "", error: ""),
       };
-      emitter(state);
+      emitter(currState.copyWith(model: model));
     }
   }
 }

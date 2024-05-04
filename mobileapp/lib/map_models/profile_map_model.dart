@@ -2,7 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mobileapp/domain/entities/profile/profile.dart';
 import 'package:mobileapp/utils/date_formatter.dart';
 
-part 'map_models.freezed.dart';
+part 'profile_map_model.freezed.dart';
 
 @freezed
 class ProfilePageBlocStateLoadedMapModelProperty
@@ -42,10 +42,18 @@ class ProfilePageBlocStateLoadedMapModel {
 
   @override
   bool operator ==(Object other) => other is ProfilePageBlocStateLoadedMapModel
-          && runtimeType == other.runtimeType;
+          && runtimeType == other.runtimeType
+          && name == other.name
+          && secondName == other.secondName
+          && age == other.age
+          && email == other.email
+          && driverLicense == other.driverLicense
+          && accountStatus == other.accountStatus
+          && balance == other.balance
+          && passport == other.passport;
 
   @override
-  int get hashCode =>0;
+  int get hashCode => name.hashCode ^ secondName.hashCode ^ age.hashCode ^ email.hashCode ^ driverLicense.hashCode ^ accountStatus.hashCode ^ balance.hashCode ^ passport.hashCode;
 
   Profile toProfile() {
     return Profile(

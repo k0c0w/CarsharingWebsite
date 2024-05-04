@@ -102,8 +102,8 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.BirthDay))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
-                .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
+                .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport == null && src.Passport!.Length == 10 ? src.Passport!.Substring(4, 6) : ""))
+                .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport == null && src.Passport!.Length == 10 ? src.Passport!.Substring(4) : ""))
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.DriverLicense));
 
             CreateMap<BookingVM, RentCarDto>()

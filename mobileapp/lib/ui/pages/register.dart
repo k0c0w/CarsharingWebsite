@@ -1,75 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobileapp/bloc/pages/register/cubit.dart';
+import 'package:mobileapp/bloc/pages/register/state.dart';
+import 'package:mobileapp/ui/Components/styles.dart';
 import 'package:mobileapp/ui/components/appbar.dart';
-import 'package:provider/provider.dart';
-
-class _ViewModelState {
-  String? email;
-  String? password;
-  String? confirmPassword;
-  String? firstName;
-  String? lastName;
-  DateTime? dateOfBirth;
-  String? errorText;
-
-  _ViewModelState({
-    required this.email,
-    required this.password,
-    required this.confirmPassword,
-    required this.firstName,
-    required this.lastName,
-    required this.dateOfBirth,
-    required this.errorText,
-  });
-}
-
-class _ViewModel extends ChangeNotifier {
-  final _state = _ViewModelState(
-    email: "",
-    password: "",
-    confirmPassword: "",
-    firstName: null,
-    lastName: null,
-    dateOfBirth: null,
-    errorText: null
-  );
-
-  _ViewModelState get state => _state;
-
-  Future<void> onRegisterPressed() async {
-    if (_state.dateOfBirth == null) {
-      _state.errorText = "Дата рождения не указана";
-      notifyListeners();
-      return;
-    }
-
-    final age = DateTime.now().year - _state.dateOfBirth!.year;
-    if (age < 18) {
-      _state.errorText = "Вам должно быть 18 лет или старше";
-      notifyListeners();
-      return;
-    }
-
-    if (_state.firstName == null || _state.lastName == null) {
-      _state.errorText = "Имя и фамилия обязательны для заполнения";
-      notifyListeners();
-      return;
-    }
-
-    if (_state.password != _state.confirmPassword) {
-      _state.errorText = "Пароль и подтверждение пароля не совпадают";
-      notifyListeners();
-      return;
-    }
-  }
-}
+import 'package:mobileapp/ui/components/bottom_button.dart';
+import 'package:mobileapp/ui/components/text_field.dart';
 
 class RegisterPageWidget extends StatelessWidget {
-  const RegisterPageWidget({Key? key});
+  const RegisterPageWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => _ViewModel(),
+    return BlocProvider<ProfilePageCubit>(
+      create: (ctx) => ProfilePageCubit(ctx),
       child: const _View(),
     );
   }
@@ -80,73 +24,67 @@ class _View extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final viewModel = Provider.of<_ViewModel>(context);
+    final cubit = context.read<ProfilePageCubit>();
+    final error = context.select((ProfilePageCubit cubit) => cubit.state.error);
+    final requestSent = context.select((ProfilePageCubit state) => cubit.state.requestSent);
 
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: DriveAppBar(title: "Регистрация"),
       body: SafeArea(
+        top: true,
         minimum: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
+          child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Spacer(),
-            FormInputSubpage(
+            DriveTextFromField(
+              enabled: !requestSent,
               label: 'Почта',
-              onChanged: (value) {
-                viewModel.state.email = value;
-              },
+              onChange: cubit.changeEmail,
             ),
             const SizedBox(height: 20),
-            FormInputSubpage(
-              label: 'Пароль',
-              obscureText: true,
-              onChanged: (value) {
-                viewModel.state.password = value;
-              },
-            ),
-            const SizedBox(height: 20),
-            FormInputSubpage(
-              label: 'Подтвердите пароль',
-              obscureText: true,
-              onChanged: (value) {
-                viewModel.state.password = value;
-              },
-            ),
-            const SizedBox(height: 20),
-            FormInputSubpage(
+            DriveTextFromField(
+              enabled: !requestSent,
               label: 'Имя',
-              onChanged: (value) {
-                viewModel.state.firstName = value;
-              },
+              onChange: cubit.changeName,
             ),
             const SizedBox(height: 20),
-            FormInputSubpage(
+            DriveTextFromField(
+              enabled: !requestSent,
               label: 'Фамилия',
-              onChanged: (value) {
-                viewModel.state.lastName = value;
-              },
+              onChange: cubit.changeSecondName,
             ),
             const SizedBox(height: 20),
-            FormInputSubpage(
+            DriveTextFromField(
               label: 'Дата рождения',
-              onChanged: (value) {
-                viewModel.state.dateOfBirth = DateTime.tryParse(value);
-              },
+              onChange: cubit.changeDate,
+              enabled: !requestSent,
             ),
             const SizedBox(height: 20),
-            if (viewModel.state.errorText != null)
+            DriveTextFromField(
+              enabled: !requestSent,
+              label: 'Пароль',
+              onChange: cubit.changePassword,
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            DriveTextFromField(
+              enabled: !requestSent,
+              label: 'Повтор пароля',
+              onChange: cubit.changePasswordRepetition,
+              obscureText: true,
+            ),
+            const SizedBox(height: 20),
+            if (error.isNotEmpty)
               Text(
-                viewModel.state.errorText!,
-                style: const TextStyle(color: Colors.red),
+                error,
+                style: DriveTextStyles.errorLabel,
               ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                viewModel.onRegisterPressed();
-              },
-              child: const Text('Создать'),
+            BottomButton(
+                title: 'Зарегестрироваться',
+                onPressed: requestSent ? null : cubit.onRegisterPressed,
             ),
-            const Spacer(),
           ],
         ),
       ),

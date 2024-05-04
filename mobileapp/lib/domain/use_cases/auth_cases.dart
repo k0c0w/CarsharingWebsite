@@ -52,6 +52,11 @@ class ValidateSessionUseCase extends UseCase<bool> {
 }
 
 class SignUpUseCase extends UseCase<bool> {
+  static const String _registrationMutation = """
+  mutation (\$email: String!, \$name: String!, \$secondName: String!, \$password: String!, \$birthDate: DateTime!) {
+    registerUser(vm: {password:\$password, email:\$email, name: \$name, surname: \$secondName, birthdate: \$birthDate, accept: \"on\"})
+  }
+  """;
 
   Future<Result<bool>> call(
       String email,
@@ -59,6 +64,24 @@ class SignUpUseCase extends UseCase<bool> {
       String secondName,
       DateTime birthDate,
       String password) async {
-    return Ok(false);
+
+    final mutationOptions = MutationOptions(
+        document: gql(_registrationMutation),
+        variables: {
+          "email": email,
+          "name": firstName,
+          "secondName": secondName,
+          "birthDate": birthDate.toIso8601String(),
+          "password": password,
+        }
+    );
+
+    final mutationResult = await withTimeOut(graphQlClient.mutate(mutationOptions));
+
+    if (mutationResult.hasException || isUnexecuted(mutationResult)) {
+      return tryDispatchError(mutationResult);
+    }
+
+    return Ok(mutationResult.data!["registerUser"]);
   }
 }
