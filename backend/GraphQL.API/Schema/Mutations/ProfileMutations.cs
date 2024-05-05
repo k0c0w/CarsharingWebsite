@@ -1,16 +1,17 @@
 ﻿using System.Security.Claims;
 using AutoMapper;
-using Carsharing.ViewModels;
-using Carsharing.ViewModels.Profile;
 using Contracts.UserInfo;
 using Features.Balance.Commands.IncreaseBalance;
 using Features.CarManagement;
 using Features.Users.Commands.ChangePassword;
 using Features.Users.Commands.EditUser;
+using GraphQL.API.ViewModels;
+using GraphQL.API.ViewModels.Profile;
 using GraphQL.API.Helpers.Extensions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace GraphQL.API.Schema.Mutations;
 
@@ -20,9 +21,9 @@ public partial class Mutations
 	[GraphQLName("increaseBalance")]
 	public async Task<string> IncreaseBalance(decimal val, 
 		[FromServices] IMediator mediator, 
-		[Service] IHttpContextAccessor httpContextAccessor)
+		ClaimsPrincipal claimsPrincipal)
 	{
-		var commandResult = await mediator.Send(new IncreaseBalanceCommand(httpContextAccessor.GetUserId(), val));
+		var commandResult = await mediator.Send(new IncreaseBalanceCommand(claimsPrincipal.GetId(), val));
 
 		return commandResult.IsSuccess
 			? $"Success, your Balance increased on {val}"
@@ -54,10 +55,10 @@ public partial class Mutations
 	public async Task<bool> EditProfile(EditUserVm userVm,
 		[FromServices] IMediator mediator, 
 		[FromServices] IMapper mapper,
-		[Service] IHttpContextAccessor httpContextAccessor)
+		ClaimsPrincipal claimsPrincipal)
 	{
 		Console.WriteLine("Попал в edit");
-		var commandResult = await mediator.Send(new EditUserCommand(httpContextAccessor.GetUserId(),
+		var commandResult = await mediator.Send(new EditUserCommand(claimsPrincipal.GetId(),
 			mapper.Map<EditUserVm, EditUserDto>(userVm)));
 
 		return commandResult.IsSuccess
@@ -70,10 +71,10 @@ public partial class Mutations
 	public async Task<bool> ChangePassword(
 		ChangePasswordVM change,
 		[FromServices] IMediator mediator,
-		[Service] IHttpContextAccessor httpContextAccessor)
+		ClaimsPrincipal claimsPrincipal)
 	{
 		var commandResult =
-			await mediator.Send(new ChangePasswordCommand(httpContextAccessor.GetUserId(), change!.OldPassword!, change!.Password!));
+			await mediator.Send(new ChangePasswordCommand(claimsPrincipal.GetId(), change!.OldPassword!, change!.Password!));
 		var info = commandResult.Value;
 
 		return commandResult.IsSuccess && info?.Success is true

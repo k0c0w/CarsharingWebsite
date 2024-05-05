@@ -1,4 +1,3 @@
-using Carsharing.Consumers;
 using Carsharing.Helpers.Options;
 using Domain.Entities;
 using Features.CarBooking.Commands.BookCar;
@@ -7,6 +6,7 @@ using Features.Tariffs.Admin;
 using Features.Tariffs.Admin.Commands.CreateTariff;
 using Features.Utils;
 using FluentValidation;
+using GraphQL.API.Consumers;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;

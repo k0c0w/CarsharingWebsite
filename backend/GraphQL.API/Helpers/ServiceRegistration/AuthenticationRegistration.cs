@@ -1,6 +1,6 @@
 ﻿using System.Text;
-using Carsharing.Helpers.Authorization;
 using Carsharing.Helpers.Options;
+using GraphQL.API.Helpers.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

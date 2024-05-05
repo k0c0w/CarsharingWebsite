@@ -6,7 +6,9 @@ EXPOSE 443
 ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
 WORKDIR /src
+RUN dotnet tool install --global dotnet-ef --version 7.0.12
 COPY ["GraphQL.API/GraphQL.API.csproj", "GraphQL.API/"]
 COPY ["Core/Features/Features.csproj", "Core/Features/"]
 COPY ["Core/Services/Services.csproj", "Core/Services/"]
@@ -16,7 +18,7 @@ COPY ["Core/Contracts/Contracts.csproj", "Core/Contracts/"]
 COPY ["Infrastructure/Clients/Clients.csproj", "Infrastructure/Clients/"]
 COPY ["Infrastructure/Migrations/Migrations.csproj", "Infrastructure/Migrations/"]
 COPY ["Infrastructure/Persistence/Persistence.csproj", "Infrastructure/Persistence/"]
-COPY ["Carsharing/Carsharing.csproj", "Carsharing/"]
+RUN dotnet restore "GraphQL.API/GraphQL.API.csproj"
 COPY . .
 WORKDIR "/src/GraphQL.API"
 RUN dotnet build "GraphQL.API.csproj" -c Release -o /app/build

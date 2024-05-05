@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
 using Carsharing.Persistence.GoogleAPI;
-using Carsharing.ViewModels;
-using Carsharing.ViewModels.Admin;
-using Carsharing.ViewModels.Admin.Car;
-using Carsharing.ViewModels.Admin.UserInfo;
 using Contracts;
 using Contracts.Tariff;
 using Contracts.User;
 using Domain.Entities;
+using GraphQL.API.ViewModels;
+using GraphQL.API.ViewModels.Admin.Car;
+using GraphQL.API.ViewModels.Admin.Tariff;
+using GraphQL.API.ViewModels.Admin.UserInfo;
 using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Carsharing.Helpers.Mappings

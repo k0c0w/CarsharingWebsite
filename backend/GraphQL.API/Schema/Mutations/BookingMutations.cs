@@ -1,10 +1,11 @@
-﻿using Carsharing.ViewModels;
+﻿using System.Security.Claims;
 using Contracts;
 using Features.CarBooking.Commands.BookCar;
-using GraphQL.API.Helpers.Extensions;
 using HotChocolate.Authorization;
+using GraphQL.API.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Shared;
 
 namespace GraphQL.API.Schema.Mutations;
 
@@ -15,11 +16,11 @@ public partial class Mutations
 	public async Task<bool> BookCar(
 		BookingVM bookingInfo,
 		[FromServices] IMediator mediator,
-		[Service] IHttpContextAccessor httpContextAccessor)
+		ClaimsPrincipal claimsPrincipal)
 	{
 		var commandResult = await mediator.Send(new BookCarCommand(new RentCarDto()
 		{
-			PotentialRenterUserId = httpContextAccessor.GetUserId(),
+			PotentialRenterUserId = claimsPrincipal.GetId(),
 			End = bookingInfo.EndDate,
 			Start = bookingInfo.StartDate,
 			CarId = bookingInfo.CarId,
