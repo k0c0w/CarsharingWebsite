@@ -2,8 +2,8 @@
 
 public abstract record Result
 {
-    private static readonly Ok _defaultSuccessResult = new Ok();
-    private static readonly Error _defaultErrorResult = new Error();
+    private static readonly Ok _defaultSuccessResult = new ();
+    private static readonly Error _defaultErrorResult = new ();
 
     public static Ok SuccessResult => _defaultSuccessResult;
 

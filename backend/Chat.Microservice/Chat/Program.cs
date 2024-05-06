@@ -1,10 +1,9 @@
+using Chat.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddGrpc();
+builder.Configure();
 
 var app = builder.Build();
-
-//app.MapGrpcService<GreeterService>();
+await app.ConfigureAsync();
 
 app.Run();
