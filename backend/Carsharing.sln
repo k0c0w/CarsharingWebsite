@@ -27,6 +27,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalanceService", "BalanceSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Core\Services\Services.csproj", "{4AA0588C-0DD3-4F79-B87B-F26C66141212}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Chat.Microservice\Chat\Chat.csproj", "{F2CA9449-6E90-4CB1-823B-B9686F91ABDF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AA0588C-0DD3-4F79-B87B-F26C66141212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2CA9449-6E90-4CB1-823B-B9686F91ABDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2CA9449-6E90-4CB1-823B-B9686F91ABDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2CA9449-6E90-4CB1-823B-B9686F91ABDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2CA9449-6E90-4CB1-823B-B9686F91ABDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
