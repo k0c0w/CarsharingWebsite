@@ -18,7 +18,7 @@ public class GetHistoryQueryHandler(
     {
         try
         {
-            var requester = await _userRepository.GetUserIdAsync(request.RequesterUserId);
+            var requester = await _userRepository.GetUserByIdAsync(request.RequesterUserId);
 
             if (!(requester.Id == request.Topic || requester.IsManager))
                 return new Error<IEnumerable<MessageDto>>();

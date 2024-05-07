@@ -11,7 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\..\Core\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Services.Abstractinos\Services.Abstractions\Services.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

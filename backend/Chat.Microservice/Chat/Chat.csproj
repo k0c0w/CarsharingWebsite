@@ -10,27 +10,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="chat.proto" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
-    <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Features\Features.csproj" />
+    <ProjectReference Include="..\Core\Features\Features.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="..\protos\chat.proto" GrpcServices="Server" Access="Internal">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Protobuf>
-    <Protobuf Include="chat.proto" GrpcServices="Server" Access="Internal" />
   </ItemGroup>
 
 </Project>

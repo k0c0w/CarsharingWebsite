@@ -9,7 +9,7 @@ package chat;
 
 
 message FromClientMessage {
-
+  string topicName = 1;
   string text = 2;
 }
 
@@ -19,17 +19,36 @@ message MessageAuthor {
   string name = 2;
 }
 
-message FromServerMessage {
-
-    MessageAuthor author = 1;
-    string text = 2;
-    google.protobuf.Timestamp time = 3;
+message Message {
+  MessageAuthor author = 1;
+  string text = 2;
+  google.protobuf.Timestamp time = 3;
 }
 
+message TopicInfoMessage {
+  string topicName = 1;
+}
+
+message FromServerMessage {
+  oneof event {
+    TopicInfoMessage topicInfo = 1;
+    Message message = 2;
+  }
+}
+
+message ChatSelectorMessage {
+  string topic = 1;
+}
+
+message SendMessageResultMessage  {
+  bool accepted = 1;
+}
 
 service ChatService {
 
-  rpc SendMessage(FromClientMessage) returns (google.protobuf.Empty);
+  rpc SendMessage(FromClientMessage) returns (SendMessageResultMessage);
 
   rpc GetChatStream(google.protobuf.Empty) returns (stream FromServerMessage);
+
+  rpc GetChatStreamByTopic(ChatSelectorMessage) returns (stream FromServerMessage);
 }
