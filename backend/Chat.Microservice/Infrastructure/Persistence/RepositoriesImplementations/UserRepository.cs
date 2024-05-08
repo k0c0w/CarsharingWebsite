@@ -9,6 +9,12 @@ public class UserRepository(ChatServiceContext context) : IUserRepository
 {
     private readonly ChatServiceContext _ctx = context;
 
+    public async Task AddAsync(User user)
+    {
+        await _ctx.User.AddAsync(user);
+        await _ctx.SaveChangesAsync();
+    }
+
     public Task<User?> GetUserByIdAsync(string id)
         => _ctx
         .User

@@ -3,14 +3,13 @@ using ChatService;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Services.Abstractions;
 using Shared;
 using System.Security.Claims;
 
 namespace Chat.Services;
 
-internal class ChatServiceImplementaion(IChatService chatService) : ChatService.ChatService.ChatServiceBase
+internal class ChatServiceGrpc(IChatService chatService) : ChatService.ChatService.ChatServiceBase
 {
     private const string MANAGER_ROLE = "Manager";
 

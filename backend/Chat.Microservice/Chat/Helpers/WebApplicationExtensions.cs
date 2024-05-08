@@ -5,17 +5,19 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Shared;
+using Migrations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chat.Helpers;
 
 public static class WebApplicationExtensions
 {
-    public static async Task ConfigureAsync(this WebApplication app)
+    public static void Configure(this WebApplication app)
     {
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapGrpcService<ChatServiceImplementaion>();
+        app.MapGrpcService<ChatServiceGrpc>();
         app.MapGet("/history/{topic:string}", async Task<Results<JsonHttpResult<IEnumerable<MessageDto>>, NotFound>> (
             [FromRoute] string topic,
             [FromServices] IMediator mediator,
@@ -29,6 +31,22 @@ public static class WebApplicationExtensions
             var queryResult = await mediator.Send(query);
             return queryResult.IsSuccess ? TypedResults.Json(queryResult.Value) : TypedResults.NotFound();
         });
+    }
 
+    public static async Task TryMigrateDatabaseAsync(this WebApplication app)
+    {
+        try
+        {
+            await using var scope = app.Services.CreateAsyncScope();
+            var sp = scope.ServiceProvider;
+
+            await using var db = sp.GetRequiredService<ChatServiceContext>();
+            await db.Database.MigrateAsync();
+        }
+        catch (Exception e)
+        {
+            app.Logger.LogError(e, "Error while migrating the database");
+            Environment.Exit(-1);
+        }
     }
 }

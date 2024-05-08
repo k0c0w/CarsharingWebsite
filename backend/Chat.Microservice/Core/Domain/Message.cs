@@ -21,7 +21,7 @@ public class Message
 
     public DateTime Time { get; set; }
 
-    public string? AuthorId { get; set; };
+    public string? AuthorId { get; set; }
 
     public string Topic { get; set; } = string.Empty;
 }

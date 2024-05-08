@@ -1,12 +1,13 @@
 using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
-using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers.Extensions.Controllers;
 using MediatR;
 using Features.CarManagement;
 using Features.CarManagement.Admin;
+using File = Contracts.Input.File;
+using Contracts;
 
 namespace Carsharing.Controllers;
 
@@ -67,9 +68,9 @@ public class AdminCarController : ControllerBase
     {
         if (id <= 0) return NotFound();
 
-        Contracts.File? file = null;
+        File? file = null;
         if (edit.Image != null)
-            file = new Contracts.File()
+            file = new File()
             {
                 Name = edit.Image.FileName,
                 Content = edit.Image.OpenReadStream()
@@ -142,9 +143,9 @@ public class AdminCarController : ControllerBase
         return deleteCarResult ? NoContent() : this.BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
     }
 
-    private static Contracts.File IFormFileToStream(IFormFile formFile)
+    private static File IFormFileToStream(IFormFile formFile)
     {
-       return new Contracts.File()
+       return new ()
         {
             Name = formFile.FileName,
             Content = formFile.OpenReadStream(),

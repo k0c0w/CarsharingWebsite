@@ -1,4 +1,4 @@
-namespace Contracts;
+namespace Contracts.Input;
 
 public record File : IFile
 {
@@ -6,5 +6,5 @@ public record File : IFile
 
     public Stream? Content { get; init; }
 
-    public string ContentType { get; init; }
+    public string ContentType { get; init; } = string.Empty;
 }

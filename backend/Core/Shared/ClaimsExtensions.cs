@@ -1,5 +1,4 @@
-﻿using System;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 
 namespace Shared;
 
@@ -7,7 +6,7 @@ public static class ClaimsExtensions
 {
     public static string GetId(this ClaimsPrincipal claimsPrincipal)
     {
-        return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        return claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)!.Value;
     }
     public static bool UserIsInRole(this ClaimsPrincipal claimsPrincipal, string role)
     {

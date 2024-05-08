@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Persistence.RepositoriesImplementations;
 
-internal class TopicRepository(IServiceScopeFactory serviceScopeFactory) : ITopicRepository
+public class TopicRepository(IServiceScopeFactory serviceScopeFactory) : ITopicRepository
 {
-    private static Dictionary<string, (IServiceScope Scope, Topic Topic)> _map = new();
-    private static SemaphoreSlim _mapSemaphore = new(1,1);
+    private static readonly Dictionary<string, (IServiceScope Scope, Topic Topic)> _map = [];
+    private static readonly SemaphoreSlim _mapSemaphore = new(1,1);
 
-    private IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
+    private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
     public async Task<Topic> GetOrCreateTopicAsync(string topicName)
     {
@@ -54,11 +54,11 @@ internal class TopicRepository(IServiceScopeFactory serviceScopeFactory) : ITopi
         await _mapSemaphore.WaitAsync();
         try
         {
-            if (_map.ContainsKey(topicName))
+            if (_map.TryGetValue(topicName, out var value))
             {
-                (var scope, var topic) = _map[topicName];
                 _map.Remove(topicName);
 
+                (var scope, var topic) = value;
                 topic.Dispose();
                 scope.Dispose();
             }

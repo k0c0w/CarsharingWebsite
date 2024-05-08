@@ -1,17 +1,17 @@
 ﻿using Entities.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Migrations.Chat;
+using Migrations.CarsharingApp;
 using Persistence.Chat.ChatEntites.SignalRModels.Shared;
 
 namespace Persistence.RepositoryImplementation;
 
 public class OccasionMessageRepository
 {
-    private readonly ChatContext _ctx;
+    private readonly CarsharingContext _ctx;
     private readonly ILogger<OccasionMessageRepository> _logger;
 
-    public OccasionMessageRepository(ChatContext context, ILogger<OccasionMessageRepository> logger)
+    public OccasionMessageRepository(CarsharingContext context, ILogger<OccasionMessageRepository> logger)
     {
         _ctx = context;
         _logger = logger;

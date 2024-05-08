@@ -10,5 +10,5 @@ public record CreateCarModelDto
 
     public int TariffId { get; init; }
     
-    public File? ModelPhoto { get; init; }
+    public Input.File? ModelPhoto { get; init; }
 }

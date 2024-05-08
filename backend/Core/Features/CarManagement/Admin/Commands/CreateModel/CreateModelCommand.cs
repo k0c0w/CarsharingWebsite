@@ -1,5 +1,4 @@
-﻿using Contracts;
-using Shared.CQRS;
+﻿using Shared.CQRS;
 
 namespace Features.CarManagement.Admin;
 
@@ -13,5 +12,5 @@ public record CreateModelCommand : ICommand<int>
 
     public int TariffId { get; init; }
 
-    public Contracts.File? ModelPhoto { get; init; }
+    public Contracts.Input.File? ModelPhoto { get; init; }
 }

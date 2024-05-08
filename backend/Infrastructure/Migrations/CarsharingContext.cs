@@ -1,9 +1,10 @@
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Entities.EntityConfigurations;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Entities.Entities;
 using Migrations.EntityConfigurations;
+using MassTransit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Migrations.CarsharingApp;
 
@@ -27,20 +28,21 @@ public class CarsharingContext : IdentityDbContext<User>
     public override DbSet<User> Users { get; set; }
 
     public virtual DbSet<Subscription> Subscriptions { get; set; }
-    
+
     public virtual DbSet<Tariff> Tariffs { get; set; }
-    
+
     public virtual DbSet<Post> News { get; set; }
-    
+
     public virtual DbSet<Document> WebsiteDocuments { get; set; }
 
     public virtual DbSet<OccasionType> OccasionTypes { get; set; }
     public virtual DbSet<Occassion> Occasions { get; set; }
-    
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        AddOutboxEntites(builder);
+
         SetDefaultValues(builder);
         SetUniqueFields(builder);
 
@@ -54,19 +56,19 @@ public class CarsharingContext : IdentityDbContext<User>
 
         var roles = new List<UserRole>()
         {
-            new UserRole()
+            new ()
             {
                 Id = "-1",
                 Name = Role.Manager.ToString(),
                 NormalizedName = Role.Manager.ToString().ToUpper(),
             },
-            new UserRole()
+            new ()
             {
                 Id = "-2",
                 Name = Role.User.ToString(),
                 NormalizedName = Role.User.ToString().ToUpper(),
             },
-            new UserRole()
+            new ()
             {
                 Id = "-3",
                 Name = Role.Admin.ToString(),
@@ -99,10 +101,10 @@ public class CarsharingContext : IdentityDbContext<User>
 
     private static void SetUniqueFields(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Document>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
+        modelBuilder.Entity<Document>(entity => { entity.HasIndex(e => e.Name).IsUnique(); entity.HasKey(e => e.FileName); });
         modelBuilder.Entity<Tariff>(entity => { entity.HasIndex(e => e.Name).IsUnique(); });
     }
-    
+
     private static void SetDefaultValues(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Car>().Property(x => x.IsOpened).HasDefaultValue(false);
@@ -110,5 +112,12 @@ public class CarsharingContext : IdentityDbContext<User>
         modelBuilder.Entity<Car>().Property(x => x.HasToBeNonActive).HasDefaultValue(false);
         modelBuilder.Entity<Subscription>().Property(x => x.IsActive).HasDefaultValue(false);
         modelBuilder.Entity<Tariff>().Property(x => x.IsActive).HasDefaultValue(false);
+    }
+
+    private static void AddOutboxEntites(ModelBuilder builder)
+    {
+        builder.AddInboxStateEntity();
+        builder.AddOutboxStateEntity();
+        builder.AddOutboxMessageEntity();
     }
 }

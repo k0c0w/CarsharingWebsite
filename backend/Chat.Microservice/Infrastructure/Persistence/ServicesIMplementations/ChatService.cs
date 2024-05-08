@@ -23,7 +23,7 @@ public class ChatService(IMessageRepository messageRepository, ITopicRepository 
         if (topic is null)
             return false;
 
-        Message message = new Message()
+        Message message = new()
         {
             AuthorId = messageDto.SenderId,
             Text = messageDto.Text,

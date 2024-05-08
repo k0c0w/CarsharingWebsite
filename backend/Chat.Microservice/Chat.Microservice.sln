@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "..\Core\Shared\Sh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services.Abstractions", "Core\Services.Abstractinos\Services.Abstractions\Services.Abstractions.csproj", "{4CDE8E37-DCAC-4180-8448-F64A033164EB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carsharing.Contracts", "..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj", "{26282C53-5A43-45F0-9537-0CB6DFB6BE9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{4CDE8E37-DCAC-4180-8448-F64A033164EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CDE8E37-DCAC-4180-8448-F64A033164EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CDE8E37-DCAC-4180-8448-F64A033164EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26282C53-5A43-45F0-9537-0CB6DFB6BE9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26282C53-5A43-45F0-9537-0CB6DFB6BE9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26282C53-5A43-45F0-9537-0CB6DFB6BE9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26282C53-5A43-45F0-9537-0CB6DFB6BE9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

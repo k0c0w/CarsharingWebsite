@@ -1,24 +1,20 @@
 ﻿using Domain.Entities;
 using Domain.Repository;
+using Entities.Exceptions;
 using Entities.Repository;
-using Microsoft.AspNetCore.Identity;
 using Services;
 using Shared.CQRS;
 using Shared.Results;
-using System.Security.Claims;
-
 
 namespace Features.Users.Commands.CreateUser;
 
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 {
     private readonly IUserBalanceCreatorService _userBalanceCreatorService;
-    private readonly UserManager<User> _userManager;
     private readonly IUnitOfWork<IUserRepository> _userRepository;
 
-    public CreateUserCommandHandler(IUserBalanceCreatorService userBalanceCreatorService, UserManager<User> userManager, IUnitOfWork<IUserRepository> userRepository)
+    public CreateUserCommandHandler(IUserBalanceCreatorService userBalanceCreatorService, IUnitOfWork<IUserRepository> userRepository)
     {
-        _userManager = userManager;
         _userBalanceCreatorService = userBalanceCreatorService;
         _userRepository = userRepository;
     }
@@ -27,7 +23,8 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var client = await _userManager.FindByEmailAsync(request.Email);
+        var userRepository = _userRepository.Unit;
+        var client = await userRepository.GetByEmailAsync(request.Email);
         if (client != null)
             return new Error(ERROR);
 
@@ -37,24 +34,28 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
         if (!preparationResult.IsSuccess)
             return new Error(ERROR);
 
-        var user = new User { Id = userId, Email = request.Email, LastName = request.LastName, FirstName = request.Name, UserName = $"{DateTime.Now:MMddyyyyHHssmm}" };
-        var resultUserCreate = await _userManager.CreateAsync(user, request.Password);
+        var user = new User
+        {
+            Id = userId,
+            Email = request.Email,
+            LastName = request.LastName,
+            FirstName = request.Name,
+            UserName = $"{DateTime.Now:MMddyyyyHHssmm}",
+            UserInfo = new UserInfo { BirthDay = request.Birthdate, UserId = userId }
+        };
 
-        if (!resultUserCreate.Succeeded)
+        try
+        {
+            await userRepository.CreateUserAsync(user, request.Password, Role.User);
+        }
+        catch (UserCreationException ex)
         {
             await _userBalanceCreatorService.RollbackAsync();
 
-            return new Error(resultUserCreate.Errors.Select(x => x.Description).FirstOrDefault());
+            return new Error(ex.Message);
         }
 
-        user.UserInfo = new UserInfo { BirthDay = request.Birthdate, UserId = userId };
-        await Task.WhenAll(
-            _userRepository.Unit.UpdateAsync(user),
-            _userManager.AddToRoleAsync(user, Role.User.ToString()),
-            _userBalanceCreatorService.CommitAsync()
-            );
-
-        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, userId));
+        await _userBalanceCreatorService.CommitAsync();
         await _userRepository.SaveChangesAsync();
 
         return Result.SuccessResult;
