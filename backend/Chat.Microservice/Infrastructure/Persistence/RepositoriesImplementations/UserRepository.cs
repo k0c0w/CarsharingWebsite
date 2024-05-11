@@ -11,19 +11,19 @@ public class UserRepository(ChatServiceContext context) : IUserRepository
 
     public async Task AddAsync(User user)
     {
-        await _ctx.User.AddAsync(user);
+        await _ctx.Users.AddAsync(user);
         await _ctx.SaveChangesAsync();
     }
 
     public Task<User?> GetUserByIdAsync(string id)
         => _ctx
-        .User
+        .Users
         .AsNoTracking()
         .FirstOrDefaultAsync(x => x.Id == id);
 
     public async Task<IEnumerable<User>> GetUsersByIdsAsync(params string[] ids)
         => await _ctx
-            .User
+            .Users
             .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync();

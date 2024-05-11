@@ -62,8 +62,7 @@ services:
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
       - RabbitMqConfig__Username=k0c0w
       - RabbitMqConfig__Password=passw0rd
-      - RabbitMqConfig__Hostname=host.docker.internal
-      - RabbitMqConfig__Port=5673
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
     depends_on:
       - db
       - rabbitmq
