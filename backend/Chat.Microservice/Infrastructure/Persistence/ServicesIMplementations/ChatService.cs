@@ -5,30 +5,15 @@ using Services.Abstractions;
 
 namespace Persistence.Services.Implementations;
 
-public class ChatService(IMessageRepository messageRepository, ITopicRepository topicRepository, IUserRepository userRepository) : IChatService
+public class ChatService(IMessageRepository messageRepository, ITopicRepository topicRepository) : IChatService
 {
     private readonly ITopicRepository _topicRepository = topicRepository;
     private readonly IMessageRepository _messageRepository = messageRepository;
-    private readonly IUserRepository _userRepository = userRepository;
 
     public async Task AddToChatAsync(string chatName, ITopicSubscriber subscriber)
     {
         var topic = await _topicRepository.GetOrCreateTopicAsync(topicName: chatName);
         await topic.AddSubscriberAsync(subscriber);
-    }
-
-    public async Task<IEnumerable<MessageAggregate>> GetMessagesAsync(string chatName, int? limit = null, int? offset = null)
-    {
-        var messages = await _messageRepository.GetMessagesByTopicAsync(chatName, limit ?? 128, offset ?? 64);
-        var users = messages
-            .Select(x => x.AuthorId)
-            .Distinct()
-            .ToArray();
-
-        var userEntities = await _userRepository.GetUsersByIdsAsync(users!);
-        var usersMap = userEntities.ToDictionary(usr => usr.Id);
-
-        return messages.Select(x => new MessageAggregate(x, usersMap[x.AuthorId!]));
     }
 
     public async Task<bool> ReceiveMessageAsync(SendMessageDto messageDto)

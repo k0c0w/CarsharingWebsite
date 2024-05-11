@@ -7,4 +7,6 @@ public interface ITopicRepository
     Task<Topic> GetOrCreateTopicAsync(string topicName);
     
     Task RemoveTopicAsync(string topicName);
+
+    Task<IEnumerable<Topic>> GetAllAsync();
 }

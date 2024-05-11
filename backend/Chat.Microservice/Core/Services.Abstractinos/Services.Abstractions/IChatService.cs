@@ -10,6 +10,4 @@ public interface IChatService
     Task RemoveFromChatAsync(string chatName, ITopicSubscriber subscriber);
 
     Task<bool> ReceiveMessageAsync(SendMessageDto messageDto);
-
-    Task<IEnumerable<MessageAggregate>> GetMessagesAsync(string chatName, int? limit = null, int? offset = null);
 }

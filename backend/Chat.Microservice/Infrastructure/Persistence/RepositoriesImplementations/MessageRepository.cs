@@ -16,12 +16,18 @@ public class MessageRepository(ChatServiceContext context) : IMessageRepository
         await _ctx.SaveChangesAsync();
     }
 
-    public async Task<IEnumerable<Message>> GetMessagesByTopicAsync(string topic, int limit = 100, int offset = 0)
+    public async Task<IEnumerable<MessageAggregate>> GetMessagesByTopicAsync(string topic, int limit = 100, int offset = 0)
     {
-        return await _ctx
-            .Messages
+        return await _ctx.Messages
             .AsNoTracking()
-            .Where(x => x.Topic == topic)
+            .Join(
+                _ctx
+                    .Users
+                    .AsNoTracking(),
+                msg => msg.AuthorId,
+                usr => usr.Id,
+                (msg, usr) => new MessageAggregate(msg, usr)
+            )
             .Skip(offset)
             .Take(limit)
             .ToArrayAsync();

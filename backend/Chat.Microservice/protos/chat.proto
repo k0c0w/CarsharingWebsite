@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "ChatService";
@@ -53,17 +52,32 @@ message ChatHistoryMessage {
   repeated Message history = 1;
 }
 
+message ActiveTopicsMessage {
+  repeated string topic = 1;
+}
+
 message SendMessageResultMessage  {
   bool accepted = 1;
 }
 
-service ChatService {
+message GetChatStreamRequest {
+}
+
+message GetActiveTopicsRequest {
+}
+
+service MessagingService {
 
   rpc SendMessage(FromClientMessage) returns (SendMessageResultMessage);
 
-  rpc GetChatStream(google.protobuf.Empty) returns (stream FromServerMessage);
+  rpc GetChatStream(GetChatStreamRequest) returns (stream FromServerMessage);
 
   rpc GetChatStreamByTopic(ChatSelectorMessage) returns (stream FromServerMessage);
+}
+
+service ManagementService {
 
   rpc GetChatHistory(ChatHistorySelectorMessage) returns (ChatHistoryMessage);
+
+  rpc GetActiveTopics(GetActiveTopicsRequest) returns (ActiveTopicsMessage);
 }

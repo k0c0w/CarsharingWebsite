@@ -12,6 +12,24 @@ public class TopicRepository(IServiceScopeFactory serviceScopeFactory) : ITopicR
 
     private readonly IServiceScopeFactory _serviceScopeFactory = serviceScopeFactory;
 
+    public async Task<IEnumerable<Topic>> GetAllAsync()
+    {
+        await _mapSemaphore.WaitAsync();
+        try
+        {
+            var values = _map
+                .Values
+                .Select(x => x.Topic)
+                .ToList();
+
+            return values;
+        }
+        finally
+        {
+            _mapSemaphore.Release();
+        }
+    }
+
     public async Task<Topic> GetOrCreateTopicAsync(string topicName)
     {
         await _mapSemaphore.WaitAsync();
