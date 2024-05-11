@@ -16,6 +16,37 @@ internal class ChatServiceGrpc(IChatService chatService) : ChatService.ChatServi
     private readonly IChatService _chatService = chatService;
 
 
+    public override async Task<ChatHistoryMessage> GetChatHistory(ChatHistorySelectorMessage request, ServerCallContext context)
+    {
+        var httpContext = context.GetHttpContext();
+        var reply = new ChatHistoryMessage();
+
+        if (IsAuthenticatedUser(httpContext.User))
+        {
+            var messages = await _chatService.GetMessagesAsync(request.Topic, limit: request.Limit, offset: request.Offset);
+            reply.History.AddRange(messages.Select(x =>
+            {
+                var message = x.Message;
+                var author = x.Author;
+
+                return new Message
+                {
+                    Id = message.Id.ToString(),
+                    Text = x.Message.Text,
+                    Time = x.Message.Time.ToTimestamp(),
+                    Author = new MessageAuthor
+                    {
+                        Id = author.Id.ToString(),
+                        IsManager = author.IsManager,
+                        Name = author.Name,
+                    },
+                };
+            }));
+        }
+
+        return reply;
+    }
+
     public override async Task<SendMessageResultMessage> SendMessage(FromClientMessage request, ServerCallContext context)
     {
         var httpContext = context.GetHttpContext();
@@ -59,6 +90,7 @@ internal class ChatServiceGrpc(IChatService chatService) : ChatService.ChatServi
     {
         return GetStreamAsync(request.Topic, responseStream, context);
     }
+
 
     private async Task GetStreamAsync(string topicName, IServerStreamWriter<FromServerMessage> responseStream, ServerCallContext context)
     {
