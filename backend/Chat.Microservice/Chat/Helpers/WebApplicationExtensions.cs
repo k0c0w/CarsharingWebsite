@@ -1,6 +1,7 @@
 ﻿using Chat.Services;
 using Migrations;
 using Microsoft.EntityFrameworkCore;
+using Chat.GrpcImplementations;
 
 namespace Chat.Helpers;
 
@@ -12,6 +13,7 @@ public static class WebApplicationExtensions
         app.UseAuthorization();
 
         app.MapGrpcService<ChatServiceGrpc>();
+        app.MapGrpcService<ManagementServiceGrpc>();
     }
 
     public static async Task TryMigrateDatabaseAsync(this WebApplication app)

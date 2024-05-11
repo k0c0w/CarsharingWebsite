@@ -1,6 +1,5 @@
 ﻿using Chat.Helpers;
 using ChatService;
-using Domain;
 using Domain.Repositories;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -16,7 +15,7 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
     private readonly IMessageRepository _messageRepository = messageRepository;
 
     [Authorize(Roles = "Manager")]
-    public override async Task<ActiveTopicsMessage> GetActiveTopics(GetActiveTopicsRequest request, ServerCallContext context)
+    public override async Task<ActiveTopicsMessage> GetActiveTopics(Empty request, ServerCallContext context)
     {
         var topics = await _topicRepository.GetAllAsync();
 
@@ -27,6 +26,17 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
     }
 
     [Authorize]
+    public override async Task<ChatHistoryMessage> GetMyChatHistory(MyChatHistorySelectorMessage request, ServerCallContext context)
+    {
+        var httpContext = context.GetHttpContext();
+        var reply = new ChatHistoryMessage();
+
+        await AddMessagesToHistoryReply(httpContext.User.GetId(), request.Limit ?? 128, request.Offset ?? 0, reply);
+
+        return reply;
+    }
+
+    [Authorize(Roles = "Manager")]
     public override async Task<ChatHistoryMessage> GetChatHistory(ChatHistorySelectorMessage request, ServerCallContext context)
     {
         var httpContext = context.GetHttpContext();
@@ -34,28 +44,32 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
 
         if (httpContext.User.HasManagerRole() || request.Topic == httpContext.User.GetId())
         {
-            var messages = await _messageRepository.GetMessagesByTopicAsync(request.Topic, request.Limit ?? 128, request.Offset ?? 0);
-
-            reply.History.AddRange(messages.Select(x =>
-            {
-                var message = x.Message;
-                var author = x.Author;
-
-                return new ChatService.Message
-                {
-                    Id = message.Id.ToString(),
-                    Text = message.Text,
-                    Time = message.Time.ToTimestamp(),
-                    Author = new MessageAuthor
-                    {
-                        Id = author.Id,
-                        IsManager = author.IsManager,
-                        Name = author.Name,
-                    },
-               };
-            }));
+            await AddMessagesToHistoryReply(request.Topic, request.Limit ?? 128, request.Offset ?? 0, reply);
         }
 
         return reply;
+    }
+
+    private async Task AddMessagesToHistoryReply(string topic, int limit, int offset, ChatHistoryMessage writeToThis)
+    {
+        var messages = await _messageRepository.GetMessagesByTopicAsync(topic, limit, offset);
+        writeToThis.History.AddRange(messages.Select(x =>
+        {
+            var message = x.Message;
+            var author = x.Author;
+
+            return new Message
+            {
+                Id = message.Id.ToString(),
+                Text = message.Text,
+                Time = message.Time.ToTimestamp(),
+                Author = new MessageAuthor
+                {
+                    Id = author.Id,
+                    IsManager = author.IsManager,
+                    Name = author.Name,
+                },
+            };
+        }));
     }
 }
