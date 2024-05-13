@@ -192,5 +192,33 @@ services:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
 
+  graphql:
+    build:
+      context: ./backend
+      dockerfile: GraqlQlDockerfile
+    container_name: arch_graphql
+    environment:
+      - KnownHosts__FrontendHosts__Main="http://localhost:3000"
+      - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
+      - KnownHosts__BackendHosts__FileService=http://host.docker.internal:7127
+      - KnownHosts__BackendHosts__BalanceMicroservice=https://host.docker.internal:6552
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+443;http://+80
+      - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Hostname=host.docker.internal
+      - RabbitMqConfig__Port=5673
+    depends_on:
+      - db
+      - rabbitmq
+      - balance_service
+    ports:
+      - 5082:80
+      - 7061:443
+
 volumes:
   postgredb-data:

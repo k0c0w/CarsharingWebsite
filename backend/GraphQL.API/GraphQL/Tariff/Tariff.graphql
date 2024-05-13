@@ -1,0 +1,9 @@
+query {
+  tariffs {
+    id
+    image
+    description
+    priceInRubles
+    maxMileage
+  }
+}

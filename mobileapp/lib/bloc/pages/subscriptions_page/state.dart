@@ -1,0 +1,4 @@
+enum SubscriptionsCubitState {
+  activeSubscriptions,
+  subscriptionHistory,
+}

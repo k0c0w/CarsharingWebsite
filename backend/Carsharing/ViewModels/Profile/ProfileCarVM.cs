@@ -15,4 +15,7 @@ public record ProfileCarVM
     
     [JsonPropertyName("is_opened")]
     public bool IsOpened { get; init; }
+
+    [JsonPropertyName("car_id")]
+    public int Id { get; init; }
 }

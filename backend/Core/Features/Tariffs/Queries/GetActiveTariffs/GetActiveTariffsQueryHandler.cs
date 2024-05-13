@@ -1,4 +1,5 @@
-﻿using Contracts.Tariff;
+﻿using AutoMapper;
+using Contracts.Tariff;
 using Domain.Entities;
 using Entities.Repository;
 using Shared.CQRS;
@@ -8,12 +9,14 @@ namespace Features.Tariffs;
 
 public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery, IEnumerable<TariffDto>>
 {
-    private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new Ok<IEnumerable<TariffDto>>(Array.Empty<TariffDto>());
+    private readonly static Ok<IEnumerable<TariffDto>> _emptyResponse = new (Array.Empty<TariffDto>());
 
     private readonly ITariffRepository _tariffRepository;
+    private readonly IMapper _mapper;
 
-    public GetActiveTariffsQueryHandler(ITariffRepository tariffRepository)
+    public GetActiveTariffsQueryHandler(ITariffRepository tariffRepository, IMapper mapper)
     {
+        _mapper = mapper;
         _tariffRepository = tariffRepository;
     }
 
@@ -47,14 +50,6 @@ public class GetActiveTariffsQueryHandler : IQueryHandler<GetActiveTariffsQuery,
 
     private TariffDto[] MapTariffs(IEnumerable<Tariff> tariffs)
         => tariffs
-            .Select(tariff => new TariffDto()
-            {
-                    Id = tariff.TariffId,
-                    Description = tariff.Description,
-                    Name = tariff.Name,
-                    MaxMileage = tariff.MaxMileage,
-                    PriceInRubles = tariff.PricePerMinute,
-                    Image = tariff.ImageUrl
-            })
+            .Select(x => _mapper.Map<Tariff, TariffDto>(x))
             .ToArray();
 }

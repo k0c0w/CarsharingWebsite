@@ -83,7 +83,7 @@ public class AdminCarController : ControllerBase
             Image = file
         });
 
-        if(editModelResult)
+        if (editModelResult)
             return NoContent();
 
         return this.BadRequestWithErrorMessage(editModelResult.ErrorMessage);
@@ -101,8 +101,8 @@ public class AdminCarController : ControllerBase
     public async Task<IActionResult> GetAllCars()
     {
         var carsResult = await _mediator.Send(new GetAllCarsQuery());
-        return carsResult 
-            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!)) 
+        return carsResult
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!))
             : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
     }
 
@@ -111,8 +111,8 @@ public class AdminCarController : ControllerBase
     {
         var carsByModelResult = await _mediator.Send(new GetCarsByModelQuery(modelId));
 
-        return carsByModelResult 
-            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!)) 
+        return carsByModelResult
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!))
             : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
     }
 
@@ -145,11 +145,11 @@ public class AdminCarController : ControllerBase
 
     private static File IFormFileToStream(IFormFile formFile)
     {
-       return new ()
+        return new()
         {
             Name = formFile.FileName,
             Content = formFile.OpenReadStream(),
             ContentType = formFile.ContentType,
-       };
+        };
     }
 }

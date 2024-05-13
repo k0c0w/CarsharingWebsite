@@ -54,7 +54,6 @@ internal class ChatServiceGrpc(IChatService chatService) : MessagingService.Mess
     [Authorize(Roles = "Manager")]
     public override Task GetChatStreamByTopic(ChatSelectorMessage request, IServerStreamWriter<FromServerMessage> responseStream, ServerCallContext context)
     {
-        Console.WriteLine("Manager joined room");
         return GetStreamAsync(request.Topic, responseStream, context);
     }
 

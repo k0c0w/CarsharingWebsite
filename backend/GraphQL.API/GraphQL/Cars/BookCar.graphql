@@ -1,0 +1,9 @@
+﻿mutation {
+  bookCar(bookingInfo: {
+    carId: 1
+    endDate: ""
+    startDate: ""
+    tariffId: 1
+    userInfoId: 1
+  })
+}

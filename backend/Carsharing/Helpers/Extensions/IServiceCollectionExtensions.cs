@@ -50,7 +50,7 @@ public static class IServiceCollectionExtensions
                 var rc = configuration
                         .GetSection(nameof(RabbitMqConfig))
                         .Get<RabbitMqConfig>()!;
-                cfg.Host(rc.Host, rbc => 
+                cfg.Host(rc.Host, rbc =>
                 {
                     rbc.Username(rc.Username);
                     rbc.Password(rc.Password);

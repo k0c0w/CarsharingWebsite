@@ -56,6 +56,8 @@ public class GetTariffsQueryHandler : IQueryHandler<GetTariffsQuery, IEnumerable
                     PriceInRubles = tariff.PricePerMinute,
                     Image = tariff.ImageUrl,
                     IsActive = tariff.IsActive,
+                    MaxBookMinutes = tariff.MinAllowedMinutes,
+                    MinBookMinutes = tariff.MaxAllowedMinutes,
             })
             .ToArray();
 }

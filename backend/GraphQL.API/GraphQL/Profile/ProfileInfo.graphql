@@ -1,0 +1,9 @@
+query TariffQueries {
+  tariffById(tariffId: 1){
+    id
+    image
+    description
+    priceInRubles
+    maxMileage
+  }
+}
