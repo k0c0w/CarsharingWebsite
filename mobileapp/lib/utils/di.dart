@@ -7,7 +7,10 @@ import 'package:mobileapp/domain/providers/location_provider.dart';
 import 'package:mobileapp/domain/providers/session_data_provider.dart';
 import 'package:mobileapp/domain/providers/user_info_provider.dart';
 import 'package:mobileapp/main.dart';
+import 'package:mobileapp/utils/grpc/chat.pbgrpc.dart';
+import 'package:mobileapp/utils/grpc/chat_grpc_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:grpc/grpc.dart' as $grpc;
 
 Future<void> registerServicesAtGetIt(GetIt getIt) async {
   getIt.registerSingleton(await SharedPreferences.getInstance());
@@ -21,6 +24,7 @@ Future<void> registerServicesAtGetIt(GetIt getIt) async {
 
   getIt.registerSingleton<GraphQLClient>(getGraphQLClient(getIt<SessionDataProvider>()));
 
+  getIt.registerSingleton<ChatGrpcClient>(getChatGrpcClient(getIt<SessionDataProvider>()));
 
   await getIt.allReady();
 }
@@ -42,4 +46,22 @@ GraphQLClient getGraphQLClient(SessionDataProvider sessionDataProvider) {
   final Link link = authLink.concat(httpLink);
 
   return GraphQLClient(link: link, cache: GraphQLCache());
+}
+
+ChatGrpcClient getChatGrpcClient(SessionDataProvider sessionDataProvider) {
+  final msgSrvCl = MessagingServiceClient(
+      $grpc.ClientChannel(
+        "10.0.2.2",
+        port: 8080,
+    )
+  );
+
+  final mngmntService = ManagementServiceClient(
+      $grpc.ClientChannel(
+        "10.0.2.2",
+        port: 8080,
+      )
+  );
+
+  return ChatGrpcClient(msgSrvCl, mngmntService, sessionDataProvider);
 }
