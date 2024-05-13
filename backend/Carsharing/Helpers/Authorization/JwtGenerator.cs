@@ -14,13 +14,15 @@ public class JwtGenerator : IJwtGenerator
 
     public JwtGenerator(IOptions<JwtOptions> jwtOptions)
     {
+        Console.WriteLine($"AAAAAAAAAAAAAAAAA: {jwtOptions.Value.Key}");
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));
     }
 
     public string CreateToken(User user, IEnumerable<Claim> claims)
     {
-        var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+       
 
+        var credentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),

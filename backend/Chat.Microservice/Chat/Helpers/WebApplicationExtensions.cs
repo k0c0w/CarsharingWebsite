@@ -9,6 +9,8 @@ public static class WebApplicationExtensions
 {
     public static void Configure(this WebApplication app)
     {
+        app.UseRouting();
+
         app.UseAuthentication();
         app.UseAuthorization();
 

@@ -6,7 +6,7 @@ import {MdDelete} from "react-icons/md"
 import API from '../httpclient/axios_client';
 
 
-const SendMessageForm = ({ sendMessage }) => {
+export const SendMessageForm = ({ sendMessage }) => {
     const [message, setMessage] = useState('');
     
     return <Form

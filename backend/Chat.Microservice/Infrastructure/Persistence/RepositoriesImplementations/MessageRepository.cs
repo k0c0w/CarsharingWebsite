@@ -20,6 +20,10 @@ public class MessageRepository(ChatServiceContext context) : IMessageRepository
     {
         return await _ctx.Messages
             .AsNoTracking()
+            .Where(x => x.Topic == topic)
+            .OrderBy(x => x.Time)
+            .Skip(offset)
+            .Take(limit)
             .Join(
                 _ctx
                     .Users
@@ -28,8 +32,6 @@ public class MessageRepository(ChatServiceContext context) : IMessageRepository
                 usr => usr.Id,
                 (msg, usr) => new MessageAggregate(msg, usr)
             )
-            .Skip(offset)
-            .Take(limit)
             .ToArrayAsync();
     }
 }

@@ -4,7 +4,6 @@ import { tokens } from '../../theme';
 import { AiFillFile } from 'react-icons/ai';
 import API from '../../httpclient/axios_client';
 
-
 const MessageContainer = ({ messages }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
@@ -20,14 +19,14 @@ const MessageContainer = ({ messages }) => {
     return <div ref={messageRef} className='message-container' style={{backgroundColor: color.primary[500]}}>
         {messages.map((m, index) => (
             <>
-                    {!m.isFromManager && <div key={index} className='other-message' style={{marginTop:"25px"}}>
+                    {!m.sender.isManager && <div key={index} className='other-message' style={{marginTop:"25px"}}>
                         <div className='message bg-primary'>{m.text}</div>
-                        <div>{m.authorName}</div>
+                        <div>{m.sender.name}</div>
                     </div>}
-                    {m.isFromManager && 
+                    {m.sender.isManager && 
                     <div key={index} className='user-message' style={{marginTop:"25px"}}>
                         <div className='message bg-primary'>{m.text}</div>
-                        <div>{m.authorName}</div>
+                        <div>{m.sender.name}</div>
                     </div>}
             </>
         ))}

@@ -1,5 +1,4 @@
-﻿using Chat.Helpers;
-using ChatService;
+﻿using ChatService;
 using Domain.Repositories;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -26,34 +25,25 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
     }
 
     [Authorize]
-    public override async Task<ChatHistoryMessage> GetMyChatHistory(MyChatHistorySelectorMessage request, ServerCallContext context)
+    public override Task<ChatHistoryMessage> GetMyChatHistory(MyChatHistorySelectorMessage request, ServerCallContext context)
     {
         var httpContext = context.GetHttpContext();
-        var reply = new ChatHistoryMessage();
 
-        await AddMessagesToHistoryReply(httpContext.User.GetId(), request.Limit ?? 128, request.Offset ?? 0, reply);
-
-        return reply;
+        return GetChatHistoryReplyAsync(httpContext.User.GetId(), request.Limit ?? 128, request.Offset ?? 0);
     }
 
     [Authorize(Roles = "Manager")]
-    public override async Task<ChatHistoryMessage> GetChatHistory(ChatHistorySelectorMessage request, ServerCallContext context)
+    public override Task<ChatHistoryMessage> GetChatHistory(ChatHistorySelectorMessage request, ServerCallContext context)
     {
-        var httpContext = context.GetHttpContext();
-        var reply = new ChatHistoryMessage();
-
-        if (httpContext.User.HasManagerRole() || request.Topic == httpContext.User.GetId())
-        {
-            await AddMessagesToHistoryReply(request.Topic, request.Limit ?? 128, request.Offset ?? 0, reply);
-        }
-
-        return reply;
+        return GetChatHistoryReplyAsync(request.Topic, request.Limit ?? 128, request.Offset ?? 0);
     }
 
-    private async Task AddMessagesToHistoryReply(string topic, int limit, int offset, ChatHistoryMessage writeToThis)
+    private async Task<ChatHistoryMessage> GetChatHistoryReplyAsync(string topic, int limit, int offset)
     {
+        var reply = new ChatHistoryMessage();
+
         var messages = await _messageRepository.GetMessagesByTopicAsync(topic, limit, offset);
-        writeToThis.History.AddRange(messages.Select(x =>
+        reply.History.AddRange(messages.Select(x =>
         {
             var message = x.Message;
             var author = x.Author;
@@ -62,7 +52,6 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
             {
                 Id = message.Id.ToString(),
                 Text = message.Text,
-                Time = message.Time.ToTimestamp(),
                 Author = new MessageAuthor
                 {
                     Id = author.Id,
@@ -71,5 +60,8 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
                 },
             };
         }));
+
+
+        return reply;
     }
 }

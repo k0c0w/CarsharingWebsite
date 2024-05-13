@@ -1,7 +1,6 @@
 ﻿using ChatService;
 using Domain;
 using Domain.Interfaces;
-using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace Chat.Persistance;
@@ -13,7 +12,7 @@ internal class TopicSubscriber(string assignedTopic, IServerStreamWriter<FromSer
 
     private readonly IServerStreamWriter<FromServerMessage> _responseStream = responseStream;
 
-    public Task ReceiveAsync(MessageAggregate messageAggregate, CancellationToken ct = default)
+    public async Task ReceiveAsync(MessageAggregate messageAggregate, CancellationToken ct = default)
     {
         var author = messageAggregate.Author;
         var message = messageAggregate.Message;
@@ -25,27 +24,34 @@ internal class TopicSubscriber(string assignedTopic, IServerStreamWriter<FromSer
                 Author = new MessageAuthor
                 {
                     Id = author.Id,
-                    Name = author.Name
+                    Name = author.Name,
+                    IsManager = author.IsManager,
                 },
                 Text = message.Text,
-                Time = message.Time.ToTimestamp(),
             }
         };
 
-        return _responseStream.WriteAsync(sendMessage, ct);
+        await _responseStream.WriteAsync(sendMessage);
+        Console.WriteLine("Send message");
     }
 
-    public Task NotifyAssignedTopicAsync(CancellationToken ct = default)
+    public async Task NotifyAssignedTopicAsync(CancellationToken ct = default)
     {
-        var sendMessage = new FromServerMessage()
+        try
         {
-            TopicInfo = new TopicInfoMessage
+            var sendMessage = new FromServerMessage()
             {
-                TopicName = _assignedTopic
-            }
-        };
+                TopicInfo = new TopicInfoMessage
+                {
+                    TopicName = _assignedTopic
+                },
+            };
+            await _responseStream.WriteAsync(sendMessage, ct);
+        }
+        catch (TaskCanceledException)
+        {
 
-        return _responseStream.WriteAsync(sendMessage, ct);
+        }
     }
 
     public override bool Equals(object? obj)

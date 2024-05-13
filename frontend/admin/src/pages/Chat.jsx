@@ -4,9 +4,31 @@ import { Button } from '@mui/material';
 import MessageContainer, {OccasionMessageContainer} from "../components/Chat/MessageContainer";
 import  SendMessageForm, {OccasionSendMessageForm} from "../components/Chat/SendMessageForm";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+import { ChatClient } from "../httpclient/grpc_clients.ts";
 import API from "../httpclient/axios_client";
 
-export default function Chat ({sendMessage, messages, leaveRoom}) {
+export default function Chat ({topic, leaveRoom}) {
+    const [client] = useState(() => new ChatClient(topic));
+    const [messages, setMessages] = useState([]);
+
+    const onMessageReceived = (message) => setMessages(old => [...old, message]);
+
+    async function sendMessage(text) {
+      await client.sendMessage(topic, text.trim());
+    }
+
+    useEffect(() => {
+      let subscription;
+
+      (async () => {
+        const history = await client.getHistory(topic);
+        setMessages(history);
+
+        subscription = await client.subscribeOnMessages(topic, onMessageReceived);
+      })();
+
+      return () => subscription?.cancelSubscribtion();
+    }, []);
 
     return (
       <div className='app'>
