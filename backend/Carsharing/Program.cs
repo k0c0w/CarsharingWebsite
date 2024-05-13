@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
 using Microsoft.EntityFrameworkCore;
-using Migrations.Chat;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

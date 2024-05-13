@@ -1,8 +1,16 @@
 version: '3.9'
 
 services:
+  envoy-proxy:
+    image: envoyproxy/envoy-dev:e4955aed5694f9935d674419dbb364e744f697b4
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "9901:9901"
+      - "8080:8080"
+
   balance_service:
-    container_name: arch_balance_service
+    container_name: drive_balance_service
     build:
       context: ./backend
       dockerfile: BalanceServiceDockerfile
@@ -16,29 +24,32 @@ services:
 
     depends_on:
       - db
-
-  chat_history_saver:
+  
+  chat-microservice:
     build:
       context: ./backend
-      dockerfile: ChatConsumersDockerfile
-    container_name: arch_chatconsumer
+      dockerfile: Chat.Microservice/Chat/Dockerfile
+    container_name: drive_chat
     environment:
-      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
-      - RabbitMqConfig__Username=k0c0w
-      - RabbitMqConfig__Password=passw0rd
-      - RabbitMqConfig__Hostname=host.docker.internal
-      - RabbitMqConfig__Port=5673
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Chat;
     depends_on:
-      - rabbitmq
       - db
-  
+      - rabbitmq
+      - envoy-proxy
+    ports:
+      - 7080:8080
+      - 7081:8081
+
   backend:
     build:
       context: ./backend
       dockerfile: CarsharingDockerfile
-    container_name: arch_backend
+    container_name: drive_backend
     environment:
       - KnownHosts__FrontendHosts__Main="http://localhost:3000"
       - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
@@ -54,8 +65,7 @@ services:
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
       - RabbitMqConfig__Username=k0c0w
       - RabbitMqConfig__Password=passw0rd
-      - RabbitMqConfig__Hostname=host.docker.internal
-      - RabbitMqConfig__Port=5673
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
     depends_on:
       - db
       - rabbitmq
@@ -63,34 +73,6 @@ services:
     ports:
       - 80:80
       - 443:443
-        
-  graphql:
-    build:
-      context: ./backend
-      dockerfile: GraqlQlDockerfile
-    container_name: arch_graphql
-    environment:
-      - KnownHosts__FrontendHosts__Main="http://localhost:3000"
-      - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
-      - KnownHosts__BackendHosts__FileService=http://host.docker.internal:7127
-      - KnownHosts__BackendHosts__BalanceMicroservice=https://host.docker.internal:6552
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+443;http://+80
-      - ASPNETCORE_HTTPS_PORT=443
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
-      - RabbitMqConfig__Username=k0c0w
-      - RabbitMqConfig__Password=passw0rd
-      - RabbitMqConfig__Hostname=host.docker.internal
-      - RabbitMqConfig__Port=5673
-    depends_on:
-      - db
-      - rabbitmq
-      - balance_service
-    ports:
-      - 5082:80
-      - 7061:443
   
   website:
     build: ./frontend/website
@@ -102,6 +84,7 @@ services:
       - REACT_APP_WEBSITE_CHAT_URL=https://localhost:443/chat
       - REACT_LOCAL_HOST="http://localhost:3000"
       - REACT_APP_WEBSITE_OCCASION_CHAT_URL=https://localhost:443/occasion_chat
+      - REACT_APP_REGULAR_CHAT_URL=http://localhost:8080
     ports:
       - 3000:3000
     depends_on:
@@ -118,6 +101,7 @@ services:
       - REACT_APP_OCCASION_CHAT_URL=https://localhost:443/occasion_chat
       - REACT_LOCAL_HOST="http:localhost:3001"
       - REACT_APP_S3_API_URL=http://localhost:7127
+      - REACT_APP_REGULAR_CHAT_URL=http://localhost:8080
     ports:
       - 3001:3000
     depends_on:
@@ -207,6 +191,34 @@ services:
     volumes:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+
+  graphql:
+    build:
+      context: ./backend
+      dockerfile: GraqlQlDockerfile
+    container_name: arch_graphql
+    environment:
+      - KnownHosts__FrontendHosts__Main="http://localhost:3000"
+      - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
+      - KnownHosts__BackendHosts__FileService=http://host.docker.internal:7127
+      - KnownHosts__BackendHosts__BalanceMicroservice=https://host.docker.internal:6552
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+443;http://+80
+      - ASPNETCORE_HTTPS_PORT=443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Hostname=host.docker.internal
+      - RabbitMqConfig__Port=5673
+    depends_on:
+      - db
+      - rabbitmq
+      - balance_service
+    ports:
+      - 5082:80
+      - 7061:443
 
 volumes:
   postgredb-data:

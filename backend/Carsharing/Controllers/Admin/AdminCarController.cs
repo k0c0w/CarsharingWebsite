@@ -1,12 +1,13 @@
 using AutoMapper;
 using Carsharing.ViewModels;
 using Carsharing.ViewModels.Admin.Car;
-using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Carsharing.Helpers.Extensions.Controllers;
 using MediatR;
 using Features.CarManagement;
 using Features.CarManagement.Admin;
+using File = Contracts.Input.File;
+using Contracts;
 
 namespace Carsharing.Controllers;
 
@@ -67,9 +68,9 @@ public class AdminCarController : ControllerBase
     {
         if (id <= 0) return NotFound();
 
-        Contracts.File? file = null;
+        File? file = null;
         if (edit.Image != null)
-            file = new Contracts.File()
+            file = new File()
             {
                 Name = edit.Image.FileName,
                 Content = edit.Image.OpenReadStream()
@@ -82,7 +83,7 @@ public class AdminCarController : ControllerBase
             Image = file
         });
 
-        if(editModelResult)
+        if (editModelResult)
             return NoContent();
 
         return this.BadRequestWithErrorMessage(editModelResult.ErrorMessage);
@@ -100,8 +101,8 @@ public class AdminCarController : ControllerBase
     public async Task<IActionResult> GetAllCars()
     {
         var carsResult = await _mediator.Send(new GetAllCarsQuery());
-        return carsResult 
-            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!)) 
+        return carsResult
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsResult.Value!))
             : this.BadRequestWithErrorMessage(carsResult.ErrorMessage);
     }
 
@@ -110,8 +111,8 @@ public class AdminCarController : ControllerBase
     {
         var carsByModelResult = await _mediator.Send(new GetCarsByModelQuery(modelId));
 
-        return carsByModelResult 
-            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!)) 
+        return carsByModelResult
+            ? new JsonResult(_mapper.Map<IEnumerable<CarDto>, IEnumerable<AdminCarVM>>(carsByModelResult.Value!))
             : this.BadRequestWithErrorMessage(carsByModelResult.ErrorMessage);
     }
 
@@ -142,13 +143,13 @@ public class AdminCarController : ControllerBase
         return deleteCarResult ? NoContent() : this.BadRequestWithErrorMessage(deleteCarResult.ErrorMessage);
     }
 
-    private static Contracts.File IFormFileToStream(IFormFile formFile)
+    private static File IFormFileToStream(IFormFile formFile)
     {
-       return new Contracts.File()
+        return new()
         {
             Name = formFile.FileName,
             Content = formFile.OpenReadStream(),
             ContentType = formFile.ContentType,
-       };
+        };
     }
 }

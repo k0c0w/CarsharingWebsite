@@ -11,7 +11,6 @@ public static class PersistanceServiceCollectionExtensions
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        services.AddScoped<IMessageRepository, MessageRepository>();
         services.AddScoped<OccasionMessageRepository>();
         services.AddScoped<IPostRepository, NotUnitOfWorkPostRepository>();
         services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
@@ -24,7 +23,6 @@ public static class PersistanceServiceCollectionExtensions
 
     public static IServiceCollection AddUnitsOfWork(this IServiceCollection services)
     {
-        services.AddScoped<IMessageUnitOfWork, ChatUnitOfWork>();
         services.AddScoped<IUnitOfWork, CarsharingUnitOfWork>();
 
 
