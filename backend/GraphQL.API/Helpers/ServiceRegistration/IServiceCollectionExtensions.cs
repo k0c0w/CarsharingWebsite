@@ -1,4 +1,6 @@
+using Carsharing.ChatHub;
 using Carsharing.Helpers.Options;
+using Domain.Common;
 using Domain.Entities;
 using Features.CarBooking.Commands.BookCar;
 using Features.PipelineBehavior;
@@ -6,13 +8,11 @@ using Features.Tariffs.Admin;
 using Features.Tariffs.Admin.Commands.CreateTariff;
 using Features.Utils;
 using FluentValidation;
-using GraphQL.API.Consumers;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Migrations.CarsharingApp;
-using Migrations.Chat;
 using Shared.Results;
 
 namespace GraphQL.API.Helpers.ServiceRegistration;
@@ -29,25 +29,38 @@ public static class IServiceCollectionExtensions
                 x => x.MigrationsAssembly(migrationAssemblyName));
         });
 
-        services.AddDbContext<ChatContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-
         return services;
     }
 
     public static IServiceCollection AddMassTransitWithRabbitMQProvider(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<IMessageProducer, MessageProducer>();
+
         services.AddMassTransit(config =>
         {
+            var currentAssembly = typeof(Program).Assembly;
+            config.AddActivities(currentAssembly);
+
+            config.AddEntityFrameworkOutbox<CarsharingContext>(cfg =>
+            {
+                cfg
+                .UsePostgres()
+                .UseBusOutbox();
+            });
+
             config.UsingRabbitMq((ctx, cfg) =>
             {
-                cfg.Host(configuration
-                        .GetSection(RabbitMqConfig.SectionName)
-                        .Get<RabbitMqConfig>()!
-                        .FullHostname);
+                var rc = configuration
+                        .GetSection(nameof(RabbitMqConfig))
+                        .Get<RabbitMqConfig>()!;
+                cfg.Host(rc.Host, rbc =>
+                {
+                    rbc.Username(rc.Username);
+                    rbc.Password(rc.Password);
+                });
                 cfg.ConfigureEndpoints(ctx);
             });
 
-            config.AddConsumer<OccasionStatusChangeConsumer>();
         });
 
         return services;

@@ -31,7 +31,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat", "Chat.Microservice\C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectsContracts", "ProjectsContracts", "{515CC0A7-F117-4094-A54A-7E96E31FD9DA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carsharing.Contracts", "SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj", "{98FD3FC6-E251-4872-8077-BAC01B5D6C2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carsharing.Contracts", "SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj", "{98FD3FC6-E251-4872-8077-BAC01B5D6C2F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL.API", "GraphQL.API\GraphQL.API.csproj", "{F212F6C9-5CA5-4A86-A237-DCAE81D9C32D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -95,6 +97,10 @@ Global
 		{98FD3FC6-E251-4872-8077-BAC01B5D6C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98FD3FC6-E251-4872-8077-BAC01B5D6C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98FD3FC6-E251-4872-8077-BAC01B5D6C2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F212F6C9-5CA5-4A86-A237-DCAE81D9C32D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F212F6C9-5CA5-4A86-A237-DCAE81D9C32D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F212F6C9-5CA5-4A86-A237-DCAE81D9C32D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F212F6C9-5CA5-4A86-A237-DCAE81D9C32D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

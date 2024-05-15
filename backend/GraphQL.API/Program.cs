@@ -12,14 +12,14 @@ builder.Services.AddGraphQLServer()
 	.AddQueryType<Queries>()
 	.AddMutationType<Mutations>();
 
-services.AddDatabase(builder.Configuration)
-	.AddMassTransitWithRabbitMQProvider(builder.Configuration);
+services.AddDatabase(builder.Configuration);
 
 services.AddIdentityAuthorization();
 
 services.AddAutoMapper(typeof(Program).Assembly);
 
-services.RegisterChat()
+services
+	.AddMassTransitWithRabbitMQProvider(builder.Configuration)
 	.RegisterBuisnessLogicServices(builder.Configuration)
 	.AddMediatorWithFeatures();
 
