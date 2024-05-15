@@ -25,6 +25,7 @@ message Message {
   string id = 1;
   MessageAuthor author = 2;
   string text = 3;
+  google.protobuf.Timestamp time = 4;
 }
 
 message TopicInfoMessage {

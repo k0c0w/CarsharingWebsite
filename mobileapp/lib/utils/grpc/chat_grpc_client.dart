@@ -1,5 +1,3 @@
-import 'package:grpc/grpc.dart';
-import 'package:mobileapp/domain/providers/session_data_provider.dart';
 import 'package:mobileapp/utils/grpc/chat.pbgrpc.dart';
 import 'package:mobileapp/utils/grpc/google/empty.pb.dart';
 import 'package:mobileapp/domain/entities/message/message.dart' as domain;
@@ -7,13 +5,11 @@ import 'package:mobileapp/domain/entities/message/message.dart' as domain;
 class ChatGrpcClient {
   late final MessagingServiceClient _messagingServiceClient;
   late final ManagementServiceClient _managementClient;
-  late final SessionDataProvider _sessionDataProvider;
   String? _subscribedTopicName;
 
   ChatGrpcClient(
       this._messagingServiceClient,
       this._managementClient,
-      this._sessionDataProvider
       );
 
   Future<bool> sendMessage(String text) async {
@@ -21,21 +17,15 @@ class ChatGrpcClient {
       return false;
     }
 
-    final callOptions = CallOptions(
-      metadata: await _getMetadata(),
-    );
     final request = FromClientMessage(text: text, topicName: _subscribedTopicName);
-    final response = await _messagingServiceClient.sendMessage(request, options: callOptions);
+    final response = await _messagingServiceClient.sendMessage(request);
 
     return response.accepted;
   }
 
   Future<List<domain.Message>> receiveHistory() async {
-    final callOptions = CallOptions(
-      metadata: await _getMetadata(),
-    );
     final messages = await _managementClient
-        .getMyChatHistory(MyChatHistorySelectorMessage(), options: callOptions);
+        .getMyChatHistory(MyChatHistorySelectorMessage());
 
     return messages.history
         .map((e) => _toDomainMessage(e))
@@ -43,12 +33,8 @@ class ChatGrpcClient {
   }
 
   Stream<domain.Message> receiveMessage() async* {
-    final callOptions = CallOptions(
-      metadata: await _getMetadata(),
-    );
-
     await for (var msg in _messagingServiceClient
-        .getChatStream(Empty(), options: callOptions)) {
+        .getChatStream(Empty())) {
       if (msg.hasTopicInfo()) {
         _subscribedTopicName = msg.topicInfo.topicName;
       } else if (msg.hasMessage()) {
@@ -58,21 +44,14 @@ class ChatGrpcClient {
     }
   }
 
-  Future<Map<String, String>> _getMetadata() async {
-    final jwt = await _sessionDataProvider.getJwtToken();
-
-    return {
-      "Authorization": "Bearer $jwt"
-    };
-  }
-
   domain.Message _toDomainMessage(Message source) {
     final chatMessageAuthor = source.author;
     return domain.Message(
+      id: source.id,
       text: source.text,
       author: chatMessageAuthor.name,
       isFromManager: chatMessageAuthor.isManager,
-      id: source.id,
+      time: source.time.toDateTime(toLocal: true),
     );
   }
 }

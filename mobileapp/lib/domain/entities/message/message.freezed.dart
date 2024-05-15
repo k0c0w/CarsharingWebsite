@@ -19,6 +19,7 @@ mixin _$Message {
   String get id => throw _privateConstructorUsedError;
   String get text => throw _privateConstructorUsedError;
   String get author => throw _privateConstructorUsedError;
+  DateTime get time => throw _privateConstructorUsedError;
   bool get isFromManager => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -30,7 +31,12 @@ abstract class $MessageCopyWith<$Res> {
   factory $MessageCopyWith(Message value, $Res Function(Message) then) =
       _$MessageCopyWithImpl<$Res, Message>;
   @useResult
-  $Res call({String id, String text, String author, bool isFromManager});
+  $Res call(
+      {String id,
+      String text,
+      String author,
+      DateTime time,
+      bool isFromManager});
 }
 
 /// @nodoc
@@ -49,6 +55,7 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
     Object? id = null,
     Object? text = null,
     Object? author = null,
+    Object? time = null,
     Object? isFromManager = null,
   }) {
     return _then(_value.copyWith(
@@ -64,6 +71,10 @@ class _$MessageCopyWithImpl<$Res, $Val extends Message>
           ? _value.author
           : author // ignore: cast_nullable_to_non_nullable
               as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       isFromManager: null == isFromManager
           ? _value.isFromManager
           : isFromManager // ignore: cast_nullable_to_non_nullable
@@ -79,7 +90,12 @@ abstract class _$$MessageImplCopyWith<$Res> implements $MessageCopyWith<$Res> {
       __$$MessageImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String id, String text, String author, bool isFromManager});
+  $Res call(
+      {String id,
+      String text,
+      String author,
+      DateTime time,
+      bool isFromManager});
 }
 
 /// @nodoc
@@ -96,6 +112,7 @@ class __$$MessageImplCopyWithImpl<$Res>
     Object? id = null,
     Object? text = null,
     Object? author = null,
+    Object? time = null,
     Object? isFromManager = null,
   }) {
     return _then(_$MessageImpl(
@@ -111,6 +128,10 @@ class __$$MessageImplCopyWithImpl<$Res>
           ? _value.author
           : author // ignore: cast_nullable_to_non_nullable
               as String,
+      time: null == time
+          ? _value.time
+          : time // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       isFromManager: null == isFromManager
           ? _value.isFromManager
           : isFromManager // ignore: cast_nullable_to_non_nullable
@@ -126,6 +147,7 @@ class _$MessageImpl implements _Message {
       {required this.id,
       required this.text,
       required this.author,
+      required this.time,
       this.isFromManager = false});
 
   @override
@@ -135,12 +157,14 @@ class _$MessageImpl implements _Message {
   @override
   final String author;
   @override
+  final DateTime time;
+  @override
   @JsonKey()
   final bool isFromManager;
 
   @override
   String toString() {
-    return 'Message(id: $id, text: $text, author: $author, isFromManager: $isFromManager)';
+    return 'Message(id: $id, text: $text, author: $author, time: $time, isFromManager: $isFromManager)';
   }
 
   @override
@@ -151,12 +175,14 @@ class _$MessageImpl implements _Message {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.author, author) || other.author == author) &&
+            (identical(other.time, time) || other.time == time) &&
             (identical(other.isFromManager, isFromManager) ||
                 other.isFromManager == isFromManager));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, text, author, isFromManager);
+  int get hashCode =>
+      Object.hash(runtimeType, id, text, author, time, isFromManager);
 
   @JsonKey(ignore: true)
   @override
@@ -170,6 +196,7 @@ abstract class _Message implements Message {
       {required final String id,
       required final String text,
       required final String author,
+      required final DateTime time,
       final bool isFromManager}) = _$MessageImpl;
 
   @override
@@ -178,6 +205,8 @@ abstract class _Message implements Message {
   String get text;
   @override
   String get author;
+  @override
+  DateTime get time;
   @override
   bool get isFromManager;
   @override

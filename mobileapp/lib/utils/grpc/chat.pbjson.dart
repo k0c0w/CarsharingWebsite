@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: backend/Chat.Microservice/protos/chat.proto
+//  source: chat.proto
 //
 // @dart = 2.12
 
@@ -49,13 +49,15 @@ const Message$json = {
     {'1': 'id', '3': 1, '4': 1, '5': 9, '10': 'id'},
     {'1': 'author', '3': 2, '4': 1, '5': 11, '6': '.chat.MessageAuthor', '10': 'author'},
     {'1': 'text', '3': 3, '4': 1, '5': 9, '10': 'text'},
+    {'1': 'time', '3': 4, '4': 1, '5': 11, '6': '.google.protobuf.Timestamp', '10': 'time'},
   ],
 };
 
 /// Descriptor for `Message`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List messageDescriptor = $convert.base64Decode(
     'CgdNZXNzYWdlEg4KAmlkGAEgASgJUgJpZBIrCgZhdXRob3IYAiABKAsyEy5jaGF0Lk1lc3NhZ2'
-    'VBdXRob3JSBmF1dGhvchISCgR0ZXh0GAMgASgJUgR0ZXh0');
+    'VBdXRob3JSBmF1dGhvchISCgR0ZXh0GAMgASgJUgR0ZXh0Ei4KBHRpbWUYBCABKAsyGi5nb29n'
+    'bGUucHJvdG9idWYuVGltZXN0YW1wUgR0aW1l');
 
 @$core.Deprecated('Use topicInfoMessageDescriptor instead')
 const TopicInfoMessage$json = {

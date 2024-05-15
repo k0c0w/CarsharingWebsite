@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
@@ -12,6 +13,8 @@ import 'package:mobileapp/utils/grpc/chat_grpc_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:grpc/grpc.dart' as $grpc;
 
+const host = "10.0.2.2";
+
 Future<void> registerServicesAtGetIt(GetIt getIt) async {
   getIt.registerSingleton(await SharedPreferences.getInstance());
   getIt.registerSingleton(const FlutterSecureStorage());
@@ -24,7 +27,7 @@ Future<void> registerServicesAtGetIt(GetIt getIt) async {
 
   getIt.registerSingleton<GraphQLClient>(getGraphQLClient(getIt<SessionDataProvider>()));
 
-  getIt.registerSingleton<ChatGrpcClient>(getChatGrpcClient(getIt<SessionDataProvider>()));
+  getIt.registerSingleton<ChatGrpcClient>(getChatGrpcClient());
 
   await getIt.allReady();
 }
@@ -33,7 +36,7 @@ final graphQLClientFactory = getGraphQLClient(getIt<SessionDataProvider>());
 
 GraphQLClient getGraphQLClient(SessionDataProvider sessionDataProvider) {
   final HttpLink httpLink = HttpLink(
-    'http://192.168.0.16:5082/graphql/',
+    'http://$host:5082/graphql/',
   );
 
   final AuthLink authLink = AuthLink(
@@ -48,20 +51,27 @@ GraphQLClient getGraphQLClient(SessionDataProvider sessionDataProvider) {
   return GraphQLClient(link: link, cache: GraphQLCache());
 }
 
-ChatGrpcClient getChatGrpcClient(SessionDataProvider sessionDataProvider) {
-  final msgSrvCl = MessagingServiceClient(
-      $grpc.ClientChannel(
-        "10.0.2.2",
-        port: 8080,
-    )
+ChatGrpcClient getChatGrpcClient() {
+  final channel = $grpc.ClientChannel(
+      InternetAddress(host, type: InternetAddressType.IPv4),
+      port: 7080,
+      options: const $grpc.ChannelOptions(
+          credentials: $grpc.ChannelCredentials.insecure(),
+          connectionTimeout: Duration(seconds: 30),
+          connectTimeout: Duration(seconds: 5),
+      ),
   );
 
-  final mngmntService = ManagementServiceClient(
-      $grpc.ClientChannel(
-        "10.0.2.2",
-        port: 8080,
-      )
+  final authorizationCallOptions = $grpc.CallOptions(
+    providers: [(Map<String, String> metadata, String _) async {
+      final sessionDataProvider = getIt<SessionDataProvider>();
+      final token = await sessionDataProvider.getJwtToken();
+      metadata["Authorization"] = "Bearer $token";
+    }],
   );
 
-  return ChatGrpcClient(msgSrvCl, mngmntService, sessionDataProvider);
+  final msgSrvCl = MessagingServiceClient(channel, options: authorizationCallOptions);
+  final mngmntService = ManagementServiceClient(channel, options: authorizationCallOptions);
+
+  return ChatGrpcClient(msgSrvCl, mngmntService);
 }

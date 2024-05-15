@@ -1,6 +1,8 @@
-﻿using ChatService;
+﻿using Chat.Helpers;
+using ChatService;
 using Domain;
 using Domain.Interfaces;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 
 namespace Chat.Persistance;
@@ -14,25 +16,12 @@ internal class TopicSubscriber(string assignedTopic, IServerStreamWriter<FromSer
 
     public async Task ReceiveAsync(MessageAggregate messageAggregate, CancellationToken ct = default)
     {
-        var author = messageAggregate.Author;
-        var message = messageAggregate.Message;
-
         var sendMessage = new FromServerMessage()
         {
-            Message = new ChatService.Message
-            {
-                Author = new MessageAuthor
-                {
-                    Id = author.Id,
-                    Name = author.Name,
-                    IsManager = author.IsManager,
-                },
-                Text = message.Text,
-            }
+            Message = messageAggregate.ToGrpcMessage(),
         };
 
         await _responseStream.WriteAsync(sendMessage);
-        Console.WriteLine("Send message");
     }
 
     public async Task NotifyAssignedTopicAsync(CancellationToken ct = default)

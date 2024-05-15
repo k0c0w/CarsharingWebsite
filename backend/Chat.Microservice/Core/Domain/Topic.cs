@@ -87,7 +87,6 @@ public class Topic : IDisposable
             {
                 _subscribersManagmentSemaphore.Release();
             }
-            Console.Write($"Broadcasting {message.Message.Text} to {subscribers.Length} subs...");
             await Task.WhenAll(subscribers.Select(x => x.ReceiveAsync(message, ct)));
         }
         catch (OperationCanceledException)

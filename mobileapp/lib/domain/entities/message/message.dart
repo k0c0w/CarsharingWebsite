@@ -9,6 +9,7 @@ class Message with _$Message {
     required String id,
     required String text,
     required String author,
+    required DateTime time,
     @Default(false)
     bool isFromManager,
   }) = _Message;

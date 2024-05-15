@@ -1,4 +1,5 @@
-﻿using ChatService;
+﻿using Chat.Helpers;
+using ChatService;
 using Domain.Repositories;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -43,24 +44,7 @@ internal class ManagementServiceGrpc(ITopicRepository topicRepository, IMessageR
         var reply = new ChatHistoryMessage();
 
         var messages = await _messageRepository.GetMessagesByTopicAsync(topic, limit, offset);
-        reply.History.AddRange(messages.Select(x =>
-        {
-            var message = x.Message;
-            var author = x.Author;
-
-            return new Message
-            {
-                Id = message.Id.ToString(),
-                Text = message.Text,
-                Author = new MessageAuthor
-                {
-                    Id = author.Id,
-                    IsManager = author.IsManager,
-                    Name = author.Name,
-                },
-            };
-        }));
-
+        reply.History.AddRange(messages.Select(x => x.ToGrpcMessage()));
 
         return reply;
     }

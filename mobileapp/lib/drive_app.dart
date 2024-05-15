@@ -8,7 +8,7 @@ import 'package:mobileapp/ui/pages/payment.dart';
 import 'package:mobileapp/ui/pages/profile.dart';
 import 'package:mobileapp/ui/pages/register.dart';
 import 'package:mobileapp/ui/pages/subscriptions/subscription_page.dart';
-import 'package:mobileapp/ui/pages/support_chat_page.dart';
+import 'package:mobileapp/ui/pages/chat/support_chat_page.dart';
 import 'package:mobileapp/ui/pages/unathorized_home_page.dart';
 
 class DriveApp extends StatelessWidget {

@@ -65,6 +65,11 @@ export class Message extends jspb.Message {
   getText(): string;
   setText(value: string): Message;
 
+  getTime(): google_protobuf_timestamp_pb.Timestamp | undefined;
+  setTime(value?: google_protobuf_timestamp_pb.Timestamp): Message;
+  hasTime(): boolean;
+  clearTime(): Message;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Message.AsObject;
   static toObject(includeInstance: boolean, msg: Message): Message.AsObject;
@@ -78,6 +83,7 @@ export namespace Message {
     id: string,
     author?: MessageAuthor.AsObject,
     text: string,
+    time?: google_protobuf_timestamp_pb.Timestamp.AsObject,
   }
 }
 

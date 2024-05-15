@@ -36,7 +36,6 @@ internal class ChatServiceGrpc(IChatService chatService) : MessagingService.Mess
         }
 
         var accepted = await _chatService.ReceiveMessageAsync(messageDto);
-
         return new SendMessageResultMessage
         {
             Accepted = accepted

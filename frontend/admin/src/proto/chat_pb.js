@@ -654,7 +654,8 @@ proto.chat.Message.toObject = function(includeInstance, msg) {
   var f, obj = {
     id: jspb.Message.getFieldWithDefault(msg, 1, ""),
     author: (f = msg.getAuthor()) && proto.chat.MessageAuthor.toObject(includeInstance, f),
-    text: jspb.Message.getFieldWithDefault(msg, 3, "")
+    text: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    time: (f = msg.getTime()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f)
   };
 
   if (includeInstance) {
@@ -703,6 +704,11 @@ proto.chat.Message.deserializeBinaryFromReader = function(msg, reader) {
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setText(value);
+      break;
+    case 4:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setTime(value);
       break;
     default:
       reader.skipField();
@@ -753,6 +759,14 @@ proto.chat.Message.serializeBinaryToWriter = function(message, writer) {
     writer.writeString(
       3,
       f
+    );
+  }
+  f = message.getTime();
+  if (f != null) {
+    writer.writeMessage(
+      4,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
     );
   }
 };
@@ -828,6 +842,43 @@ proto.chat.Message.prototype.getText = function() {
  */
 proto.chat.Message.prototype.setText = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional google.protobuf.Timestamp time = 4;
+ * @return {?proto.google.protobuf.Timestamp}
+ */
+proto.chat.Message.prototype.getTime = function() {
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
+    jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 4));
+};
+
+
+/**
+ * @param {?proto.google.protobuf.Timestamp|undefined} value
+ * @return {!proto.chat.Message} returns this
+*/
+proto.chat.Message.prototype.setTime = function(value) {
+  return jspb.Message.setWrapperField(this, 4, value);
+};
+
+
+/**
+ * Clears the message field making it undefined.
+ * @return {!proto.chat.Message} returns this
+ */
+proto.chat.Message.prototype.clearTime = function() {
+  return this.setTime(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {boolean}
+ */
+proto.chat.Message.prototype.hasTime = function() {
+  return jspb.Message.getField(this, 4) != null;
 };
 
 

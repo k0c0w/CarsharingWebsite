@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: backend/Chat.Microservice/protos/chat.proto
+//  source: chat.proto
 //
 // @dart = 2.12
 
@@ -13,7 +13,8 @@ import 'dart:core' as $core;
 
 import 'package:protobuf/protobuf.dart' as $pb;
 
-import 'package:mobileapp/utils/grpc/google/wrappers.pb.dart' as $2;
+import 'package:mobileapp/utils/grpc/google/timestamp.pb.dart' as $2;
+import 'package:mobileapp/utils/grpc/google/wrappers.pb.dart' as $3;
 
 class FromClientMessage extends $pb.GeneratedMessage {
   factory FromClientMessage({
@@ -162,6 +163,7 @@ class Message extends $pb.GeneratedMessage {
     $core.String? id,
     MessageAuthor? author,
     $core.String? text,
+    $2.Timestamp? time,
   }) {
     final $result = create();
     if (id != null) {
@@ -173,6 +175,9 @@ class Message extends $pb.GeneratedMessage {
     if (text != null) {
       $result.text = text;
     }
+    if (time != null) {
+      $result.time = time;
+    }
     return $result;
   }
   Message._() : super();
@@ -183,6 +188,7 @@ class Message extends $pb.GeneratedMessage {
     ..aOS(1, _omitFieldNames ? '' : 'id')
     ..aOM<MessageAuthor>(2, _omitFieldNames ? '' : 'author', subBuilder: MessageAuthor.create)
     ..aOS(3, _omitFieldNames ? '' : 'text')
+    ..aOM<$2.Timestamp>(4, _omitFieldNames ? '' : 'time', subBuilder: $2.Timestamp.create)
     ..hasRequiredFields = false
   ;
 
@@ -235,6 +241,17 @@ class Message extends $pb.GeneratedMessage {
   $core.bool hasText() => $_has(2);
   @$pb.TagNumber(3)
   void clearText() => clearField(3);
+
+  @$pb.TagNumber(4)
+  $2.Timestamp get time => $_getN(3);
+  @$pb.TagNumber(4)
+  set time($2.Timestamp v) { setField(4, v); }
+  @$pb.TagNumber(4)
+  $core.bool hasTime() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearTime() => clearField(4);
+  @$pb.TagNumber(4)
+  $2.Timestamp ensureTime() => $_ensure(3);
 }
 
 class TopicInfoMessage extends $pb.GeneratedMessage {
@@ -423,8 +440,8 @@ class ChatSelectorMessage extends $pb.GeneratedMessage {
 class ChatHistorySelectorMessage extends $pb.GeneratedMessage {
   factory ChatHistorySelectorMessage({
     $core.String? topic,
-    $2.Int32Value? offset,
-    $2.Int32Value? limit,
+    $3.Int32Value? offset,
+    $3.Int32Value? limit,
   }) {
     final $result = create();
     if (topic != null) {
@@ -444,8 +461,8 @@ class ChatHistorySelectorMessage extends $pb.GeneratedMessage {
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'ChatHistorySelectorMessage', package: const $pb.PackageName(_omitMessageNames ? '' : 'chat'), createEmptyInstance: create)
     ..aOS(1, _omitFieldNames ? '' : 'topic')
-    ..aOM<$2.Int32Value>(2, _omitFieldNames ? '' : 'offset', subBuilder: $2.Int32Value.create)
-    ..aOM<$2.Int32Value>(3, _omitFieldNames ? '' : 'limit', subBuilder: $2.Int32Value.create)
+    ..aOM<$3.Int32Value>(2, _omitFieldNames ? '' : 'offset', subBuilder: $3.Int32Value.create)
+    ..aOM<$3.Int32Value>(3, _omitFieldNames ? '' : 'limit', subBuilder: $3.Int32Value.create)
     ..hasRequiredFields = false
   ;
 
@@ -480,32 +497,32 @@ class ChatHistorySelectorMessage extends $pb.GeneratedMessage {
   void clearTopic() => clearField(1);
 
   @$pb.TagNumber(2)
-  $2.Int32Value get offset => $_getN(1);
+  $3.Int32Value get offset => $_getN(1);
   @$pb.TagNumber(2)
-  set offset($2.Int32Value v) { setField(2, v); }
+  set offset($3.Int32Value v) { setField(2, v); }
   @$pb.TagNumber(2)
   $core.bool hasOffset() => $_has(1);
   @$pb.TagNumber(2)
   void clearOffset() => clearField(2);
   @$pb.TagNumber(2)
-  $2.Int32Value ensureOffset() => $_ensure(1);
+  $3.Int32Value ensureOffset() => $_ensure(1);
 
   @$pb.TagNumber(3)
-  $2.Int32Value get limit => $_getN(2);
+  $3.Int32Value get limit => $_getN(2);
   @$pb.TagNumber(3)
-  set limit($2.Int32Value v) { setField(3, v); }
+  set limit($3.Int32Value v) { setField(3, v); }
   @$pb.TagNumber(3)
   $core.bool hasLimit() => $_has(2);
   @$pb.TagNumber(3)
   void clearLimit() => clearField(3);
   @$pb.TagNumber(3)
-  $2.Int32Value ensureLimit() => $_ensure(2);
+  $3.Int32Value ensureLimit() => $_ensure(2);
 }
 
 class MyChatHistorySelectorMessage extends $pb.GeneratedMessage {
   factory MyChatHistorySelectorMessage({
-    $2.Int32Value? offset,
-    $2.Int32Value? limit,
+    $3.Int32Value? offset,
+    $3.Int32Value? limit,
   }) {
     final $result = create();
     if (offset != null) {
@@ -521,8 +538,8 @@ class MyChatHistorySelectorMessage extends $pb.GeneratedMessage {
   factory MyChatHistorySelectorMessage.fromJson($core.String i, [$pb.ExtensionRegistry r = $pb.ExtensionRegistry.EMPTY]) => create()..mergeFromJson(i, r);
 
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(_omitMessageNames ? '' : 'MyChatHistorySelectorMessage', package: const $pb.PackageName(_omitMessageNames ? '' : 'chat'), createEmptyInstance: create)
-    ..aOM<$2.Int32Value>(2, _omitFieldNames ? '' : 'offset', subBuilder: $2.Int32Value.create)
-    ..aOM<$2.Int32Value>(3, _omitFieldNames ? '' : 'limit', subBuilder: $2.Int32Value.create)
+    ..aOM<$3.Int32Value>(2, _omitFieldNames ? '' : 'offset', subBuilder: $3.Int32Value.create)
+    ..aOM<$3.Int32Value>(3, _omitFieldNames ? '' : 'limit', subBuilder: $3.Int32Value.create)
     ..hasRequiredFields = false
   ;
 
@@ -548,26 +565,26 @@ class MyChatHistorySelectorMessage extends $pb.GeneratedMessage {
   static MyChatHistorySelectorMessage? _defaultInstance;
 
   @$pb.TagNumber(2)
-  $2.Int32Value get offset => $_getN(0);
+  $3.Int32Value get offset => $_getN(0);
   @$pb.TagNumber(2)
-  set offset($2.Int32Value v) { setField(2, v); }
+  set offset($3.Int32Value v) { setField(2, v); }
   @$pb.TagNumber(2)
   $core.bool hasOffset() => $_has(0);
   @$pb.TagNumber(2)
   void clearOffset() => clearField(2);
   @$pb.TagNumber(2)
-  $2.Int32Value ensureOffset() => $_ensure(0);
+  $3.Int32Value ensureOffset() => $_ensure(0);
 
   @$pb.TagNumber(3)
-  $2.Int32Value get limit => $_getN(1);
+  $3.Int32Value get limit => $_getN(1);
   @$pb.TagNumber(3)
-  set limit($2.Int32Value v) { setField(3, v); }
+  set limit($3.Int32Value v) { setField(3, v); }
   @$pb.TagNumber(3)
   $core.bool hasLimit() => $_has(1);
   @$pb.TagNumber(3)
   void clearLimit() => clearField(3);
   @$pb.TagNumber(3)
-  $2.Int32Value ensureLimit() => $_ensure(1);
+  $3.Int32Value ensureLimit() => $_ensure(1);
 }
 
 class ChatHistoryMessage extends $pb.GeneratedMessage {

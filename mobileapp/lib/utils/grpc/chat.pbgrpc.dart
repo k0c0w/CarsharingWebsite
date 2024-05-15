@@ -1,6 +1,6 @@
 //
 //  Generated code. Do not modify.
-//  source: backend/Chat.Microservice/protos/chat.proto
+//  source: chat.proto
 //
 // @dart = 2.12
 
@@ -11,10 +11,13 @@
 
 import 'dart:async' as $async;
 import 'dart:core' as $core;
+
 import 'package:grpc/service_api.dart' as $grpc;
 import 'package:protobuf/protobuf.dart' as $pb;
-import 'package:mobileapp/utils/grpc/google/empty.pb.dart' as $1;
+
 import 'chat.pb.dart' as $0;
+import 'package:mobileapp/utils/grpc/google/empty.pb.dart' as $1;
+
 export 'chat.pb.dart';
 
 @$pb.GrpcServiceName('chat.MessagingService')
