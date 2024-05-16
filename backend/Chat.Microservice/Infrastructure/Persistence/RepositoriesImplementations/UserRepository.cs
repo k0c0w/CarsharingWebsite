@@ -27,4 +27,17 @@ public class UserRepository(ChatServiceContext context) : IUserRepository
             .AsNoTracking()
             .Where(x => ids.Contains(x.Id))
             .ToArrayAsync();
+
+    public Task RemoveByIdAsync(string id)
+    {
+        return _ctx.Users
+            .Where(x => x.Id == id)
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        _ctx.Users.Update(user);
+        await _ctx.SaveChangesAsync();
+    }
 }

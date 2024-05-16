@@ -4,5 +4,9 @@ namespace Services.Abstractions;
 
 public interface IUserService
 {
-    Task TryCreateUserAsync(User user);
+    Task TryCreateUserAsync(UserInfoDto user);
+
+    Task TryDeleteUserAsync(string id);
+
+    Task TryUpdateUserAsync(UserInfoDto userUpdate);
 }

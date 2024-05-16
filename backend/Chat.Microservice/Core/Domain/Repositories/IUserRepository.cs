@@ -6,4 +6,8 @@ public interface IUserRepository
 
     public Task<IEnumerable<User>> GetUsersByIdsAsync(params string[] ids);
     public Task<User?> GetUserByIdAsync(string id);
+
+    public Task UpdateAsync(User user);
+
+    public Task RemoveByIdAsync(string id);
 }

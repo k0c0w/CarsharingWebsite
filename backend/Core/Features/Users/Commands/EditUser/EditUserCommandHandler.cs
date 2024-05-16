@@ -1,7 +1,13 @@
-﻿using Features.Users.Queries.GetUserWithInfo;
+﻿using Carsharing.Contracts.UserEvents;
+using Contracts.UserInfo;
+using Domain.Entities;
+using Domain.Repository;
+using Entities.Repository;
+using Features.Users.Queries.GetUserWithInfo;
 using Features.Users.Shared;
+using MassTransit;
+using MassTransit.Initializers;
 using MediatR;
-using Migrations.CarsharingApp;
 using Services.Exceptions;
 using Shared.CQRS;
 using Shared.Results;
@@ -12,13 +18,17 @@ public class EditUserCommandHandler : ICommandHandler<EditUserCommand>
 {
     private readonly ISender _mediator;
     private readonly UserValidation _userValidation;
-    private readonly CarsharingContext _context;
+    private readonly IUserRepository _userRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public EditUserCommandHandler(ISender mediator, UserValidation userValidation, CarsharingContext context)
+    public EditUserCommandHandler(ISender mediator, UserValidation userValidation, IUserRepository userRepository, IPublishEndpoint publishEndpoint, IUnitOfWork unitOfWork)
     {
         _mediator = mediator;
         _userValidation = userValidation;
-        _context = context;
+        _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Result> Handle(EditUserCommand request, CancellationToken cancellationToken)
@@ -36,27 +46,41 @@ public class EditUserCommandHandler : ICommandHandler<EditUserCommand>
             UserValidation.CheckUserPassport(user.UserInfo, request.EditUserDto!.Passport!);
             UserValidation.CheckUserPassportType(user.UserInfo, request.EditUserDto!.PassportType!);
 
-            var userInfo = user.UserInfo;
             var userEditDto = request.EditUserDto;
-            {
-                userInfo.PassportType = userEditDto.PassportType;
-                userInfo.Passport = userEditDto.Passport;
-                userInfo.BirthDay = userEditDto.BirthDay;
-                userInfo.DriverLicense = userEditDto.DriverLicense;
-                userInfo.Verified = false;
-                user.FirstName = userEditDto.FirstName;
-                user.LastName = userEditDto.LastName;
+            UpdateUserInfoFields(user.UserInfo, userEditDto);
+            await UpdateUserFieldsAsync(user, userEditDto);
 
-                //_context.Users.Update(user);
-                _context.UserInfos.Update(userInfo);
-            }
+            await _userRepository.UpdateAsync(user);
+            await _unitOfWork.SaveChangesAsync();
 
-            await _context.SaveChangesAsync(cancellationToken);
             return Result.SuccessResult;
         }
         catch (Exception e)
         {
             return new Error(e.Message);
         }
+    }
+
+    private void UpdateUserInfoFields(UserInfo userInfo, EditUserDto userEditDto)
+    {
+        userInfo.PassportType = userEditDto.PassportType;
+        userInfo.Passport = userEditDto.Passport;
+        userInfo.BirthDay = userEditDto.BirthDay;
+        userInfo.DriverLicense = userEditDto.DriverLicense;
+        userInfo.Verified = false;
+    }
+
+    private async Task UpdateUserFieldsAsync(User user, EditUserDto userEditDto)
+    {
+        user.FirstName = userEditDto.FirstName;
+        user.LastName = userEditDto.LastName;
+
+        var roles = await _userRepository.GetUserRolesAsync(user.Id);
+        await _publishEndpoint.Publish(new UserUpdatedEvent
+        {
+            UserId = user.Id,
+            Name = user.FirstName,
+            Roles = roles.Select(x => x.ToString()).ToArray(),
+        });
     }
 }

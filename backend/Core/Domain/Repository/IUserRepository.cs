@@ -9,6 +9,8 @@ public interface IUserRepository : IRepository<User, string>
 
     Task<User?> GetByEmailAsync(string email);
 
+    Task<IEnumerable<Role>> GetUserRolesAsync(string userId);
+
     /// <summary>
     /// 
     /// </summary>
