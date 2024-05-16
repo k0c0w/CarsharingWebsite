@@ -46,6 +46,7 @@ public class CarRepository : ICarRepository
     public async Task<Car?> GetByIdAsync(int primaryKey)
     {
         return await _ctx.Cars
+            .Include(x=>x.CarModel)
             .SingleOrDefaultAsync(x => x.Id == primaryKey);
     }
 

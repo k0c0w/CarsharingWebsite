@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Carsharing.Forms;
 
-public class RegistrationVm : LoginVM
+public class RegistrationVm
 {
     private const string invalidSymbols = @"^[^$&+,:;=?@#|<>.-^*)(%!\""/№_}\[\]{{~]*$";
     
@@ -20,13 +20,23 @@ public class RegistrationVm : LoginVM
     [RegExCheck($"^[^{invalidSymbols}]*$", ErrorMessage = "К сожалению, фамилия сожержит недопустимые символы.")]
     [JsonPropertyName("surname")]
     public string? Surname { get; set; }
-
     
     [Required(ErrorMessage = "Пожалуйста, укажите Вашу дату рождения.")]
     [ValidateAge(AgeThreshold = 23, ErrorMessage = "Вам должно быть не менее 23 лет.")]
     [JsonPropertyName("birthdate")]
     public DateTime Birthdate { get; set; }
-    
+
+    protected const string required = "Поле обязательно.";
+    [Required(ErrorMessage = required)]
+    [EmailAddress(ErrorMessage = "Не верный формат почты")]
+    [JsonPropertyName("email")]
+    public string Email { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = required)]
+    [MinLength(6, ErrorMessage = "Используйте пароль длиной в 6 символов и более.")]
+    [JsonPropertyName("password")]
+    public string Password { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
     [Compare("AcceptMustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
     [JsonPropertyName("accept")]

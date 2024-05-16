@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Persistence</RootNamespace>
@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\Core\Domain\Domain.csproj" />
     <ProjectReference Include="..\..\Core\Services\Services.csproj" />
     <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
+    <ProjectReference Include="..\..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj" />
     <ProjectReference Include="..\Clients\Clients.csproj" />
     <ProjectReference Include="..\Migrations\Migrations.csproj" />
   </ItemGroup>

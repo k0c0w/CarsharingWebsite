@@ -1,0 +1,16 @@
+query CarQueries {
+  freeCars(carSearch: {
+    carModelId: 1,
+    longitude: 1000,
+    latitude: 1000,
+    radius: 2005
+  })
+  {
+    id
+    licensePlate
+    parkingLatitude
+    imageUrl
+    description
+    parkingLongitude
+  }
+}

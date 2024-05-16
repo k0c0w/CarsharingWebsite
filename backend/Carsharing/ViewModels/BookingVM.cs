@@ -10,8 +10,6 @@ public class BookingVM
     [JsonPropertyName("car_id")]
     public int CarId { get; set;  }
     
-    public int TariffId { get; set; }
-    
     [Required(ErrorMessage = "start_date обязательно.")]
     [JsonPropertyName("start_date")]
     public DateTime StartDate { get; set; }
@@ -20,6 +18,4 @@ public class BookingVM
     [DateEnd(DateStartProperty="StartDate", ErrorMessage = "Не верные даты.")]
     [JsonPropertyName("end_date")]
     public DateTime EndDate { get; set; }
-    
-    public int UserInfoId { get; set; }
 }

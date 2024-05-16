@@ -8,6 +8,8 @@ using Contracts;
 using Contracts.Tariff;
 using Contracts.User;
 using Domain.Entities;
+using static System.Net.Mime.MediaTypeNames;
+using System.Xml.Linq;
 using EditUserDto = Contracts.UserInfo.EditUserDto;
 
 namespace Carsharing.Helpers.Mappings
@@ -16,6 +18,17 @@ namespace Carsharing.Helpers.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<Tariff, TariffDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.TariffId))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.MaxMileage, opt => opt.MapFrom(src => src.MaxMileage))
+                .ForMember(dest => dest.PriceInRubles, opt => opt.MapFrom(src => src.PricePerMinute))
+                .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.ImageUrl))
+                .ForMember(dest => dest.MaxBookMinutes, opt => opt.MapFrom(src => src.MaxAllowedMinutes))
+                .ForMember(dest => dest.MinBookMinutes, opt => opt.MapFrom(src => src.MinAllowedMinutes));
+
+
             CreateMap<GetUserResult, User>()
                 .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.email))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.given_name))
@@ -53,7 +66,8 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.UserInfo.DriverLicense))
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+                .ForMember(dest => dest.Confirmed, opt => opt.MapFrom(src => src.UserInfo.Verified));
 
             
             // Controllers
@@ -88,15 +102,14 @@ namespace Carsharing.Helpers.Mappings
                 .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.FirstName))
                 .ForMember(dest => dest.BirthDay, opt => opt.MapFrom(src => src.BirthDay))
                 .ForMember(dest => dest.LastName, opt => opt.MapFrom(src => src.LastName))
-                .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
-                .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport!.Substring(4)))
+                .ForMember(dest => dest.Passport, opt => opt.MapFrom(src => src.Passport == null && src.Passport!.Length == 10 ? src.Passport!.Substring(4, 6) : ""))
+                .ForMember(dest => dest.PassportType, opt => opt.MapFrom(src => src.Passport == null && src.Passport!.Length == 10 ? src.Passport!.Substring(4) : ""))
                 .ForMember(dest => dest.DriverLicense, opt => opt.MapFrom(src => src.DriverLicense));
-            
-            CreateMap<BookingVM, RentCarDto>() 
+
+            CreateMap<BookingVM, RentCarDto>()
                 .ForMember(dest => dest.End, opt => opt.MapFrom(src => src.EndDate))
                 .ForMember(dest => dest.Start, opt => opt.MapFrom(src => src.StartDate))
-                .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId))
-                .ForMember(dest => dest.TariffId, opt => opt.MapFrom(src => src.TariffId));
+                .ForMember(dest => dest.CarId, opt => opt.MapFrom(src => src.CarId));
             
             // 
             CreateMap<CarModel, CarModelDto>();

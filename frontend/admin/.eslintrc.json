@@ -16,13 +16,8 @@
   "rules": {
       "arrow-spacing": "warn",
       "no-var": "warn",
-      "no-unused-vars": [
-          "error",
-          {
-              "varsIgnorePattern": "_",
-              "argsIgnorePattern": "_"
-          }
-      ],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": ["error"],
       "no-debugger": "warn",
       "react/react-in-jsx-scope": "off",
       "react/no-unknown-property": "off",

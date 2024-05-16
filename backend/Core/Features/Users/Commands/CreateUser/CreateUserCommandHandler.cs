@@ -1,33 +1,41 @@
-﻿using Domain.Entities;
+﻿using Carsharing.Contracts.UserEvents;
+using Domain.Entities;
 using Domain.Repository;
 using Entities.Repository;
-using Microsoft.AspNetCore.Identity;
+using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Services;
 using Shared.CQRS;
 using Shared.Results;
-using System.Security.Claims;
-
 
 namespace Features.Users.Commands.CreateUser;
 
 public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
 {
     private readonly IUserBalanceCreatorService _userBalanceCreatorService;
-    private readonly UserManager<User> _userManager;
-    private readonly IUnitOfWork<IUserRepository> _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserRepository _userRepository;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CreateUserCommandHandler(IUserBalanceCreatorService userBalanceCreatorService, UserManager<User> userManager, IUnitOfWork<IUserRepository> userRepository)
+    public CreateUserCommandHandler(
+        IUserBalanceCreatorService userBalanceCreatorService, 
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        IPublishEndpoint publishEndpoint
+        )
     {
-        _userManager = userManager;
         _userBalanceCreatorService = userBalanceCreatorService;
         _userRepository = userRepository;
+        _publishEndpoint = publishEndpoint;
+        _unitOfWork = unitOfWork;
     }
 
     const string ERROR = "Не возможно создать пользователя.";
 
     public async Task<Result> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var client = await _userManager.FindByEmailAsync(request.Email);
+        var userRepository = _userRepository;
+        var client = await userRepository.GetByEmailAsync(request.Email);
         if (client != null)
             return new Error(ERROR);
 
@@ -37,25 +45,44 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
         if (!preparationResult.IsSuccess)
             return new Error(ERROR);
 
-        var user = new User { Id = userId, Email = request.Email, LastName = request.LastName, FirstName = request.Name, UserName = $"{DateTime.Now:MMddyyyyHHssmm}" };
-        var resultUserCreate = await _userManager.CreateAsync(user, request.Password);
+        var user = new User
+        {
+            Id = userId,
+            Email = request.Email,
+            LastName = request.LastName,
+            FirstName = request.Name,
+            UserName = $"{DateTime.UtcNow:MMddyyyyHHssmm}",
+            UserInfo = new UserInfo { BirthDay = request.Birthdate, UserId = userId }
+        };
 
-        if (!resultUserCreate.Succeeded)
+        try
+        {
+            await userRepository.CreateUserAsync(user, request.Password, Role.User);
+            await _publishEndpoint.Publish(new UserCreatedEvent
+            {
+                Name = user.FirstName!,
+                Roles = [Role.User.ToString()],
+                UserId = user.Id
+            });
+
+            await _userBalanceCreatorService.CommitAsync();
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
         {
             await _userBalanceCreatorService.RollbackAsync();
-
-            return new Error(resultUserCreate.Errors.Select(x => x.Description).FirstOrDefault());
         }
+        catch (Exception ex)
+        {
+            await _userRepository.RemoveByIdAsync(userId);
+            await _publishEndpoint.Publish(new UserDeletedEvent()
+            {
+                UserId = userId
+            });
+            await _unitOfWork.SaveChangesAsync();
 
-        user.UserInfo = new UserInfo { BirthDay = request.Birthdate, UserId = userId };
-        await Task.WhenAll(
-            _userRepository.Unit.UpdateAsync(user),
-            _userManager.AddToRoleAsync(user, Role.User.ToString()),
-            _userBalanceCreatorService.CommitAsync()
-            );
-
-        await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, userId));
-        await _userRepository.SaveChangesAsync();
+            return new Error(ex.Message);
+        }
 
         return Result.SuccessResult;
     }

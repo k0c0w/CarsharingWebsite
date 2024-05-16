@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import '../css/popup-chat.css';
-import SendMessageForm, {OccasionSendMessageForm} from '../Components/SendMessageForm';
+import { SendMessageForm, OccasionSendMessageForm } from '../Components/SendMessageForm';
 import MessageContainer, {OccasionMessageContainer } from "../Components/MessageContainer";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr'
 import API from '../httpclient/axios_client';
 import { AuthData } from '../Components/Auth/AuthWrapper';
+import { ChatClient } from '../httpclient/grpc_clients.ts';
 
 export default function PopupChat () {
     const { user } = AuthData();
@@ -49,7 +50,7 @@ export default function PopupChat () {
         }
 
         fetchOccasion();
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         async function fetchOccasionTypes() {
@@ -183,59 +184,27 @@ function OccasionChat({occasionId, onCloseOccasionRecieved}) {
 }
 
 function DefaultSupportChat() {
-    const { getToken } = AuthData();
-    const [connection, setConnection] = useState();
+    const [client] = useState(() => new ChatClient());
     const [messages, setMessages] = useState([]);
-    const [connectedRoomId, setConnectedRoomId] = useState();
-
-    async function onRecieveRoomId(roomId) {
-        const history = await API.getChatHistory(roomId);
-        setMessages(history);
-        setConnectedRoomId(roomId);
-      }
-
-    const joinRoom = async () => {
-      try {
-        const connection = new HubConnectionBuilder()
-          .withUrl(process.env.REACT_APP_WEBSITE_CHAT_URL, { accessTokenFactory: getToken })
-          .configureLogging(LogLevel.Information)
-          .withAutomaticReconnect()
-          .build();
-  
-        connection.on('RecieveMessage', (message) => setMessages(messages => [...messages, message]));
-  
-        connection.on('RecieveRoomId', (roomId) => onRecieveRoomId(roomId));
-  
-        connection.onclose(() => {
-          setConnection();
-          setMessages([]);
-        });
-  
-        await connection.start();
-        setConnection(connection);
-      } catch (e) {
-        console.log(e);
-      }
-    }
   
     const sendMessage = async (message) => {
       try {
-        const messageModel = {
-          Text: message,
-          Time: new Date().toJSON(),
-          RoomId: connectedRoomId,
-        };
-  
-        await connection.invoke('SendMessage', messageModel);
+        await client.sendMessage(message.trim());
       } catch (e) {
         console.log(e)
       }
     }
 
-    useEffect(() => {
-        joinRoom();
+    const onMessage = (message) => setMessages(old => [...old, message]);
 
-        return () => connection?.stop();
+    useEffect(() => {
+        (async () => {
+            const history = await client.getHistory();
+            setMessages(history);
+            await client.subscribeOnMessages(onMessage);
+        })();
+
+        return () => client.cancelSubscription();
     }, []);
 
     return <>

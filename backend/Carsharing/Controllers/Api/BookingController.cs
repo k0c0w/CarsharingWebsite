@@ -29,7 +29,6 @@ public class BookingController : ControllerBase
             End = bookingInfo.EndDate,
             Start = bookingInfo.StartDate,
             CarId = bookingInfo.CarId,
-            TariffId = bookingInfo.TariffId,
         }));
         return commandResult
             ? new JsonResult(new

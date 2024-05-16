@@ -6,8 +6,8 @@ import API from '../httpclient/axios_client';
 // eslint-disable-next-line react/prop-types
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
-    const isFromClient = (message) => !message.isFromManager;
-    const isFromTechSupport = (message) => message.isFromManager;
+    const isFromClient = (message) => !message.sender.isManager;
+    const isFromTechSupport = (message) => message.sender.isManager;
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -30,7 +30,7 @@ const MessageContainer = ({ messages }) => {
                             <div className='message'>{m.text}</div>
                             
                         </div>
-                        <div className='author'>{m.authorName}</div>
+                        <div className='author'>{m.sender.name}</div>
                         </>
                     }
             </>
