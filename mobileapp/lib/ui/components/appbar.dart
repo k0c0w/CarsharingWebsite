@@ -5,6 +5,7 @@ import 'package:mobileapp/bloc/pages/home_page/events.dart';
 import 'package:mobileapp/bloc/pages/home_page/state.dart';
 import 'package:mobileapp/domain/entities/tariff/tariff.dart';
 import 'package:mobileapp/ui/components/styles.dart';
+import 'package:mobileapp/ui/pages/pages_list.dart';
 
 const _ellipticalRadius = Radius.elliptical(50, 20);
 
@@ -52,7 +53,9 @@ class _Menu extends StatelessWidget {
       children: [
         _ButtonMenu(onClick:openDrawer, iconData: Icons.menu,),
         _TariffList(),
-        _ButtonMenu(onClick:() {}, iconData: Icons.chat_bubble_outline_outlined,),
+        _ButtonMenu(
+          onClick:() => Navigator.of(context).pushNamed(DriveRoutes.support),
+          iconData: Icons.chat_bubble_outline_outlined,),
       ],
     );
   }
