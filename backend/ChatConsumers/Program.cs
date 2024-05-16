@@ -13,15 +13,16 @@ builder.Services.AddMassTransit(config =>
 
     config.UsingRabbitMq((ctx, cfg) =>
     {
+        var config = builder.Configuration
+            .GetSection(nameof(RabbitMqConfig))
+            .Get<RabbitMqConfig>() ?? throw new ArgumentNullException("Provide Rabbitmq config");
+
         cfg.ConfigureEndpoints(ctx);
-        cfg.Host(builder.Configuration
-            .GetSection(nameof(RabbitMqConfig))
-            .Get<RabbitMqConfig>()!
-            .FullHostname);
-        Console.WriteLine(builder.Configuration
-            .GetSection(nameof(RabbitMqConfig))
-            .Get<RabbitMqConfig>()!
-            .FullHostname);
+        cfg.Host(config.Host, hostCfg =>
+        {
+            hostCfg.Username(config.Username);
+            hostCfg.Password(config.Password);
+        });
     });
 });
 

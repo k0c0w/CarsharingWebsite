@@ -1,4 +1,4 @@
-﻿using Carsharing.Contracts;
+﻿using Carsharing.Contracts.UserEvents;
 using Domain.Entities;
 using Domain.Repository;
 using Entities.Repository;
@@ -77,7 +77,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
             await _userRepository.RemoveByIdAsync(userId);
             await _publishEndpoint.Publish(new UserDeletedEvent()
             {
-                Id = userId
+                UserId = userId
             });
             await _unitOfWork.SaveChangesAsync();
 
