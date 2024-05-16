@@ -24,7 +24,11 @@ public static class IServiceCollectionExtensions
         services.AddDbContext<CarsharingContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
-                x => x.MigrationsAssembly(migrationAssemblyName));
+                x =>
+                {
+                    x.MigrationsAssembly(migrationAssemblyName);
+                    x.MinBatchSize(1);
+                });
         });
 
         return services;
@@ -34,16 +38,16 @@ public static class IServiceCollectionExtensions
     {
         services.AddMassTransit(config =>
         {
-            var currentAssembly = typeof(Program).Assembly;
-            config.AddConsumers(currentAssembly);
-            config.AddActivities(currentAssembly);
-
             config.AddEntityFrameworkOutbox<CarsharingContext>(cfg =>
             {
                 cfg
                 .UsePostgres()
                 .UseBusOutbox();
             });
+
+            var currentAssembly = typeof(Program).Assembly;
+            config.AddConsumers(currentAssembly);
+            config.AddActivities(currentAssembly);
 
             config.UsingRabbitMq((ctx, cfg) =>
             {

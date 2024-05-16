@@ -20,17 +20,11 @@ public class RegistrationVm
     [RegExCheck($"^[^{invalidSymbols}]*$", ErrorMessage = "К сожалению, фамилия сожержит недопустимые символы.")]
     [JsonPropertyName("surname")]
     public string? Surname { get; set; }
-
     
     [Required(ErrorMessage = "Пожалуйста, укажите Вашу дату рождения.")]
     [ValidateAge(AgeThreshold = 23, ErrorMessage = "Вам должно быть не менее 23 лет.")]
     [JsonPropertyName("birthdate")]
     public DateTime Birthdate { get; set; }
-    
-    [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
-    [Compare("AcceptMustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
-    [JsonPropertyName("accept")]
-    public string? Accept { get; set; }
 
     protected const string required = "Поле обязательно.";
     [Required(ErrorMessage = required)]
@@ -42,4 +36,11 @@ public class RegistrationVm
     [MinLength(6, ErrorMessage = "Используйте пароль длиной в 6 символов и более.")]
     [JsonPropertyName("password")]
     public string Password { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
+    [Compare("AcceptMustBe", ErrorMessage = "Необходимо Ваше согласие на обработку персональных данных.")]
+    [JsonPropertyName("accept")]
+    public string? Accept { get; set; }
+
+    [ValidateNever] public string AcceptMustBe => "on";
 }

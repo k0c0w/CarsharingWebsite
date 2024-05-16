@@ -5,7 +5,7 @@ using Carsharing.Helpers.Extensions.ServiceRegistration;
 using Microsoft.AspNetCore.Mvc;
 using MassTransit;
 using Migrations.CarsharingApp;
-using Microsoft.EntityFrameworkCore;
+using Carsharing.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -38,6 +38,7 @@ services.Configure<ApiBehaviorOptions>(o =>
     };
 });
 
+services.AddHostedService<MigrateDatabaseBackgroundService<CarsharingContext>>();
 
 services.AddCors(options =>
 {
@@ -57,42 +58,15 @@ services.AddCors(options =>
 
 
 var app = builder.Build();
-var migrateDatabaseTask = TryMigrateDatabaseAsync(app);
-
-
 
 app.UseSwagger()
    .UseSwaggerUI()
    .UseCors("DevFrontEnds");
 
-app.UseHttpsRedirection();
 app.UseAuthentication()
    .UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chat");
 app.MapHub<OccasionsSupportChatHub>("/occasion_chat");
 
-
-await migrateDatabaseTask;
 app.Run();
-
-
-
-static async Task TryMigrateDatabaseAsync(WebApplication app)
-{
-    try
-    {
-        await using var scope = app.Services.CreateAsyncScope();
-        var sp = scope.ServiceProvider;
-
-        await using var db = sp.GetRequiredService<CarsharingContext>();
-        await db.Database.MigrateAsync();
-    }
-    catch (Exception e)
-    {
-        app.Logger.LogError(e, "Error while migrating the database");
-        Environment.Exit(-1);
-    }
-
-}
