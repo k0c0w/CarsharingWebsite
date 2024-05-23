@@ -16,7 +16,7 @@ public class OpenCarCommandHandler : ICommandHandler<OpenCarCommand>
 
     public async Task<Result> Handle(OpenCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _carRepository.Unit.GetByLiciensePlateAsync(request.LicensePlate);
+        var car = await _carRepository.Unit.GetByLicensePlateAsync(request.LicensePlate);
         if (car is null)
             return new Error(new NullReferenceException().Message);
 

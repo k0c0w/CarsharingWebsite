@@ -67,7 +67,7 @@ public class SubscriptionService : ISubscriptionService
 
         try
         {
-            await _unitOfWork.Unit.RemoveByIdAsync(_savedSubscription.SubscriptionId);
+            await _unitOfWork.Unit.RemoveAsync(_savedSubscription);
             if (_savedInDb)
             {
                await _unitOfWork.SaveChangesAsync();

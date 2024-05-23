@@ -92,7 +92,7 @@ public class CarRepository : ICarRepository
             .ToArrayAsync();
     }
 
-    public Task<Car?> GetByLiciensePlateAsync(string lp)
+    public Task<Car?> GetByLicensePlateAsync(string lp)
     {
         return _ctx.Cars
             .AsNoTracking()

@@ -14,7 +14,6 @@ public class JwtGenerator : IJwtGenerator
 
     public JwtGenerator(IOptions<JwtOptions> jwtOptions)
     {
-        Console.WriteLine($"AAAAAAAAAAAAAAAAA: {jwtOptions.Value.Key}");
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.Key));
     }
 

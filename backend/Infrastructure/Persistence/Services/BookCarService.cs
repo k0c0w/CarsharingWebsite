@@ -10,48 +10,50 @@ namespace Persistence.Services;
 
 public class BookCarService : IBookCarService
 {
-    private readonly IUnitOfWork<ICarRepository> _carRepositoryUoW;
+    private readonly ICarRepository _carRepository;
+    private readonly IUnitOfWork _uoW;
     private readonly ILogger<BookCarService> _logger;
 
     private readonly SemaphoreSlim _locker = new(1,1);
 
     private int? _lockedCar;
-    private bool _carCommited;
+    private bool _carCommitted;
 
-    public BookCarService(IUnitOfWork<ICarRepository> carRepositoryUoW, ILogger<BookCarService> logger)
+    public BookCarService(ICarRepository carRepository, ILogger<BookCarService> logger, IUnitOfWork unitOfWork)
     {
-        _carRepositoryUoW = carRepositoryUoW;
+        _uoW = unitOfWork;
+        _carRepository = carRepository;
         _logger = logger;
     }
 
-    public Task<Result> CommitCarAssigmentAsync()
-        => DoUnderLockAsync(CommitCarAssigmentInternalAsync());
+    public Task<Result> CommitCarAssignmentAsync()
+        => DoUnderLockAsync(CommitCarAssignmentInternalAsync());
 
-    public Task<Result> PrepareCarAssigmentAsync(int carId)
-        => DoUnderLockAsync(PrepareCarAssigmentInternalAsync(carId));
+    public Task<Result> PrepareCarAssignmentAsync(int carId)
+        => DoUnderLockAsync(PrepareCarAssignmentInternalAsync(carId));
 
-    public Task<Result> RollbackCarAssigmentAsync()
-        => DoUnderLockAsync(RollbackCarAssigmentInternalAsync());
+    public Task<Result> RollbackCarAssignmentAsync()
+        => DoUnderLockAsync(RollbackCarAssignmentInternalAsync());
 
-    private async Task<Result> PrepareCarAssigmentInternalAsync(int carId)
+    private async Task<Result> PrepareCarAssignmentInternalAsync(int carId)
     {
         if (_lockedCar != null)
             return Result.ErrorResult;
 
         try
         {
-            var car = await _carRepositoryUoW.Unit.GetByIdAsync(carId);
+            var car = await _carRepository.GetByIdAsync(carId);
             if (car == null || car.HasToBeNonActive || car.IsTaken || car.Prebooked)
                 return new Error("Car is already busy.");
 
             car.Prebooked = true;
-            await _carRepositoryUoW.Unit.UpdateAsync(car);
+            await _carRepository.UpdateAsync(car);
 
-            await _carRepositoryUoW.SaveChangesAsync();
+            await _uoW.SaveChangesAsync();
         }
         catch (DbException ex)
         {
-            _logger.LogError(ex, "Error during Car preparement.");
+            _logger.LogError(ex, "Error during Car preparation.");
 
             return Result.ErrorResult;
         }
@@ -61,24 +63,24 @@ public class BookCarService : IBookCarService
         return Result.SuccessResult;
     }
 
-    private async Task<Result> RollbackCarAssigmentInternalAsync()
+    private async Task<Result> RollbackCarAssignmentInternalAsync()
     {
         if (!_lockedCar.HasValue)
             return Result.ErrorResult;
         try
         {
-            var car = await _carRepositoryUoW.Unit.GetByIdAsync(_lockedCar.Value);
+            var car = await _carRepository.GetByIdAsync(_lockedCar.Value);
             if (car == null)
                 return Result.ErrorResult;
 
             car.Prebooked = false;
-            if (_carCommited)
+            if (_carCommitted)
             {
                 car.IsTaken = false;
             }
 
-            await _carRepositoryUoW.Unit.UpdateAsync(car);
-            await _carRepositoryUoW.SaveChangesAsync();
+            await _carRepository.UpdateAsync(car);
+            await _uoW.SaveChangesAsync();
         }
         catch (DbException ex)
         {
@@ -87,26 +89,26 @@ public class BookCarService : IBookCarService
             return Result.ErrorResult;
         }
 
-        _carCommited = default;
+        _carCommitted = default;
         _lockedCar = default;
 
         return Result.SuccessResult;
     }
 
-    private async Task<Result> CommitCarAssigmentInternalAsync()
+    private async Task<Result> CommitCarAssignmentInternalAsync()
     {
-        // no prepare was called or car already commited
-        if (!_lockedCar.HasValue || _carCommited)
+        // no prepare was called or car already committed
+        if (!_lockedCar.HasValue || _carCommitted)
             return Result.ErrorResult;
 
         try
         {
-            var car = await _carRepositoryUoW.Unit.GetByIdAsync(_lockedCar.Value);
+            var car = await _carRepository.GetByIdAsync(_lockedCar.Value);
             car!.Prebooked = false;
             car.IsTaken = true;
-            await _carRepositoryUoW.Unit.UpdateAsync(car);
+            await _carRepository.UpdateAsync(car);
 
-            await _carRepositoryUoW.SaveChangesAsync();
+            await _uoW.SaveChangesAsync();
         }
         catch (DbException ex)
         {
@@ -115,7 +117,7 @@ public class BookCarService : IBookCarService
             return Result.ErrorResult;
         }
 
-        _carCommited = true;
+        _carCommitted = true;
 
         return Result.SuccessResult;
     }

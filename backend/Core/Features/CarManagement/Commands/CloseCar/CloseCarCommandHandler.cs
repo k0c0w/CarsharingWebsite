@@ -16,7 +16,7 @@ public class CloseCarCommandHandler : ICommandHandler<CloseCarCommand>
 
     public async Task<Result> Handle(CloseCarCommand request, CancellationToken cancellationToken)
     {
-        var car = await _carRepository.Unit.GetByLiciensePlateAsync(request.LicensePlate);
+        var car = await _carRepository.Unit.GetByLicensePlateAsync(request.LicensePlate);
         if (car is null)
             return new Error("Машина не найдена");
 

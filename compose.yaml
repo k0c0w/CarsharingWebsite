@@ -1,6 +1,30 @@
 version: '3.9'
 
 services:
+  analytics-microservice:
+    build:
+      context: ./backend
+      dockerfile: Analytics.Microservice/Api/Dockerfile
+    container_name: drive_analytics_service
+    environment:
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+      - ConnectionStrings__ClickHouse=Host=host.docker.internal;Port=8123;Password=123;Database=carsharing;
+    depends_on:
+      - storage-clickhouse-db
+      - rabbitmq
+    ports:
+      - 11080:8080
+
+  storage-clickhouse-db:
+    image: bitnami/clickhouse
+    container_name: drive_clickhouse
+    ports:
+      - 8123:8123
+    environment:
+      - CLICKHOUSE_ADMIN_PASSWORD=123
+ 
   main-monolyth-worker-history:
     build:
       context: ./backend
@@ -185,7 +209,7 @@ services:
       - 9000:9000
       - 9091:9091
     volumes:
-      - ./volume_minio:/data
+      - ./volumes/volume_minio:/data
     environment:
       MINIO_ROOT_USER: k0c0w
       MINIO_ROOT_PASSWORD: P@ssw0rd
