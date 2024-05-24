@@ -1,5 +1,8 @@
-﻿using Domain.Entities;
+﻿using Carsharing.Contracts.CarEvents;
+using Domain.Entities;
+using Domain.Repository;
 using Entities.Repository;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Services;
 using Shared.CQRS;
@@ -11,6 +14,8 @@ namespace Features.CarBooking.Commands.BookCar;
 public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
 {
     private readonly ICarRepository _carRepository;
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly IPublishEndpoint _publishEndpoint;
     private readonly IBalanceService _balanceService;
     private readonly ISubscriptionService _subscriptionService;
     private readonly IBookCarService _bookCarService;
@@ -20,7 +25,9 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
     public BookCarCommandHandler(ILogger<BookCarCommandHandler> logger, 
         ICarRepository carRepository, 
         ISubscriptionService subscriptionService, 
-        IBookCarService bookCarService, 
+        IBookCarService bookCarService,
+        IPublishEndpoint publishEndpoint,
+        IUnitOfWork unitOfWork,
         IBalanceService balanceService)
     {
         _carRepository = carRepository;
@@ -28,12 +35,12 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
         _bookCarService = bookCarService;
         _subscriptionService = subscriptionService;
         _logger = logger;
+        _publishEndpoint = publishEndpoint;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<Result> Handle(BookCarCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Got rent request");
-
         var rentInfo = request.RentCarInfo;
 
         var tariff = await _carRepository.GetRelatedTariffAsync(rentInfo.CarId);
@@ -53,7 +60,7 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
         {
             _balanceService.PrepareBalanceChangeAsync(userId, totalPrice),
             _subscriptionService.PrepareSubscriptionAsync(subscription),
-            _bookCarService.PrepareCarAssigmentAsync(rentInfo.CarId),
+            _bookCarService.PrepareCarAssignmentAsync(rentInfo.CarId),
         };
 
         await Task.WhenAll(tasksToComplete);
@@ -65,7 +72,7 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
 
             var debitResult = tasksToComplete[0].Result;
             if (!debitResult.IsSuccess)
-                message = debitResult.ErrorMessage ?? "Error occured while atempting to debit funds. Check your balance first.";
+                message = debitResult.ErrorMessage ?? "Error occurred while attempting to debit funds. Check your balance first.";
 
             await RollbackAsync();
 
@@ -78,7 +85,7 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
 
         tasksToComplete[0] = _balanceService.CommitAsync();
         tasksToComplete[1] = _subscriptionService.CommitAsync();
-        tasksToComplete[2] = _bookCarService.CommitCarAssigmentAsync();
+        tasksToComplete[2] = _bookCarService.CommitCarAssignmentAsync();
 
         await Task.WhenAll(tasksToComplete);
 
@@ -91,11 +98,24 @@ public class BookCarCommandHandler : ICommandHandler<BookCarCommand>
             return new Error("Unable to complete operation.");
         }
 
-        _logger.LogInformation("Commited.");
+        var car = await _carRepository.GetByIdAsync(rentInfo.CarId);
+        Debug.Assert(car != null, "Car was not found.");
+        Debug.Assert(car.CarModel != null, "Include Car Model.");
+        await _publishEndpoint.Publish(new CarBookedEvent
+        {
+            TariffName = tariff.Name,
+            CarLicensePlate = car.LicensePlate,
+            CarModelName = $"{car.CarModel.Brand} {car.CarModel.Model}",
+            SubscriptionStartTimeUtc = subscription.StartDate,
+            CreationTimeUtc = DateTime.UtcNow,
+        });
+        await _unitOfWork.SaveChangesAsync();
+
+        _logger.LogInformation("Committed.");
 
         return Result.SuccessResult;
     }
 
     private Task RollbackAsync()
-        => Task.WhenAll(_balanceService.RollbackAsync(), _subscriptionService.RollbackAsync(), _bookCarService.RollbackCarAssigmentAsync());
+        => Task.WhenAll(_balanceService.RollbackAsync(), _subscriptionService.RollbackAsync(), _bookCarService.RollbackCarAssignmentAsync());
 }

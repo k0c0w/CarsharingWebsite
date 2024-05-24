@@ -5,7 +5,7 @@ namespace Entities.Repository;
 
 public interface ICarRepository : IRepository<Car, int>
 {
-    public Task<Car?> GetByLiciensePlateAsync(string lp);
+    public Task<Car?> GetByLicensePlateAsync(string lp);
 
     public Task<bool> ExistsByIdAsync(int carId);
 

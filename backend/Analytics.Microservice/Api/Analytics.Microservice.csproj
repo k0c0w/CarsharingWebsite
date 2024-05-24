@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>da1979c5-0893-4feb-b08b-427c85ce0856</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="ClickHouse.Client" Version="7.5.0" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj" />
+    <ProjectReference Include="..\Core\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Infrastructure\Persistance\Persistence.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+  	<Protobuf Include="..\protos\analytics.proto" GrpcServices="Server" Access="Internal">
+  		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</Protobuf>
+  </ItemGroup>
+
+</Project>

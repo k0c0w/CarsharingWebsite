@@ -10,8 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  protobuf: ^3.1.0
-  grpc: ^3.2.4
   #inputs
   email_validator: ^2.1.17
   intl_phone_number_input: 0.7.4
@@ -37,7 +35,11 @@ dependencies:
   get_it: ^7.7.0
   freezed: ^2.5.2
   json_annotation: ^4.8.1
+  #clients
+  dart_amqp: ^0.2.5
   graphql_flutter: ^5.1.2
+  protobuf: ^3.1.0
+  grpc: ^3.2.4
 
 dev_dependencies:
   flutter_test:
