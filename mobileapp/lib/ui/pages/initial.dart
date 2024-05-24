@@ -26,7 +26,7 @@ class _View extends StatelessWidget {
   const _View();
 
   void _onCubitStateChange(BuildContext context, InitialPageCubitState state) {
-    final route = state == InitialPageCubitState.authorized ? DriveRoutes.home : DriveRoutes.unathorizedHome;
+    final route = state == InitialPageCubitState.authorized ? DriveRoutes.home : DriveRoutes.unauthorizedHome;
     Navigator.of(context).pushReplacementNamed(route);
   }
 

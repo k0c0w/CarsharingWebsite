@@ -7,6 +7,7 @@ import 'package:mobileapp/ui/pages/pages_list.dart';
 import 'package:mobileapp/ui/pages/payment.dart';
 import 'package:mobileapp/ui/pages/profile.dart';
 import 'package:mobileapp/ui/pages/register.dart';
+import 'package:mobileapp/ui/pages/statistics.dart';
 import 'package:mobileapp/ui/pages/subscriptions/subscription_page.dart';
 import 'package:mobileapp/ui/pages/chat/support_chat_page.dart';
 import 'package:mobileapp/ui/pages/unathorized_home_page.dart';
@@ -25,7 +26,7 @@ class DriveApp extends StatelessWidget {
       initialRoute: DriveRoutes.appLoader,
       routes: {
         DriveRoutes.home : (_) => const HomePageWidget(),
-        DriveRoutes.unathorizedHome: (context) => const UnauthorizedHomePageWidget(),
+        DriveRoutes.unauthorizedHome: (context) => const UnauthorizedHomePageWidget(),
         DriveRoutes.profile: (_) => const ProfilePageWidget(),
         DriveRoutes.userSubscriptions: (_) => const SubscriptionsPageWidget(),
         DriveRoutes.payment: (_) => const PaymentPageWidget(),
@@ -33,6 +34,7 @@ class DriveApp extends StatelessWidget {
         DriveRoutes.registration: (_) => const RegisterPageWidget(),
         DriveRoutes.appLoader: (_) => InitialPageWidget(),
         DriveRoutes.support: (_) => const SupportChatPageWidget(),
+        DriveRoutes.stats: (_) => const TariffUsageStatisticsPageWidget()
       },
     );
   }

@@ -109,6 +109,11 @@ class _DrawerPageList extends StatelessWidget {
             title: "ОПЛАТА",
             onTap: createNavigateToRoute(context, DriveRoutes.payment),
           ),
+          /// Statistics
+          _DrawerListItem(
+            title: "СТАТИСТИКА",
+            onTap: createNavigateToRoute(context, DriveRoutes.stats),
+          ),
         ],
       ),
     );
