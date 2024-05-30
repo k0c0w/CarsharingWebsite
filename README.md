@@ -23,7 +23,6 @@ Project which simulates online carsharing service.
 - Docker as containerization
 - PostgreSql, MongoDB, Redis, ClickHouse, MinIO S3 as storages
 - RabbitMQ as transport
-- SonaR and eslint pipline as part of CI
 
 ## Start up
 - Use compose.yml file to up containers for backend and frontend
