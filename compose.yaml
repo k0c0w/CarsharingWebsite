@@ -109,10 +109,10 @@ services:
     ports:
       - 5082:80
 
-  main-monolyth-worker-history:
+  main-monolyth-worker:
     build:
       context: ./backend
-      dockerfile: /Main.Service/ChatConsumers/ChatConsumersDockerfile
+      dockerfile: /Main.Service/Worker/Dockerfile
     container_name: drive_occasion_chat_saver
     environment:
       - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;

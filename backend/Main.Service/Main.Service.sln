@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Features", "Core\Features\F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GraphQL.API", "GraphQL.API\GraphQL.API.csproj", "{E2E629A0-BBAE-40E1-8FF5-3654CBCD0982}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OccasionChatHistorySaver", "ChatConsumers\OccasionChatHistorySaver.csproj", "{4CD67074-C47A-4173-9A1F-6C8F20641A92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Main.Service.Worker", "ChatConsumers\Main.Service.Worker.csproj", "{4CD67074-C47A-4173-9A1F-6C8F20641A92}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedLibs", "SharedLibs", "{CFAABA5B-E9F3-45B4-9DBC-EB8169B6E1E5}"
 EndProject
@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carsharing.Contracts", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Core\Services\Services.csproj", "{425AB75D-5F7C-4B27-8732-A200CAB3061A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiExtensions", "Infrastructure\ApiExtenssions\ApiExtensions.csproj", "{E744A9DB-524D-47C3-AE06-A4940DBFD584}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiExtensions", "Infrastructure\ApiExtenssions\ApiExtensions.csproj", "{E744A9DB-524D-47C3-AE06-A4940DBFD584}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CQRS", "..\SharedLibs\CQRS\CQRS\CQRS.csproj", "{72EDA33F-B553-4F22-8ABC-3F97B68B4B4F}"
 EndProject
