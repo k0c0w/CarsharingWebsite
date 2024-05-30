@@ -417,3 +417,5 @@ yarn.lock
 .env
 
 appsettings.Development.json
+
+volumes

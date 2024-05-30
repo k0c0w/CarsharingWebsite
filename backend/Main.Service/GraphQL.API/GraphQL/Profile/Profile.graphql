@@ -1,0 +1,16 @@
+query {
+  profile {
+    userInfo {
+      email
+      fullName
+      balance
+    }
+
+    bookedCars {
+      imageUrl
+      name
+      licensePlate
+      isOpened 
+    }
+  }
+}

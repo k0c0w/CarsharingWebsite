@@ -18,7 +18,7 @@ async function send() {
     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
 
-    var body = JSON.stringify(obj);
+    let body = JSON.stringify(obj);
     API.getCars(body);
 }
 
@@ -97,7 +97,7 @@ function TarrifTable({ tariffsData, refreshRows, onUpdate, onDelete }) {
     return (
         <>
             <TableAddRefreshButtons addHandler = {handleClickAdd} refreshHandler={refreshRows} color={color}/>
-            <TarrifsGrid handleClickInfo={handleClickInfo} handleSelect={(list)=>setSelected(list)} rows={tariffsData} handleSwitch={handleSwitch}></TarrifsGrid>
+            <TarrifsGrid handleClickInfo={handleClickInfo} handleSelect={(list) => setSelected(list)} rows={tariffsData} handleSwitch={handleSwitch}></TarrifsGrid>
 
             <Box position="fixed" left={'0%'} top={'0%'} width={'100%'} >
                 <footer style={{ opacity: (selected.length === 0 ? 0 : 1) }}>
@@ -106,7 +106,7 @@ function TarrifTable({ tariffsData, refreshRows, onUpdate, onDelete }) {
                             disabled={selected.length !== 1}
                             variant={'contained'}
                             style={{ backgroundColor: (selected.length !== 1 ? color.grey[500] : color.primary[100]), color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickEdit()}
+                            onClick={() => handleClickEdit()}
                             >
                             Изменить
                         </Button>

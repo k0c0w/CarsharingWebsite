@@ -4,7 +4,6 @@ import { tokens } from '../../theme';
 import { AiFillFile } from 'react-icons/ai';
 import API from '../../httpclient/axios_client';
 
-
 const MessageContainer = ({ messages }) => {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
@@ -20,14 +19,14 @@ const MessageContainer = ({ messages }) => {
     return <div ref={messageRef} className='message-container' style={{backgroundColor: color.primary[500]}}>
         {messages.map((m, index) => (
             <>
-                    {!m.isFromManager && <div key={index} className='other-message' style={{marginTop:"25px"}}>
+                    {!m.sender.isManager && <div key={index} className='other-message' style={{marginTop:"25px"}}>
                         <div className='message bg-primary'>{m.text}</div>
-                        <div>{m.authorName}</div>
+                        <div>{m.sender.name}</div>
                     </div>}
-                    {m.isFromManager && 
+                    {m.sender.isManager && 
                     <div key={index} className='user-message' style={{marginTop:"25px"}}>
                         <div className='message bg-primary'>{m.text}</div>
-                        <div>{m.authorName}</div>
+                        <div>{m.sender.name}</div>
                     </div>}
             </>
         ))}
@@ -48,10 +47,10 @@ export function OccasionMessageContainer ({ messages }) {
     return <div ref={messageRef} className='message-container' >
         {/* eslint-disable-next-line react/prop-types */}
         {messages?.map((m, i) => (
-            <div className={isFromClient(m) ? 'other-message' : 'user-message'}>
+            <div key={i} className={isFromClient(m) ? 'other-message' : 'user-message'}>
                 <div  style={{marginTop:"0px"}} id={i}>
-                    {m.attachments && m.attachments.map(x => 
-                        <div className='attachments-container'>
+                    {m.attachments && m.attachments.map((x,i) => 
+                        <div key={i} className='attachments-container'>
                             <Attachment link={x.download_url} contentType={x.content_type} fileName={x.file_name}/>
                         </div>
                     )}

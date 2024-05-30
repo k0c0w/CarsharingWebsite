@@ -117,10 +117,18 @@ export function ProfileEdit () {
     async function handleSend(event) {
         event.preventDefault();
         if(requestSent || !areValidProfileEdit(formRef.current)) return;
-
         setErrors({});
         setRequestSent(true);
-        const response = await API.editPersonalInfo(formRef.current);
+        const formElements = formRef.current.elements;
+        const objects = {
+            email: formElements.email.value, 
+            firstName: formElements.name.value,
+            secondName: formElements.surname.value, 
+            passport: formElements.passport.value?.replace(" ", ""), 
+            driverLicense: formElements.license.value?.replace(" ", ""), 
+            birthDate: (new Date(formElements.birthdate.value)).toJSON(), 
+        };
+        const response = await API.editPersonalInfo(objects);
         setRequestSent(false);
         handleResponse(response, () => alert("Данные обновленны"), () => navigator(`/login?return_uri=${location.pathname}`), setErrors);
     }

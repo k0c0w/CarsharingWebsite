@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef} from 'react';
 import { AiFillFile } from 'react-icons/ai';
 import '../css/popup-chat.css';
 import API from '../httpclient/axios_client';
@@ -6,8 +6,8 @@ import API from '../httpclient/axios_client';
 // eslint-disable-next-line react/prop-types
 const MessageContainer = ({ messages }) => {
     const messageRef = useRef();
-    const isFromClient = (message) => !message.isFromManager;
-    const isFromTechSupport = (message) => message.isFromManager;
+    const isFromClient = (message) => !message.sender.isManager;
+    const isFromTechSupport = (message) => message.sender.isManager;
 
     useEffect(() => {
         if (messageRef && messageRef.current) {
@@ -30,7 +30,7 @@ const MessageContainer = ({ messages }) => {
                             <div className='message'>{m.text}</div>
                             
                         </div>
-                        <div className='author'>{m.authorName}</div>
+                        <div className='author'>{m.sender.name}</div>
                         </>
                     }
             </>
@@ -56,7 +56,7 @@ export function OccasionMessageContainer ({ messages }) {
             <>
                 <div className={isFromClient(m) ? 'message-sent':'message-rcvd'} style={{marginTop:"0px"}} id={i}>
                     {m.attachments && m.attachments.map(x => 
-                        <div className='attachments-container'>
+                        <div key={i} className='attachments-container'>
                             <Attachment link={x.download_url} contentType={x.content_type} fileName={x.file_name}/>
                         </div>
                     )}

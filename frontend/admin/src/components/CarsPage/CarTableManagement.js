@@ -10,30 +10,11 @@ import CarsGrid from './CarsGrid';
 import { Popup } from '../Popup';
 import { CarForm, CarFormTitle, CarFormSubmit } from './CarForm';
 import { CarViewInfo, CarViewInfoTitle } from './CarViewInfo';
-//import { getElementsByTagNames } from '../../functions/getElementsByTags';
 import API from '../../httpclient/axios_client';
-
-
-
-
-
-// A component is changing the default value state of an uncontrolled Select after being initialized. To suppress this warning opt to use a controlled Select. ??????
-
 
 function CarTable({ refreshRows, carsData }) {
     const theme = useTheme();
     const color = tokens(theme.palette.mode);
-
-
-    // function send() {
-    //     const elements = getElementsByTagNames("input,textarea", document.getElementById("form"));
-    //     const obj = Object.values(elements).reduce((obj, field) => { obj[field.name] = field.value; return obj }, {});
-    //
-    //     var body = JSON.stringify(obj);
-    //     console.log(body);
-    //     var result = API.getCars(body);
-    //     console.log(result);
-    // }
 
     // selected from data grid of cars
     const [selected, setSelected] = useState([]);
@@ -51,7 +32,7 @@ function CarTable({ refreshRows, carsData }) {
     );
 
     // открывают попап с нужным действием
-    var handleClickInfo = (model) => {
+    let handleClickInfo = (model) => {
         const popup = {
             title: <CarViewInfoTitle></CarViewInfoTitle>,
             close: () => setD('none'),
@@ -60,7 +41,7 @@ function CarTable({ refreshRows, carsData }) {
         setPopup(popup);
         setD('block');
     }
-    var handleClickAdd = () => {
+    let handleClickAdd = () => {
         const popup = {
             title: <CarFormTitle title='Добавить'></CarFormTitle>,
             close: () => setD('none'),
@@ -72,7 +53,7 @@ function CarTable({ refreshRows, carsData }) {
         console.log(selected[0]);
         setD('block');
     }
-    var handleClickChange = () => {
+    let handleClickChange = () => {
         const popup = {
             title: <CarFormTitle title='Изменить'></CarFormTitle>,
             close: () => setD('none'),

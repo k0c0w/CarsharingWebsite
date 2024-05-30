@@ -51,7 +51,6 @@
 }
 
 .popup-chat-header {
-    background-color: #dad9d9;
     flex-grow: 0.5;
     flex-shrink: 4;
     min-height: 30px;

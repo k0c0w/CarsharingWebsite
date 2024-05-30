@@ -7,7 +7,7 @@ function delay(ms) {
   }
 
 class AxiosWrapper {
-    constructor(url = process.env.REACT_APP_WEBSITE_API_URL) {
+    constructor(url = process.env.REACT_APP_WEBSITE_API_URL ?? "https://localhost:7129/api") {
         const options = {
             baseURL: url,
             timeout: 10000,
@@ -15,12 +15,12 @@ class AxiosWrapper {
             headers: {
                 'Accept': 'application/json',
                 'Content-type': 'application/json; charset=UTF-8',
-                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL,
+                "Access-Control-Allow-Origin": process.env.REACT_APP_WEBSITE_API_URL ?? "https://localhost:7129",
                 "X-Requested-With": "XMLHttpRequest"
             },
             withCredentials: true,
         }
-        this.token = localStorage.getItem("token");
+        this.token = sessionStorage.getItem("token");
         this.axiosInstance = axios.create(options);
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
 
@@ -107,16 +107,20 @@ class AxiosWrapper {
         return await this._get(`/information/news`);
     }
 
-    async login(form) {
-        let response = await this._post(`/account/login/`, this._getModelFromForm(form));
+    async login(login, password) {
+        let response = await this._post(`/account/login/`, {
+            email: login,
+            password: password,
+        });
         this.token = response?.data?.bearer_token ?? "";
         this.axiosInstance.defaults.headers["Authorization"] = `Bearer ${this.token}`;
         this.s3ServiceAxios.defaults.headers.Authorization = `Bearer ${this.token}`;
-        localStorage.setItem("token", this.token)
+        sessionStorage.setItem("token", this.token);
         return response
     }
 
     async logout() {
+        sessionStorage.removeItem("token");
         return await this._post(`/account/logout/`);
     }
 
@@ -136,8 +140,15 @@ class AxiosWrapper {
         return await this._get('/Account/PersonalInfo');
     }
 
-    async editPersonalInfo(form) {
-        return await this._post('/Account/PersonalInfo/Edit', this._getModelFromForm(form));
+    async editPersonalInfo({email, firstName, secondName, passport, driverLicense, birthDate}) {
+        return await this._post('/Account/PersonalInfo/Edit', {
+            surname: secondName,
+            name: firstName,
+            email: email,
+            birthdate: birthDate,
+            passport: passport,
+            license: driverLicense,
+        });
     }
 
     async profile() {
@@ -215,7 +226,7 @@ class AxiosWrapper {
         await this.s3ServiceAxios.post("/attachments", formData, {
             headers: { "Content-Type": "multipart/form-data" }
         })
-        .then(response =>{
+        .then(response => {
             attachmentCreationTrackingId = response.data.value;
         })
         .catch((err) => {
@@ -313,7 +324,7 @@ class AxiosWrapper {
                 response.data = r.data;
                 response.status = r.status;
             })
-            .catch(error =>{ 
+            .catch(error => { 
                 if(error.response) {
                     response.error = error.response.data.error;
                     response.status = error.response.status;
@@ -345,8 +356,8 @@ class AxiosWrapper {
 
     _renameKeys(obj, keys) {
         
-        for (var key in keys){
-            for (var elem in obj) {
+        for (let key in keys){
+            for (let elem in obj) {
                 console.log(elem)
                 if (elem === key) {
                     this._renameKey(obj, elem, keys[key])

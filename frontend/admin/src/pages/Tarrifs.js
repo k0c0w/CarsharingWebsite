@@ -13,7 +13,7 @@ const attrs = [
     },
     {
         value: 'Price',
-        label: 'Цена (p.)',
+        label: 'Цена (p./мин)',
         labelHelper: "Ценe"
     },
     {
@@ -48,7 +48,7 @@ function TarrifMngmt() {
     }
 
     const loadData = async () => {
-        var result = await API.getTariffs()
+        let result = await API.getTariffs()
     
         if (result.error !== null)
             setTariffsData(result.data);

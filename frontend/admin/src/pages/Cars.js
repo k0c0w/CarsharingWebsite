@@ -25,15 +25,15 @@ const attrs = [
 function CarsMngmt() {
     const [carsData, setCarsData] = useState([]);
     
-    var loadData = async () => {
-        var result = await API.getCars();
+    let loadData = async () => {
+        let result = await API.getCars();
         console.log(result);
 
         if (result.error !== null)
         setCarsData(result.data);
     }
 
-    useEffect(()=>{ 
+    useEffect(() => { 
         loadData()
     }, []);
 
@@ -44,7 +44,7 @@ function CarsMngmt() {
             </h1>
             <TableSearchField data={carsData} attrs={attrs} defaultAttrName="Brand" setData={setCarsData}/>
             <div className='commandsList'>
-                <CarTable carsData={carsData} refreshRows={()=>loadData()}/>
+                <CarTable carsData={carsData} refreshRows={() => loadData()}/>
             </div>
         </>
     )

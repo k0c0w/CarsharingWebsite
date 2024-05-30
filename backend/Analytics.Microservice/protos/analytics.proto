@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option csharp_namespace = "Analytics.Microservice";
+
+package analytics;
+
+message SubscriptionInfo  {
+  string queueName = 1;
+}
+
+service AnalyticsService {
+
+  rpc SubscribeTariffsUsageUpdates(google.protobuf.Empty) returns (SubscriptionInfo);
+}

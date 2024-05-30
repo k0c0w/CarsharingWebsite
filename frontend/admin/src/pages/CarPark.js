@@ -45,27 +45,26 @@ const attrs = [
 function CarParkMngmt() {
     const [carParkData, setCarParkData] = useState([]);
     
-    var loadData = async () => {
-        var result = await API.getCarPark();
-        console.log(result);
+    const loadData = async () => {
+        let result = await API.getCarPark();
 
         if (result.error !== null)
         setCarParkData(result.data);
     }
 
-    useEffect(()=>{ 
-        loadData()
+    useEffect(() => { 
+        loadData();
     }, []);
 
 
     return (
         <>
             <h1>
-                Car Models
+                Автопарк (not working)
             </h1>
             <TableSearchField data={carParkData} attrs={attrs} defaultAttrName="LicensePlate" setData={setCarParkData}/>
             <div className='commandsList'>
-                <CarParkTable carParkData={carParkData} refreshRows={()=>loadData()}/>
+                <CarParkTable carParkData={carParkData} refreshRows={() => loadData()}/>
             </div>
         </>
     )

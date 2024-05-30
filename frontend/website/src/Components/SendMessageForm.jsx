@@ -6,7 +6,7 @@ import {MdDelete} from "react-icons/md"
 import API from '../httpclient/axios_client';
 
 
-const SendMessageForm = ({ sendMessage }) => {
+export const SendMessageForm = ({ sendMessage }) => {
     const [message, setMessage] = useState('');
     
     return <Form
@@ -61,7 +61,7 @@ export function OccasionSendMessageForm({sendMessage}) {
         }
     }
 
-    async function onSendButtonClicked(e) {
+    async function onSendButtonClicked() {
         if (message == null && attachments.length == 0)
             return;
 

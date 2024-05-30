@@ -52,7 +52,7 @@ export function PostGrid({handleClickInfo, handleSelect, rows=[]}) {
                         <Button
                             variant={'contained'}
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickInfo(params.row)} //e.target.parentNode.parentNode.parentNode.childNodes
+                            onClick={() => handleClickInfo(params.row)} //e.target.parentNode.parentNode.parentNode.childNodes
                         >
                             Посмотреть данные
                         </Button>
@@ -116,7 +116,7 @@ export function PostGrid({handleClickInfo, handleSelect, rows=[]}) {
                 checkboxSelection disableRowSelectionOnClick
                 columns={columns}
                 rows={rows}
-                onRowSelectionModelChange={(e)=>_handleSelect(e)}
+                onRowSelectionModelChange={(e) => _handleSelect(e)}
             />
         </Box>
     )

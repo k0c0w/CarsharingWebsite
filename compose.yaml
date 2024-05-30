@@ -1,162 +1,244 @@
 version: '3.9'
 
 services:
-  chat_history_saver:
+  analytics-microservice:
     build:
       context: ./backend
-      dockerfile: ChatConsumersDockerfile
-    container_name: chatConsumer
+      dockerfile: Analytics.Microservice/Api/Dockerfile
+    container_name: drive_analytics_service
     environment:
-      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
-      - RabbitMqConfig__Username=${RABBITMQ_USER}
-      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
-      - RabbitMqConfig__Hostname=rabbitmq
-      - RabbitMqConfig__Port=5672
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+      - ConnectionStrings__ClickHouse=Host=host.docker.internal;Port=8123;Password=123;Database=carsharing;
     depends_on:
+      - storage-clickhouse-db
       - rabbitmq
-  
-  backend:
+    ports:
+      - 11080:8080
+
+  storage-clickhouse-db:
+    image: bitnami/clickhouse
+    container_name: drive_clickhouse
+    ports:
+      - 8123:8123
+    environment:
+      - CLICKHOUSE_ADMIN_PASSWORD=123
+
+  envoy-proxy:
+    container_name: drive_grpc_web_proxy
+    image: envoyproxy/envoy-dev:e4955aed5694f9935d674419dbb364e744f697b4
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "9901:9901"
+      - "8080:8080"
+
+  balance-microservice:
+    container_name: drive_balance_service
     build:
       context: ./backend
-      dockerfile: CarsharingDockerfile
-    container_name: backend
+      dockerfile: Balance.Microservice/BalanceService/BalanceServiceDockerfile
     environment:
-      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
-      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
-      - KnownHosts__BackendHosts__FileService=${BACK_FILESERVICE}
-      - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
-      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
-      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION}
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Balance;
+    ports:
+      - 6552:8080
+
+    depends_on:
+      - storage-sql-db
+  
+  chat-microservice:
+    build:
+      context: ./backend
+      dockerfile: Chat.Microservice/Chat/Dockerfile
+    container_name: drive_chat_service
+    environment:
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Chat;
+    depends_on:
+      - storage-sql-db
+      - rabbitmq
+      - envoy-proxy
+    ports:
+      - 7080:8080
+
+  main-monolyth-restapi:
+    build:
+      context: ./backend
+      dockerfile: Main.Service/Rest.API/RestDockerfile
+    container_name: drive_rest_api
+    environment:
+      - KnownHosts__FrontendHosts__Main="http://localhost:3000"
+      - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
+      - KnownHosts__BackendHosts__FileService=http://host.docker.internal:7127
+      - KnownHosts__BackendHosts__BalanceMicroservice=http://host.docker.internal:6552
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
       - Authorization__Google__AppId =${GOOGLE_APP_ID}
       - Authorization__Google__AppSecret =${GOOGLE_APP_SECRET}
-      - RabbitMqConfig__Username=${RABBITMQ_USER}
-      - RabbitMqConfig__Password=${RABBITMQ_PASSWORD}
-      - RabbitMqConfig__Hostname=rabbitmq
-      - RabbitMqConfig__Port=5672
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
     depends_on:
-      - db
+      - storage-sql-db
       - rabbitmq
+      - balance-microservice
+      - s3-microservice
     ports:
-      - ${BACK_ASP_PORTS}
-      - ${BACK_ASP_PORTS2}
-  
-  website:
-    build: ./frontend/website
-    container_name: frontend
-    environment:
-      - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
-      - REACT_APP_WEBSITE_ORIGIN=${WEBSITE_ORIGIN}
-      - REACT_APP_S3_API_URL=${S3_API_URL}
-      - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-      - REACT_LOCAL_HOST=${FRONT_MAIN}
-      - REACT_APP_WEBSITE_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
-    
-    ports:
-      - ${FRONT_WEBSITE_PORTS}
-  
-  admin:
-    build: ./frontend/admin
-    container_name: admin_dashboard
-    environment:
-      - REACT_APP_ADMIN_API_URL=${ADMIN_API_URL}
-      - REACT_APP_WEBSITE_API_URL=${WEBSITE_API_URL}
-      - REACT_APP_WEBSITE_CHAT_URL=${WEBSITE_CHAT_URL}
-      - REACT_APP_OCCASION_CHAT_URL=${WEBSITE_OCCASION_CHAT_URL}
-      - REACT_LOCAL_HOST=${WEBSITE_ORIGIN}
-      - REACT_APP_S3_API_URL=${S3_API_URL}
-    ports:
-      - ${FRONT_ADMIN_PORTS}
-  db:
-    container_name: database
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: Carsharing
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGDATA: "/var/lib/postgresql/data/pgdata"
-    volumes:
-      - ../2. Init Database:/docker-entrypoint-initdb.d
-    ports:
-      - ${DB_PORTS}
-  
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:3-alpine
-    env_file:
-      - .env
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      - 80:8080
 
-  minio_carsharing:
+  main-monolyth-graphql:
     build:
       context: ./backend
-      dockerfile: MinioConsumersDockerfile
-    env_file:
-      - .mongo.env
-      - .redis.env
-      - .env
-    ports:
-      - "7125:80"
-      - "7126:443"
-    container_name: minio_carsharing
-    depends_on:
-      - minioS3
-      - tmdb
-      - pmdb
+      dockerfile: Main.Service/GraphQL.API/GraqlQlDockerfile
+    container_name: drive_graphql_api
     environment:
-      - KnownHosts__FrontendHosts__Main=${FRONT_MAIN}
-      - KnownHosts__FrontendHosts__Admin=${FRONT_ADMIN}
+      - KnownHosts__BackendHosts__BalanceMicroservice=http://host.docker.internal:6552
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+80
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+    depends_on:
+      - storage-sql-db
+      - rabbitmq
+      - balance-microservice
+    ports:
+      - 5082:80
+
+  main-monolyth-worker:
+    build:
+      context: ./backend
+      dockerfile: /Main.Service/Worker/Dockerfile
+    container_name: drive_occasion_chat_saver
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID=k0c0w;Password=P@ssw0rd;Server=host.docker.internal;Port=6543;Database=Carsharing;
+      - RabbitMqConfig__Username=k0c0w
+      - RabbitMqConfig__Password=passw0rd
+      - RabbitMqConfig__Host=amqp://host.docker.internal:5673
+    depends_on:
+      - rabbitmq
+      - storage-sql-db
+  
+  ui-main-website:
+    build: ./frontend/website
+    container_name: drive_user_website
+    environment:
+      - REACT_APP_WEBSITE_API_URL=http://localhost:80/api
+      - REACT_APP_WEBSITE_ORIGIN=http://localhost:80
+      - REACT_APP_S3_API_URL=http://localhost:7127
+      - REACT_LOCAL_HOST="http://localhost:3000"
+      - REACT_APP_WEBSITE_OCCASION_CHAT_URL=http://localhost:80/occasion_chat
+      - REACT_APP_REGULAR_CHAT_URL=http://localhost:8080
+    ports:
+      - 3000:3000
+    depends_on:
+      - main-monolyth-restapi
+      - s3-microservice
+      - envoy-proxy
+  
+  ui-admin-website:
+    build: ./frontend/admin
+    container_name: drive_admin_website
+    environment:
+      - REACT_APP_ADMIN_API_URL=http://localhost:80/api/admin
+      - REACT_APP_WEBSITE_API_URL=http://localhost:80/api
+      - REACT_APP_OCCASION_CHAT_URL=http://localhost:80/occasion_chat
+      - REACT_LOCAL_HOST="http:localhost:3001"
+      - REACT_APP_S3_API_URL=http://localhost:7127
+      - REACT_APP_REGULAR_CHAT_URL=http://localhost:8080
+    ports:
+      - 3001:3000
+    depends_on:
+      - main-monolyth-restapi
+      - s3-microservice
+      - envoy-proxy
+
+  storage-sql-db:
+    container_name: drive_postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: k0c0w
+      POSTGRES_PASSWORD: P@ssw0rd
+    volumes:
+      - postgredb-data:/var/lib/postgresql/data
+    ports:
+      - 6543:5432
+  
+  rabbitmq:
+    container_name: drive_rabbitmq
+    image: rabbitmq:3.10.6-management-alpine
+    ports:
+      - 15673:15672
+      - 5673:5672
+    environment:
+      RABBITMQ_DEFAULT_USER: k0c0w
+      RABBITMQ_DEFAULT_PASS: passw0rd
+
+  s3-microservice:
+    container_name: drive_s3_service
+    build:
+      context: ./backend
+      dockerfile: S3.Microservice/S3.Service/S3MicroserviceDockerfile
+    ports:
+      - 7127:8080
+    depends_on:
+      - storage-s3
+      - storage-nosql-redis
+      - storage-nosql-mongo
+    environment:
+      - KnownHosts__FrontendHosts__Main="http://localhost:3000"
+      - KnownHosts__FrontendHosts__Admin="http://localhost:3001"
       - MinioS3__AccessKey=minioadmin
       - MinioS3__SecretKey=minioadmin
       - MinioS3__Timeout=5000
       - MinioS3__Endpoint=minio:9000
-      - ASPNETCORE_ENVIRONMENT=${BACK_ASP_ENV}
-      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
-      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${KestrelCertifPass}
-      - RedisDbSettings__ConnectionUrl=tmdb:6379
-      - RedisDbSettings__Host=tmdb
-      - RedisDbSettings__Port=6379
-      - MongoDbSettings__ConnectionUrl=mongodb://pmdb:27017/
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RedisDbSettings__ConnectionUrl=host.docker.internal:6381,abortConnect=false,connectTimeout=30000,responseTimeout=30000
+      - RedisDbSettings__Host=host.docker.internal
+      - RedisDbSettings__Port=6381
+      - MongoDbSettings__ConnectionUrl=mongodb://host.docker.internal:27018/
       - MongoDbSettings__DatabaseName=carsharing
-    links:
-      - "tmdb"
-      - "pmdb"
   
-  minioS3:
+  storage-s3:
     image: minio/minio
-    container_name: minio
+    container_name: drive_minio
+    hostname: minio
     ports:
-      - "9000:9000"
-      - "9090:9090"
+      - 9000:9000
+      - 9091:9091
+    volumes:
+      - ./volumes/volume_minio:/data
     environment:
-      MINIO_ROOT_USER: "carsharing"
-      MINIO_ROOT_PASSWORD: "carsharingAdmin"
-    command: server --console-address ":9090" /data/
+      MINIO_ROOT_USER: k0c0w
+      MINIO_ROOT_PASSWORD: P@ssw0rd
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: server --console-address ":9091" /data/
     
-  pmdb:
+  storage-nosql-mongo:
     image: mongo
-    container_name: pmdb
+    container_name: drive_mongo
     restart: always
+    volumes:
+      - ./volumes/volume_mongo:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
       
-  tmdb:
+  storage-nosql-redis:
     image: redis:latest
-    container_name: tmdb
+    container_name: drive_redis
     restart: always
     ports:
-      - "6379:6379"
+      - "6381:6379"
     volumes:
       - /path/to/local/dаta:/root/redis
       - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+
+
+
+volumes:
+  postgredb-data:

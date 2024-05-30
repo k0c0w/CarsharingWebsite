@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Persistence</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.Tools" Version="2.62.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj" />
+    <ProjectReference Include="..\..\Core\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\..\Core\Services\Services.csproj" />
+    <ProjectReference Include="..\Clients\Clients.csproj" />
+    <ProjectReference Include="..\Migrations\Migrations.csproj" />
+  </ItemGroup>
+	
+	
+</Project>

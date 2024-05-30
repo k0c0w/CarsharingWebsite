@@ -1,0 +1,13 @@
+query CarQueries {
+  carModelByTariff(id: 1)
+  {
+    price
+    tariffName
+    maxMilage
+    id
+    brand
+		description
+		url
+    model
+  }
+}

@@ -59,7 +59,7 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
                         <Button 
                             variant={'contained'} 
                             style={{ backgroundColor: color.primary[100], color: color.primary[900], marginRight: '20px' }}
-                            onClick={()=>handleClickInfo(params.row)}
+                            onClick={() => handleClickInfo(params.row)}
                             >
                             Посмотреть данные
                         </Button>
@@ -70,8 +70,8 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
     ]
     
     //  ----- Оптимизировать -----  //
-    var _handleSelect = async (listId) => {
-        var result = []
+    let _handleSelect = async (listId) => {
+        let result = []
         listId.forEach(id => {
             rows.forEach( row => {
                 if (row.id == id) {
@@ -122,7 +122,7 @@ function CarsGrid({handleClickInfo, handleSelect, rows}) {
                 checkboxSelection disableRowSelectionOnClick
                 columns={columns}
                 rows={rows}
-                onRowSelectionModelChange={(e)=>_handleSelect(e)}
+                onRowSelectionModelChange={(e) => _handleSelect(e)}
             />
         </Box>
     )

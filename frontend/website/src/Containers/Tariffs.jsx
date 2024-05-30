@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CardHolder } from "../Components/Card";
 import Container from "../Components/Container";
 import Section, { GreetingSection, SectionTitle } from "../Components/Sections";
-import { useEffect } from "react";
+
 import  API  from "../httpclient/axios_client";
 import Bold from "../Components/TextTags";
 
@@ -55,7 +55,7 @@ export function CarListSection ({tariffId, price}) {
             <div style={style}>
             {!loaded && <Bold>Загрузка...</Bold>}
             {loaded && cars.length == 0 && <Bold>К сожалению, нет доступных машин.</Bold>}
-            {cars.map((x, i) =>{
+            {cars.map((x, i) => {
 
                 let description = x.description?.substring(0, 64);
                 if(x?.description.length > 64)
