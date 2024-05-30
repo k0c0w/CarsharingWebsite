@@ -418,4 +418,4 @@ yarn.lock
 
 appsettings.Development.json
 
-volume_minio
+volumes

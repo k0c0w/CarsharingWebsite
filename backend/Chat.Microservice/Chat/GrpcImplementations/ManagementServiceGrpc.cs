@@ -4,7 +4,7 @@ using Domain.Repositories;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
-using Shared;
+using CommonExtensions.Claims;
 
 namespace Chat.GrpcImplementations;
 

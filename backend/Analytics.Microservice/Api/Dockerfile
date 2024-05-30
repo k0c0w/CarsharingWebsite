@@ -6,8 +6,10 @@ EXPOSE 8080
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 
-COPY ["Analytics.Microservice/", "/src/Analytics.Microservice/"]
-COPY ["SharedLibs/Carsharing.Contracts/", "/src/SharedLibs/Carsharing.Contracts/"]
+WORKDIR /src
+COPY ["Analytics.Microservice/", "Analytics.Microservice/"]
+COPY ["SharedLibs/Carsharing.Contracts/", "SharedLibs/Carsharing.Contracts/"]
+COPY ["SharedLibs/CommonExtensions/", "SharedLibs/CommonExtensions/"]
 WORKDIR /src/Analytics.Microservice
 RUN dotnet restore "./Api/Analytics.Microservice.csproj"
 COPY . .

@@ -13,17 +13,12 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Shared\Shared.csproj" />
     <ProjectReference Include="..\..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj" />
+    <ProjectReference Include="..\..\SharedLibs\CommonExtensions\CommonExtensions\CommonExtensions.csproj" />
     <ProjectReference Include="..\Core\Services.Abstractinos\Services.Abstractions\Services.Abstractions.csproj" />
     <ProjectReference Include="..\Infrastructure\Migrations\Migrations.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistence\Persistence.csproj" />

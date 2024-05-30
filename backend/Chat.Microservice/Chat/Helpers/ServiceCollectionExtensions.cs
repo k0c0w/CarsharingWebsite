@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using CommonExtensions.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAuthorization(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddConfiguredAuthentication()
             .AddJwtBearer(o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters

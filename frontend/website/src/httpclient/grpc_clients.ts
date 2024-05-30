@@ -48,7 +48,6 @@ export class ChatClient {
             if (incommingMessage.hasTopicinfo()) {
                 const topicInfo = incommingMessage.getTopicinfo()!;
                 this.topic = topicInfo.getTopicname();
-                console.log(this.topic);
             }
         });
         stream.on("error", (err) => {

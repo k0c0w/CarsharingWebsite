@@ -1,12 +1,11 @@
 ﻿using Chat.Helpers;
 using Chat.Persistance;
 using ChatService;
-using Domain;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Services.Abstractions;
-using Shared;
+using CommonExtensions.Claims;
 
 namespace Chat.Services;
 

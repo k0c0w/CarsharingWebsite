@@ -3,15 +3,13 @@ using Analytics.Microservice.Options;
 using Domain;
 using LinqToDB;
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Persistence.DataAccess;
 using Persistence.Services;
-using Persistence.Transport;
 using Persistence.Transport.Consumers;
 using RabbitMQ.Client;
-using System.Text;
+using CommonExtensions.Jwt;
+using CommonExtensions.Authorization;
 
 namespace Analytics.Microservice.Extensions;
 
@@ -60,21 +58,8 @@ public static class IServiceCollectionExtensions
     private static IServiceCollection AddAuthenticationAndAuthorization(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(o =>
-            {
-                o.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey
-                        (Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new InvalidOperationException())),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
-                };
-            });
+            .AddConfiguredAuthentication()
+            .AddJwtBearer(configuration);
 
         serviceCollection.AddAuthorization();
 

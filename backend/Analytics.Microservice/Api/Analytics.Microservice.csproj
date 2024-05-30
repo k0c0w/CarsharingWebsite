@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\SharedLibs\Carsharing.Contracts\Carsharing.Contracts.csproj" />
+    <ProjectReference Include="..\..\SharedLibs\CommonExtensions\CommonExtensions\CommonExtensions.csproj" />
     <ProjectReference Include="..\Core\Domain\Domain.csproj" />
     <ProjectReference Include="..\Infrastructure\Persistance\Persistence.csproj" />
   </ItemGroup>

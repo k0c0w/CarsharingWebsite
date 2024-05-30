@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>MinioConsumer</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR" Version="12.2.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
+      <PackageReference Include="Minio" Version="6.0.1" />
+      <PackageReference Include="MongoDB.Driver" Version="2.22.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+      <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\OccasionAttachment\InputModels\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\SharedLibs\CommonExtensions\CommonExtensions\CommonExtensions.csproj" />
+      <ProjectReference Include="..\..\SharedLibs\CQRS\CQRS\CQRS.csproj" />
+      <ProjectReference Include="..\..\SharedLibs\Result\Result\Results.csproj" />
+    </ItemGroup>
+
+</Project>

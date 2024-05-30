@@ -4,9 +4,6 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
 EXPOSE 7080
-EXPOSE 7081
-
-ADD ./certificates/https/aspnetapp.pfx /https/aspnetapp.pfx
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release

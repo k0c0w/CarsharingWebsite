@@ -1,5 +1,5 @@
-﻿using Shared;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using CommonExtensions.Claims;
 
 namespace Chat.Helpers;
 

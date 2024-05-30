@@ -1,0 +1,22 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["S3.Microservice/S3.Service/", "S3.Microservice/S3.Service/"]
+COPY ["SharedLibs/CQRS", "SharedLibs/CQRS"]
+COPY ["SharedLibs/Result", "SharedLibs/Result"]
+COPY ["SharedLibs/CommonExtensions", "SharedLibs/CommonExtensions"]
+
+WORKDIR "/src/S3.Microservice/S3.Service/"
+RUN dotnet restore "S3.Microservice.csproj"
+RUN dotnet build "S3.Microservice.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "S3.Microservice.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "S3.Microservice.dll"]
